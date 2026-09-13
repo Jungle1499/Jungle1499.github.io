@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>持仓晨析 · 2026-08-27（基于 2026-08-26 收盘）</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1f2329; --sub:#6b7280; --line:#e5e7eb;
+  --up:#d92e2e; --down:#1a9e54; --warn:#d97706; --bad:#dc2626; --ok:#2563eb; --chip:#eef2f7;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 6px 20px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;font-size:14px}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+header.top{background:linear-gradient(135deg,#1f2937,#374151);color:#fff;border-radius:14px;padding:22px 26px;box-shadow:var(--shadow)}
+header.top h1{margin:0 0 4px;font-size:21px;letter-spacing:.5px}
+header.top .meta{font-size:12.5px;opacity:.82;display:flex;flex-wrap:wrap;gap:14px;margin-top:6px}
+header.top .meta b{font-weight:600;color:#fde68a}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-top:18px;box-shadow:var(--shadow)}
+section h2{font-size:16px;margin:0 0 14px;padding-left:10px;border-left:4px solid var(--ok);display:flex;align-items:center;gap:8px}
+section h2 .tag{font-size:11px;font-weight:500;color:var(--sub);background:var(--chip);border-radius:6px;padding:2px 8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:#fcfdff}
+.card .k{font-size:12px;color:var(--sub)}
+.card .v{font-size:22px;font-weight:700;margin-top:3px}
+.card .d{font-size:11.5px;color:var(--sub);margin-top:3px}
+.v.bad{color:var(--bad)} .v.warn{color:var(--warn)} .v.ok{color:var(--ok)} .v.up{color:var(--up)} .v.down{color:var(--down)}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.chartbox{position:relative;height:300px}
+.chartbox.sm{height:240px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center;vertical-align:top}
+th{background:#f1f5f9;font-weight:600;color:#334155}
+td.l,th.l{text-align:left}
+.up{color:var(--up);font-weight:600} .down{color:var(--down);font-weight:600}
+.pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;font-weight:600}
+.pill.ok{background:#e7f0ff;color:var(--ok)} .pill.warn{background:#fef3c7;color:var(--warn)}
+.pill.bad{background:#fde8e8;color:var(--bad)} .pill.neu{background:#eef2f7;color:#475569}
+.verdict{font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block}
+.verdict.ok{background:#e7f0ff;color:var(--ok)} .verdict.warn{background:#fef3c7;color:var(--warn)} .verdict.bad{background:#fde8e8;color:var(--bad)}
+.note{font-size:12px;color:var(--sub);background:#fafbfc;border:1px dashed var(--line);border-radius:8px;padding:9px 12px;margin-top:12px}
+.ev{font-size:12.5px;line-height:1.55}
+.ev li{margin:3px 0}
+.src{font-size:11px;color:#9aa3af;margin-top:10px;text-align:right}
+h3.sub{font-size:14px;margin:18px 0 8px;color:#334155}
+.hold-card{border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-top:12px}
+.hold-card h4{margin:0 0 6px;font-size:14.5px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hold-card .w{font-size:12.5px;color:var(--sub)}
+.hold-card .row{font-size:12.5px;margin:4px 0;color:#374151}
+.kbar{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.kbar span{font-size:11px;background:var(--chip);border-radius:5px;padding:2px 7px;color:#475569}
+.flag{background:#fde8e8;color:var(--bad);border-radius:5px;padding:1px 6px;font-size:11px;font-weight:600}
+ul.clean{margin:6px 0;padding-left:20px}
+ul.clean li{margin:4px 0}
+.pc{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.pc .item{flex:1;min-width:150px;border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+.pc .item .t{font-size:12px;color:var(--sub)} .pc .item .n{font-size:18px;font-weight:700;margin-top:2px}
+.foot{font-size:11.5px;color:#9aa3af;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>持仓晨析 · 2026-08-27（周四）</h1>
+  <div class="meta">
+    <span>触发：自动化 08:00</span>
+    <span>统计日：<b>2026-08-26 收盘</b></span>
+    <span>对比基准：<b>2026-08-25 收盘</b>（前一日块）</span>
+    <span>数据源：westock / 公告以交易所·巨潮资讯一手优先</span>
+  </div>
+  <div class="meta" style="margin-top:8px">
+    <span>⚠️ 非交易日校验：2026-08-27 = 交易日（已通过）</span>
+    <span>⚠️ 当日 07:00 盘前策略 / 09:25 竞价强度：本 08:00 槽尚未取数，最终以二者为准</span>
+  </div>
+</header>
+
+<!-- 结论卡 -->
+<section>
+  <h2>首屏结论卡 <span class="tag">综合评级：结构高危 ❌（单日浮盈但组合极脆弱）</span></h2>
+  <div class="cards">
+    <div class="card"><div class="k">杠杆倍数（净资比合计）</div><div class="v bad">196.5%</div><div class="d">超 120% 警戒线 76.5pt → 需压回至 ≤120%</div></div>
+    <div class="card"><div class="k">行业集中度 HHI</div><div class="v bad">0.583</div><div class="d">等权 8 股应为 0.125，实际≈4.6× → 极度集中</div></div>
+    <div class="card"><div class="k">前二仓位（迈为+正帆）</div><div class="v bad">81.3%</div><div class="d">净资比 0.459+0.354；单票均破 15% 红线</div></div>
+    <div class="card"><div class="k">主线暴露</div><div class="v warn">76.6%</div><div class="d">半导体（设备/制造）单主线；迈为偏光伏</div></div>
+    <div class="card"><div class="k">8/26 净资加权涨跌</div><div class="v up">+13.68%</div><div class="d">单日强，但源于 IPO 博傻+动量，不可持续</div></div>
+    <div class="card"><div class="k">换仓性质</div><div class="v warn">100%</div><div class="d">8/26 vs 8/25 近乎全换；5 天内第 3 次换主线</div></div>
+  </div>
+  <div class="note">⚠️ <b>一句话定性</b>：昨日（8/26）组合单日净资 +13.68% 看似漂亮，但建立在 <b>197% 杠杆 + 单主线 77% 暴露 + 前二 81% 集中 + 两只 IPO 次新博傻（C高凯+388%、频准+448%）</b> 之上。半导体设备国产替代主线已处 <b>P2末→P3 高位拥挤 + 派发</b> 阶段，买点是整轮行情最贵、最拥挤的位置。结构风险远大于单日浮盈，建议今日起大幅降杠杆、压单票。</div>
+</section>
+
+<!-- 组合画像 -->
+<section>
+  <h2>组合画像 · 行业分布与集中度体检</h2>
+  <div class="grid2">
+    <div>
+      <div class="chartbox"><canvas id="pie"></canvas></div>
+      <div class="src">来源：申万行业归类（agentic_search 复核）+ 持仓权重；统计日 2026-08-26</div>
+    </div>
+    <div>
+      <div class="pc">
+        <div class="item"><div class="t">净资比合计（杠杆）</div><div class="n bad">196.5%</div></div>
+        <div class="item"><div class="t">HHI 集中度</div><div class="n bad">0.583</div></div>
+        <div class="item"><div class="t">前二占比（净资）</div><div class="n bad">81.3%</div></div>
+        <div class="item"><div class="t">单票最高（迈为）</div><div class="n bad">45.9%</div></div>
+        <div class="item"><div class="t">半导体主线暴露</div><div class="n warn">76.6%</div></div>
+        <div class="item"><div class="t">持仓只数</div><div class="n">8</div></div>
+      </div>
+      <div class="note">
+        <b>体检结论：</b>① <b>单一行业过度押注</b>——7/8 只属电子-半导体（设备/制造/零部件），暴露 76.6%；迈为虽归电力设备-光伏设备，但其先进封装设备业务亦属泛半导体，真实半导体相关暴露更高。② <b>个股极度集中</b>——迈为 45.9%、正帆 35.4% 双双远超 15% 单票上限；前二合计 81.3%。③ <b>杠杆失度</b>——196.5% 远超 120% 警戒。④ <b>含两只 IPO 次新博傻</b>（C高凯 8/25 上市、频准 8/18 上市），属情绪交易而非产业研判。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ① 变化与归因 -->
+<section>
+  <h2>① 变化与归因（8/26 最新 vs 8/25 前序）</h2>
+  <h3 class="sub">持仓变动明细</h3>
+  <table>
+    <tr><th class="l">对比维度</th><th class="l">8/25 收盘块（前序）</th><th class="l">8/26 收盘块（本次）</th><th class="l">变化性质</th></tr>
+    <tr><td class="l">主题</td><td class="l">温控液冷/激光/电子/机器人（键凯科技 54.6% 等 11 只）</td><td class="l">半导体设备国产替代 + IPO次新（8 只）</td><td class="l"><span class="pill bad">100% 换仓</span></td></tr>
+    <tr><td class="l">延续标的</td><td class="l">频准激光（0.1185）</td><td class="l">频准激光（0.1598，权重上调）</td><td class="l"><span class="pill warn">仅 1 只延续</span></td></tr>
+    <tr><td class="l">杠杆</td><td class="l">168.4%</td><td class="l">196.5%</td><td class="l"><span class="pill bad">↑ +28pt 加杠杆</span></td></tr>
+    <tr><td class="l">集中度 HHI</td><td class="l">约 0.35（键凯单票主导）</td><td class="l">0.583</td><td class="l"><span class="pill bad">↑ 更集中</span></td></tr>
+  </table>
+
+  <h3 class="sub">收益归因（8/26 当日，净资加权）</h3>
+  <table>
+    <tr><th class="l">标的</th><th>净资比</th><th>当日涨跌%</th><th>贡献（净资×涨跌）</th><th class="l">收益来源判定</th></tr>
+    <tr><td class="l">C高凯</td><td>21.9%</td><td class="up">+27.44</td><td class="up">+6.01pt</td><td class="l">IPO 次新博傻（beta 情绪，非 alpha）</td></tr>
+    <tr><td class="l">华虹宏力</td><td>30.9%</td><td class="up">+7.71</td><td class="up">+2.38pt</td><td class="l">中报业绩反弹 + 超跌修复（事件驱动）</td></tr>
+    <tr><td class="l">迈为股份</td><td>45.9%</td><td class="up">+4.58</td><td class="up">+2.10pt</td><td class="l">板块动量 + 资金净流入</td></tr>
+    <tr><td class="l">频准激光</td><td>16.0%</td><td class="up">+6.72</td><td class="up">+1.07pt</td><td class="l">IPO 次新延续炒作</td></tr>
+    <tr><td class="l">正帆科技</td><td>35.4%</td><td class="up">+3.12</td><td class="up">+1.11pt</td><td class="l">板块动量 + 主力净流入</td></tr>
+    <tr><td class="l">精智达</td><td>21.6%</td><td class="up">+2.48</td><td class="up">+0.54pt</td><td class="l">板块跟随</td></tr>
+    <tr><td class="l">拓荆科技</td><td>12.5%</td><td class="up">+3.06</td><td class="up">+0.38pt</td><td class="l">板块跟随（但资金净流出=派发）</td></tr>
+    <tr><td class="l">盛美上海</td><td>12.4%</td><td class="up">+0.73</td><td class="up">+0.09pt</td><td class="l">板块跟随</td></tr>
+    <tr><td class="l"><b>合计</b></td><td><b>196.5%</b></td><td class="l">—</td><td class="up"><b>+13.68pt</b></td><td class="l">组合净资加权当日 +13.68%</td></tr>
+  </table>
+  <div class="note">收益主要来自 <b>IPO 次新博傻（C高凯+频准 贡献 7.08pt）+ 半导体板块整体动量</b>，属 beta/情绪收益而非个股 alpha。在 197% 杠杆下被放大；一旦主线退潮，回撤同样被杠杆放大。</div>
+
+  <h3 class="sub">风险归因</h3>
+  <ul class="clean">
+    <li>🔴 <b>杠杆超警戒</b>：196.5% vs 120% 警戒线，下行时净值损耗加速。</li>
+    <li>🔴 <b>单票纪律破线</b>：迈为 45.9%、正帆 35.4% 远超 15% 上限；前二 81.3% 等同于押注两只票。</li>
+    <li>🔴 <b>板块单一</b>：半导体主线 76.6%，无跨行业对冲；主线回调即全盘承压。</li>
+    <li>🔴 <b>追高 / IPO 博傻</b>：C高凯买在 +388% IPO 峰值（49% 换手）、频准 +448% 次新；属情绪交易。</li>
+    <li>🟠 <b>资金背离</b>：拓荆、盛美价涨但主力净流出（派发）；华虹 20 日主力净流 -36 亿（长期派发中）。</li>
+    <li>🟠 <b>高频换仓</b>：8/21 医药 → 8/25 温控/机器人 → 8/26 半导体，5 天 3 次 100% 换主线，交易磨损与择时失误风险高。</li>
+  </ul>
+  <div class="src">来源：westock data_quote / data_fund_flow / 持仓_收盘历史.md；统计日 2026-08-26</div>
+</section>
+
+<!-- ② 买入对错 -->
+<section>
+  <h2>② 前一天（8/26）买入对错 · 产业趋势 × 三阶段论 × 事件驱动 × 图形</h2>
+  <div class="note">
+    <b>主线阶段定位（agentic_search 研判）：</b>半导体设备国产替代——
+    <b>P1 启动</b>（2026 上半年低位启动）→ <b>P2 共识/扩散</b>（6–8 月板块指数 +21%，龙头创新高，并扩散至 IPO 次新疯炒）→ <b>P2末→P3 高潮/退潮</b>（8/18 板块见顶回落 -6.8%，PB/PS 处 99% 历史极值分位，近 5/10 日主力净流出约 -30/-143 亿）。
+    <b>结论：用户买在 P3 最贵、最拥挤的位置。</b>
+  </div>
+
+  <h3 class="sub">逐只 Verdict（建仓日=2026-08-26）</h3>
+
+  <div class="hold-card">
+    <h4>迈为股份 sz300751 <span class="verdict warn">⚠️ 偏空（结构风险）</span></h4>
+    <div class="w">净资比 45.9% · 收盘 221.18（+4.58%）· PE106 / PB7.67 · 20D +36.64% / 60D +1.12%</div>
+    <div class="row">📌 三阶段：相对板块较晚启动（60D 仅 +1.12%，但 20D +36.64% 加速）→ <b>P2 中后段</b>。</div>
+    <div class="row">⚠️ 关键矛盾：① <b>单票 45.9% 是核爆级风险</b>，任何个股回撤对净值都是毁灭性；② 迈为核心是 <b>HJT 光伏设备</b>，与「半导体国产替代」主线逻辑不一致（虽含先进封装设备业务，但占比有限）——等于用 46% 净资押了一只「挂半导体名、行光伏实」的票。③ 8/24 中报 + 计提减值 + 关联交易 + 财务资助 + 8/14 股东减持届满，无超预期强催化。</div>
+    <div class="row">🎯 判定：单日涨≠买点对。<b>仓位错（太大）＞ 方向错</b>。建议压回 ≤10–15%。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>正帆科技 sh688596 <span class="verdict warn">⚠️ 偏空（超买+超重）</span></h4>
+    <div class="w">净资比 35.4% · 收盘 72.80（+3.12%）· PE303 / PB6.55 · 20D +33.07% / 60D +89.24%</div>
+    <div class="row">📌 三阶段：60D +89%、20D +33% → <b>P2末→P3 加速赶顶</b>，严重超买。</div>
+    <div class="row">💰 资金面：今日主力 +2.40 亿、5D +4.51 亿、20D +6.69 亿（全正向，短线最强）。但 PE303、60D 近翻倍 → 估值已透支。</div>
+    <div class="row">📌 事件：8/26 中报 + 计提减值；8/6 异常波动风险提示 + 转债强赎摘牌（稀释出清已完成）。8/6 已发「交易异常波动暨风险提示」→ 监管已提示风险。</div>
+    <div class="row">🎯 判定：动量尚在但 <b>35.4% 单票 + 极度超买</b> = 高位重仓。建议压回 ≤10–15%。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>华虹宏力 sh688347 <span class="verdict warn">⚠️ 接反弹非埋伏</span></h4>
+    <div class="w">净资比 30.9% · 收盘 244.02（+7.71%）· PE859 / PB9.37 · 20D -9.69% / 10D -10.68%</div>
+    <div class="kbar"><span>事件日=中报 8/26 盘后</span><span>公告前 8/26 已 +7.71% 放量大涨</span><span>买入日=8/26 收盘 244</span></div>
+    <div class="row">📌 <b>图形提前反应检测</b>：中报（净利 +437%，一手来源待核实）8/26 19:09 盘后才公告，但 <b>当日已 +7.71% 放量大涨（成交 57.4 亿、换手 5.87%、超大单 +7.11 亿）</b>。用户买在 244.02 = 反弹当日高位，<b>非「埋伏者」而是「接反弹者」</b>。</div>
+    <div class="row">📉 K线位置：7/22 见顶 413.13 → 8/25 探底 226.56（<b>月内 -45%</b>），8/26 的 +7.71% 是深度超跌后的业绩反弹，但 <b>20D 主力净流仍 -36.11 亿（长期派发）</b>，趋势仍处下行通道。</div>
+    <div class="row">⚖️ 合规边界：中报为预定定期报告（日期公开），买在公告前一日交易不属内幕；但「买在公告前最后一天 + 当日已涨 7.71%」= 追利好预期，需自查信息来源是否涉及未公开重大信息。</div>
+    <div class="row">🎯 判定：业绩确实强（若 +437% 属实有修复空间），但 <b>买点合时性一般（接反弹高位）+ 趋势未反转 + 利好 8/27 面临「出尽」压力</b>。建议不追、逢高减。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>C高凯 sh688835（高凯技术） <span class="verdict bad">❌ 极高风险（IPO 博傻峰值）</span></h4>
+    <div class="w">净资比 21.9% · 收盘 299.48（+27.44%）· 52周最高=299.48（即买入价）· 换手 49.05%</div>
+    <div class="kbar"><span>IPO 8/25 上市</span><span>较发行价 ≈ +388%</span><span>买入日=8/26 盘中 299.48=当日最高</span></div>
+    <div class="row">📌 <b>图形提前反应检测</b>：无任何「事件埋伏」逻辑，纯 IPO 炒新。买入价 299.48 = <b>当日最高、也是 52 周最高</b>，较发行价（约 61 元）已 +388%，单日换手 49% = 极致情绪博弈。</div>
+    <div class="row">📉 资金：今日主力 +1.87 亿、超大单 +1.53 亿，但 20D/10D/5D 净流均为 +23.98 亿 = <b>自 IPO 起累计，非真实 20 日趋势</b>，数据无意义，仅反映上市吸筹。</div>
+    <div class="row">🎯 判定：<b>买在情绪峰值、无基本面锚</b>。次新炒新退潮即可能单日 -20% 以上。建议优先清/大幅减。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>精智达 sh688627 <span class="verdict warn">⚠️ 中性偏谨慎</span></h4>
+    <div class="w">净资比 21.6% · 收盘 459.75（+2.48%）· PE516 / PB24.21 · 20D +4.42% / 5D -6.55%</div>
+    <div class="row">📌 三阶段：60D +32%、20D +4.42% → <b>P2末</b>。PE516 估值高。</div>
+    <div class="row">💰 资金：今日 +1.81 亿，但 5D -7.54 亿（近 5 日净流出）→ 短线派发迹象。</div>
+    <div class="row">📌 事件：8/18 中报 + 募投结项补流；8/7 定增获证监会注册批复（融资事件，偏中性/稀释）。8/21 投资者活动。</div>
+    <div class="row">🎯 判定：方向尚可、资金短线分歧，估值偏贵。建议减至 ≤10%。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>频准激光 sh688826 <span class="verdict bad">❌ 次新博傻（晚期）</span></h4>
+    <div class="w">净资比 16.0% · 收盘 1024.49（+6.72%）· PE246 / PB18.33 · 换手 28.1% · 较发行价 ≈ +448%</div>
+    <div class="kbar"><span>IPO 8/18 上市</span><span>较发行价 ≈ +448%</span><span>买入日=8/26（上市后第 6 日）</span></div>
+    <div class="row">📌 <b>图形提前反应检测</b>：8/18 上市首日即 +516%（开盘 1100→收盘 1152），此后 8/19-8/25 在 940-980 区间震荡，8/26 反弹至 1024。买入价处上市后次高位，<b>+448% 于发行价</b>，28% 换手 = 持续博傻。</div>
+    <div class="row">💰 今日主力 +0.65 亿、超大单 -0.46 亿（超大单已出）→ 资金分歧。20D 净流 +4.69 亿 = 自 IPO 累计，非真实趋势。</div>
+    <div class="row">📌 事件：8/26 中报（IPO 后首份）+ 募投置换（常规）。无超预期强催化。</div>
+    <div class="row">🎯 判定：较 C高凯 稍晚但同为次新博傻，<b>利好出尽 / 炒新退潮</b>风险高。建议大幅减。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>拓荆科技 sh688072 <span class="verdict warn">⚠️ 派发/诱多</span></h4>
+    <div class="w">净资比 12.5% · 收盘 675.06（+3.06%）· PE90 / PB15.43 · 20D -3.68% / 60D +13.33%</div>
+    <div class="kbar"><span>事件：8/10 发行股份购买资产进展</span><span>8/20 中报+子公司投私募基金(关联交易)</span></div>
+    <div class="row">📌 <b>图形提前反应检测</b>：8/26 价 +3.06% 但 <b>主力净流 -0.23 亿、超大单 +0.85 亿但整体净出</b> = 典型 <b>价升资金出 = 派发/诱多</b>。20D 主力净流 -10.05 亿确认中期派发。</div>
+    <div class="row">📌 三阶段：60D +13%、20D -3.68% → <b>P3 高位震荡派发</b>。</div>
+    <div class="row">⚖️ 合规边界：若「蹲」重组事件买入，需确认 8/10 发行股份购买资产为 <b>已公开披露</b>的进展，非未公开筹划；勿基于未公告信息建仓。</div>
+    <div class="row">🎯 判定：事件驱动但图形显示资金在出，<b>接盘风险</b>。建议减。</div>
+  </div>
+
+  <div class="hold-card">
+    <h4>盛美上海 sh688082 <span class="verdict ok">🟢 相对最干净</span></h4>
+    <div class="w">净资比 12.4% · 收盘 294.50（+0.73%）· PE84 / PB9.73 · 20D +6.29% / 60D +31.22%</div>
+    <div class="row">📌 三阶段：60D +31%、20D +6.29% → <b>P2末→P3</b>，但整体最温和。</div>
+    <div class="row">💰 资金：20D 主力 +5.03 亿（8 只中唯一 20 日净流为正且非 IPO 累计），今日 -0.23 亿（微幅）。资金面最健康。</div>
+    <div class="row">📌 事件：8/7 中报 + 股权激励（中性偏多）+ 持续督导跟踪。无异常。</div>
+    <div class="row">🎯 判定：持仓中性价比最高，但仍是热门半导体、且处 P3。建议保留观察、压至 ≤10%，不追高。</div>
+  </div>
+  <div class="src">来源：westock data_quote/data_fund_flow/data_kline/data_notice；agentic_search 产业研判；统计日 2026-08-26</div>
+</section>
+
+<!-- ③ 次日节奏 -->
+<section>
+  <h2>③ 次日操作节奏（2026-08-27）</h2>
+  <div class="note">⚠️ 本 08:00 槽尚未取得当日 07:00 盘前策略 / 09:25 竞价强度，下述为基于持仓风险的框架性节奏，<b>最终买卖以 07:00 盘前策略 + 09:25 竞价强度为准，不追高、等回踩低吸</b>。</div>
+  <table>
+    <tr><th class="l">标的</th><th>净资比</th><th class="l">优先级</th><th class="l">动作建议</th><th class="l">关键理由</th></tr>
+    <tr><td class="l">C高凯</td><td>21.9%</td><td><span class="pill bad">优先清/大减</span></td><td class="l">清仓或降至 ≤5%</td><td class="l">IPO 峰值 +388%、49% 换手，退潮即暴跌</td></tr>
+    <tr><td class="l">频准激光</td><td>16.0%</td><td><span class="pill bad">优先大减</span></td><td class="l">降至 ≤8%</td><td class="l">+448% 次新博傻、28% 换手</td></tr>
+    <tr><td class="l">迈为股份</td><td>45.9%</td><td><span class="pill bad">紧急压仓</span></td><td class="l">压至 ≤10–15%</td><td class="l">单票核爆风险 + 偏光伏 off-theme</td></tr>
+    <tr><td class="l">正帆科技</td><td>35.4%</td><td><span class="pill bad">紧急压仓</span></td><td class="l">压至 ≤10–15%</td><td class="l">单票超重 + 60D +89% 超买 + 监管已风险提示</td></tr>
+    <tr><td class="l">拓荆科技</td><td>12.5%</td><td><span class="pill warn">减</span></td><td class="l">降至 ≤8%</td><td class="l">价升资金出 = 派发/诱多</td></tr>
+    <tr><td class="l">华虹宏力</td><td>30.9%</td><td><span class="pill warn">减/不追</span></td><td class="l">降至 ≤10%</td><td class="l">接反弹高位 + 趋势未反转 + 中报利好 8/27 出尽压力</td></tr>
+    <tr><td class="l">精智达</td><td>21.6%</td><td><span class="pill warn">减</span></td><td class="l">降至 ≤10%</td><td class="l">5D 净流出 + PE516 偏贵</td></tr>
+    <tr><td class="l">盛美上海</td><td>12.4%</td><td><span class="pill ok">持有观察</span></td><td class="l">压至 ≤10%，不追</td><td class="l">资金面最干净，但仍处 P3、属热门</td></tr>
+  </table>
+  <h3 class="sub">总仓纪律（硬性）</h3>
+  <ul class="clean">
+    <li>🔴 <b>降杠杆</b>：196.5% → 压回 <b>≤120%</b> 警戒线下（需净减约 76.5pt ≈ 39% 总敞口）。</li>
+    <li>🔴 <b>单票 ≤15%</b>、<b>热门板块（半导体）单票 ≤10%</b>：迈为/正帆必须大幅减，其余半导体股均压至 ≤10%。</li>
+    <li>🟠 <b>不追高、等回踩低吸</b>：主线处 P3，追高即接派发。</li>
+    <li>🟠 <b>事件驱动合规</b>：华虹（中报已出，8/27 防出尽）、拓荆（重组须为已公开披露）、C高凯/频准（纯情绪，无事件锚）→ 凡基于未公开信息建仓均触碰合规边界，需自查。</li>
+    <li>🟢 <b>分散建议</b>：若维持半导体偏好，至少跨设备/制造/材料/设计分仓，避免 7/8 同主线。</li>
+  </ul>
+  <div class="src">来源：持仓风险框架 + 盘面数据；统计日 2026-08-26；最终以 07:00 盘前策略 + 09:25 竞价强度为准</div>
+</section>
+
+<!-- 图形佐证 -->
+<section>
+  <h2>图形佐证 · 背离与分歧</h2>
+  <div class="grid2">
+    <div>
+      <h3 class="sub">20日涨幅 vs 当日主力净流（背离气泡图）</h3>
+      <div class="chartbox"><canvas id="bubble"></canvas></div>
+      <div class="src">气泡大小=净资比；X=20D涨跌幅%，Y=当日主力净流(亿)；来源 westock 2026-08-26</div>
+    </div>
+    <div>
+      <h3 class="sub">换手率分歧（投机强度）</h3>
+      <div class="chartbox sm"><canvas id="turn"></canvas></div>
+      <div class="src">来源 westock data_quote 2026-08-26；红框=&gt;20% 为极致投机</div>
+    </div>
+  </div>
+  <div class="note">
+    <b>背离解读：</b>① <b>华虹</b>（右下：20D -9.69%、当日 +8.73 亿）= 长期派发中的单日业绩反弹，持续性存疑；② <b>拓荆/盛美</b>（左上：价涨但主力净流出）= 派发/诱多信号；③ <b>C高凯/频准</b>（极右：20D +388%/+448% 因 IPO 失真，当日净流仅 +1.87/+0.65 亿）= 纯情绪、资金跟进有限；④ <b>迈为/正帆/精智达</b>（右上：价涨+资金进）= 短线动量健康，但估值与仓位已极端。
+  </div>
+</section>
+
+<!-- 公告事件表 -->
+<section>
+  <h2>各股近期公告 / 事件表（近 30 日）</h2>
+  <table>
+    <tr><th class="l">标的</th><th class="l">日期</th><th class="l">事件</th><th class="l">判定</th><th class="l">备注</th></tr>
+    <tr><td class="l">迈为股份</td><td class="l">08-24</td><td class="l">2026 中报 + 计提减值 + 关联交易 + 为子公司财务资助</td><td><span class="pill neu">常规/待核实</span></td><td class="l">净利数据需核实原文；8-25 投资者活动；8-14 股东减持届满（偏空但出清）</td></tr>
+    <tr><td class="l">正帆科技</td><td class="l">08-26</td><td class="l">2026 中报 + 计提减值 + 章程变更（转债强赎后）</td><td><span class="pill neu">常规/待核实</span></td><td class="l">8-06 已发「异常波动风险提示」+ 转债强赎摘牌（稀释出清）</td></tr>
+    <tr><td class="l">华虹宏力</td><td class="l">08-26 盘后</td><td class="l">2026 中报（净利 +437%，一手来源待核实）+ 港股中期业绩</td><td><span class="pill ok">实质利好</span></td><td class="l">7-08 发行股份购买资产获证监会注册批复（重组落地，此前已炒）；买入在公告前一日反弹高位</td></tr>
+    <tr><td class="l">华虹宏力</td><td class="l">08-13</td><td class="l">Q2 业绩公布 + 高管离任</td><td><span class="pill neu">常规</span></td><td class="l">—</td></tr>
+    <tr><td class="l">C高凯</td><td class="l">08-23</td><td class="l">IPO 上市公告书（8-25 上市）</td><td><span class="pill warn">炒新事件</span></td><td class="l">无业绩事件，纯 IPO 情绪；8-19 招股书</td></tr>
+    <tr><td class="l">精智达</td><td class="l">08-18</td><td class="l">2026 中报 + 募投结项补流</td><td><span class="pill neu">常规</span></td><td class="l">8-07 定增获证监会注册批复（融资/稀释）；8-21 投资者活动</td></tr>
+    <tr><td class="l">频准激光</td><td class="l">08-26</td><td class="l">2026 中报（IPO 后首份）+ 募投置换</td><td><span class="pill neu">常规</span></td><td class="l">IPO 后治理制度完善，无超预期催化</td></tr>
+    <tr><td class="l">拓荆科技</td><td class="l">08-20</td><td class="l">2026 中报 + 全资子公司投私募基金（关联交易）</td><td><span class="pill neu">中性</span></td><td class="l">8-10 发行股份购买资产进展（重组进行中，事件驱动需核实公开性）</td></tr>
+    <tr><td class="l">盛美上海</td><td class="l">08-07</td><td class="l">2026 中报 + 股权激励 + 持续督导跟踪</td><td><span class="pill ok">中性偏多</span></td><td class="l">无异常</td></tr>
+  </table>
+  <div class="note">⚠️ 净利/营收等具体数据以巨潮资讯、交易所公告一手来源为准；本表标题来自 westock data_notice，媒体解读标「需核实原文」。</div>
+  <div class="src">来源：westock data_notice（近 30 日）；统计截至 2026-08-26</div>
+</section>
+
+<!-- 数据附表 -->
+<section>
+  <h2>数据附表 · 全指标（2026-08-26 收盘）</h2>
+  <table>
+    <tr><th class="l">标的</th><th>收盘</th><th>涨%</th><th>换手%</th><th>5D%</th><th>20D%</th><th>60D%</th><th>PE</th><th>PB</th><th>今主净(亿)</th><th>5D净(亿)</th><th>20D净(亿)</th></tr>
+    <tr><td class="l">迈为 sz300751</td><td>221.18</td><td class="up">+4.58</td><td>5.89</td><td>+16.72</td><td>+36.64</td><td>+1.12</td><td>106.4</td><td>7.67</td><td class="up">+0.74</td><td class="up">+0.80</td><td class="up">+7.40</td></tr>
+    <tr><td class="l">正帆 sh688596</td><td>72.80</td><td class="up">+3.12</td><td>8.66</td><td>+11.69</td><td>+33.07</td><td>+89.24</td><td>303.2</td><td>6.55</td><td class="up">+2.40</td><td class="up">+4.51</td><td class="up">+6.69</td></tr>
+    <tr><td class="l">华虹 sh688347</td><td>244.02</td><td class="up">+7.71</td><td>5.87</td><td>+4.73</td><td class="down">-9.69</td><td>+7.74</td><td>859.4</td><td>9.37</td><td class="up">+8.73</td><td class="down">-22.39</td><td class="down">-36.11</td></tr>
+    <tr><td class="l">C高凯 sh688835</td><td>299.48</td><td class="up">+27.44</td><td>49.05</td><td>+388.07</td><td>+388.07</td><td>+388.07</td><td>162.3</td><td>13.41</td><td class="up">+1.87</td><td class="up">+23.98*</td><td class="up">+23.98*</td></tr>
+    <tr><td class="l">精智达 sh688627</td><td>459.75</td><td class="up">+2.48</td><td>3.97</td><td class="down">-6.55</td><td>+4.42</td><td>+32.12</td><td>516.8</td><td>24.21</td><td class="up">+1.81</td><td class="down">-7.54</td><td class="up">+3.10</td></tr>
+    <tr><td class="l">频准 sh688826</td><td>1024.49</td><td class="up">+6.72</td><td>28.10</td><td>+8.75</td><td>+448.21</td><td>+448.21</td><td>246.2</td><td>18.33</td><td class="up">+0.65</td><td class="up">+0.49</td><td class="up">+4.69*</td></tr>
+    <tr><td class="l">拓荆 sh688072</td><td>675.06</td><td class="up">+3.06</td><td>1.56</td><td class="down">-2.17</td><td class="down">-3.68</td><td>+13.33</td><td>90.2</td><td>15.43</td><td class="down">-0.23</td><td class="down">-1.34</td><td class="down">-10.05</td></tr>
+    <tr><td class="l">盛美 sh688082</td><td>294.50</td><td class="up">+0.73</td><td>0.77</td><td class="down">-0.49</td><td>+6.29</td><td>+31.22</td><td>84.1</td><td>9.73</td><td class="down">-0.23</td><td class="down">-3.64</td><td class="up">+5.03</td></tr>
+  </table>
+  <div class="note">* C高凯 / 频准 的 5D/10D/20D 主力净流 = 自 IPO 上市起累计值（C高凯 8/25、频准 8/18 上市），非真实 20 日区间趋势，仅作参考。</div>
+  <div class="src">来源：westock data_quote / data_fund_flow；统计日 2026-08-26 收盘</div>
+</section>
+
+<div class="foot">
+  大盘背景（2026-08-26）：上证 3912.52 +0.59%｜创业板 3414.88 +0.51%｜科创50 1632.02 +1.71%；涨跌家数 上涨 2946（53.1%）/ 下跌 2448（44.1%）/ 涨停 51 / 跌停 1，涨跌比 1.2（偏多但分化）。来源：westock data_market_overview / data_quote。
+  <br>免责声明：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+</div>
+
+<script>
+function build(){
+  Chart.defaults.font.family = '-apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+  Chart.defaults.font.size = 11;
+  var up='#d92e2e', down='#1a9e54', warn='#d97706', bad='#dc2626', ok='#2563eb', grid='#eef1f5';
+
+  // Pie: industry
+  new Chart(document.getElementById('pie'), {
+    type:'doughnut',
+    data:{
+      labels:['电子-半导体（设备/制造/零部件）','电力设备-光伏设备（迈为）'],
+      datasets:[{data:[76.6,23.4],backgroundColor:['#2563eb','#d97706'],borderWidth:2,borderColor:'#fff'}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},
+      tooltip:{callbacks:{label:function(c){return c.label+': '+c.parsed+'%';}}},
+      title:{display:true,text:'行业分布（占组合毛敞口 %）'}}}
+  });
+
+  // Bubble: 20D% vs today main net flow
+  var stocks=[
+    {n:'迈为',x:36.64,y:0.74,r:14,w:45.9},
+    {n:'正帆',x:33.07,y:2.40,r:11,w:35.4},
+    {n:'华虹',x:-9.69,y:8.73,r:19,w:30.9},
+    {n:'C高凯',x:388.07,y:1.87,r:14,w:21.9},
+    {n:'精智达',x:4.42,y:1.81,r:13,w:21.6},
+    {n:'频准',x:448.21,y:0.65,r:10,w:16.0},
+    {n:'拓荆',x:-3.68,y:-0.23,r:8,w:12.5},
+    {n:'盛美',x:6.29,y:-0.23,r:8,w:12.4}
+  ];
+  new Chart(document.getElementById('bubble'),{
+    type:'bubble',
+    data:{datasets:[{
+      label:'个股（气泡=净资比）',
+      data:stocks.map(function(s){return {x:s.x,y:s.y,r:s.r,label:s.n};}),
+      backgroundColor:stocks.map(function(s){return s.x<0?'rgba(217,46,46,.55)':'rgba(37,99,235,.55)';}),
+      borderColor:'#334155',borderWidth:1
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{title:{display:true,text:'20日涨跌幅 %'},grid:{color:grid}},
+        y:{title:{display:true,text:'当日主力净流（亿元）'},grid:{color:grid}}
+      },
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(c){var d=c.raw;return d.label+': 20D '+d.x+'% / 今日 '+d.y+'亿 / 净资比 '+d.r+'%';}}},
+        title:{display:true,text:'右上=健康动量｜左上=派发/诱多｜右下=抄底反弹'}}
+    }
+  });
+
+  // Turnover bar
+  var tnames=['C高凯','频准','正帆','迈为','华虹','精智达','盛美','拓荆'];
+  var tvals=[49.05,28.10,8.66,5.89,5.87,3.97,0.77,1.56];
+  new Chart(document.getElementById('turn'),{
+    type:'bar',
+    data:{labels:tnames,datasets:[{label:'换手率 %',data:tvals,
+      backgroundColor:tvals.map(function(v){return v>20?bad:(v>5?warn:ok);})}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{grid:{display:false}},y:{title:{display:true,text:'换手率 %'},grid:{color:grid}}},
+      plugins:{legend:{display:false},title:{display:true,text:'换手率越高=投机/博傻强度越大'}}}
+  });
+}
+if(document.readyState!=='loading'){build();}else{document.addEventListener('DOMContentLoaded',build);}
+</script>
+</body>
+</html>

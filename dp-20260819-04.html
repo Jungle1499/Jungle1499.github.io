@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>每日盘前策略 - 2026年8月19日</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:#2d3748;line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:12px 16px 40px}
+
+/* 标题栏 */
+.header-card{background:linear-gradient(135deg,#1a3a7a 0%,#254b9e 50%,#2d5aa8 100%);border-radius:14px;padding:24px 22px 22px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.header-card::before{content:'';position:absolute;top:-40px;right:-30px;width:160px;height:160px;background:rgba(255,255,255,.06);border-radius:50%}
+.header-card::after{content:'';position:absolute;bottom:-50px;left:-20px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%}
+.date-line{font-size:12.5px;color:rgba(255,255,255,.75);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.date-line .cal-icon{font-size:15px}
+.main-title{font-size:25px;font-weight:800;letter-spacing:1px;margin-bottom:14px}
+.quote-box{font-size:13px;color:rgba(255,255,255,.88);line-height:1.65;border-left:3px solid rgba(255,255,255,.35);padding-left:12px;margin-bottom:16px}
+.quote-artist{font-style:italic;color:rgba(255,255,255,.65);font-size:12px;margin-top:4px}
+.tags-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag-pill{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.22);padding:5px 13px;border-radius:20px;font-size:12.5px;font-weight:500}
+
+/* 卡片通用 */
+.card{background:#fff;border-radius:12px;padding:18px 18px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
+.card-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:14px;color:#1a202c}
+.card-title .emoji{font-size:19px}
+
+/* 左边框 */
+.card-lb-red{border-left:4px solid #dc2626}
+.card-lb-blue{border-left:4px solid #2563eb}
+.card-lb-orange{border-left:4px solid #dd6b20}
+.card-lb-purple{border-left:4px solid #7c3aed}
+.card-lb-yellow{border-left:4px solid #d97706}
+
+/* 段落文字 */
+.para{font-size:14px;line-height:1.75;color:#374151;margin-bottom:12px;text-align:justify}
+.para strong{color:#1a202c;font-weight:600}
+.hl-red{color:#dc2626;font-weight:600}
+.hl-green{color:#16a34a;font-weight:600}
+.hl-blue{color:#2563eb;font-weight:600}
+.hl-orange{color:#dd6b20;font-weight:600}
+
+/* 列表项 */
+.sub-title{font-size:15px;font-weight:700;color:#1a202c;display:flex;align-items:center;gap:6px;margin:14px 0 10px}
+.sub-title .num{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;background:#2563eb;color:#fff;border-radius:50%;font-size:12px;font-weight:700}
+.bullet-item{font-size:14px;line-height:1.75;color:#374151;margin-bottom:8px;padding-left:4px}
+.arrow-line{font-size:14px;line-height:1.75;color:#374151;margin-bottom:6px;display:flex;gap:6px;white-space:normal;word-break:break-word}
+.arrow-line .arrow{color:#2563eb;font-weight:700;flex-shrink:0}
+.arrow-line strong{color:#1a202c;font-weight:600;display:inline}
+
+/* 表格 */
+.data-table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:13px}
+.data-table thead th{background:#1e3a6e;color:#fff;font-weight:600;padding:11px 10px;text-align:left;font-size:13px;white-space:nowrap}
+.data-table thead th:first-child{border-radius:8px 0 0 0}
+.data-table thead th:last-child{border-radius:0 8px 0 0}
+.data-table tbody td{padding:10px 10px;border-bottom:1px solid #f0f0f0;color:#374151;vertical-align:middle}
+.data-table tbody tr:last-child td{border-bottom:none}
+.data-table tbody tr:nth-child(even){background:#fafbfc}
+.num-cell{text-align:right;font-family:"SF Mono",Menlo,monospace;font-weight:600}
+.positive{color:#dc2626;font-weight:600}
+.negative{color:#16a34a;font-weight:600}
+
+/* 徽章/标签 */
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:14px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.badge-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.badge-orange{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.badge-yellow{background:#fefce8;color:#a16207;border:1px solid #fde68a}
+.badge-green{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.badge-gray{background:#f9fafb;color:#6b7280;border:1px solid #e5e7eb}
+.badge-solid-red{background:#dc2626;color:#fff}
+.badge-solid-orange{background:#dd6b20;color:#fff}
+.badge-solid-green{background:#16a34a;color:#fff}
+
+/* 评分圆 */
+.score-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0}
+.score-row:last-child{border-bottom:none}
+.score-name{font-size:14px;font-weight:600;color:#1a202c;min-width:100px;flex-shrink:0}
+.score-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0}
+.score-circle.s-red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.score-circle.s-orange{background:linear-gradient(135deg,#dd6b20,#f97316)}
+.score-circle.s-yellow{background:linear-gradient(135deg,#d97706,#eab308)}
+.score-circle.s-green{background:linear-gradient(135deg,#16a34a,#22c55e)}
+.score-label{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:10px}
+.consensus-text{font-size:13.5px;color:#4b5563;min-width:80px}
+.action-text{font-size:13.5px;color:#374151;min-width:90px}
+.position-text{font-size:13px;color:#6b7280;font-family:"SF Mono",Menlo,monospace}
+
+/* 风险卡片 */
+.risk-card{background:#fef2f2;border-left:4px solid #dc2626;border-radius:0 12px 12px 0;padding:14px 16px;margin:8px 0}
+.risk-card .risk-title{font-size:14px;font-weight:700;color:#991b1b;margin-bottom:6px}
+.risk-card p{font-size:13.5px;color:#7f1d1d;line-height:1.65}
+
+/* 催化日历 */
+.cal-date{font-size:14.5px;font-weight:700;color:#1a202c;margin:12px 0 6px}
+.cal-event{font-size:13.5px;color:#374151;margin-bottom:5px;padding-left:14px;position:relative;line-height:1.65}
+.cal-event::before{content:'•';position:absolute;left:0;color:#2563eb;font-weight:700}
+.cal-highlight{background:#eff6ff;padding:8px 12px;border-radius:8px;margin:6px 0;display:inline-block}
+.cal-highlight strong{color:#1d4ed8}
+
+/* 页脚 */
+.footer{text-align:center;padding:24px 0 12px;color:#9ca3af;font-size:12px;line-height:1.7}
+.footer .disclaimer-icon{font-size:16px}
+.footer a{color:#6b7280}
+
+/* 响应式 */
+@media(max-width:480px){
+  .container{padding:8px 10px 30px}
+  .header-card{padding:20px 16px 18px;border-radius:12px}
+  .main-title{font-size:22px}
+  .card{padding:14px 14px 16px;border-radius:10px}
+  .data-table{font-size:12px}
+  .data-table thead th{padding:9px 8px;font-size:12px}
+  .data-table tbody td{padding:8px 8px}
+  .para{font-size:13.5px}
+  .bullet-item{font-size:13.5px}
+  .score-row{gap:8px;padding:10px 0}
+  .score-name{font-size:13px;min-width:80px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ════════════ 标题栏 ════════════ -->
+<div class="header-card">
+  <div class="date-line"><span class="cal-icon">📅</span> 2026年8月19日 · 周三 · 丙申月 癸未日</div>
+  <div class="main-title">每日盘前策略</div>
+  <div class="quote-box">
+    🎵《追梦赤子心》— GALA<br>
+    "向前跑，迎着冷眼和嘲笑，生命的广阔不历经磨难怎能感到。"
+    <div class="quote-artist">—— GALA《追梦赤子心》</div>
+  </div>
+  <div class="tags-row">
+    <span class="tag-pill">农业/粮食（P2加速）</span>
+    <span class="tag-pill">油服/能源（地缘涨价）</span>
+    <span class="tag-pill">AI硬件退潮·外盘暴跌</span>
+    <span class="tag-pill">防御为主</span>
+  </div>
+</div>
+
+<!-- ════════════ 核心摘要 ════════════ -->
+<div class="card card-lb-red">
+  <div class="card-title"><span class="emoji">📌</span> 核心摘要</div>
+
+  <div class="sub-title"><span style="color:#2563eb">■</span> 前一交易日（8月18日周二）回顾</div>
+  <div class="para">8/17 普涨后的<b>兑现日</b>：沪指抗跌微红 <span class="hl-red">+0.19%</span> 报<span class="hl-red">3990.30</span>（逼近4000关），创业板指 <span class="hl-green">-0.93%</span> 报3705.56，深证成指 <span class="hl-green">-0.56%</span>，科创50 <span class="hl-red">+0.11%</span>。两市成交<span class="hl-blue">2.40万亿</span>（环比基本持平）；上涨2121 vs 下跌3292（涨跌比<span class="hl-green">0.64</span>）、<span class="hl-orange">涨停76只</span>（较8/17的110明显回落）、跌停0。昨日涨停<span class="hl-red">+1.23%</span>/昨日连板<span class="hl-red">+2.38%</span>溢价仍正但显著收窄（情绪降温）。<b>AI硬件全面退潮</b>：通信设备<span class="hl-green">-1.35%</span>（主力<span class="hl-green">-120.7亿</span>）、半导体<span class="hl-green">-0.23%</span>（主力<span class="hl-green">-112.4亿</span>）、元件<span class="hl-green">-2.03%</span>，20日资金线通信<span class="hl-green">-210亿</span>/半导体<span class="hl-green">-575亿</span>=反弹回补非反转。资金极致抱团<b>农业新主线</b>：种植业<span class="hl-red">+9.54%</span>断层第一（主力<span class="hl-red">+14.2亿</span>·5日<span class="hl-red">+16.7亿</span>·20日<span class="hl-red">+12.5亿</span>连续正流入=健康），转基因<span class="hl-red">+8.41%</span>/玉米<span class="hl-red">+7.76%</span>/粮食<span class="hl-red">+6.52%</span>，神农种业3日龙虎榜机构净买1.31亿。</div>
+
+  <div class="sub-title"><span style="color:#2563eb">■</span> 核心信号</div>
+  <div class="bullet-item">① <strong>⚠️ 外盘暴跌（最高风险变量）：</strong>8/18美东美股<b>三连跌</b>（纳指<span class="hl-green">-1.33%</span>/标普<span class="hl-green">-0.69%</span>），费城半导体<span class="hl-green">-4.98%</span>创7月29日以来最大单日跌幅，存储（闪迪<span class="hl-green">-9.01%</span>/美光<span class="hl-green">-7.02%</span>/SK海力士<span class="hl-green">-9.20%</span>）与光通信（Coherent<span class="hl-green">-12%</span>/Lumentum<span class="hl-green">-9%</span>）全线崩跌——<b>连续3日领涨的AI硬件主线全球性退潮，今日A股通信/半导体/CPO面临补跌压力（US-③映射降档）</b>；</div>
+  <div class="bullet-item">② <strong>30Y美债<span class="hl-red">5.283%</span>创19年新高：</strong>全球长端利率飙升（日10Y三十年高/德法三十年高），通胀+财政+AI债务三重忧虑压制成长股估值，AI估值高企板块首当其冲；</div>
+  <div class="bullet-item">③ <strong>亚太重挫+避险反杀：</strong>日经225 <span class="hl-green">-2.54%</span>（铠侠-8%）、KOSPI <span class="hl-green">-1.55%</span>；现货黄金<span class="hl-green">-1.87%</span>报4333.41美元/盎司（COMEX口径4389.50，⚠️两口径差已标注）、白银<span class="hl-green">-3.75%</span>报63.31——避险逻辑松动+获利回吐，今日贵金属承压；WTI 84.94/布油91.02（美伊僵局）→能源/油服逆势（标普500能源指数创3月新高）。</div>
+
+  <div class="sub-title"><span style="color:#2563eb">■</span> 今日（8月19日周三）展望</div>
+  <div class="para">隔夜<b>AI硬件全球退潮</b>（费半-5%/存储光通信暴跌）+ 亚太重挫（日经-2.5%）+ 30Y美债19年新高，A股今日<b>大概率低开、AI硬件（通信/半导体/CPO/电子化学品）补跌</b>；但 T-1 已提前兑现（8/18通信-1.35%提前调整）部分对冲外盘冲击。结构性机会在<b>农业/粮食（P2加速·资金连续正流入）与油服/能源（地缘涨价·防御）</b>，贵金属（金价大跌）与AI硬件回避。<strong>判断：防御日，总仓≤4成，多≤2板块（农业+油服），AI硬件/贵金属/白酒回避，低吸不追高</strong>。今日催化：美国FOMC纪要（8/20凌晨）、8/20 LPR报价、中报披露高峰。</div>
+</div>
+
+<!-- ════════════ 决策逻辑链 ════════════ -->
+<div class="card card-lb-blue">
+  <div class="card-title"><span class="emoji">🔗</span> 决策逻辑链</div>
+
+  <!-- ① -->
+  <div class="sub-title"><span class="num">①</span>数据</div>
+  <div class="para">8/18 涨停76/跌停0、涨跌比0.64、昨日涨停+1.23%/昨日连板+2.38%溢价收窄、成交2.40万亿持平；种植业+9.54%/转基因+8.41%断层领涨，通信设备-1.35%主力-120.7亿、半导体-0.23%主力-112.4亿。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>8/17普涨后兑现日确认（㉓反弹=减仓窗口验证），情绪由狂热降温（涨停110→76）；AI硬件退潮三要素齐备（板块跌+主力大额流出+20日资金线深负）＝P3→退潮确认。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>非情绪重启日（昨日涨停溢价收窄+量能未放大+外围主线暴跌，㊴三条件不成立）→ 正常门控（多≤3），今日防御。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>总仓≤40%，主攻农业+油服，回避AI硬件/贵金属/白酒。</div>
+
+  <!-- ② -->
+  <div class="sub-title"><span class="num">②</span>数据</div>
+  <div class="para">隔夜美股三连跌：纳指-1.33%/标普-0.69%/道指-0.22%；费半-4.98%；闪迪-9.01%/美光-7.02%/SK海力士-9.20%；Coherent-12%/Lumentum-9%；英伟达-2.34%/Meta-4.45%；中概金龙-1.01%（百度-12.73%）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>连续3日领涨的AI硬件主线（存储/光通信/半导体设备）全球性崩跌，30Y美债5.283%创19年新高压制成长估值（US-③映射前提校验：A股自身8/18已退潮+美股隔夜暴跌→映射确定性崩塌）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>今日A股AI硬件补跌概率高，通信设备/半导体/CPO/电子化学品一律降档回避。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>已持有AI硬件逢反抽减仓；空仓不接飞刀（⑳）。</div>
+
+  <!-- ③ -->
+  <div class="sub-title"><span class="num">③</span>数据</div>
+  <div class="para">农业链：种植业+9.54%（神农种业20cm涨停/金健米业/敦煌种业涨停），主力+14.2亿·5日+16.7亿·20日+12.5亿连续正流入；摩根大通预警明年全球食品通胀走高；粮食概念+6.52%/转基因+8.41%。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>农业P1启动（8/17种植业+4.16%进涨幅榜）→P2加速（8/18扩散至饲料/加工/猪肉，资金连续正流入=健康）＝三-①确认；事件驱动（粮食危机预警）但资金真金白银，非纯情绪。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>最强新主线（P2加速），但已连涨2日，今日高开防兑现（㉕），给"多"但仓位克制、低吸不追高。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>神农种业/敦煌种业/金健米业/大北农，回调低吸为主。</div>
+
+  <!-- ④ -->
+  <div class="sub-title"><span class="num">④</span>数据</div>
+  <div class="para">油价：WTI 84.94美元/桶（+0.52%）、布油91.02（+0.17%）维持90上方；美伊谈判僵局（特朗普称未进行任何谈判）；油服工程+3.05%（海油工程+7.31%）；标普500能源指数创3月新高。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>地缘（霍尔木兹海峡被拦截+美伊无谈判）持续推升油价，油服/能源=顺涨价逻辑+防御属性，今日外盘暴跌下避险资金可能切向能源。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>油服/能源中性偏多（P1催化启动，资金验证待确认）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>海油工程/中曼石油观察，轻仓（≤5%）参与。</div>
+
+  <!-- ⑤ -->
+  <div class="sub-title"><span class="num">⑤</span>数据</div>
+  <div class="para">现货黄金-1.87%报4333.41、白银-3.75%报63.31；日经-2.54%/KOSPI-1.55%；中概金龙-1.01%（百度-12.73%）；电子化学品+1.45%（中石科技20cm二连板但机构出货-2.06亿、20日资金-61.4亿）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>金价大跌（避险逻辑松动+获利回吐）→贵金属今日承压（㊲修复窗口关闭）；亚太重挫压制A股风险偏好；电子化学品独苗（中石科技）机构出货=P2分化，跟风不足。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>贵金属/小金属转中性偏空（金价反杀），电子化学品中性（不追独苗），白酒延续空（风格跷跷板㉒另一侧）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>贵金属减仓（金价破位），白酒回避，电子化学品持有不加。</div>
+</div>
+
+<!-- ════════════ 盘前30秒速览 ════════════ -->
+<div class="card card-lb-orange">
+  <div class="card-title"><span class="emoji">⚡</span> 盘前30秒速览</div>
+  <div class="bullet-item">• <strong>指数：</strong>沪指<span class="hl-red">3990.30</span>（+0.19%抗跌）、创业板<span class="hl-green">3705.56</span>（-0.93%）、科创50<span class="hl-red">1790.87</span>（+0.11%）</div>
+  <div class="bullet-item">• <strong>成交：</strong>2.40万亿持平，涨停<span class="hl-orange">76</span>（110→76回落）、跌停0、涨跌比<span class="hl-green">0.64</span></div>
+  <div class="bullet-item">• <strong>情绪：</strong>兑现日确认，昨日涨停+1.23%溢价收窄；<span class="hl-orange">非重启日（㊴三条件缺外围主线）</span></div>
+  <div class="bullet-item">• <strong>最强主线：</strong>种植业<span class="hl-red">+9.54%</span>（P2加速·主力+14.2亿·20日+12.5亿连续正流入）、油服+3.05%（油价破85）</div>
+  <div class="bullet-item">• <strong>弱势区：</strong>AI硬件退潮（通信-1.35%/-120.7亿、半导体-0.23%/-112.4亿、元件-2.03%）、白酒弱</div>
+  <div class="bullet-item">• <strong>隔夜外盘（⚠️核心）：</strong>美股三连跌·纳指-1.33%·费半-4.98%·存储闪迪-9%·光通信Coherent-12.75%·现货黄金-1.87%·日经-2.54%</div>
+  <div class="bullet-item">• <strong>风险变量：</strong>30Y美债<span class="hl-red">5.283%</span>创19年新高、油价升破85美元（美伊僵局）、FOMC纪要今晚</div>
+</div>
+
+<!-- ════════════ 隔夜外盘 ════════════ -->
+<div class="card card-lb-blue">
+  <div class="card-title"><span class="emoji">🌍</span> 隔夜外盘（8月18日美东收盘 &amp; 8月19日亚太）</div>
+
+  <div class="sub-title" style="margin-top:4px"><span style="color:#1e3a6e;font-weight:800">|</span> 美股</div>
+  <table class="data-table">
+    <thead><tr><th>指数</th><th>收盘</th><th>涨跌</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>道琼斯</td><td class="num-cell">53343.40</td><td class="num-cell negative">-0.22%</td><td><span class="badge badge-green">三连跌</span></td></tr>
+      <tr><td>标普500</td><td class="num-cell">7691.76</td><td class="num-cell negative">-0.69%</td><td><span class="badge badge-green">三连跌</span></td></tr>
+      <tr><td>纳斯达克</td><td class="num-cell">26289.71</td><td class="num-cell negative">-1.33%</td><td><span class="badge badge-green">三连跌</span></td></tr>
+      <tr><td>费城半导体(SOX)</td><td class="num-cell">—</td><td class="num-cell negative">-4.98%</td><td><span class="badge badge-solid-green">暴跌·7/29来最大</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 关键驱动</div>
+  <div class="bullet-item">• <strong>AI硬件全球退潮（核心）：</strong>存储闪迪<span class="hl-green">-9.01%</span>/SK海力士<span class="hl-green">-9.20%</span>/希捷<span class="hl-green">-9.01%</span>/西数<span class="hl-green">-7.43%</span>/美光<span class="hl-green">-7.02%</span>；光通信Coherent<span class="hl-green">-12%</span>/Lumentum<span class="hl-green">-9%</span>/康宁<span class="hl-green">-7%</span>；CoreWeave<span class="hl-green">-12%</span>（AI云）；英伟达<span class="hl-green">-2.34%</span>/Meta<span class="hl-green">-4.45%</span>（29州诉讼）</div>
+  <div class="bullet-item">• <strong>30Y美债<span class="hl-red">5.283%</span>创19年新高：</strong>日本10Y三十年高、德国30Y 2011年来高、法国30Y 2008年来高——通胀+财政赤字+AI债务融资三重忧虑，长端利率飙升压制成长估值（AI/半导体首当其冲）</div>
+  <div class="bullet-item">• <strong>能源逆势：</strong>标普500能源指数+1.8%创3月新高，油价破85美元（美伊僵局，特朗普称无谈判计划+霍尔木兹油轮被拦截）</div>
+  <div class="bullet-item">• <strong>中概：</strong>金龙指数<span class="hl-green">-1.01%</span>报6256.97，百度<span class="hl-green">-12.73%</span>、世纪互联<span class="hl-green">-16.8%</span>，阿里+2.8%</div>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 亚太（8月19日）</div>
+  <table class="data-table">
+    <thead><tr><th>指数</th><th>点位</th><th>涨跌</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>日经225</td><td class="num-cell">67460.73</td><td class="num-cell negative">-2.54%</td><td><span class="badge badge-green">重挫</span></td></tr>
+      <tr><td>韩国KOSPI</td><td class="num-cell">6869.83</td><td class="num-cell negative">-1.55%</td><td><span class="badge badge-green">重挫</span></td></tr>
+      <tr><td>恒生指数（夜盘）</td><td class="num-cell">25471.20</td><td class="num-cell positive">+0.07%</td><td><span class="badge badge-orange">相对抗跌</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 大宗商品</div>
+  <table class="data-table">
+    <thead><tr><th>品种</th><th>最新价</th><th>日内</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>现货黄金</td><td class="num-cell">4333.41美元/盎司</td><td class="num-cell negative">-1.87%</td><td><span class="badge badge-green">破位</span></td></tr>
+      <tr><td>现货白银</td><td class="num-cell">63.31美元/盎司</td><td class="num-cell negative">-3.75%</td><td><span class="badge badge-green">暴跌</span></td></tr>
+      <tr><td>WTI原油(9月)</td><td class="num-cell">84.94美元/桶</td><td class="num-cell positive">+0.52%</td><td><span class="badge badge-red">地缘升</span></td></tr>
+      <tr><td>布伦特原油(10月)</td><td class="num-cell">91.02美元/桶</td><td class="num-cell positive">+0.17%</td><td><span class="badge badge-red">破90</span></td></tr>
+      <tr><td>COMEX铜</td><td class="num-cell">6.46美元/磅</td><td class="num-cell negative">-2.42%</td><td><span class="badge badge-green">回落</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="para" style="margin-top:10px"><strong>信号解读：</strong>①AI硬件主线（存储/光通信/设备）全球性退潮+长端利率飙升=今日A股科技成长承压，映射必须降档（US-③）；②资金流向"能源/农业/防御"——油价84.94美元+粮食危机预警，A股对应油服/农业今日或成避风港；③现货黄金-1.87%破位+白银-3.75%=贵金属今日承压（㊲修复窗口关闭），有色金属整体转弱；④日经-2.54%重挫（铠侠-8%）验证存储链全球回调，韩股-1.55%同步。</div>
+</div>
+
+<!-- ════════════ 市场全景 ════════════ -->
+<div class="card card-lb-purple">
+  <div class="card-title"><span class="emoji">📊</span> 市场全景（8月18日收盘）</div>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 四大指数</div>
+  <table class="data-table">
+    <thead><tr><th>指数</th><th>收盘</th><th>涨跌</th><th>成交</th><th>换手</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>上证指数</td><td class="num-cell">3990.30</td><td class="num-cell positive">+0.19%</td><td class="num-cell">1.14万亿</td><td class="num-cell">1.05%</td><td><span class="badge badge-red">抗跌</span></td></tr>
+      <tr><td>深证成指</td><td class="num-cell">14622.50</td><td class="num-cell negative">-0.56%</td><td class="num-cell">1.27万亿</td><td class="num-cell">2.75%</td><td><span class="badge badge-green">回落</span></td></tr>
+      <tr><td>创业板指</td><td class="num-cell">3705.56</td><td class="num-cell negative">-0.93%</td><td class="num-cell">6061亿</td><td class="num-cell">3.66%</td><td><span class="badge badge-green">领跌</span></td></tr>
+      <tr><td>科创50</td><td class="num-cell">1790.87</td><td class="num-cell positive">+0.11%</td><td class="num-cell">1225亿</td><td class="num-cell">1.61%</td><td><span class="badge badge-orange">分化</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 涨跌分布（已剔除停牌）</div>
+  <table class="data-table">
+    <thead><tr><th>指标</th><th>数值</th><th>方向</th></tr></thead>
+    <tbody>
+      <tr><td>上涨家数</td><td class="num-cell">2121</td><td class="positive">↑</td></tr>
+      <tr><td>下跌家数</td><td class="num-cell">3292</td><td class="negative">↓</td></tr>
+      <tr><td>平盘</td><td class="num-cell">132</td><td>—</td></tr>
+      <tr><td>涨停</td><td class="num-cell">76</td><td class="positive">↑</td></tr>
+      <tr><td>跌停</td><td class="num-cell">0</td><td>—</td></tr>
+      <tr><td>涨跌比</td><td class="num-cell">0.64</td><td class="negative">↓</td></tr>
+      <tr><td>昨日涨停溢价</td><td class="num-cell">+1.23%</td><td class="positive">↑</td></tr>
+      <tr><td>昨日连板溢价</td><td class="num-cell">+2.38%</td><td class="positive">↑</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 板块排行（申万二级 / 概念）</div>
+  <table class="data-table">
+    <thead><tr><th>类型</th><th>板块</th><th>涨跌幅</th><th>5日</th><th>20日</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="7" style="font-weight:600;color:#6b7280;vertical-align:top;padding-top:14px">行业<br>板块</td><td>种植业</td><td class="num-cell positive">+9.54%</td><td class="num-cell positive">+11.69%</td><td class="num-cell positive">+22.08%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>农产品加工</td><td class="num-cell positive">+4.29%</td><td class="num-cell positive">+5.16%</td><td class="num-cell positive">+15.77%</td><td><span class="badge badge-solid-red">扩散</span></td></tr>
+      <tr><td>渔业</td><td class="num-cell positive">+3.26%</td><td class="num-cell positive">+5.80%</td><td class="num-cell positive">+17.78%</td><td><span class="badge badge-solid-orange">扩散</span></td></tr>
+      <tr><td>油服工程</td><td class="num-cell positive">+3.05%</td><td class="num-cell positive">+0.87%</td><td class="num-cell positive">+9.69%</td><td><span class="badge badge-solid-orange">催化</span></td></tr>
+      <tr><td>光学光电子</td><td class="num-cell positive">+2.35%</td><td class="num-cell positive">+7.61%</td><td class="num-cell positive">+9.45%</td><td><span class="badge badge-solid-orange">暖进</span></td></tr>
+      <tr><td>通信设备</td><td class="num-cell negative">-1.35%</td><td class="num-cell positive">+11.65%</td><td class="num-cell negative">-3.04%</td><td><span class="badge badge-solid-green">退潮</span></td></tr>
+      <tr><td>元件</td><td class="num-cell negative">-2.03%</td><td class="num-cell positive">+3.60%</td><td class="num-cell positive">+7.82%</td><td><span class="badge badge-solid-green">退潮</span></td></tr>
+      <tr><td rowspan="5" style="font-weight:600;color:#6b7280;vertical-align:top;padding-top:14px">概念<br>板块</td><td>转基因</td><td class="num-cell positive">+8.41%</td><td class="num-cell positive">+12.15%</td><td class="num-cell positive">+20.86%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>玉米</td><td class="num-cell positive">+7.76%</td><td class="num-cell positive">+10.27%</td><td class="num-cell positive">+20.23%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>粮食概念</td><td class="num-cell positive">+6.52%</td><td class="num-cell positive">+9.96%</td><td class="num-cell positive">+22.01%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>大豆</td><td class="num-cell positive">+5.88%</td><td class="num-cell positive">+8.45%</td><td class="num-cell positive">+17.56%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>大硅片</td><td class="num-cell positive">+3.97%</td><td class="num-cell positive">+9.18%</td><td class="num-cell positive">+3.13%</td><td><span class="badge badge-solid-orange">暖进</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 主力资金净流入Top5（8/18）</div>
+  <table class="data-table">
+    <thead><tr><th>板块</th><th>主力净流入</th><th>5日累计</th></tr></thead>
+    <tbody>
+      <tr><td>农业种植（概念·神农种业等）</td><td class="num-cell positive">+22.54亿</td><td class="num-cell positive">+32.76亿</td></tr>
+      <tr><td>触摸屏概念（彩虹股份等）</td><td class="num-cell positive">+20.56亿</td><td class="num-cell positive">+35.06亿</td></tr>
+      <tr><td>大硅片（有研硅等）</td><td class="num-cell positive">+20.39亿</td><td class="num-cell positive">+18.88亿</td></tr>
+      <tr><td>光学光电子（骏成科技等）</td><td class="num-cell positive">+15.50亿</td><td class="num-cell positive">+39.39亿</td></tr>
+      <tr><td>种植业（神农种业/敦煌种业）</td><td class="num-cell positive">+14.23亿</td><td class="num-cell positive">+16.67亿</td></tr>
+    </tbody>
+  </table>
+  <div class="para" style="font-size:12.5px;color:#6b7280"><strong>⚠️ 资金流出端（退潮确认）：</strong>通信设备<span class="hl-green">-120.68亿</span>（20日-210.26亿）、半导体<span class="hl-green">-112.36亿</span>（20日-575.26亿）、元件<span class="hl-green">-97.16亿</span>、TMT概念<span class="hl-green">-409亿</span>——AI硬件退潮三要素齐备（20日资金线深负=反弹回补非反转）。</div>
+</div>
+
+<!-- ════════════ 板块共识度与方向表 ════════════ -->
+<div class="card card-lb-yellow">
+  <div class="card-title"><span class="emoji">⭐</span> 板块共识度与方向表</div>
+  <div class="para" style="font-size:13px;color:#6b7280;margin-bottom:14px">评分=动量×0.3+产业锚×0.25+聪明钱×0.25+微观×0.1+催化×0.1，0-100。共识度=多维度一致性判断。阶段判定按三阶段理论（三-①~三-⑧）；全局情绪门控：非重启日（㊴不触发）→ 正常门控多≤3，今日防御多≤2。</div>
+
+  <table class="data-table" style="margin:0">
+    <thead><tr><th>板块</th><th>评分</th><th>共识度</th><th>阶段判定</th><th>操作判断</th><th>建议仓位</th><th>核心策略</th><th>核心个股建议</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">农林牧渔/种植业</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-red" style="width:40px;height:40px;font-size:15px;display:inline-flex">88</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-red" style="font-size:11px;padding:3px 8px;border-radius:8px">极强</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-red">P2 加速</span><br><span style="font-size:11px">Pair:神农种业/敦煌种业 连2日领涨</span></td>
+        <td style="vertical-align:middle;font-weight:600">主攻·低吸</td>
+        <td class="num-cell" style="vertical-align:middle">8%-10%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">粮食危机催化（摩根大通预警）+资金20日+12.5亿连续正流入=健康P2，已连涨2日防高开兑现（㉕），低吸不追高</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">神农种业（20cm龙头·机构净买1.31亿）<br>敦煌种业（转基因）<br>金健米业（粮食）<br>大北农（饲料扩散）</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">油服/能源</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-orange" style="width:40px;height:40px;font-size:15px;display:inline-flex">72</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">强</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-orange">P1 催化</span><br><span style="font-size:11px">油价破85+美伊僵局</span></td>
+        <td style="vertical-align:middle;font-weight:600">中性偏多·轻仓</td>
+        <td class="num-cell" style="vertical-align:middle">3%-5%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">地缘涨价+防御双属性，美股能源指数创3月新高验证，今日避险资金或流入</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">海油工程（+7.31%）<br>中曼石油（观察）</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">电子化学品/光学</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-orange" style="width:40px;height:40px;font-size:15px;display:inline-flex">62</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-orange">P2 分化</span><br><span style="font-size:11px">中石20cm独苗但机构出货</span></td>
+        <td style="vertical-align:middle;font-weight:600">中性·持有不加</td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">中石科技20cm二连板但机构出货-2.06亿+20日资金-61.4亿=反弹回补非反转（PUA 20日线降级）；外盘光通信暴跌今日承压</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">中石科技（持有不加）<br>有研硅（大硅片·独立强）</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">半导体</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-yellow" style="width:40px;height:40px;font-size:15px;display:inline-flex">55</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-yellow">P3→退潮</span><br><span style="font-size:11px">20日-575亿+费半-5%</span></td>
+        <td style="vertical-align:middle;font-weight:600">减仓·回避</td>
+        <td class="num-cell" style="vertical-align:middle">0%-3%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">退潮三要素齐备（主力-112亿+20日-575亿深负）；隔夜费半-4.98%/存储暴跌=今日补跌风险大（US-③）</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">回避（不接飞刀⑳）<br>长鑫科技观察</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">通信设备/CPO</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-yellow" style="width:40px;height:40px;font-size:15px;display:inline-flex">52</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-yellow">退潮确认</span><br><span style="font-size:11px">-1.35%+主力-120.7亿</span></td>
+        <td style="vertical-align:middle;font-weight:600">减仓·回避</td>
+        <td class="num-cell" style="vertical-align:middle">0%-3%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">退潮确认（板块跌+主力-120.7亿+20日-210亿）；隔夜光通信Coherent-12%/Lumentum-9%映射崩塌（US-③）</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">回避（不接飞刀）<br>中际旭创/新易盛观察</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">贵金属</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-green" style="width:40px;height:40px;font-size:15px;display:inline-flex">45</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">弱</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-green">退潮</span><br><span style="font-size:11px">金价-1.87%破位</span></td>
+        <td style="vertical-align:middle;font-weight:600">减仓·回避</td>
+        <td class="num-cell" style="vertical-align:middle">0%-2%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">现货黄金-1.87%/白银-3.75%破位=避险逻辑松动+获利回吐（㊲修复窗口关闭），今日承压</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">山东黄金/中金黄金减仓</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">小金属/稀土</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-green" style="width:40px;height:40px;font-size:15px;display:inline-flex">48</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-yellow">退潮修复中断</span><br><span style="font-size:11px">-0.71%+锗镓-1.48%</span></td>
+        <td style="vertical-align:middle;font-weight:600">中性·观望</td>
+        <td class="num-cell" style="vertical-align:middle">≤3%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">修复窗口中断（8/18 -0.71%），外盘铜-2.42%拖累有色，等待企稳</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">云南锗业观望</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">白酒/消费</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-green" style="width:40px;height:40px;font-size:15px;display:inline-flex">35</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">弱</span></td>
+        <td style="vertical-align:middle;font-size:12px;color:#374151"><span class="badge badge-green">退潮</span><br><span style="font-size:11px">㉒跷跷板另一侧</span></td>
+        <td style="vertical-align:middle;font-weight:600">减仓·回避</td>
+        <td class="num-cell" style="vertical-align:middle">0%-2%</td>
+        <td style="vertical-align:middle;font-size:12.5px;line-height:1.6;color:#374151">风格跷跷板另一侧（㉒），资金切农业/能源，消费弱+中报证伪风险，回避</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.65;color:#4b5563">回避（不接飞刀）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="para" style="margin-top:14px;font-size:13.5px"><strong>组合建议（防御日·正常门控多≤2）：</strong><br>
+  总仓位 <strong>40%上限</strong>（外盘暴跌+情绪降温+30Y美债19年新高）。<br>
+  • 主攻仓 15%：农林牧渔 10% + 油服能源 5%（低吸不追高）<br>
+  • 观察仓 ≤10%：电子化学品 5%（持有不加）+ 现金为主<br>
+  • 现金 60%：等待外盘企稳/FOMC纪要落地/中报验证后再加
+  </div>
+</div>
+
+<!-- ════════════ 风险点 + 催化日历 + 止盈止损纪律 ════════════ -->
+<div class="card card-lb-red">
+  <div class="card-title"><span class="emoji">⚠️</span> 风险点 + 📅 催化日历 + 🎯 纪律</div>
+
+  <div class="sub-title"><span style="color:#dc2626;font-weight:800">|</span> 风险点清单（注意⚠害怕）</div>
+  <div class="risk-card">
+    <p>• <strong>外盘风险（今日核心）：</strong>美股三连跌+费半<span class="hl-green">-4.98%</span>（7/29来最大）——存储（闪迪-9%/美光-7%）与光通信（Coherent-12%）全线崩跌，AI硬件主线全球退潮，A股通信/半导体/CPO/电子化学品今日<span class="hl-red">补跌风险大</span>（US-③）</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>汇率/利率风险：</strong>30Y美债<span class="hl-red">5.283%</span>创19年新高（10Y 4.70%），日10Y三十年高、德法三十年期新高——全球长端利率飙升压制成长股估值，AI估值高企板块首当其冲；今晚FOMC纪要是关键变量（若偏鹰将进一步冲击）</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>地缘风险：</strong>美伊谈判破裂（特朗普称无谈判计划）+霍尔木兹油轮被拦截→WTI 84.94、布油91.02维持90上方——若油价冲100美元将强化通胀担忧，压制风险资产</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>情绪风险：</strong>涨停110→76连降、涨跌比0.64、昨日涨停溢价+1.23%收窄——情绪退潮确认，8/17普涨后兑现日延续，今日低开后若杀跌可能引发恐慌</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>政策/业绩风险：</strong>8月中报密集披露期"业绩兑现"是关键变量（高位题材股面临证伪）；农业为事件驱动（粮食危机预警），若催化证伪或2日连涨后高开低走，追高者受伤</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>技术风险：</strong>沪指3990.30逼近<span class="hl-red">4000整数关口</span>（前期密集成交区），T-1缩量2.40万亿（60日均量84.7%）突破乏力；创业板3705.56失守5日线，若今日低开破位，科技成长可能加速下探</p>
+  </div>
+
+  <div class="sub-title" style="margin-top:18px"><span style="color:#2563eb;font-weight:800">|</span> 催化日历（本周重点）</div>
+
+  <div class="cal-date">📌 8月19日 周三（今日）</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>【关键】FOMC会议纪要（北京时间8/20凌晨02:00）</strong></span>——30Y美债5.283%新高+油价破85背景下，若纪要偏鹰（暗示加息），全球成长股二次冲击</div>
+  <div class="cal-event">中报业绩密集披露（半导体/电子/农业/白酒），频准激光上市次日表现（8/18首日+516%）</div>
+  <div class="cal-event">美伊谈判动态（僵局延续则油价续升）</div>
+
+  <div class="cal-date">📌 8月20-21日（本周关键时点）</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>8月20日周四</strong></span> 中国8月LPR报价（1年期/5年期，降息预期与汇率平衡）</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>8月21日周五</strong></span> 杰克逊霍尔全球央行年会前奏，中报披露高峰</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>本周</strong></span> 粮食危机预警链（摩根大通）/ 存储涨价动态 / 美债长端利率走势</div>
+
+  <div class="sub-title" style="margin-top:18px"><span style="color:#2563eb;font-weight:800">|</span> 止盈止损纪律</div>
+  <div class="para"><strong>① 仓位铁律：</strong>总仓位≤40%上限（外盘暴跌防御日）。单一板块≤10%，单一标的≤5%。AI硬件（半导体/CPO/电子化学品）合计≤10%。</div>
+  <div class="para"><strong>② 止损硬约束：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 农业主攻仓：跌破5日均线减半，破20日均线清仓；高开>3%不追，等回踩低吸</div>
+  <div class="bullet-item" style="padding-left:16px">• 油服仓：油价回落至83美元下方止损</div>
+  <div class="bullet-item" style="padding-left:16px">• 贵金属/半导体/通信：已减仓不接飞刀（⑳）</div>
+  <div class="para"><strong>③ 止盈规则：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 农业主升段：浮盈达20%后移动止盈（回撤8%出局）</div>
+  <div class="bullet-item" style="padding-left:16px">• 涨停76+情绪退潮期，连板股断板即减</div>
+  <div class="para"><strong>④ 不动原则：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 不在9:25集合竞价重仓；不在午盘情绪低点恐慌割肉；不在跌停板上挂跌停价割肉</div>
+  <div class="bullet-item" style="padding-left:16px">• 外盘暴跌日低开>1%不盲目抄底，等企稳信号（30分钟K线止跌/昨日涨停溢价回正）</div>
+  <div class="para"><strong>⑤ 风格再平衡触发：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 成交额若缩至2.1万亿以下：主攻仓先砍1/3避险</div>
+  <div class="bullet-item" style="padding-left:16px">• 创业板指单日跌幅>3%：主攻仓先砍1/3避险</div>
+</div>
+
+<!-- ════════════ 页脚 ════════════ -->
+<div class="footer">
+  <div style="font-size:18px;margin-bottom:6px">⚖️</div>
+  本报告仅供参考，不构成投资建议。<br>
+  数据来源：腾讯自选股（westock-data，2026-08-18收盘）、证券时报/东方财富/每日经济新闻/智通财经/第一财经（外盘2026-08-18美东收盘）、SGX（亚太2026-08-19）。<br>
+  多源交叉认证：A股指数/广度/板块/资金（westock+东财妙想双源一致）；美股指数/个股（证券时报+智通财经+中新经纬+大河财立方四源一致）；亚太（日经-2.54%/KOSPI-1.55%多源一致）；口径差已标注（现货金4333.41 vs COMEX 4389.50、涨停76 vs 81）。<br>
+  市场有风险，投资需谨慎。决策请独立思考，盈亏自担。
+</div>
+
+</div>
+</body>
+</html>

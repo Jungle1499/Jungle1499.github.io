@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V2.4 新模型 · 数据可行性 & 回测方案</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0f0f1a; color:#e6e6ee; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; padding:22px; line-height:1.6; }
+.wrap { max-width:980px; margin:0 auto; }
+.head { background:linear-gradient(135deg,#1a1a2e,#16213e); border:1px solid #2a2a4a; border-radius:14px; padding:18px 22px; margin-bottom:16px; }
+.head h1 { font-size:20px; color:#fff; }
+.head .sub { color:#9aa0c0; font-size:12.5px; margin-top:6px; }
+.badge { display:inline-block; border-radius:8px; padding:2px 9px; font-size:11px; margin-left:6px; }
+.b-ths { background:#00284a; color:#66ccff; border:1px solid #005a99; }
+.b-v { background:#3a0030; color:#ff66cc; border:1px solid #660055; }
+.card { background:#1a1a2e; border:1px solid #2a2a4a; border-radius:12px; padding:15px 17px; margin-bottom:14px; }
+.card h2 { font-size:15px; color:#fff; margin-bottom:11px; border-left:4px solid #ff4d4f; padding-left:10px; }
+table { width:100%; border-collapse:collapse; font-size:12.3px; }
+th,td { border:1px solid #2a2a4a; padding:5px 8px; text-align:left; }
+th { background:#23233f; color:#b9bee0; }
+.ok { color:#00d68f; font-weight:600; }
+.no { color:#ff5b5b; font-weight:600; }
+.warn { color:#ffcc66; font-weight:600; }
+.dim { color:#8a90b0; }
+.concl { background:#15152a; border:1px solid #2a2a4a; border-radius:10px; padding:11px 14px; font-size:13px; margin-top:8px; }
+.concl b { color:#ffcc66; }
+.foot { color:#6a7090; font-size:12px; text-align:center; margin-top:8px; }
+code { background:#23233f; color:#66ccff; padding:1px 5px; border-radius:4px; font-size:11px; }
+</style></head>
+<body><div class="wrap">
+
+<div class="head">
+<h1>V2.4 新模型 · 数据可行性 & 三个月回测方案<span class="badge b-ths">同花顺问财</span><span class="badge b-v">V2.4</span></h1>
+<div class="sub">用户新增「强弱锚定 + 风格锚定 + 选股1/2 + 动态最优高开」模型，要求回测过去三个月、产出正确率图。<br>
+数据源铁律：<b>同花顺优先</b>；缺失标「代」/N/A，绝不编造。下方为已实测的接口可行性（2026-08-14 抽样）。</div>
+</div>
+
+<div class="card">
+<h2>一、新模型字段 · 同花顺问财可拉取性实测</h2>
+<table>
+<tr><th>模型模块</th><th>所需字段</th><th>状态</th><th>实测返回 / 降级方案</th></tr>
+<tr><td>强弱锚定</td><td>涨停封单总额 / 跌停封单总额（当日 vs 昨日）</td><td class="ok">✅ 全量可用</td><td>8/14 涨停64只、跌停10只，含 <code>涨停封单额[日期]</code></td></tr>
+<tr><td>强弱锚定</td><td>昨日涨停股 → 今日竞价（算昨日封单基准）</td><td class="ok">✅ 可用</td><td>8/14 返回62只，含 <code>涨停[前日]</code>+<code>竞价涨幅[当日]</code></td></tr>
+<tr><td>风格锚定1</td><td>昨日成交额前20中军 今日竞价红盘率</td><td class="ok">✅ 可用</td><td>8/14 返回20只，可算红盘率>60%</td></tr>
+<tr><td>风格锚定2</td><td>连板指数 880812 竞价涨幅</td><td class="warn">⚠️ 代理</td><td>精确指数不可直查；改用"连板个股竞价均值/涨停数"代理</td></tr>
+<tr><td>选股2</td><td>昨日烂板 / 一字 / T字 → 今日竞价</td><td class="ok">✅ 可用</td><td>烂板10 / 一字12 / T字2，含 <code>竞价涨幅[当日]</code></td></tr>
+<tr><td>选股2</td><td>昨日长上影线个股</td><td class="ok">✅ 可用</td><td>8/13 返回686只</td></tr>
+<tr><td>核心算法</td><td>个股昨日振幅（算最优高开=振幅×0.6）</td><td class="warn">⚠️ 间接</td><td><code>昨日振幅</code>直查0行；改用 (昨最高-昨最低)/昨收 计算</td></tr>
+<tr><td>选股1</td><td>9:24:50–9:25:00 逐笔大单占比≥500手</td><td class="no">❌ 不可回溯</td><td>L2逐笔盘后无免费源 → 标注 N/A，仅作信号说明不计入打分</td></tr>
+<tr><td>回测真值</td><td>个股/板块 当日收盘涨跌幅</td><td class="ok">✅ 可用</td><td>前20已验证；全量分批拉取</td></tr>
+</table>
+<div class="concl">✅ <b>可真实回测</b>：强弱锚定（多空强度差）、风格锚定1（中军红盘率）、选股2（烂板弱转强 / 一字强更强）。<br>
+⚠️ <b>代理降级</b>：连板指数精确值、个股昨日振幅（间接算）。<br>
+❌ <b>不计入打分</b>：选股1逐笔大单占比（无源，仅文字说明）。全部标注，符合铁律。</div>
+</div>
+
+<div class="card">
+<h2>二、正确率表 · 草案结构（你示例图的落地格式）</h2>
+<table>
+<tr><th>信号档</th><th>触发条件（新模型）</th><th>样本日数</th><th>次日上涨概率</th><th>次日平均收益</th><th>盈亏比</th><th>vs 随机47.5%</th></tr>
+<tr><td class="ok">情绪极强</td><td>多空强度差 &gt; 0.3</td><td class="dim">待算</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
+<tr><td class="warn">情绪正常</td><td>0 ≤ 差 ≤ 0.3</td><td class="dim">待算</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
+<tr><td class="no">情绪转弱</td><td>差 &lt; 0</td><td class="dim">待算</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
+<tr><td colspan="7" class="dim">另含：风格锚定切换命中率（大票稳/小票疯两种切换的次日胜率）、选股2 弱转强(A类) vs 强更强(C类) 次日胜率对比。</td></tr>
+</table>
+<div class="concl">最终交付：一张<b>正确率柱状/折线图</b>（按信号档分色）+ 上方统计表，部署云端 + 飞书可点链接。</div>
+</div>
+
+<div class="card">
+<h2>三、执行计划（确认后开跑）</h2>
+<table>
+<tr><th>步骤</th><th>内容</th><th>量级</th></tr>
+<tr><td>1</td><td>生成全部交易日清单（2026/05/18–08/17，约66日）</td><td>1次</td></tr>
+<tr><td>2</td><td>逐日拉：涨停/跌停封单额、昨日涨停→今竞价、前20中军、烂板/一字/T字、长上影、收盘涨跌幅</td><td>~66日 × 6类 ≈ 400次调用</td></tr>
+<tr><td>3</td><td>按新模型算每日信号档 + 风格切换 + 选股2分类</td><td>脚本</td></tr>
+<tr><td>4</td><td>回测：信号档→次日收盘，算胜率/均收益/盈亏比，生成图表</td><td>脚本</td></tr>
+<tr><td>5</td><td>部署云端 + 飞书推送</td><td>1次</td></tr>
+</table>
+<div class="concl">⏱ 受接口限流（约18s/次），全量拉取预计 <b>2–3 小时</b>，后台跑、不每天打扰你，最后只发汇总图。</div>
+</div>
+
+<div class="foot">数据来源：同花顺问财（iwencai）· 红涨绿跌 · 缺标「代」/N/A · 非实时交易建议</div>
+</div></body></html>

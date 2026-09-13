@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>A股主线分析 · 2026-09-01（周二 · v3.77</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--card2:#1c2333;--border:#30363d;--text:#e6edf3;--sub:#8b949e;--red:#f85149;--green:#3fb950;--gold:#d29922;--blue:#58a6ff;--purple:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;font-size:12px;padding:24px 16px}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:22px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:var(--sub);font-size:12px;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:20px}
+.card h2{font-size:16px;margin-bottom:12px;padding-left:10px;border-left:4px solid var(--gold);color:var(--gold)}
+.card h3{font-size:14px;margin:12px 0 8px;color:var(--blue)}
+.card h4{font-size:13px;margin:10px 0 6px;color:var(--sub);font-weight:600}
+/* ★ 统一：段落/提示框 13px = 表格 td 一致 */
+p{font-size:13px;margin:6px 0}
+.up{color:var(--red);font-weight:600}
+.down{color:var(--green);font-weight:600}
+.flat{color:var(--sub)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin-right:6px;font-weight:700}
+.tag-red{background:rgba(248,81,73,.15);color:var(--red);border:1px solid var(--red)}
+.tag-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid var(--green)}
+.tag-gold{background:rgba(210,153,34,.15);color:var(--gold);border:1px solid var(--gold)}
+.tag-blue{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid var(--gold)}
+.tag-blue{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid var(--blue)}
+.tag-gray{background:rgba(139,148,158,.15);color:var(--sub);border:1px solid var(--sub)}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.stat{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px}
+.stat .n{font-size:18px;font-weight:700}
+.stat .l{font-size:12px;color:var(--sub);margin-top:2px}
+.stat .s{font-size:11px;color:var(--sub);margin-top:4px}
+/* ★ 统一表格字号 13px */
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th{background:var(--card2);color:var(--gold);padding:6px 10px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;font-size:13px;font-weight:600}
+td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-size:13px}
+tr:hover td{background:rgba(88,166,255,.05)}
+.chart{width:100%;height:320px}
+ul,ol{padding-left:22px}
+li{font-size:13px;margin:3px 0}
+/* ★ 统一提示框字号 13px（与表格一致） */
+.warn{background:rgba(210,153,34,.08);border:1px solid var(--gold);border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;line-height:1.6}
+.risk{background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.4);border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;line-height:1.6}
+.ok{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.4);border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13px;line-height:1.6}
+.note{background:var(--card2);border-left:3px solid var(--blue);padding:8px 14px;margin:8px 0;font-size:13px;border-radius:4px;color:var(--text)}
+.stage{font-weight:700;padding:1px 6px;border-radius:4px;font-size:12px}
+.st-p1{color:var(--green);background:rgba(63,185,80,.12)}
+.st-p2{color:var(--blue);background:rgba(88,166,255,.12)}
+.st-p3{color:var(--red);background:rgba(248,81,73,.12)}
+.st-int{color:var(--gold);background:rgba(210,153,34,.12)}
+.pos-leader{color:var(--gold);font-weight:700}
+.pos-main{color:var(--blue);font-weight:600}
+.pos-lag{color:var(--green)}
+.pos-follow{color:var(--sub)}
+.footer{text-align:center;color:var(--sub);font-size:12px;margin-top:30px;padding-top:16px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>A股主线分析 · 2026-09-01（周二 · v3.77</h1>
+<div class="sub">v3.76 复盘 Agent · 14 章结构 · 数据源：westock / iFinD / 进门投研 / 韭研公社 / 知识星球 / 开盘啦 / 腾讯行情 | 生成 2026-09-01 18:00</div>
+
+<!-- ① 标题 -->
+<div class="card">
+<h2>① 标题：农业断层主升 + AI内容延续，科技材料高位兑现</h2>
+<p>9/1 上证 3979.89（<span class="down">-0.16%</span>冲高回落，科创50 <span class="down">-2.19%</span> 领跌；涨停 86 / 跌停 0，成交 2.03 万亿（缩量 976 亿。<b>农业链断层爆发</b>（转基因 <span class="up">+8.07%</span> 第一 / 种植业 <span class="up">+7.19%</span>，万向德农 6 板 + 神农种业 20cm，<b>AI 内容/传媒延续</b>（数字媒体 <span class="up">+5.6%</span>，芒果超媒 20cm 涨停，<b>科技材料链高位兑现</b>（覆铜板 <span class="down">-5.19%</span> / 电子化学品 <span class="down">-4.66%</span> / 半导体 <span class="down">-2.75%</span>，生益 -5.85% / 昊华 -7.83% 崩。8/31 预判的「科技材料高位防兑现」精确命中，农业/AI 内容双主线晋级 P2 预警。</p>
+</div>
+
+<!-- ② 核心结论 -->
+<div class="card">
+<h2>② 核心结论（8 项</h2>
+<div class="grid g4">
+<div class="stat"><div class="n up">+8.07%</div><div class="l">转基因概念（第一</div><div class="s">农业链断层主升</div></div>
+<div class="stat"><div class="n up">86 只</div><div class="l">涨停（跌停 0</div><div class="s">情绪仍高</div></div>
+<div class="stat"><div class="n down">-0.16%</div><div class="l">上证 3979.89</div><div class="s">冲高回落</div></div>
+<div class="stat"><div class="n down">-5.19%</div><div class="l">覆铜板（第一跌</div><div class="s">科技材料兑现</div></div>
+<div class="stat"><div class="n up">+20.02%</div><div class="l">芒果超媒（20cm</div><div class="s">AI 内容龙头</div></div>
+<div class="stat"><div class="n up">6 板</div><div class="l">万向德农</div><div class="s">农业龙头主升</div></div>
+<div class="stat"><div class="n up">+3.52%</div><div class="l">渔业（种业共振</div><div class="s">农业全线</div></div>
+<div class="stat"><div class="n down">-2.19%</div><div class="l">科创50</div><div class="s">科技硬件拖累</div></div>
+</div>
+<ul>
+<li><b>双主线</b>：农业（种业/转基因/粮食，P2 预警+ AI 内容/传媒（短剧/AI 应用，P2 预警——两者均为 8/31 P1 确认方向，今日晋级。</li>
+<li><b>科技材料兑现</b>：覆铜板/PTFE/存储/消费电子全线大跌，8/31 高位确认 = 9/1 兑现卖点（教训再次验证：P1 确认次日高位勿追。</li>
+<li><b>地位切换</b>：万向德农 6 板（农业龙头+ 芒果超媒 20cm（AI 内容龙头取代生益/德明利成为新重点池核心。</li>
+<li><b>成交缩量</b>：2.03 万亿（-976 亿，存量博弈下高位科技兑现 + 低位农业/AI 接力。</li>
+</ul>
+</div>
+
+<!-- ③ 市场概况 -->
+<div class="card">
+<h2>③ 市场概况</h2>
+<div class="grid g4">
+<div class="stat"><div class="n">3979.89</div><div class="l">上证 <span class="down">-0.16%</span></div><div class="s">冲高回落留上影</div></div>
+<div class="stat"><div class="n">13872.38</div><div class="l">深成 <span class="down">-1.02%</span></div><div class="s">科技权重拖累</div></div>
+<div class="stat"><div class="n">3393.43</div><div class="l">创业板 <span class="down">-1.32%</span></div><div class="s">成长回调</div></div>
+<div class="stat"><div class="n">1647.53</div><div class="l">科创50 <span class="down">-2.19%</span></div><div class="s">半导体/材料领跌</div></div>
+</div>
+<table>
+<tr><th>指标</th><th>数值</th><th>解读</th></tr>
+<tr><td>涨/跌家数</td><td><span class="up">3387</span> / <span class="down">2040</span>（60.0%</td><td>普涨但指数跌 = 权重科技拖累，题材活跃</td></tr>
+<tr><td>涨停/跌停</td><td><span class="up">86</span> / 0</td><td>情绪高位，无跌停</td></tr>
+<tr><td>成交额</td><td>2.03 万亿（<span class="down">-976 亿</span></td><td>缩量，存量轮动</td></tr>
+<tr><td>小绿判定</td><td><span class="up">无小绿</span></td><td>下跌家数占比 36.7% &lt; 65%</td></tr>
+<tr><td>沪深300 / 中证500 / 1000</td><td><span class="down">-0.30%</span> / <span class="down">-1.18%</span> / <span class="down">-1.02%</span></td><td>中盘弱于大盘，成长风格回调</td></tr>
+</table>
+</div>
+
+<!-- ④ 短线情绪 -->
+<div class="card">
+<h2>④ 短线情绪</h2>
+<table>
+<tr><th>指标</th><th>数值</th><th>解读</th></tr>
+<tr><td>最高标</td><td>海鸥住工 7 板 / 万向德农 6 板</td><td>实控人变更（妖+ 农业（主升双高标</td></tr>
+<tr><td>连板高度分布</td><td>7板×1 / 6板×2 / 4板×1 / 3板×5</td><td>梯队完整但中高位断层</td></tr>
+<tr><td>昨日涨停今日</td><td>农业/AI 涨停晋级率高</td><td>主线赚钱效应强</td></tr>
+<tr><td>龙虎榜</td><td>协鑫能科 / 神农种业 / 芒果超媒 净买居前</td><td>农业 + AI 内容获资金认可</td></tr>
+<tr><td>情绪定位</td><td><span class="up">强分歧后主线再升</span></td><td>科技兑现 → 农业/AI 接力</td></tr>
+</table>
+</div>
+
+<!-- ⑤ 上个交易日交易计划验证 -->
+<div class="card">
+<h2>⑤ 上个交易日（8/31交易计划验证</h2>
+
+<h3>5.1 市场大方向判定（验证 11.1</h3>
+<table>
+<tr><th>预判项</th><th>8/31 预判</th><th>9/1 实际</th><th>验证</th></tr>
+<tr><td>大盘走势</td><td>上证 3960-4020 震荡偏强</td><td>3979.89（-0.16%冲高回落</td><td><span class="up">✅ 区间命中（3980 在 3960-4020</span></td></tr>
+<tr><td>仓位</td><td>5 成仓</td><td>高低切换日，5 成合理</td><td><span class="up">✅ 合理</span></td></tr>
+<tr><td>大板块配置</td><td>超配农业/AI 应用/液冷/覆铜板</td><td>农业/AI 应用兑现；液冷/覆铜板大跌</td><td><span class="warn">⚠️ 部分命中（材料端兑现未回避</span></td></tr>
+</table>
+<p><b>打分：7/10 ⚠️</b> 大盘区间精确，但科技材料高位未提示减仓（8/31 P1 确认次日即大跌。</p>
+
+<h3>5.2 新进板块验证（增量盲区排查</h3>
+<table>
+<tr><th>叙事归属</th><th>前日催化</th><th>分析原因</th><th>验证</th></tr>
+<tr><td>科技(TMT)/电子/覆铜板、PTFE</td><td>8/31 已有高位兑现苗头（生益+5.32% 后冲高回落</td><td>8/31 判定 P1 确认看多，未识别「高位确认次日兑现」规律</td><td><span class="down">⚠️ 无催化没预判到（板块回调可解释</span></td></tr>
+<tr><td>消费/农业/种业（升级主升</td><td>万向 5 板 + 厄尔尼诺 95% 概率再通胀</td><td>8/31 看多但按「回调修复」定性，未升格为主升</td><td><span class="up">⚠️ 无催化升级（方向对但强度低估</span></td></tr>
+<tr><td>科技(TMT)/传媒/AI 内容</td><td>芒果超媒 8/31 涨停 + 短剧出海</td><td>已列入 AI 应用，未单独拆 AI 内容子叙事</td><td><span class="up">⚠️ 方向对，载体聚焦不足</span></td></tr>
+</table>
+
+<h3>5.3 昨日进攻方向验证（对照 8/31 11.3</h3>
+<table>
+<tr><th>叙事归属</th><th>涨幅判定</th><th>阶段更新</th><th>操作计划</th><th>实际走势</th><th>归因</th><th>预判分</th><th>验证分</th></tr>
+<tr><td>科技(TMT)/计算机/AI应用</td><td>数字媒体 +5.6%（前 3%</td><td>P1确认→P2预警</td><td>中文在线/芒果低吸</td><td>芒果 +20.02% 涨停，中文在线 +3.78%</td><td>AI 内容/短剧催化兑现，方向完全命中</td><td>9</td><td><span class="up">9 ✅</span></td></tr>
+<tr><td>消费/农业/种业</td><td>种植业 +7.19%（前 1%</td><td>P1确认→P2预警</td><td>万向持有不追</td><td>万向 6 板 +10.01%，新赛 4 板</td><td>厄尔尼诺再通胀主线主升，断层第一</td><td>9</td><td><span class="up">9 ✅</span></td></tr>
+<tr><td>周期(资源)/基础化工/化工涨价</td><td>化工分化（前 60%</td><td>P1确认</td><td>金牛低吸</td><td>金牛 +7.50%</td><td>涨价逻辑延续但板块内部分化</td><td>8</td><td><span class="up">7 ⚠️</span></td></tr>
+<tr><td>科技(TMT)/电子/覆铜板</td><td>覆铜板 -5.19%（后 10%</td><td>P1确认→中断</td><td>生益回踩持有</td><td>生益 -5.85% 破位</td><td>高位确认次日兑现，未识别兑现信号</td><td>8</td><td><span class="down">3 ❌</span></td></tr>
+<tr><td>科技(TMT)/电子/散热(液冷)</td><td>液冷 -3.39%（后 30%</td><td>P1确认→中断</td><td>英维克回踩持有</td><td>英维克 -3.39% 回调</td><td>科技硬件整体退潮拖累</td><td>8</td><td><span class="down">4 ❌</span></td></tr>
+<tr><td>周期(资源)/基础化工/氟化工PTFE</td><td>PTFE 大跌（后 15%</td><td>P1确认→中断</td><td>沃特守住</td><td>昊华 -7.83%，沃特 -3.44%</td><td>龙头崩盘，材料链集体兑现</td><td>7</td><td><span class="down">3 ❌</span></td></tr>
+<tr><td>科技(TMT)/电子/存储</td><td>长鑫存储 -4.01%（后 10%</td><td>P2预警→中断</td><td>德明利守 +0%</td><td>德明利 -4.23% 破位</td><td>存储 P2 未推进，随科技回调</td><td>6</td><td><span class="down">3 ❌</span></td></tr>
+<tr><td>金融/房地产/房地产服务</td><td>房地产服务 +2%（前 25%</td><td>P1确认</td><td>我爱我家持有</td><td>我爱我家 3 板 +10%</td><td>地产新政延续，低位补涨</td><td>7</td><td><span class="up">8 ✅</span></td></tr>
+<tr><td>科技(TMT)/电子/AI手机</td><td>消费电子 -2.07%（后 20%</td><td>P1预警→中断</td><td>精研回踩 -5% 低吸</td><td>精研 -6.77% 破位</td><td>AI 手机证伪，科技整体弱</td><td>6</td><td><span class="down">2 ❌</span></td></tr>
+<tr><td>金融/券商</td><td>券商 +0.61%（前 40%</td><td>P1预警第6天</td><td>中信观望</td><td>中信 +0.79% 滞涨</td><td>成交缩量券商难发动</td><td>5</td><td><span class="down">5 ❌</span></td></tr>
+<tr><td>周期(资源)/有色金属/黄金</td><td>贵金属 -1.34%（后 15%</td><td>中断</td><td>回避</td><td>金价 -1.74% 调整</td><td>回避正确</td><td>—</td><td><span class="up">8 ✅（规避命中</span></td></tr>
+</table>
+<p><b>小结</b>：11 方向 ✅5 / ⚠️3 / ❌3。核心教训：<b>科技材料 P1 确认次日 = 兑现卖点</b>（覆铜板/PTFE/液冷/存储/AI手机 5 个科技方向 4 个 ❌，农业/AI 内容/地产服务 3 个正确。</p>
+
+<h3>5.4 个股作战计划验证（对照 8/31 11.5</h3>
+<table>
+<tr><th>股票</th><th>叙事归属</th><th>涨幅排名</th><th>涨幅预判</th><th>阶段更新</th><th>操作计划</th><th>实际走势</th><th>归因</th><th>预判分</th><th>验证分</th></tr>
+<tr><td>中文在线(300364)</td><td>科技(TMT)/计算机/AI应用</td><td>+3.78%（前 20%</td><td>高开≤+5% 低吸</td><td>P1确认→P2预警</td><td>低吸</td><td>+3.78%</td><td>AI 应用温和上涨，未爆发</td><td>8</td><td><span class="up">8 ✅</span></td></tr>
+<tr><td>芒果超媒(300413)</td><td>科技(TMT)/传媒/AI内容</td><td>+20.02%（前 1%</td><td>回踩-3% 低吸</td><td>P1确认→P2预警</td><td>低吸</td><td>+20.02% 涨停</td><td>AI 内容龙头全面爆发</td><td>8</td><td><span class="up">10 ✅</span></td></tr>
+<tr><td>康盛股份(002418)</td><td>科技(TMT)/电子/散热</td><td>+5.38%（前 15%</td><td>回踩-5% 低吸</td><td>液冷回调</td><td>低吸</td><td>+5.38%</td><td>液冷补涨逆势</td><td>7</td><td><span class="up">7 ⚠️</span></td></tr>
+<tr><td>金牛化工(600722)</td><td>周期(资源)/基础化工/化工涨价</td><td>+7.50%（前 10%</td><td>回踩-5% 低吸</td><td>P1确认</td><td>低吸</td><td>+7.50%</td><td>化工涨价延续</td><td>7</td><td><span class="up">8 ✅</span></td></tr>
+<tr><td>新赛股份(600540)</td><td>消费/农业/种业</td><td>+10.07%（前 3%</td><td>回踩-4% 低吸</td><td>P1确认→P2预警</td><td>低吸</td><td>+10.07% 4 板</td><td>农业补涨龙头</td><td>6</td><td><span class="up">9 ✅</span></td></tr>
+<tr><td>精研科技(300709)</td><td>科技(TMT)/电子/AI手机</td><td>-6.77%（后 5%</td><td>回踩-4% 低吸</td><td>P1预警→中断</td><td>低吸</td><td>-6.77%</td><td>AI 手机证伪，板块大跌</td><td>6</td><td><span class="down">2 ❌</span></td></tr>
+<tr><td>生益科技(600183)</td><td>科技(TMT)/电子/覆铜板</td><td>-5.85%（后 8%</td><td>回踩-4% 持有</td><td>P1确认→中断</td><td>持有</td><td>-5.85% 破位</td><td>覆铜板兑现</td><td>9</td><td><span class="down">3 ❌</span></td></tr>
+<tr><td>英维克(002837)</td><td>科技(TMT)/电子/散热</td><td>-3.39%（后 30%</td><td>回踩-4% 持有</td><td>P1确认→中断</td><td>持有</td><td>-3.39%</td><td>液冷随科技回调</td><td>9</td><td><span class="down">4 ❌</span></td></tr>
+<tr><td>万向德农(600371)</td><td>消费/农业/种业</td><td>+10.01%（前 3%</td><td>一字持有</td><td>P1确认→P2预警</td><td>持有</td><td>+10.01% 6 板</td><td>农业龙头主升</td><td>8</td><td><span class="up">10 ✅</span></td></tr>
+<tr><td>德明利(001309)</td><td>科技(TMT)/电子/存储</td><td>-4.23%（后 10%</td><td>守 +0% 持有</td><td>P2预警→中断</td><td>持有</td><td>-4.23% 破位</td><td>存储 P2 未推进</td><td>5</td><td><span class="down">3 ❌</span></td></tr>
+<tr><td>中信证券(600030)</td><td>金融/券商</td><td>+0.79%（前 40%</td><td>站 +0% 加仓</td><td>P1预警第6天</td><td>观望</td><td>+0.79%</td><td>滞涨，成交未回 2 万亿</td><td>5</td><td><span class="down">5 ❌</span></td></tr>
+</table>
+<p><b>小结</b>：个股 11 只 ✅5 / ⚠️3 / ❌3（生益/英维克/德明利 3 只高位持有标的全军覆没 = 科技材料兑现教训。锐度命中 6/11（55%，回撤控制 3/11（27%。</p>
+
+<h3>5.5 反思总结</h3>
+<ul>
+<li><b>（1）量化总结</b>：方向 ✅5/⚠️3/❌3；个股 ✅5/⚠️3/❌3。预判分 vs 验证分偏差：生益 9→3（-6、英维克 9→4（-5、德明利 5→3（-2、精研 6→2（-4= 科技材料方向系统性高估；新赛 6→9（+3、万向 8→10（+2、芒果 8→10（+2= 农业/AI 低估。</li>
+<li><b>（2）判断错误归因</b>：①覆铜板/PTFE/液冷/存储/AI手机 5 个科技方向 4 个 ❌ = <b>「P1 确认次日高位 = 兑现卖点」规律未内化</b>（8/27 英伟达财报兑现后 8/28 科技跌、8/31 财报发酵后 9/1 材料跌，两次同构；②科技材料持仓（生益/英维克/德明利全破位 = 该在 8/31 高位减半而非持有；③AI 应用内部分化（内容强/软件弱已 8/31 教训，本次聚焦内容正确。</li>
+<li><b>（3）学习总结</b>：COG-032 候选 = <b>「科技硬件主线 P1 确认第 2 天若龙头冲高回落/板块放量滞涨 = 兑现卖点，持仓减半」</b>；COG-033 = <b>「农业再通胀 + AI 内容 = 双主线可并行，科技兑现资金流入低位题材」</b>。</li>
+<li><b>（4）改进动作</b>：①下次 P1 确认次日对高位持仓统一设置「冲高回落 + 板块放量滞涨 = 减半」机械规则；②农业/AI 内容升格为重点主线（重点池已替换；③科技材料方向 9/2 观察超跌反抽但不再加仓。</li>
+<li><b>（5）上期核查</b>：8/31 改进动作「AI 应用聚焦内容/语料」已执行（中文在线/芒果/掌阅且命中；「黄金回避」执行正确。</li>
+</ul>
+</div>
+
+<!-- ⑥ 全球股市扫描 -->
+<div class="card">
+<h2>⑥ 全球股市扫描（科技</h2>
+<table>
+<tr><th>市场</th><th>指数/标的</th><th>涨跌幅</th><th>科技链表现与逻辑</th></tr>
+<tr><td>美股（9/1 盘前收盘</td><td>纳指 / 标普 / 道指 / 费半ETF</td><td><span class="down">-0.12%</span> / <span class="down">-0.33%</span> / <span class="down">-0.70%</span> / <span class="up">+0.48%</span></td><td>费半逆势微涨，AI 硬件情绪未崩，但大盘走弱</td></tr>
+<tr><td>大宗</td><td>布油 / 黄金 / 伦铜</td><td><span class="up">+0.69%</span> / <span class="up">+0.14%</span> / <span class="up">+0.98%</span></td><td>铜价高位（14434 美元支撑有色；金价 4488 调整企稳</td></tr>
+<tr><td>外汇</td><td>美元指数</td><td>99.47（+0.06%</td><td>美元企稳，人民币 6.72 平稳</td></tr>
+<tr><td>A股映射</td><td>费半 +0.48% vs A股半导体 -2.75%</td><td>—</td><td>外盘未崩但 A 股科技兑现 = 内因驱动（高位获利了结，非外盘传导</td></tr>
+</table>
+<p class="warn"><b>映射结论</b>：隔夜美股温和（费半微涨，A 股科技大跌 = 内部高位兑现，9/2 若费半延续强势或触发科技超跌反抽，但趋势仍弱。</p>
+</div>
+
+<!-- ⑦ 当日大盘扫描 -->
+<div class="card">
+<h2>⑦ 当日大盘扫描（自上而下</h2>
+<h3>7.1 主线分析（大盘→板块→资金</h3>
+<table>
+<tr><th>方向</th><th>板块</th><th>涨幅</th><th>主力净流入</th><th>排名</th></tr>
+<tr><td rowspan="3"><span class="up">领涨</span></td><td>种植业（农业</td><td class="up">+7.19%</td><td>+1.77 亿</td><td>前 1%</td></tr>
+<tr><td>数字媒体（AI内容</td><td class="up">+5.60%</td><td>+0.54 亿</td><td>前 2%</td></tr>
+<tr><td>一般零售（免税/消费</td><td class="up">+3.87%</td><td>+1.50 亿</td><td>前 5%</td></tr>
+<tr><td rowspan="3"><span class="down">领跌</span></td><td>元件（电子材料</td><td class="down">-4.74%</td><td>-7.09 亿</td><td>后 1%</td></tr>
+<tr><td>电子化学品</td><td class="down">-4.66%</td><td>-1.04 亿</td><td>后 2%</td></tr>
+<tr><td>半导体</td><td class="down">-2.75%</td><td>-11.99 亿</td><td>后 10%</td></tr>
+</table>
+<p><b>资金动向</b>：主力从科技硬件（半导体 -12 亿 / 元件 -7.1 亿 / 通信 -1.6 亿流出，流入农业（种植业 +1.8 亿+ 保险（+1.2 亿+ 券商（+1.2 亿+ 地产链。缩量下高低切换明确。</p>
+
+<h3>7.2 驱动因素（板块涨跌归因</h3>
+<ul>
+<li><span class="up">农业链 +7.19%</span>：厄尔尼诺 95% 概率再通胀 + 150 年最强高温 + 黑海粮食断供 → 转基因/种业/粮食全线，万向 6 板 + 神农 20cm + 敦煌/金健涨停。</li>
+<li><span class="up">数字媒体 +5.6%</span>：首部上星 AI 长剧《后西游记》开播（芒果+ AI 短剧出海 + 美股 SaaS 映射 → 芒果 20cm + 欢瑞/中广天择 5 板 + 掌阅涨停。</li>
+<li><span class="down">元件 -4.74% / 电子化学品 -4.66% / 覆铜板 -5.19%</span>：8/31 材料链 P1 确认后集体兑现（生益 -5.85% / 金安 -3.75% / 科翔 -3.95%，高位获利了结 + 涨价函兑现。</li>
+<li><span class="down">PTFE -7.83%（昊华</span>：Rubin 方案四季度才定，预期提前兑现后龙头崩盘。</li>
+<li><span class="down">存储 -4%</span>：长鑫存储 -4.01%，德明利 -4.23%，P2 未推进。</li>
+</ul>
+
+<h3>7.3 核心龙头</h3>
+<table>
+<tr><th>板块</th><th>核心龙头</th><th>当日表现</th><th>核心逻辑</th><th>评级</th></tr>
+<tr><td>农业/种业</td><td>万向德农(600371)</td><td class="up">6 板 +10.01%</td><td>厄尔尼诺再通胀主线龙头</td><td><span class="pos-leader">A 主升</span></td></tr>
+<tr><td>农业/转基因</td><td>神农种业(300189)</td><td class="up">20cm 涨停</td><td>转基因弹性龙头</td><td><span class="pos-leader">A 主升</span></td></tr>
+<tr><td>AI 内容/短剧</td><td>芒果超媒(300413)</td><td class="up">20cm 涨停</td><td>AI 长剧 + 短剧出海龙头</td><td><span class="pos-leader">A 主升</span></td></tr>
+<tr><td>化工涨价</td><td>金牛化工(600722)</td><td class="up">+7.50%</td><td>煤化工涨价</td><td><span class="pos-main">B 中军</span></td></tr>
+<tr><td>地产服务</td><td>我爱我家(000560)</td><td class="up">3 板 +10%</td><td>地产新政</td><td><span class="pos-main">B 中军</span></td></tr>
+</table>
+</div>
+
+<!-- ⑧ 异常启动股票扫描 -->
+<div class="card">
+<h2>⑧ 异常启动股票扫描（自下而上</h2>
+
+<h3>8.1 连板股（LimitUpDays≥2，机器名单 9 只）</h3>
+<table>
+<tr><th>股票(代码+名称)</th><th>连板</th><th>叙事归属</th><th>涨停原因</th><th>地位判定</th></tr><tr><td>海鸥住工(002084)</td><td><span class="up">7 天 7 板</span></td><td>轻工制造/家居/实控人变更</td><td>博泰车联拟 8 亿元受让 1.29 亿股（每股 6.19 元，较现价溢价 72%，控制权变更落地；半年报营收 12.16 亿（-11.09%、净亏 3996 万，纯资金博弈妖股</td><td><span class="pos-leader">龙头</span></td></tr>
+<tr><td>万向德农(600371)</td><td><span class="up">6 天 6 板</span></td><td>消费/农业/种业</td><td>厄尔尼诺 150 年最强再通胀主线；累计涨幅 61%、龙虎榜营业部净买 5288 万，主力特大单净流入 1256 万，种业主升龙头</td><td><span class="pos-leader">龙头</span></td></tr>
+<tr><td>捷荣技术(002855)</td><td><span class="up">6 天 6 板</span></td><td>科技(TMT)/电子/消费电子</td><td>公司公告澄清「AI液冷/折叠屏」相关业务收入占比<1%，但华为链+精密结构件题材延续，妖股惯性</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>新赛股份(600540)</td><td><span class="up">4 天 4 板</span></td><td>消费/农业/棉花</td><td>中报净利润同比+18 倍、扣非扭亏为盈；皮棉主业高增+新疆振兴+游资介入，棉花补涨龙头</td><td><span class="pos-lag">补涨</span></td></tr>
+<tr><td>我爱我家(000560)</td><td><span class="up">3 天 3 板</span></td><td>金融/房地产/地产服务</td><td>西安发布地产新政（卖旧买新+公积金支持；中报净利 8079 万（-16.9%，低位补涨</td><td><span class="pos-leader">龙头</span></td></tr>
+<tr><td>国芳集团(601086)</td><td><span class="up">3 天 3 板</span></td><td>消费/零售/一般零售</td><td>IP经济(谷子经济)+参股国泰君安+2026中报预增；兰州连锁零售龙头，免税+西部消费补涨</td><td><span class="pos-lag">补涨</span></td></tr>
+<tr><td>福建金森(002679)</td><td><span class="up">3 天 3 板</span></td><td>消费/农业/林业</td><td>中报亏损收窄 30%+政府补助+90%；林业碳汇（全国唯一林业背景国有碳汇公司，农业共振补涨</td><td><span class="pos-lag">补涨</span></td></tr>
+<tr><td>时代出版(600551)</td><td><span class="up">3 天 3 板</span></td><td>科技(TMT)/传媒/出版</td><td>中报扣非净利+34%、毛利率全面提升+中期分红；AI出版+素质教育题材，出版价值重估</td><td><span class="pos-lag">补涨</span></td></tr>
+<tr><td>竞业达(003005)</td><td><span class="up">3 天 3 板</span></td><td>科技(TMT)/计算机/AI应用</td><td>教育/招考大模型备案完成、多款 AI 产品落地+在手订单增长；地方教育十五五规划 AI 赋能</td><td><span class="pos-follow">跟风</span></td></tr></table>
+
+<h3>8.2 涨停股（LimitUpDays=1 首板·全量 74 只 5 列展开）</h3>
+<table>
+<tr><th>股票</th><th>涨幅</th><th>叙事归属</th><th>涨停原因</th><th>地位判定</th></tr>
+<tr><td>芒果超媒(300413)</td><td class="up">+20.02%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-文化传媒-数字媒体+短剧游戏+文化传媒概念+IP经济(谷子经济)；今日早盘，短剧概念震荡走强，芒果超媒、中广天择、欢瑞世纪涨停，德才股份触及涨停，掌阅科技、中文在线、流金科技等跟涨。消息面上，8月31日，《后西游记》正式定档。 作为国内首部上星播出的AI长剧，该剧由Seedance 2.0、Seedanc</td><td>龙头</td></tr>
+<tr><td>遥望科技(002291)</td><td class="up">+10.07%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-文化传媒-广告营销+短剧游戏+NFT概念+文化传媒概念；与板块共振</td><td>中军</td></tr>
+<tr><td>掌阅科技(603533)</td><td class="up">+10.00%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-文化传媒-数字媒体+AI视频+AI语料+短剧游戏；与板块共振</td><td>中军</td></tr>
+<tr><td>欢瑞世纪(000892)</td><td class="up">+10.00%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-影视院线-影视院线Ⅲ+短剧游戏+文化传媒概念+IP经济(谷子经济)；每经AI快讯，8月31日，影视院线板块短线拉升，欢瑞世纪涨停，华智数媒、北京文化、捷成股份、博纳影业、华策影视等跟涨。相关ETF方面，影视ETF国泰；涨0.98%，成交额42.46万元</td><td>补涨</td></tr>
+<tr><td>中广天择(603721)</td><td class="up">+10.00%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-影视院线-影视院线Ⅲ+快手概念+AI视频+小红书概念；2026年1月9日互动易：公司与火山引擎在AI漫剧应用工具的探索上有合作。 展开。14数据要素。我爱我家。竞业达。华是科技。2024年12月24日微信公众号发布，中广天择中标华为AI大模型数据采购。 自今年2月正式开展服务大模型厂商的音视频</td><td>补涨</td></tr>
+<tr><td>粤传媒(002181)</td><td class="up">+9.99%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-文化传媒-出版+短剧游戏+足球概念+虚拟数字人；与板块共振</td><td>补涨</td></tr>
+<tr><td>常山北明(000158)</td><td class="up">+9.98%</td><td>科技(TMT)/传媒/AI内容</td><td>计算机-IT服务-IT服务Ⅲ+华为盘古+云计算+智慧政务；与板块共振</td><td>跟风</td></tr>
+<tr><td>博纳影业(001330)</td><td class="up">+9.98%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-影视院线-影视院线Ⅲ+短剧游戏+文化传媒概念+AI视频；8月31日午间，A股半日下来共有60只涨停股、10只跌停股。影视院线板块活跃，上海电影、博纳影业等涨停；短剧概念走强，芒果超媒、掌阅科技等涨停。 连板股方面，海鸥住工6连板，捷荣技术、万向德农5连板，康盛股份5天4板，我爱我家5天3板，赤天</td><td>跟风</td></tr>
+<tr><td>大晟文化(600892)</td><td class="up">+9.95%</td><td>科技(TMT)/传媒/AI内容</td><td>传媒-游戏-游戏Ⅲ+短剧游戏+文化传媒概念+抖音概念(字节概念)；与板块共振</td><td>跟风</td></tr>
+<tr><td>神农种业(300189)</td><td class="up">+20.03%</td><td>消费/农业/种业</td><td>农林牧渔-种植业与林业-种子生产+转基因+玉米+粮食概念；[进门·纪要] 国泰海通农业｜中报点睛之种植板块:厄尔尼诺，催化景气 | ### 1.种植板块核心逻辑：厄尔尼诺强度创历史级，农产品涨价景气周期确立 - **厄尔尼诺强度与持续性**   - **强度定位**：本轮厄尔尼诺从海水温度监测来看</td><td>龙头</td></tr>
+<tr><td>隆平高科(000998)</td><td class="up">+10.04%</td><td>消费/农业/种业</td><td>农林牧渔-种植业与林业-种子生产+玉米+转基因+粮食概念；国内种业龙头,全球种业排名第十,主要产品为杂交水稻种子、杂交玉米种子、杂交辣椒种子、蔬菜瓜果种子等等,其中杂交水稻的市占率达到30%;17年10月,隆平高科携手中信农业基金宣布完成收购陶氏益农巴西玉米种子业务; 17年相关业务收入27.9亿</td><td>中军</td></tr>
+<tr><td>农发种业(600313)</td><td class="up">+10.03%</td><td>消费/农业/种业</td><td>农林牧渔-种植业与林业-种子生产+转基因+玉米+粮食概念；2025年4月19日公告：公司积极响应国家“一带一路”倡议，始终秉持开放合作与互利共赢的理念，积极参与国际合作与技术援助，推动农业领域的技术交流与发展，加快种业“走出去”和“引进来”。 中农发种业集团股份有限公司的主营业务是农作物种子的研发</td><td>中军</td></tr>
+<tr><td>敦煌种业(600354)</td><td class="up">+10.01%</td><td>消费/农业/种业</td><td>农林牧渔-种植业与林业-种子生产+转基因+粮食概念+玉米；8月28日，敦煌种业（600354.SH）股价高开高走，盘中触及涨停。8月27日晚间，敦煌种业披露2026年半年度报告。 报告显示，公司上半年实现营业收入8.68亿元，同比增长20.93%，归属于上市公司股东的净利润达1.45亿元，同比大幅</td><td>补涨</td></tr>
+<tr><td>登海种业(002041)</td><td class="up">+10.00%</td><td>消费/农业/种业</td><td>农林牧渔-种植业与林业-种子生产+转基因+玉米+粮食概念；5生态农业。敦煌种业。先达股份。登海种业。公司在国内玉米种子生产规模中处领先水平，到内蒙等三大基地改建完成，公司制种规模可以达到5800万公斤，募资项目完成后，公司的制种规模有望攀上全国第一的高位。 国内杂交玉米种子龙头,主力产品为登海60</td><td>补涨</td></tr>
+<tr><td>金健米业(600127)</td><td class="up">+9.97%</td><td>消费/农业/种业</td><td>农林牧渔-农产品加工-粮油加工+玉米+粮食概念+乳业；与板块共振</td><td>补涨</td></tr>
+<tr><td>供销大集(000564)</td><td class="up">+9.93%</td><td>消费/农业/种业</td><td>商贸零售-零售-百货零售+供销社+农村电商+物业管理；[进门·纪要] 东吴食饮 | 周黑鸭半年度业绩及后续展望交流 | ### 1.业绩综述与全年指引 - **2026H1业绩概览**   - **营业收入**：**14.6亿元**，同比增长约**20%**。   - **毛利额**：**8亿</td><td>跟风</td></tr>
+<tr><td>茂业商业(600828)</td><td class="up">+10.08%</td><td>商贸零售-零售-百货零售（行业归属）</td><td>商贸零售-零售-百货零售+信托概念+物业管理+西部大开发；与板块共振</td><td>龙头</td></tr>
+<tr><td>新华百货(600785)</td><td class="up">+9.99%</td><td>商贸零售-零售-百货零售（行业归属）</td><td>商贸零售-零售-百货零售+IP经济(谷子经济)+粮食概念+统一大市场；上证报中国证券网讯 8月28日，零售板块午后震荡走高，新华百货一度触及涨停。截至13时51分，新华百货涨近9%，百大集团、上海九百、广百股份等跟涨。国芳集团、我爱我家、莱绅通灵此前涨停。数据</td><td>中军</td></tr>
+<tr><td>东百集团(600693)</td><td class="up">+9.99%</td><td>商贸零售-零售-百货零售（行业归属）</td><td>商贸零售-零售-百货零售+免税店+IP经济(谷子经济)+旅游概念；与板块共振</td><td>中军</td></tr>
+<tr><td>国光连锁(605188)</td><td class="up">+9.99%</td><td>商贸零售-零售-百货零售（行业归属）</td><td>商贸零售-零售-百货零售+预制菜+冷链物流+智能物流；国光连锁公司主要从事连锁超市和百货商场的运营业务，立足于江西省内市场。公司以生鲜和食品为核心品类，通过多年来的本地市场深耕和门店升级转型，已发展成为江西本土领先的连锁经营企业。 公司持续优化商品结构，深化与供应商的合作关系，并通过合理的商业</td><td>补涨</td></tr>
+<tr><td>吉华集团(603980)</td><td class="up">+10.00%</td><td>周期(资源)/基础化工</td><td>基础化工-化学制品-纺织化学用品+染料+有机硅概念+家用电器；锦鸡股份，吉华集团﹌?详细分 数据齐全，我来整理对比分析。锦鸡股份，吉华集团﹌?详细分 数据齐全，我来整理对比分析。 先说结论：从"未来一年的爆发力 + 弹性 + 行业反转确定性"三个维度综合看，吉华集团；胜在"反转确定性高、弹性已兑现一半</td><td>龙头</td></tr>
+<tr><td>双象股份(002395)</td><td class="up">+9.97%</td><td>周期(资源)/基础化工</td><td>基础化工-塑料制品-合成树脂+足球概念+体育产业+丙烯酸；与板块共振</td><td>中军</td></tr>
+<tr><td>金正大(002470)</td><td class="up">+9.95%</td><td>周期(资源)/基础化工</td><td>基础化工-农化制品-复合肥+化肥+生态农业+农村电商；与板块共振</td><td>中军</td></tr>
+<tr><td>千金药业(600479)</td><td class="up">+10.04%</td><td>医药生物-中药-中药Ⅲ（行业归属）</td><td>医药生物-中药-中药Ⅲ+农业种植+医药电商+流感；8月28日，千金药业；9:33左右获资金抢筹，用时仅2分钟即封板涨停。截至午间收盘，千金药业涨9.98%报13.33元/股，收获“3连板”，最新市值达66亿元。 wind显示，千金药业近5日累计涨幅达36.58%。8月27日晚间，千金药业发</td><td>龙头</td></tr>
+<tr><td>沃华医药(002107)</td><td class="up">+10.00%</td><td>医药生物-中药-中药Ⅲ（行业归属）</td><td>医药生物-中药-中药Ⅲ+医药电商+流感+阿尔茨海默概念；A股中药板块盘中拉升，精华制药、沃华医药、千金药业涨停，粤万年青涨超10%，康缘药业、神奇制药、佛慈制药、益盛药业等跟涨</td><td>中军</td></tr>
+<tr><td>精华制药(002349)</td><td class="up">+10.00%</td><td>医药生物-中药-中药Ⅲ（行业归属）</td><td>医药生物-中药-中药Ⅲ+医药电商+仿制药一致性评价+肝炎概念；上证报中国证券网讯 8月28日，中药板块盘中拉升，截至10时25分，精华制药涨停，此前沃华医药、千金药业涨停，粤万年青涨超10%，康缘药业、神奇制药等跟涨</td><td>中军</td></tr>
+<tr><td>香溢融通(600830)</td><td class="up">+10.01%</td><td>非银金融-多元金融-多元金融Ⅲ（行业归属）</td><td>非银金融-多元金融-多元金融Ⅲ+化债概念(AMC概念)+国企改革+共同富裕示范区；与板块共振</td><td>龙头</td></tr>
+<tr><td>翠微股份(603123)</td><td class="up">+10.01%</td><td>非银金融-多元金融-多元金融Ⅲ（行业归属）</td><td>非银金融-多元金融-多元金融Ⅲ+跨境支付(CIPS)+移动支付+数字货币；与板块共振</td><td>中军</td></tr>
+<tr><td>新力金融(600318)</td><td class="up">+9.99%</td><td>非银金融-多元金融-多元金融Ⅲ（行业归属）</td><td>非银金融-多元金融-多元金融Ⅲ+化债概念(AMC概念)+供销社+乡村振兴；与板块共振</td><td>中军</td></tr>
+<tr><td>深粮控股(000019)</td><td class="up">+10.00%</td><td>农林牧渔-农产品加工-粮油加工（行业归属）</td><td>农林牧渔-农产品加工-粮油加工+粮食概念+预制菜+冷链物流；与板块共振</td><td>龙头</td></tr>
+<tr><td>京粮控股(000505)</td><td class="up">+9.94%</td><td>农林牧渔-农产品加工-粮油加工（行业归属）</td><td>农林牧渔-农产品加工-粮油加工+转基因+粮食概念+海南自贸区；与板块共振</td><td>中军</td></tr>
+<tr><td>瑞康医药(002589)</td><td class="up">+10.06%</td><td>医药生物-医药商业-医药流通（行业归属）</td><td>医药生物-医药商业-医药流通+创新药+医药电商+智能医疗；2、瑞康医药2014年2月19日在深交所互动易平台表示，公司目前已建有药品电子商务平台，可以通过互联网完成从药品信息发布到在线交易、在线支付的全过程，公司是医药批发企业， 按照药品管理法的要求公司的服务客户为医疗机构即B2B。3、公司官网：</td><td>龙头</td></tr>
+<tr><td>开开实业(600272)</td><td class="up">+10.02%</td><td>医药生物-医药商业-医药流通（行业归属）</td><td>医药生物-医药商业-医药流通+民营医院+医药电商+参股银行；与板块共振</td><td>中军</td></tr>
+<tr><td>埃泰克(603293)</td><td class="up">+10.01%</td><td>汽车-汽车零部件-汽车电子电气系统（行业归属）</td><td>汽车-汽车零部件-汽车电子电气系统+汽车热管理+小米汽车+新能源汽车；与板块共振</td><td>龙头</td></tr>
+<tr><td>大明电子(603376)</td><td class="up">+10.00%</td><td>汽车-汽车零部件-汽车电子电气系统（行业归属）</td><td>汽车-汽车零部件-汽车电子电气系统+共同富裕示范区+长安汽车概念+无人驾驶；1、市场因素：国内汽车市场的持续发展空间。公司生产的汽车车身电子电器控制总成主要应用于新车配套，由于公司产品高度覆盖国内主流整车厂商与热门车型，故国内汽车整车产销量的增长潜力对公司未来发展具有重大影响， 整车销售市场的变化情况是驱动公司业绩</td><td>中军</td></tr>
+<tr><td>鸿合科技(002955)</td><td class="up">+10.01%</td><td>电子-光学光电子-面板（行业归属）</td><td>电子-光学光电子-面板+托育服务+体育产业+云办公；与板块共振</td><td>龙头</td></tr>
+<tr><td>华映科技(000536)</td><td class="up">+10.00%</td><td>电子-光学光电子-面板（行业归属）</td><td>电子-光学光电子-面板+新能源汽车+福建自贸区+华为概念；与板块共振</td><td>中军</td></tr>
+<tr><td>佳禾食品(605300)</td><td class="up">+10.05%</td><td>食品饮料-饮料制造-乳品（行业归属）</td><td>食品饮料-饮料制造-乳品+预制菜+代糖概念+跨境电商；个股原因：2026年7月31日佳禾食品在代糖概念行情下录得3.17%涨幅，2026年7月28日同样录得3.17%涨幅，反映市场对其代糖布局认可； 佳禾食品拥有有效专利92项（其中发明专利17项、实用新型专利50项、PCT国际专利7项、外观专</td><td>龙头</td></tr>
+<tr><td>一鸣食品(605179)</td><td class="up">+9.99%</td><td>食品饮料-饮料制造-乳品（行业归属）</td><td>食品饮料-饮料制造-乳品+乳业+三胎概念+冷链物流；与板块共振</td><td>中军</td></tr>
+<tr><td>楚天龙(003040)</td><td class="up">+10.00%</td><td>金融/金融科技/跨境支付</td><td>通信-通信设备-通信终端及配件+数字货币+移动支付+跨境支付(CIPS)；在“AI+智能硬件”领域，公司与业内优秀合作伙伴通力合作，持续推动 AI+技术融合，推动智能硬件产业升级和政企数字化转型，公司自主研发的楚天龙咨询导办机器人产品， 依托 AI虚拟数字人、融合大模型、边缘AI、RPA机器人流程自动化等创新技术</td><td>龙头</td></tr>
+<tr><td>青山纸业(600103)</td><td class="up">+9.97%</td><td>科技(TMT)/电子/光学光电子/光芯片</td><td>轻工制造-造纸-造纸Ⅲ+数据中心(AIDC)+海峡两岸+碳中和；交易所数据显示，8月28日，青山纸业以；开盘，并持续封于涨停状态。截至上午10时01分，该股成交2.50亿元，涨停封单达3.58亿元，盘中买盘踊跃，封单坚决。 值得注意的是，从近期的市场走势来看，青山纸业自8月25日起连续涨停，截至今日已收</td><td>龙头</td></tr>
+<tr><td>普路通(002769)</td><td class="up">+10.01%</td><td>交通运输-物流-物流Ⅲ（行业归属）</td><td>交通运输-物流-物流Ⅲ+跨境电商+一带一路+碳交易；| 物流供应链服务业库存量(元) | -- | -- | -- | -- | 9827.86万 |。该股暂无相关数据。主营构成分析。营业收入。营业成本。利润比例。报告期。； ； 华东地区 +。华中地区 +。境外 +。其他业务总计</td><td>龙头</td></tr>
+<tr><td>龙版传媒(605577)</td><td class="up">+9.98%</td><td>传媒-文化传媒-出版（行业归属）</td><td>传媒-文化传媒-出版+IP经济(谷子经济)+黑龙江自贸区+文化传媒概念；与板块共振</td><td>龙头</td></tr>
+<tr><td>凯撒文化(002425)</td><td class="up">+10.09%</td><td>传媒-游戏-游戏Ⅲ（行业归属）</td><td>传媒-游戏-游戏Ⅲ+手机游戏+网络游戏+NFT概念；与板块共振</td><td>龙头</td></tr>
+<tr><td>协鑫能科(002015)</td><td class="up">+9.97%</td><td>公用事业-电力-新能源发电（行业归属）</td><td>公用事业-电力-新能源发电+抽水蓄能+虚拟电厂+华为数字能源；协鑫能科 8 月 24 日一字板封涨停，收盘报 15.57 元 / 股，市值升至 253 亿元。 触发这波行情的是两天前的一份框架协议—— 8 月 22 日，协鑫能科与火山引擎、中国电信等企业签署乌兰察布绿色算电协同项目合作框架协议，围绕 </td><td>龙头</td></tr>
+<tr><td>百洋股份(002696)</td><td class="up">+9.97%</td><td>农林牧渔-农产品加工-水产饲料（行业归属）</td><td>农林牧渔-农产品加工-水产饲料+预制菜+污水处理+垃圾分类；战略基调上，公司仍维持"水产品加工、饲料及饲料原料为业务双核心，依托远洋渔业协同发展"的框架，但实际经营重心已明显向以内销为主的饲料、饲料原料及生猪养殖方向倾斜。 4. 风险对冲工具的引入2026年上半年公司新增商品期货套期保值业务（生猪期</td><td>龙头</td></tr>
+<tr><td>国投丰乐(000713)</td><td class="up">+10.02%</td><td>农林牧渔-种植业与林业-种子生产（行业归属）</td><td>农林牧渔-种植业与林业-种子生产+玉米+粮食概念+转基因；[进门·纪要] 长江公用 | 国投电力2026年中报业绩交流会 | ### 1. 2026年上半年业绩概览：营收利润承压，来水偏枯+煤价上行为主因 - **装机结构**：截至2026年6月底，公司投产装机**4766万千瓦**。其中水电**</td><td>龙头</td></tr>
+<tr><td>小方制药(603207)</td><td class="up">+10.00%</td><td>医药生物-化学制药-化学制剂（行业归属）</td><td>医药生物-化学制药-化学制剂+仿制药一致性评价+医药电商+毛发医疗；与板块共振</td><td>龙头</td></tr>
+<tr><td>透景生命(300642)</td><td class="up">+19.99%</td><td>医药生物-医疗器械-体外诊断（行业归属）</td><td>医药生物-医疗器械-体外诊断+肝炎概念+流感+辅助生殖；2025年2月17日官微:作为国内IVD领域AI应用的先行者，透景生命自2024年3月率先发布"超级产品经理"以来，持续深耕人工智能领域。 千金药业。洁特生物。透景生命。基于流式荧光技术、化学发光技术平台，公司开发多项生殖健康检测产品，包括</td><td>龙头</td></tr>
+<tr><td>澳洋健康(002172)</td><td class="up">+9.98%</td><td>医药生物-医疗服务-医院（行业归属）</td><td>医药生物-医疗服务-医院+高压氧舱+民营医院+毛发医疗；与板块共振</td><td>龙头</td></tr>
+<tr><td>内蒙一机(600967)</td><td class="up">+10.02%</td><td>国防军工-军工装备-地面兵装（行业归属）</td><td>国防军工-军工装备-地面兵装+中俄贸易概念+军民融合+央企国企改革；与板块共振</td><td>龙头</td></tr>
+<tr><td>集泰股份(002909)</td><td class="up">+9.97%</td><td>基础化工-化学制品-有机硅（行业归属）</td><td>基础化工-化学制品-有机硅+装配式建筑+新型城镇化+雄安新区；8月31日集泰股份涨停：液冷服务器，飞行汽车/eVTOL，装修装饰概念热股证券之星消息，集泰股份8月31日涨停收盘，；。 该股于9点44分涨停，未打开涨停，截止收盘封单资金为4877.61万元，占其流通市值2.13%。 近5日资金流向一览见</td><td>龙头</td></tr>
+<tr><td>江天化学(300927)</td><td class="up">+20.00%</td><td>基础化工-化学原料-其他化学原料（行业归属）</td><td>基础化工-化学原料-其他化学原料+草甘膦+丙烯酸+国企改革；在2026年8月27日的股市中，江山股份；以18.81元的价格收盘，涨幅达到2.28%。这一表现引发了投资者的广泛关注，尤其是在公司董秘对投资者提问的回应中，透露了更多关于公司战略和未来发展的信息。 这篇文章将深入分析江山股份的减持策略、市</td><td>龙头</td></tr>
+<tr><td>英力特(000635)</td><td class="up">+10.06%</td><td>基础化工-化学原料-氯碱（行业归属）</td><td>基础化工-化学原料-氯碱+绿色电力+国企改革+碳交易；与板块共振</td><td>龙头</td></tr>
+<tr><td>精艺股份(002295)</td><td class="up">+10.05%</td><td>有色金属-工业金属-铜（行业归属）</td><td>有色金属-工业金属-铜+金属铜+虚拟电厂+国企改革；与板块共振</td><td>龙头</td></tr>
+<tr><td>*ST宝馨(002514)</td><td class="up">+10.16%</td><td>机械设备-通用设备-金属制品（行业归属）</td><td>机械设备-通用设备-金属制品+ST板块+换电概念+污水处理；与板块共振</td><td>龙头</td></tr>
+<tr><td>浙江世宝(002703)</td><td class="up">+10.01%</td><td>汽车-汽车零部件-底盘与发动机系统（行业归属）</td><td>汽车-汽车零部件-底盘与发动机系统+长安汽车概念+小米汽车+共同富裕示范区；圣龙股份。飞龙股份。浙江世宝。公司2023年11月28日公告显示：公司主要为整车厂商提供汽车转向系统总成及关键部件的一级配套。长安汽车是公司的客户之一。 展开。7小米汽车。沃特股份。飞龙股份。浙江世宝。 浙江世宝公司主要从事汽车转向系统的研</td><td>龙头</td></tr>
+<tr><td>明新旭腾(605068)</td><td class="up">+9.98%</td><td>汽车-汽车零部件-车身附件及饰件（行业归属）</td><td>汽车-汽车零部件-车身附件及饰件+长安汽车概念+华为汽车+机器人概念；与板块共振</td><td>龙头</td></tr>
+<tr><td>云煤能源(600792)</td><td class="up">+10.01%</td><td>煤炭-煤炭开采加工-焦炭加工（行业归属）</td><td>煤炭-煤炭开采加工-焦炭加工+煤炭概念+煤化工概念+国企改革；We're sorry but thsc-f10-astockpc doesn't work properly without JavaScript enabled. Please enable it tocontinue.</td><td>龙头</td></tr>
+<tr><td>郑州煤电(600121)</td><td class="up">+9.98%</td><td>煤炭-煤炭开采加工-煤炭开采（行业归属）</td><td>煤炭-煤炭开采加工-煤炭开采+煤炭概念+国企改革+数据要素；8月31日，煤炭板块表现活跃，郑州煤电（600121.SH）涨停，大有能源（600403.SH）、中煤能源（601898.SH）、淮北矿业（600985.SH）、山西焦煤（000983.SZ）跟涨。 消息面上，中国煤炭运销协会数据显示，截至</td><td>龙头</td></tr>
+<tr><td>京蓝科技(000711)</td><td class="up">+10.02%</td><td>环保-环境治理-综合环境治理（行业归属）</td><td>环保-环境治理-综合环境治理+金属锌+小金属概念+金属回收；与板块共振</td><td>龙头</td></tr>
+<tr><td>金龙羽(002882)</td><td class="up">+10.00%</td><td>电力设备-电网设备-线缆部件及其他（行业归属）</td><td>电力设备-电网设备-线缆部件及其他+核电+锂电池概念+固态电池；与板块共振</td><td>龙头</td></tr>
+<tr><td>立达信(605365)</td><td class="up">+9.97%</td><td>电子-光学光电子-LED（行业归属）</td><td>电子-光学光电子-LED+一带一路+福建自贸区+智能物流；[进门·纪要] 立达信2026年半年度业绩说明会 | ### 1.2026年上半年业绩概况 - **营业收入**：**2026年上半年公司实现营业收入30.68亿元**，较上年同期增长0.95%，营收规模保持平稳。  ### 2.美国关税政</td><td>龙头</td></tr>
+<tr><td>波导股份(600130)</td><td class="up">+10.04%</td><td>电子-消费电子-消费电子零部件及组装（行业归属）</td><td>电子-消费电子-消费电子零部件及组装+人脸识别+卫星导航+汽车电子；与板块共振</td><td>龙头</td></tr>
+<tr><td>*ST西旅(000610)</td><td class="up">+10.07%</td><td>社会服务-旅游及酒店-旅游综合（行业归属）</td><td>社会服务-旅游及酒店-旅游综合+ST板块+旅游概念+创投；[进门·纪要] 中金公司 | 如何看待消费金融ABS | ### 1.核心观点：监管"纠偏旧模式、稳住好供给"，行业并未走向终结 - **报告核心结论**   - **消费信贷行业并未完结**：2026年以来消金行业监管趋严、部分助贷平台出</td><td>龙头</td></tr>
+<tr><td>西安饮食(000721)</td><td class="up">+10.00%</td><td>社会服务-旅游及酒店-餐饮（行业归属）</td><td>社会服务-旅游及酒店-餐饮+预制菜+国企改革+职业教育；与板块共振</td><td>龙头</td></tr>
+<tr><td>九牧王(601566)</td><td class="up">+10.05%</td><td>纺织服饰-服装家纺-服装（行业归属）</td><td>纺织服饰-服装家纺-服装+网红经济+IP经济(谷子经济)+高股息精选；与板块共振</td><td>龙头</td></tr>
+<tr><td>金一文化(002721)</td><td class="up">+10.03%</td><td>纺织服饰-服装家纺-饰品（行业归属）</td><td>纺织服饰-服装家纺-饰品+数字货币+移动支付+互联网金融；[进门·纪要] 国泰海通轻工｜美凯龙2026半年报业绩交流 | ### 1.2026年上半年业绩核心财务表现：扭亏为盈，经营利润质量显著改善 - **归母净利润**：2026年上半年实现**归母净利润7486万元（约0.75亿元）**，同比</td><td>龙头</td></tr>
+<tr><td>华胜天成(600410)</td><td class="up">+9.97%</td><td>计算机-IT服务-IT服务Ⅲ（行业归属）</td><td>计算机-IT服务-IT服务Ⅲ+云计算+信创+网络安全；华胜天成(600410) 最新动态-公司概要 直击疫情 近期重要事件 A股&GDR股价对比 新闻公告 财务指标 主力控盘 电影票房 题材要点 定增融资 龙虎榜 大宗交易 融资融券 投资者互动。公司概要。 | 2026-08-18 | 发布公</td><td>龙头</td></tr>
+<tr><td>*ST华鹏(603021)</td><td class="up">+9.96%</td><td>轻工制造-家居用品-其他家居用品（行业归属）</td><td>轻工制造-家居用品-其他家居用品+ST板块+地下管网+跨境电商；与板块共振</td><td>龙头</td></tr>
+<tr><td>爱丽家居(603221)</td><td class="up">+10.01%</td><td>轻工制造-家居用品-瓷砖地板（行业归属）</td><td>轻工制造-家居用品-瓷砖地板+人民币贬值受益；爱丽家居(603221) 最新动态-公司概要 直击疫情 近期重要事件 A股&GDR股价对比 新闻公告 财务指标 主力控盘 电影票房 题材要点 定增融资 龙虎榜 大宗交易 融资融券 投资者互动。公司概要。 | 2026-08-26 | 发布公</td><td>龙头</td></tr>
+<tr><td>恒宝股份(002104)</td><td class="up">+10.04%</td><td>通信-通信设备-通信终端及配件（行业归属）</td><td>通信-通信设备-通信终端及配件+电子身份证+移动支付+数字货币；与板块共振</td><td>龙头</td></tr>
+<tr><td>华林证券(002945)</td><td class="up">+10.01%</td><td>非银金融-证券-证券Ⅲ（行业归属）</td><td>非银金融-证券-证券Ⅲ+互联网金融+西部大开发+创投；格隆汇9月1日｜A股市场部分券商股拉升，其中，华林证券涨超6%，国盛证券涨近3%，国元证券、湘财股份、中泰证券涨超1%</td><td>龙头</td></tr>
+<tr><td>古井贡酒(000596)</td><td class="up">+10.00%</td><td>食品饮料-白酒-白酒Ⅲ（行业归属）</td><td>食品饮料-白酒-白酒Ⅲ+白酒概念+国企改革+深股通；与板块共振</td><td>龙头</td></tr>
+</table>
+<p class="warn">★ 8.2 全量 74 只按规范 5 列展开（机器名单 scan_sections，已过滤北交所）。叙事归属：板块库 narrative 反查优先（权威三层），未命中落同花顺二级行业三层并标「行业」（不冒充叙事，避免"沾边概念"误归）。涨停原因 = iFinD 行业事实 + 公司实质催化（已清洗新闻噪音），无实质内容标「与板块共振」。地位判定按叙事内涨幅降序：第1=龙头/2-3=中军/4-6=补涨/7+=跟风。</p>
+<h3>8.3 首日大涨组（涨幅>5% 且成交额>10亿 非涨停·全量 14 只）</h3>
+<table>
+<tr><th>股票</th><th>涨幅</th><th>成交额</th><th>叙事归属</th><th>大涨原因</th><th>地位判定</th></tr><tr><td>万兴科技(300624)</td><td class="up">+8.52%</td><td>—</td><td>科技(TMT)/计算机/AI应用</td><td>AI 创意软件+视频生成，AI 应用共振</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>大北农(002385)</td><td class="up">+7.62%</td><td>10.8亿</td><td>消费/农业/种业</td><td>种业+转基因，农业链主升</td><td><span class="pos-main">中军</span></td></tr>
+<tr><td>金牛化工(600722)</td><td class="up">+7.50%</td><td>31.2亿</td><td>周期(资源)/基础化工/化工涨价</td><td>煤化工+反内卷涨价延续</td><td><span class="pos-main">中军</span></td></tr>
+<tr><td>北大荒(600598)</td><td class="up">+7.44%</td><td>15.0亿</td><td>消费/农业/种植</td><td>粮食安全+土地流转</td><td><span class="pos-main">中军</span></td></tr>
+<tr><td>利欧股份(002131)</td><td class="up">+7.37%</td><td>51.6亿</td><td>科技(TMT)/计算机/AI应用</td><td>AI 营销+数字营销</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>四方精创(300468)</td><td class="up">+6.79%</td><td>15.4亿</td><td>金融/金融科技/跨境支付</td><td>数字货币+跨境支付</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>伯特利(603596)</td><td class="up">+6.31%</td><td>12.7亿</td><td>高端制造/汽车/智能底盘</td><td>线控制动+机器人执行器</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>中国人保(601319)</td><td class="up">+6.17%</td><td>19.0亿</td><td>金融/保险</td><td>保险中报+低估值修复</td><td><span class="pos-main">中军</span></td></tr>
+<tr><td>天洋新材(603330)</td><td class="up">+6.16%</td><td>11.0亿</td><td>科技(TMT)/电子/POE胶膜</td><td>光伏胶膜+比亚迪概念</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>永辉超市(601933)</td><td class="up">+6.15%</td><td>14.5亿</td><td>消费/零售/一般零售</td><td>零售改革+消费刺激</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>红宝丽(002165)</td><td class="up">+6.05%</td><td>20.4亿</td><td>周期(资源)/基础化工/环氧丙烷</td><td>泰兴 16 万吨环氧丙烷试产+聚氨酯硬泡龙头，环氧丙烷涨价</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>亚盛集团(600108)</td><td class="up">+5.95%</td><td>12.1亿</td><td>消费/农业/种植</td><td>粮食+土地流转</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>拉卡拉(300773)</td><td class="up">+5.44%</td><td>14.3亿</td><td>金融/金融科技/跨境支付</td><td>稳定币+支付</td><td><span class="pos-follow">跟风</span></td></tr>
+<tr><td>康盛股份(002418)</td><td class="up">+5.38%</td><td>26.0亿</td><td>科技(TMT)/电子/散热</td><td>液冷+算力租赁逆势，龙虎榜净买 2.63 亿</td><td><span class="pos-follow">跟风</span></td></tr></table>
+
+<h3>8.4 监控池异动组（|涨跌幅|>5%，来自 pool.json 重点池+观察池）</h3>
+<table>
+<tr><th>股票</th><th>涨跌幅</th><th>监控池归属</th><th>阶段判定</th><th>地位判定</th><th>涨跌归因</th><th>操作</th></tr><tr><td>芒果超媒(300413)</td><td class="up">+20.02%</td><td>观察池</td><td><span class="stage st-p2">P2预警</span></td><td><span class="pos-leader">龙头</span></td><td>《后西游记》上星 AI 长剧定档催化，短剧 DAU+104%，数字媒体+5.6%</td><td><span class="up">晋级</span></td></tr>
+<tr><td>透景生命(300642)</td><td class="up">+19.99%</td><td>观察池</td><td><span class="stage st-p1">P1预警</span></td><td><span class="pos-leader">龙头</span></td><td>IVD 领域 AI 先行者（超级产品经理，体外诊断+肝炎/辅助生殖概念</td><td><span class="up">维持</span></td></tr>
+<tr><td>内蒙一机(600967)</td><td class="up">+10.02%</td><td>观察池</td><td><span class="stage st-p1">P1预警</span></td><td><span class="pos-leader">龙头</span></td><td>印巴冲突+中俄贸易，军工地面兵装+3.28%，北向新进</td><td><span class="up">维持</span></td></tr>
+<tr><td>华林证券(002945)</td><td class="up">+10.01%</td><td>观察池</td><td><span class="stage st-p1">P1预警</span></td><td><span class="pos-follow">跟风</span></td><td>券商拉升小券商弹性（格隆汇，板块+0.61%</td><td><span class="up">维持</span></td></tr>
+<tr><td>敦煌种业(600354)</td><td class="up">+10.01%</td><td>观察池</td><td><span class="stage st-p2">P2预警</span></td><td><span class="pos-lag">补涨</span></td><td>中报净利+165.68% 种子量利齐升，种业共振</td><td><span class="up">晋级</span></td></tr>
+<tr><td>金牛化工(600722)</td><td class="up">+7.50%</td><td>观察池</td><td><span class="stage st-p1">P1确认</span></td><td><span class="pos-main">中军</span></td><td>煤化工+反内卷涨价延续</td><td><span class="up">晋级</span></td></tr>
+<tr><td>康盛股份(002418)</td><td class="up">+5.38%</td><td>观察池</td><td><span class="stage st-p1">P1确认</span></td><td><span class="pos-follow">跟风</span></td><td>液冷+算力租赁逆势，龙虎榜净买 2.63 亿</td><td><span class="up">维持</span></td></tr>
+<tr><td>昊华科技(600378)</td><td class="down">-7.83%</td><td>重点池</td><td><span class="stage st-int">中断</span></td><td><span class="pos-leader">龙头</span></td><td>8/28 曾 2 连板（英伟达 M10 认证+5N 高纯 PTFE 市占 90%，高位兑现+Rubin 方案 Q4 才定，获利盘出逃</td><td><span class="down">移出</span></td></tr>
+<tr><td>精研科技(300709)</td><td class="down">-6.77%</td><td>观察池</td><td><span class="stage st-int">中断</span></td><td><span class="pos-follow">跟风</span></td><td>光模块壳体已量产但消费电子-2.07% 板块大跌，AI 手机证伪</td><td><span class="down">降级</span></td></tr>
+<tr><td>肯特股份(301591)</td><td class="down">-5.20%</td><td>观察池</td><td><span class="stage st-int">中断</span></td><td><span class="pos-follow">跟风</span></td><td>8/27 曾随 PTFE 涨停潮（半导体 PTFE 产业暗线，今日材料链集体回调</td><td><span class="down">降级</span></td></tr>
+<tr><td>生益科技(600183)</td><td class="down">-5.85%</td><td>重点池</td><td><span class="stage st-int">中断</span></td><td><span class="pos-leader">龙头</span></td><td>覆铜板-5.19% 高位兑现，8/31 P1 确认次日卖点，跌破回踩位</td><td><span class="down">降级</span></td></tr>
+<tr><td>德明利(001309)</td><td class="down">-4.23%</td><td>重点池</td><td><span class="stage st-int">中断</span></td><td><span class="pos-leader">龙头</span></td><td>存储调整+激励解禁上市，P2 未推进转中断</td><td><span class="down">降级</span></td></tr></table>
+
+<h3>8.5 叙事总结（完整覆盖 + review_note 板块清单核对</h3>
+<table>
+<tr><th>叙事归属</th><th>叙事说明(因)</th><th>逻辑传导</th><th>涉及股票(果)</th><th>阶段说明</th><th>打分</th></tr>
+<tr><td><b style="color:#3fb950">消费/农业/种业（转基因/粮食</b></td><td>厄尔尼诺 95% 概率再通胀 + 150 年最强高温 + 黑海粮食断供，</td><td><span class="up">利好：种业/转基因/粮食/棉花/渔业</span></td><td>万向德农（6板/+10.01%、神农种业（+20.03%、新赛股份（4板/+10.07%、敦煌种业（+10.01%、金健米业（+9.97%、大北农（+7.62%、北大荒（+7.44%、福建金森（3板/+10%、亚盛集团（+5.95%</td><td><span class="stage st-p2">P2预警</span></td><td>9</td></tr>
+<tr><td><b style="color:#3fb950">科技(TMT)/传媒/AI内容（短剧/AI应用</b></td><td>首部上星 AI 长剧《后西游记》开播 + AI 短剧出海 + 美股 SaaS 映射，数字媒体 +5.6% 行业第 2</td><td><span class="up">利好：AI 内容/短剧/出版/语料</span></td><td>芒果超媒（+20.02%、欢瑞世纪（+10%、中广天择（+10%、掌阅科技（+10%、时代出版（3板/+10.06%、粤传媒（+9.99%、中文在线（+3.78%、利欧股份（+7.37%、竞业达（3板/+9.98%</td><td><span class="stage st-p2">P2预警</span></td><td>8</td></tr>
+<tr><td><b style="color:#3fb950">周期(资源)/基础化工/化工涨价</b></td><td>反内卷 + 库存低位 + 9 月提价落地，煤化工/环氧丙烷/尿素多点涨价</td><td><span class="up">利好：煤化工/环氧丙烷/农药化肥</span></td><td>金牛化工（+7.50%、红宝丽（+6.05%、潞化科技（+4.02%、赤天化（+2.58%</td><td><span class="stage st-p1">P1确认</span></td><td>7</td></tr>
+<tr><td><b style="color:#58a6ff">金融/房地产/房地产服务</b></td><td>地产新政延续 + 存量房服务，我爱我家 3 板</td><td><span class="up">利好：地产服务/装修/零售</span></td><td>我爱我家（3板/+10%、茂业商业（+10.08%、国芳集团（3板/+10%、永辉超市（+6.15%</td><td><span class="stage st-p1">P1确认</span></td><td>7</td></tr>
+<tr><td><b style="color:#58a6ff">高端制造/军工/地面兵装</b></td><td>印巴冲突升级 + 军贸订单预期，地面兵装 +3.28%</td><td><span class="up">利好：军工装备/无人机</span></td><td>内蒙一机（+10.02%、中无人机（+8.03%</td><td><span class="stage st-p1">P1预警</span></td><td>6</td></tr>
+<tr><td><b style="color:#58a6ff">金融/金融科技/跨境支付</b></td><td>稳定币概念 + 数字货币，四方精创/拉卡拉走强</td><td><span class="up">利好：支付/数字货币/金融科技</span></td><td>四方精创（+6.79%、拉卡拉（+5.44%、香溢融通（+10.01%、恒宝股份（+10.04%</td><td><span class="stage st-p1">P1预警</span></td><td>6</td></tr>
+<tr><td><b style="color:#f85149">科技(TMT)/电子/覆铜板（PTFE/CCL</b></td><td>8/31 高位确认后兑现，涨价函落地即卖点</td><td><span class="down">利空：覆铜板/PTFE/电子化学品</span></td><td>生益科技（-5.85%、金安国纪（-3.75%、科翔股份（-3.95%、昊华科技（-7.83%、沃特股份（-3.44%、东材科技（-7.49%、景旺电子（-7.45%</td><td><span class="stage st-int">中断</span></td><td>2</td></tr>
+<tr><td><b style="color:#f85149">科技(TMT)/电子/存储</b></td><td>长鑫 LPDDR6 量产利好兑现，P2 未推进</td><td><span class="down">利空：存储/HBM/长鑫链</span></td><td>德明利（-4.23%、澜起科技（回调、恒烁股份（回调</td><td><span class="stage st-int">中断</span></td><td>3</td></tr>
+<tr><td><b style="color:#f85149">科技(TMT)/电子/散热(液冷)</b></td><td>9 月交付拐点未兑现，随科技回调</td><td><span class="down">利空：液冷/散热</span></td><td>英维克（-3.39%、申菱环境（回调、康盛股份（+5.38% 逆势</td><td><span class="stage st-int">中断</span></td><td>3</td></tr>
+<tr><td><b style="color:#f85149">科技(TMT)/电子/AI手机</b></td><td>AI 手机预期证伪，消费电子 -2.07%</td><td><span class="down">利空：消费电子/端侧AI</span></td><td>精研科技（-6.77%、波导股份（+10.04% 逆势</td><td><span class="stage st-int">中断</span></td><td>2</td></tr>
+<tr><td><b style="color:#d29922">周期(资源)/有色金属/贵金属</b></td><td>金价 -1.74% 调整，中断延续</td><td><span class="down">利空：黄金/白银/饰品</span></td><td>贵金属板块 -1.34%，恒邦股份（+0.27%</td><td><span class="stage st-int">中断</span></td><td>2</td></tr>
+<tr><td><b style="color:#d29922">金融/券商</b></td><td>成交缩量，券商 P1 预警第 6 天滞涨</td><td><span class="flat">中性：券商/多元金融</span></td><td>中信证券（+0.79%、华林证券（+10.01%、锦龙股份（+4.01%</td><td><span class="stage st-p1">P1预警</span></td><td>4</td></tr>
+<tr><td><b style="color:#d29922">无主线叙事/待归因</b></td><td>海鸥住工 7 板妖股（实控人变更纯资金博弈，暂无明显产业逻辑，仅情绪/资金驱动</td><td><span class="flat">中性：妖股独立</span></td><td>海鸥住工（7板/+10.03%</td><td><span class="stage st-int">妖股化</span></td><td>3</td></tr>
+</table>
+<p class="warn"><b>review_note 核对</b>：进门复盘笔记板块清单 0 条（当日复盘笔记尚未生成板块归纳，以 8.1~8.4 机器名单 + ifind_sector 双维度覆盖为准。</p>
+
+<h3>8.6 Pair 推荐（每叙事多组 + 业务说明 + 阶段 + 打分 ★v3.77 match_score≥0.5 门槛）</h3>
+<table>
+<tr><th>叙事归属</th><th>Pair推荐</th><th>Pair逻辑</th><th>业务说明</th><th>阶段判定</th><th>打分</th></tr>
+<tr><td rowspan="3"><b style="color:#3fb950">消费/农业/种业</b></td>
+<td>万向德农 × 新赛股份</td><td>种业龙头 × 棉花补涨，同向转基因/玉米主线（match_score=0.88，D1=0.7/D2=0.926/D3=1.0，score_total=0.21）</td><td>万向德农=玉米种业龙头（一供）；新赛股份=新疆棉花/农业；同属农业再通胀叙事；龙头×补涨振幅差显著</td><td><span class="stage st-p2">P2预警</span></td><td>9</td></tr>
+<tr><td>神农种业 × 敦煌种业</td><td>转基因 20cm 弹性 × 种业补涨（match_score=0.73，D1=0.5/D2=0.697/D3=1.0，score_total=0.36）</td><td>神农种业=转基因种子研发；敦煌种业=西北种业基地；同种子生产细分</td><td><span class="stage st-p2">P2预警</span></td><td>8</td></tr>
+<tr><td>万向德农 × 金健米业</td><td>龙头 × 粮食概念补涨（match_score=0.65，D1=0.5/D2=0.46/D3=1.0，score_total=0.26）</td><td>万向=种业；金健=米业加工；粮食安全链条上下游</td><td><span class="stage st-p2">P2预警</span></td><td>7</td></tr>
+<tr><td rowspan="2"><b style="color:#3fb950">科技(TMT)/传媒/AI内容</b></td>
+<td>中文在线 × 掌阅科技</td><td>AI 语料/数字阅读双龙头共振（match_score=0.80，D1=1.0/D2=0.554/D3=0.857，score_total=0.33）</td><td>中文在线=AI 语料/AI 短剧；掌阅=数字阅读/语料库；同 AI 内容叙事，内容+语料互补</td><td><span class="stage st-p2">P2预警</span></td><td>8</td></tr>
+<tr><td>昆仑万维 × 蓝色光标</td><td>AI 应用龙头 × 营销补涨（match_score=0.767，D1=1.0/D2=0.188/D3=0.857，score_total=0.28）</td><td>昆仑万维=AI 大模型/短剧出海；蓝色光标=AI 营销；同 AI 应用叙事，模型+营销互补</td><td><span class="stage st-p2">P2预警</span></td><td>7</td></tr>
+<tr><td rowspan="2"><b style="color:#3fb950">周期(资源)/基础化工/化工涨价</b></td>
+<td>金牛化工 × 潞化科技</td><td>煤化工龙头 × 化工涨价补涨（match_score=0.76，D1=0.7/D2=0.731/D3=0.857，score_total=0.47）</td><td>金牛=煤化工；潞化=煤化工；同化工涨价逻辑</td><td><span class="stage st-p1">P1确认</span></td><td>8</td></tr>
+<tr><td>金牛化工 × 红宝丽</td><td>煤化工龙头 × 环氧丙烷补涨（match_score=0.71，D1=0.7/D2=0.583/D3=0.857）</td><td>金牛=煤化工；红宝丽=环氧丙烷/聚氨酯；同化工涨价逻辑</td><td><span class="stage st-p1">P1确认</span></td><td>7</td></tr>
+<tr><td rowspan="2"><b style="color:#58a6ff">金融/房地产/房地产服务</b></td>
+<td>我爱我家 × 特发服务</td><td>地产服务龙头 × 物业补涨（match_score=0.88，D1=1.0/D2=0.778/D3=0.857，score_total=0.33）</td><td>我爱我家=存量房经纪；特发服务=物业服务；同地产服务链</td><td><span class="stage st-p1">P1确认</span></td><td>8</td></tr>
+<tr><td>我爱我家 × 茂业商业</td><td>地产服务龙头 × 零售/免税补涨（match_score=0.79，D1=0.5/D2=0.997/D3=0.857，score_total=0.22）</td><td>我爱我家=存量房经纪；茂业=商业零售/免税；同消费地产链</td><td><span class="stage st-p1">P1确认</span></td><td>7</td></tr>
+<p class="warn"><b>失效 Pair（8.6 收敛）</b>：生益×金安（覆铜板中断）、昊华×沃特（PTFE 崩）、英维克×申菱（液冷回调）、德明利×澜起（存储中断）→ 已回写配对池失效；液冷/PTFE/存储等中断叙事下 match_score 虽≥0.5 但叙事终结不推荐。</p>
+</table>
+<p class="warn"><b>★ v3.77 配对第一性原理</b>：推荐 Pair 全部过「前提硬门槛（同叙事 narrative_id + 产业逻辑类似）」+「三维度匹配分（D1 环节可比 / D2 市值比≤3 倍 / D3 Wave 涨幅前 30%）」，match_score≥0.5 才可进 8.6；score_total 与 wave_alpha 用于排序。</p><h3>8.7 回写闭环</h3>
+<p>ch7_flow_2026-09-01.json → apply_ch7_flow.py 机器回写完成：重点池 3（万向/芒果晋级 + 生益/德明利/英维克降级）、观察池 119、配对池 54（活跃 37 + 失效 17）、配对库母库 55 pair（score_pair_library 评分 54 + score_pair_match match_score 55 + score_pair_wave wave_perf 41）、叙事监控池 11/13、板块库叙事 28。verify_ch7_flow 0 告警。</p><!-- ⑨ 盘后催化扫描 -->
+<div class="card">
+<h2>⑨ 盘后催化扫描</h2>
+<h3>9.1 宏观（隔夜美股 = premarket 收盘口径 + 21:30 盘中提示）</h3>
+<table>
+<tr><th>类别</th><th>标的</th><th>涨跌幅</th><th>口径</th><th>传导</th></tr>
+<tr><td>美股</td><td>纳指 / 标普 / 道指</td><td class="down">-0.12% / -0.33% / -0.70%</td><td>收盘（9/1 盘前补采）</td><td>外盘温和，不构成 A 股压力</td></tr>
+<tr><td>费半ETF</td><td>SOXX</td><td class="up">+0.48%</td><td>收盘</td><td>AI 硬件外盘未崩，A 股科技回调为内因</td></tr>
+<tr><td>大宗</td><td>布油 / 黄金 / 伦铜</td><td class="up">+0.69% / +0.14% / +0.98%</td><td>收盘</td><td>铜价 14434 高位支撑有色；金价企稳</td></tr>
+<tr><td>★ 21:30 盘中</td><td>纳指 / 费半ETF</td><td class="down">-1.09% / <b>-2.84%</b></td><td>盘中（21:30 快照）</td><td><b>费半大跌 2.84% = 9/2 A 股科技链重大利空信号，超跌反抽预期减弱，勿抄底</b></td></tr>
+<tr><td>★ 21:30 盘中</td><td>布油</td><td class="up">+2.20%</td><td>盘中</td><td>油价大涨（美伊冲突升级），利好油运/油气，压制航空</td></tr>
+</table>
+<p class="warn">★ 隔夜美股收盘口径 = premarket_macro_2026-09-01.json（9:25 盘前）；21:30 盘中口径 = postmarket_macro_2026-09-01.json，仅作当晚盘中提示，不得冒充收盘。</p><h3>9.2 产业</h3>
+<ul>
+<li><span class="up">农业再通胀（DIR-007</span>：厄尔尼诺 95% + 黑海断供，种业主升延续，9/2 关注转基因商业化催化。</li>
+<li><span class="up">AI 内容/短剧（DIR-020</span>：《后西游记》开播 + 短剧出海，芒果 20cm 验证，关注 9 月 AI 长剧排播。</li>
+<li><span class="down">科技材料兑现（DIR-015/011</span>：覆铜板/PTFE 高位兑现未完，9/2 防二次杀跌。</li>
+<li><span class="flat">化工涨价（DIR-019</span>：9 月提价落地，关注金牛/红宝丽延续性。</li>
+</ul>
+
+<h3>9.3 个股公告扫描（6 类高影响，机器名单 32 条节选）</h3>
+<table>
+
+<tr><th>股票</th><th>公告类型</th><th>利好/利空</th><th>次日影响</th></tr><tr><td>中欣氟材(002915)</td><td>减持/解禁</td><td><span class="down">利空</span></td><td>中：解禁利空</td></tr>
+<tr><td>中坚科技(002779)</td><td>立案/监管/ST</td><td><span class="down">利空</span></td><td>低：监管处罚</td></tr>
+<tr><td>国际复材(301526)</td><td>立案/监管/ST</td><td><span class="down">利空</span></td><td>低：监管处罚</td></tr>
+<tr><td>贵州燃气(600903)</td><td>并购重组</td><td><span class="up">利好</span></td><td>中：并购重组进展</td></tr>
+<tr><td>电投水电(600292)</td><td>并购重组</td><td><span class="up">利好</span></td><td>中：并购重组进展</td></tr>
+<tr><td>纬德信息(688171)</td><td>并购重组</td><td><span class="up">利好</span></td><td>中：并购重组进展</td></tr>
+<tr><td>珠海中富(000659)</td><td>并购重组</td><td><span class="up">利好</span></td><td>中：并购重组进展</td></tr>
+<tr><td>国风新材(000859)</td><td>立案/监管/ST</td><td><span class="down">利空</span></td><td>低：监管处罚</td></tr>
+<tr><td colspan="4">完整 32 条从 scan_notices_2026-09-01.json 机器名单引用（减持/解禁 12 + 回购/增持 8 + 并购重组 4 + 重大合同 4 + 立案/监管 3 + 业绩 1；德明利激励解禁 + 中欣氟材解禁利空，精艺股份铜加工大单利好）。</td></tr></table><h3>9.4 次日重点提示</h3>
+<ul>
+<li><span class="up">农业链延续</span>：万向 6 板后 9/2 看 7 板质量，补涨梯队（神农/敦煌/金健是否跟上 → 决定 P2 是否确认。</li>
+<li><span class="up">AI 内容延续</span>：芒果 20cm 后看承接，欢瑞/中广天择 5 板高度。</li>
+<li><span class="down">科技材料二次杀跌风险</span>：覆铜板/PTFE/存储 9/2 防反抽后再下。</li>
+<li><span class="flat">德明利解禁 + 存储调整</span>：利空叠加，回避。</li>
+</ul>
+</div>
+
+<!-- ⑩ 今日汇总判断 -->
+<div class="card">
+<h2>⑩ 今日汇总判断</h2>
+<h3>1. 核心主线结论</h3>
+<p><b>双主线确立</b>：<span class="up">农业（种业/转基因/粮食</span> 断层主升（转基因 +8.07% 第一 + 万向 6 板 + 神农 20cm+ <span class="up">AI 内容/传媒</span>（数字媒体 +5.6% + 芒果 20cm。两者均为 8/31 P1 确认方向的延续晋级，资金面（龙虎榜净买农业/AI与产业面（再通胀 + 短剧出海共振。</p>
+<h3>2. 风险/退潮信号</h3>
+<p><span class="down">科技材料链全面退潮</span>：覆铜板/PTFE/存储/液冷/AI手机 5 方向全部中断或回调（生益 -5.85% / 昊华 -7.83% / 德明利 -4.23% / 英维克 -3.39% / 精研 -6.77%。8/31 的「P1 确认」在 9/1 兑现为卖点，验证「高位确认次日 = 兑现」规律（8/27→8/28、8/31→9/1 两次同构。</p>
+<h3>3. 明日关注焦点</h3>
+<p>①农业 P2 确认质量（万向 7 板 + 补涨梯队；②AI 内容高度（芒果 20cm 后承接；③科技材料是否二次杀跌或超跌反抽；④成交能否维持 2 万亿。</p>
+<h3>4. 判断支持（三阶段 + 仓位取向</h3>
+<p>三阶段：农业/AI 内容 = P2 预警（加速期，化工/地产服务 = P1 确认，科技材料 = 中断。仓位取向：<b>5 成仓</b>，聚焦农业 + AI 内容双主线，科技材料出清后观察反抽但不加仓。</p>
+<p class="warn"><b>去噪声明</b>：排除①妖股（海鸥住工 7 板纯资金博弈，不参与；②白酒/保险补涨（一日游性质，不追；③稳定币/跨境支付概念（消息驱动，持续性待验证。</p>
+</div>
+
+<!-- ⑪ 明日交易计划 -->
+<div class="card">
+<h2>⑪ 明日交易计划（9/2</h2>
+<h3>11.1 大盘走势预判（三理论综合</h3>
+<ul>
+<li><b>缠论</b>：上证日线冲高回落留上影，短期高位震荡，3970-4000 区间争夺。</li>
+<li><b>小绿理论</b>：无小绿（下跌占比 36.7%，情绪未退潮。</li>
+<li><b>三阶段</b>：农业/AI 内容 = P2 预警（加速中，科技材料 = 中断，主升接近中段，未到 P3 阶段（主升中段，未至退潮）。</li>
+<li><b>综合</b>：9/2 预计 3960-4010 震荡，题材轮动延续（农业/AI 内容 vs 科技反抽，涨幅 ±0.5%。</li>
+<li><b>仓位</b>：4-5 成（双主线持有 + 预留科技反抽仓位。</li>
+<li><b>大板块配置</b>：超配农业/种业、AI 内容；标配化工/地产服务；低配科技材料（观察反抽；回避贵金属/妖股。</li>
+</ul>
+
+<h3>11.2 昨日进攻方向处理</h3>
+<table>
+<tr><th>叙事归属</th><th>三阶段判定</th><th>涨幅预判</th><th>操作建议</th><th>风险提示</th></tr>
+<tr><td>消费/农业/种业</td><td><span class="stage st-p2">P2预警</span></td><td>+2%~+5%</td><td>万向持有，回踩 -3% 内不破持有；神农/敦煌补涨观察</td><td>万向断板 + 种植业跌 >-4% = P2 证伪减仓</td></tr>
+<tr><td>科技(TMT)/传媒/AI内容</td><td><span class="stage st-p2">P2预警</span></td><td>+1%~+4%</td><td>芒果持有，回踩 -4% 内不破持有；掌阅/欢瑞观察</td><td>芒果 20cm 后高开 >+8% 防兑现；跌破 -6% 减仓</td></tr>
+<tr><td>周期(资源)/基础化工/化工涨价</td><td><span class="stage st-p1">P1确认</span></td><td>+0%~+3%</td><td>金牛持有，回踩 -4% 不破持有</td><td>跌破 -6% 减半（化工跟涨农业但弱于主线</td></tr>
+<tr><td>金融/房地产/房地产服务</td><td><span class="stage st-p1">P1确认</span></td><td>+0%~+2%</td><td>我爱我家持有，冲高 +5% 减半</td><td>跌破 +0% 离场（低位补涨持续性弱</td></tr>
+<tr><td>科技(TMT)/电子/覆铜板/PTFE</td><td><span class="stage st-int">中断</span></td><td>-1%~+1%</td><td>生益/昊华超跌反抽减仓，不抄底</td><td>反抽不过 -4% 继续出清</td></tr>
+<tr><td>科技(TMT)/电子/存储/液冷</td><td><span class="stage st-int">中断</span></td><td>-1%~+1%</td><td>德明利/英维克反弹减仓</td><td>德明利解禁利空 + 存储调整，回避</td></tr>
+<tr><td>周期(资源)/有色金属/贵金属</td><td><span class="stage st-int">中断</span></td><td>-1%~+1%</td><td>不参与，金价企稳前观望</td><td>金价再跌 >-2% 确认调整加深（当前 4488</td></tr>
+</table>
+
+<h3>11.3 潜在进攻方向预判</h3>
+<table>
+<tr><th>叙事归属</th><th>三阶段判定</th><th>涨幅预判</th><th>操作建议</th><th>风险提示</th><th>打分</th></tr>
+<tr><td>消费/农业/种业</td><td><span class="stage st-p2">P2预警</span></td><td>+2%~+5%</td><td>万向回踩 -3% 低吸；神农回踩 -5% 低吸；新赛回踩 -4% 低吸</td><td>板块再跌 >-4% 证伪；万向断板</td><td>9</td></tr>
+<tr><td>科技(TMT)/传媒/AI内容</td><td><span class="stage st-p2">P2预警</span></td><td>+1%~+4%</td><td>芒果回踩 -4% 低吸；掌阅回踩 -5% 低吸</td><td>高开 >+8% 不追；断板减仓</td><td>8</td></tr>
+<tr><td>高端制造/军工/地面兵装</td><td><span class="stage st-p1">P1预警</span></td><td>+0%~+3%</td><td>内蒙一机回踩 -4% 低吸</td><td>印巴冲突降温 = 证伪</td><td>6</td></tr>
+<tr><td>金融/金融科技/跨境支付</td><td><span class="stage st-p1">P1预警</span></td><td>+0%~+2%</td><td>四方精创回踩 -5% 低吸</td><td>稳定币监管利空</td><td>5</td></tr>
+<tr><td>周期(资源)/基础化工/化工涨价</td><td><span class="stage st-p1">P1确认</span></td><td>+0%~+3%</td><td>金牛回踩 -4% 低吸</td><td>提价不及预期</td><td>7</td></tr>
+<tr><td colspan="6"><b>建议规避</b>：①科技(TMT)/电子/覆铜板·PTFE·存储·液冷（中断未完，反抽减仓不抄底；②周期(资源)/有色金属/贵金属（金价调整；③科技(TMT)/电子/AI手机（证伪；④妖股（海鸥住工 7 板纯资金博弈。</td></tr>
+</table>
+
+<h3>11.4 昨日作战股票处理</h3>
+<table>
+<tr><th>具体标的</th><th>叙事归属</th><th>触发条件</th><th>操作</th><th>仓位</th></tr>
+<tr><td>生益科技(600183)</td><td>科技(TMT)/电子/覆铜板</td><td>反抽 +3% 内减仓，反抽 +5% 清仓</td><td>减仓</td><td>→ 0%</td></tr>
+<tr><td>英维克(002837)</td><td>科技(TMT)/电子/散热</td><td>反抽 +3% 减半，跌破 -5% 清仓</td><td>减仓</td><td>→ 0%</td></tr>
+<tr><td>德明利(001309)</td><td>科技(TMT)/电子/存储</td><td>反抽 +2% 清仓（解禁利空</td><td>清仓</td><td>→ 0%</td></tr>
+<tr><td>万向德农(600371)</td><td>消费/农业/种业</td><td>回踩 -3% 不破持有，断板 + 板块 -4% 减半</td><td>持有</td><td>30%</td></tr>
+<tr><td>芒果超媒(300413)</td><td>科技(TMT)/传媒/AI内容</td><td>回踩 -4% 不破持有，跌破 -6% 减半</td><td>持有</td><td>20%</td></tr>
+<tr><td>金牛化工(600722)</td><td>周期(资源)/基础化工/化工涨价</td><td>回踩 -4% 不破持有，跌破 -6% 减半</td><td>持有</td><td>10%</td></tr>
+</table>
+
+<h3>11.5 次日作战计划</h3>
+<table>
+<tr><th>具体标的</th><th>叙事归属</th><th>涨幅预判</th><th>触发条件</th><th>操作</th><th>仓位</th><th>打分</th></tr>
+<tr><td>万向德农(600371)</td><td>消费/农业/种业</td><td>+3%~+7%</td><td>回踩 -3% 不破低吸；高开 >+7% 不追</td><td>低吸/持有</td><td>25%</td><td>9</td></tr>
+<tr><td>神农种业(300189)</td><td>消费/农业/转基因</td><td>+2%~+6%</td><td>回踩 -5% 不破低吸</td><td>低吸</td><td>15%</td><td>8</td></tr>
+<tr><td>新赛股份(600540)</td><td>消费/农业/棉花</td><td>+2%~+6%</td><td>回踩 -4% 不破低吸</td><td>低吸</td><td>10%</td><td>8</td></tr>
+<tr><td>芒果超媒(300413)</td><td>科技(TMT)/传媒/AI内容</td><td>+1%~+5%</td><td>回踩 -4% 不破低吸；高开 >+8% 不追</td><td>低吸/持有</td><td>15%</td><td>8</td></tr>
+<tr><td>掌阅科技(603533)</td><td>科技(TMT)/传媒/AI内容</td><td>+1%~+5%</td><td>回踩 -5% 不破低吸</td><td>低吸</td><td>10%</td><td>7</td></tr>
+<tr><td>金牛化工(600722)</td><td>周期(资源)/基础化工/化工涨价</td><td>+0%~+4%</td><td>回踩 -4% 不破低吸</td><td>低吸</td><td>10%</td><td>7</td></tr>
+<tr><td>内蒙一机(600967)</td><td>高端制造/军工/地面兵装</td><td>+0%~+3%</td><td>回踩 -4% 不破低吸</td><td>低吸</td><td>5%</td><td>6</td></tr>
+</table>
+</div>
+
+<!-- ⑫ 三阶段理论视角 -->
+<div class="card">
+<h2>⑫ 三阶段理论视角</h2>
+<table>
+<tr><th>叙事归属</th><th>7 状态</th><th>龙头</th><th>补涨</th><th>说明</th></tr>
+<tr><td>消费/农业/种业</td><td><span class="stage st-p2">P2预警</span></td><td>万向德农（6板</td><td>神农/新赛/敦煌/金健</td><td>龙头 6 板主升，补涨梯队跟上 → 明日看 P2 确认（补涨连 2 天跑赢</td></tr>
+<tr><td>科技(TMT)/传媒/AI内容</td><td><span class="stage st-p2">P2预警</span></td><td>芒果超媒（20cm</td><td>掌阅/欢瑞/中广天择/时代出版</td><td>龙头涨停，补涨 5 板 → 加速期</td></tr>
+<tr><td>周期(资源)/基础化工/化工涨价</td><td><span class="stage st-p1">P1确认</span></td><td>金牛化工</td><td>红宝丽/潞化/赤天化</td><td>涨价逻辑延续，弱于双主线</td></tr>
+<tr><td>金融/房地产/房地产服务</td><td><span class="stage st-p1">P1确认</span></td><td>我爱我家（3板</td><td>茂业商业/国芳集团</td><td>低位补涨</td></tr>
+<tr><td>科技(TMT)/电子/覆铜板</td><td><span class="stage st-int">中断</span></td><td>生益科技</td><td>金安/科翔</td><td>高位兑现，W 结束</td></tr>
+<tr><td>周期(资源)/基础化工/氟化工PTFE</td><td><span class="stage st-int">中断</span></td><td>昊华科技</td><td>沃特股份</td><td>龙头 -7.83% 崩，W 结束</td></tr>
+<tr><td>科技(TMT)/电子/存储</td><td><span class="stage st-int">中断</span></td><td>德明利</td><td>澜起/恒烁</td><td>P2 未推进，解禁利空</td></tr>
+<tr><td>科技(TMT)/电子/散热(液冷)</td><td><span class="stage st-int">中断</span></td><td>英维克</td><td>申菱/康盛</td><td>随科技回调</td></tr>
+<tr><td>科技(TMT)/电子/AI手机</td><td><span class="stage st-int">中断</span></td><td>精研科技</td><td>—</td><td>证伪</td></tr>
+<tr><td>金融/券商</td><td><span class="stage st-p1">P1预警</span></td><td>中信证券</td><td>华林/锦龙</td><td>第 6 天滞涨，成交缩量难发动</td></tr>
+<tr><td>周期(资源)/有色金属/贵金属</td><td><span class="stage st-int">中断</span></td><td>—</td><td>—</td><td>金价调整，不参与</td></tr>
+</table>
+<p class="warn"><b>三阶段结论</b>：双主线（农业/AI内容处于 P2 预警加速期，主升中段；科技材料链全面中断 = W 结束；市场处于「主线处于 P2 阶段（补涨加速）+ 老主线退潮」的典型轮动结构，仓位 4-5 成，聚焦双主线。</p>
+</div>
+
+<!-- ⑬ 风险提示 -->
+<div class="card">
+<h2>⑬ 风险提示</h2>
+<div class="risk">
+<ul>
+<li><b>科技材料二次杀跌</b>：覆铜板/PTFE/存储中断未完，9/2 反抽后可能再下（生益 -5.85% 后未见企稳信号。</li>
+<li><b>农业高位分歧</b>：万向 6 板后 7 板质量存疑，若断板 + 板块跌 >-4% = P2 证伪，需快速止盈。</li>
+<li><b>AI 内容兑现风险</b>：芒果 20cm 后次日高开 >+8% 防兑现（教训：8/31 芒果涨停 → 9/1 再涨停但板块内已有分歧。</li>
+<li><b>德明利解禁</b>：激励解禁上市 + 存储调整，回避。</li>
+<li><b>缩量环境</b>：2.03 万亿缩量，题材轮动快，追高易套，坚持回踩低吸。</li>
+<li><b>妖股风险</b>：海鸥住工 7 板纯资金博弈，断板即崩，严禁参与。</li>
+</ul>
+</div>
+</div>
+
+<!-- ⑭ 数据来源总结 -->
+<div class="card">
+<h2>⑭ 数据来源总结（机器生成 data_source_2026-09-01.json</h2>
+<h3>14.1 各数据源真实采集量（9 源逐列）</h3>
+<table>
+<tr><th>源</th><th>数据层</th><th>类型</th><th>条数</th><th>覆盖率</th></tr>
+<tr><td>westock 腾讯自选股</td><td>行情/盘面层(主)</td><td>指数行情 / 涨跌分布 / 涨停名单 / 板块排行 / 资金流向 / 龙虎榜</td><td>8 / 1 / 86 / 200+ / 30+ / 59</td><td>100% ✅</td></tr>
+<tr><td>iFinD 同花顺</td><td>估值/交叉验证层</td><td>指数 PE/PB 分位 / 申万行业 PE/PB / 市场宽度 / 异动扫描</td><td>30 / 31 / 3 / 86+32</td><td>100% ✅</td></tr>
+<tr><td>finenter 进门投研</td><td>研究观点层</td><td>内参 / 事件信号 / 纪要 / 点评 / 复盘笔记 / 资源</td><td>111 / 2492 / 418 / 1187 / 5 / 10</td><td>182.7% ✅（21:30 翻页拉全）</td></tr>
+<tr><td>jyg 韭研公社</td><td>消息面</td><td>社群研选+广场 / 产业库主题</td><td>49 / 15</td><td>100% ✅</td></tr>
+<tr><td>zsxq 知识星球</td><td>消息面</td><td>主题（重分类后）</td><td>388</td><td>97% ✅（21:30 补采）</td></tr>
+<tr><td>kaipanla 开盘啦</td><td>盘面结构层</td><td>涨停天梯 / 市场情绪 / 异动提醒</td><td>80 / 8 / 3</td><td>100% ✅（异动=盘后严重口径）</td></tr>
+<tr><td>concept 概念板块</td><td>盘面结构层</td><td>概念板块涨幅排序</td><td>801</td><td>100% ✅</td></tr>
+<tr><td>盘后公告</td><td>公司公告层</td><td>6 类关键词检索</td><td>64（加工后 32）</td><td>100% ✅</td></tr>
+<tr><td>盘后宏观</td><td>宏观催化层</td><td>美股 4 + 大宗 3 + 外汇 2</td><td>9</td><td>100% ✅</td></tr>
+<tr><td>iFinD 异动解读</td><td>盘面结构层</td><td>概念板块 / 异动股</td><td>8 / 123（含监控池 21）</td><td>100% ✅</td></tr>
+<tr><td>iFinD 板块主线</td><td>盘面结构层</td><td>行业板块 / 概念板块涨幅排名</td><td>20 / 20</td><td>100% ✅</td></tr>
+</table>
+<h3>14.2 跨源覆盖率门控（verify_coverage 结果）</h3>
+<table>
+<tr><th>源</th><th>已采</th><th>期望</th><th>覆盖率</th><th>达标</th></tr>
+<tr><td>westock</td><td>3 字段</td><td>30/50/30</td><td>100%</td><td>✅</td></tr>
+<tr><td>iFinD</td><td>indicators 30 / industry_pe_pb 31</td><td>30 / 31</td><td>100%</td><td>✅</td></tr>
+<tr><td>进门投研</td><td>事件 2492 / 纪要 418 / 点评 1187</td><td>1500 / 350 / 450</td><td>166% / 119% / 264%</td><td>✅（21:30 翻页拉全）</td></tr>
+<tr><td>韭研公社</td><td>社群 49 / 产业库 15</td><td>40 / 15</td><td>100%</td><td>✅</td></tr>
+<tr><td>知识星球</td><td>388</td><td>400</td><td>97%</td><td>✅</td></tr>
+<tr><td>开盘啦</td><td>天梯 80 / 情绪 8 / 异动 3</td><td>50 / 8 / 3</td><td>160% / 100% / 100%</td><td>✅</td></tr>
+<tr><td>概念板块</td><td>801</td><td>30</td><td>2670%</td><td>✅</td></tr>
+<tr><td>融合台账</td><td>14 方向</td><td>12</td><td>100%</td><td>✅</td></tr>
+<tr><td>日韩台行情</td><td>台湾 1085</td><td>1000</td><td>108%</td><td>✅</td></tr>
+<tr><td>盘后公告</td><td>64</td><td>50</td><td>128%</td><td>✅</td></tr>
+<tr><td>盘后宏观</td><td>9 项</td><td>9</td><td>100%</td><td>✅</td></tr>
+<tr><td>iFinD 异动扫描</td><td>涨停 86 / 大涨 32</td><td>50 / 20</td><td>172% / 160%</td><td>✅</td></tr>
+<tr><td>iFinD 异动解读</td><td>8 / 123</td><td>8 / 50</td><td>100%</td><td>✅</td></tr>
+<tr><td>iFinD 板块主线</td><td>20 / 20</td><td>15 / 15</td><td>133%</td><td>✅</td></tr>
+</table>
+<p class="ok">✅ 14 源覆盖率全达标（verify_coverage AUDIT PASS）。进门 21:30 翻页拉全（事件 2492/纪要 418/点评 1187）+ 星球 21:30 补采（388）+ 修复 verify_coverage 嵌套字段统计 bug（constituents_full）。</p>
+<h3>14.3 数据沉淀情况（data_quality_check 十环节）</h3>
+<table>
+<tr><th>源</th><th>采集</th><th>沉淀去向</th><th>沉淀量</th><th>沉淀率</th><th>状态</th></tr>
+<tr><td>进门投研</td><td>4223 条</td><td>股票库 catalysts + 事件库</td><td>1828</td><td>43%</td><td>✅</td></tr>
+<tr><td>韭研公社</td><td>79 条</td><td>股票库 catalysts（joke_parser→dispatch）</td><td>785</td><td>994%</td><td>✅ 一拆多</td></tr>
+<tr><td>知识星球</td><td>388 条</td><td>股票库 catalysts（data_dispatcher）</td><td>359</td><td>92%</td><td>✅</td></tr>
+<tr><td>盘后公告</td><td>64 条</td><td>股票库 announcements</td><td>66</td><td>103%</td><td>✅</td></tr>
+<tr><td>westock / iFinD / 开盘啦 / concept / 宏观</td><td>—</td><td>盘面/结构快照，落 report_snapshot，不沉淀六库</td><td>—</td><td>—</td><td>✅ 不沉淀</td></tr>
+</table>
+<p><b>质检</b>：分类 332/332（未匹配率 28.6% 正常）、沉淀覆盖率 finenter 43% / zsxq 92%（含港股美股正常）、重复 catalyst 0、code↔name 错配 0、监控池⊆股票库 0 缺失、叙事挂载合法性 28/28。</p>
+<h3>14.4 报告数字可追回性</h3>
+<p>所有数字可从 report_snapshot_2026-09-01.json / scan_sections_2026-09-01.json / scan_notices_2026-09-01.json / postmarket_macro_2026-09-01.json / premarket_macro_2026-09-01.json / data_source_2026-09-01.json / ifind_hotspot_2026-09-01.json / ifind_sector_2026-09-01.json 追回。</p><div class="footer">A股每日复盘 Agent v3.77 · 2026-09-01 · 数据窗口 9/1 全天（16:54 采集· 下一步：22:30 心跳补采 + 9/2 9:25 盘前补采</div>
+</div>
+</div></div></body>
+</html>

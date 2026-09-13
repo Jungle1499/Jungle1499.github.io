@@ -1,0 +1,191 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>激进型交易框架（草拟）+ 历史持仓回测</title>
+<style>
+:root{--bg:#fff;--ink:#1a1a1a;--sub:#5b6470;--line:#e6e8ec;--card:#fafbfc;--red:#c8102e;--grn:#1a7f37;--yel:#b26a00;--blue:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:34px 24px 70px}
+h1{font-size:25px;margin:0 0 4px;font-weight:800}
+h2{font-size:20px;margin:30px 0 10px;padding-left:11px;border-left:5px solid var(--blue)}
+h3{font-size:16px;margin:20px 0 6px;color:#222}
+.sub{color:var(--sub);font-size:13px;margin-bottom:6px}
+.lead{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:14px}
+.warn{background:#fff6ed;border:1px solid #f3d9bf;border-left:4px solid var(--yel)}
+.bad{background:#fdecef;border:1px solid #f3c2c8;border-left:4px solid var(--red)}
+.good{background:#e9f6ed;border:1px solid #bfe6cb;border-left:4px solid var(--grn)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card b{font-size:22px;display:block}
+.card .t{font-size:12.5px;color:var(--sub)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th,td{border:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+th{background:#f3f5f7;font-weight:600;font-size:12px}
+.pos{color:var(--red);font-weight:700}.neg{color:var(--grn);font-weight:700}
+.pill{padding:2px 8px;border-radius:10px;font-weight:700;font-size:12px}
+.p-go{background:#e9f6ed;color:var(--grn)}.p-no{background:#fdecef;color:var(--red)}
+.p3{background:#fdecef;color:#dc2626}.p2{background:#e8f0fe;color:var(--blue)}.p1{background:#e9f6ed;color:#16a34a}.pdf{background:#fdeccf;color:var(--yel)}.px{background:#f3e8ff;color:#7c3aed}
+.bar{height:14px;border-radius:7px;background:#eee;overflow:hidden;display:inline-block;vertical-align:middle}
+.bar>i{display:block;height:100%}
+.flow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:12.5px;flex:1;min-width:150px}
+.step b{color:var(--blue)}
+.note{font-size:12px;color:var(--sub);margin-top:6px}
+.tag{display:inline-block;background:#eef2f7;color:#334;border-radius:6px;padding:1px 7px;font-size:12px;margin:2px 3px 2px 0}
+.foot{margin-top:30px;color:var(--sub);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+ul{margin:8px 0 8px 0;padding-left:20px}li{margin:4px 0}
+</style></head><body><div class="wrap">
+<h1>激进型交易框架（草拟 v1）＋ 历史持仓回测</h1>
+<div class="sub">框架底座 = 比价配对框架·早期三段论（上涨1介入 / 上涨2持有 / 核心走弱减半）＋ 模块11 修正分类器 ＋ 模块9.5 双名单 ｜ 回测数据：新浪日K（真实成交）｜ 生成 2026-08-30</div>
+
+<div class="lead">
+<b>一句话：</b>按你真实持仓，3 日胜率仅 <b>23.8%</b>；但框架判定「可推仓（P1/P2）」的子集胜率 <b>42.9%</b>，判定「不推（P3/派发/次新）」的仅 <b>14.3%</b>。框架能把你大部分亏损筛掉——你亏在追了框架会说「不推」的票（满仓次新、追 P3）。但 8/21 医药 10 只全灭证明：<b>个股 P2 也挡不住行业派发，必须叠加你让我判的大盘+行业贝塔门控。</b>
+</div>
+
+<!-- ============ 一、画像 ============ -->
+<h2>一、你的交易画像（据此定框架）</h2>
+<div class="cards">
+<div class="card"><b>150–200%</b><span class="t">常年净资仓位，敢杠杆</span></div>
+<div class="card"><b>满仓单/双票</b><span class="t">确定性高时敢 100% 压 1–2 只</span></div>
+<div class="card"><b>3 日基准</b><span class="t">主仓买了 3 天内要见盈利（拐点）</span></div>
+<div class="card"><b>30–50% 打野</b><span class="t">当日/次日套利，与主仓分离</span></div>
+</div>
+<ul>
+<li><b>确定性优先</b>：买阿尔法＋确定性，有时买贝塔；多 5 少 5 不在意，靠仓位挣钱，不惧追高。</li>
+<li><b>新东西优先</b>：本周 PTFE / 散热 / 液冷这类新题材，给更高权重（= 上涨1 早期观察名单的升级候选）。</li>
+<li><b>节点位置</b>：偏好「位置还可以的节点」——距高可控、P1→P2 刚抬头的位置优先于高位。</li>
+<li><b>你要我做的三件事</b>：①判大盘（情绪/退潮）②判行业贝塔（板块派发 or 扩散）③判个股一二三阶段。</li>
+</ul>
+
+<!-- ============ 二、框架 ============ -->
+<h2>二、草拟框架：激进但可控</h2>
+
+<h3>2.1 个股三阶段判定（沿用「最新理论」模块11 修正分类器）</h3>
+<table><thead><tr><th>阶段</th><th>判定口径（c5/c10/c20/c60/距高）</th><th>操作含义（激进版）</th></tr></thead>
+<tbody>
+<tr><td><span class="pill p1">P1</span></td><td>c20≥-8（启动/早期，60日已转正则 P1→P2）</td><td>早期观察仓来源；新题材节点可试仓</td></tr>
+<tr><td><span class="pill p2">P2</span></td><td>c20≥12 且 c60≥0（主升/共识）｜⚠钝化＝c20≥35 且 c10≤3</td><td><b>主仓可推</b>：满仓单/双票的核心池；顺势不加仓</td></tr>
+<tr><td><span class="pill p3">P3</span></td><td>c20&gt;50 且 c5,c10&gt;0（真加速·已透支）</td><td><b>不追</b>：你最爱满仓的「加速末端」，框架禁推；等分歧回踩</td></tr>
+<tr><td><span class="pill pdf">派发</span></td><td>c20≥12 且 c60&lt;0（窗口含峰值但中长期转负＝实为回落）</td><td><b>不推</b>：板块/个股在派发，禁接飞刀</td></tr>
+<tr><td><span class="pill pdf">退潮</span></td><td>距高≥30% 且 c5≤-2（高位回落续弱）</td><td><b>减半/不推</b>：系统性风险信号</td></tr>
+<tr><td><span class="pill px">次新</span></td><td>IPO 全窗口污染·不可定阶</td><td><b>不进主仓</b>：仅打野小仓试，绝对仓位风险</td></tr>
+</tbody></table>
+<div class="note">距高 dh =（现价 − 60日最高）/60日最高。c20 是滑动窗口，峰值落入会虚高，必须用 c60/c10 做背离校验（否则 P3 严重虚高）。</div>
+
+<h3>2.2 你的 5 条修正（叠加在最新理论上）</h3>
+<div class="cards">
+<div class="card"><b>①新题材优先</b><span class="t">PTFE/散热/液冷 → 上涨1早期观察名单的升级候选，给更高权重与更早试仓权</span></div>
+<div class="card"><b>②节点位置</b><span class="t">距高可控 + P1→P2 刚抬头的位置优先；高位 P3 即便强也不追</span></div>
+<div class="card"><b>③不惧追高</b><span class="t">多5少5不在意；确定性高时满仓单/双票。但退潮/P3鱼尾是红线，禁追</span></div>
+<div class="card"><b>④确定性优先</b><span class="t">逻辑三问（行业性/久期/认知差）＋宽度验证 = 确定性的量化来源</span></div>
+<div class="card"><b>⑤3日+打野分离</b><span class="t">主仓3日内见盈利（拐点）；30–50%打野做当日/次日套利，独立止损</span></div>
+</div>
+
+<h3>2.3 仓位架构（激进但设红线）</h3>
+<table><thead><tr><th>仓位层</th><th>占比（净资）</th><th>标的</th><th>纪律</th></tr></thead>
+<tbody>
+<tr><td><b>主仓（拐点/3日）</b></td><td>50–70%</td><td>1–3 只高确定性 P1→P2/P2（新题材节点优先）</td><td>单票≤50%净资；总杠杆≤150%警戒；3日未盈利重新定阶</td></tr>
+<tr><td><b>打野（次日套利）</b></td><td>30–50%</td><td>事件/竞价/盘中节点；含次新小仓</td><td>当日或次日了结；独立止损 -5%~-8%，不熬成主仓</td></tr>
+<tr><td><b>红线</b></td><td colspan="3">P3/次新 <b>禁止进主仓</b>；行业派发板块禁推；大盘退潮期主仓≤2只、总仓≤100%</td></tr>
+</tbody></table>
+<div class="warn lead">你当前真实仓位：单票迈为48%/正帆39%/强一34%（远超15%上限），总杠杆1.56x仍超120%警戒。<b>框架不强行压你到15%，但把单票红线放宽到≤50%、次新/追P3列入禁区</b>——这是你风格下最该守的两条。</div>
+
+<h3>2.4 大盘 & 行业贝塔门控（你要我每天判的两件事）</h3>
+<div class="flow">
+<div class="step"><b>大盘退潮</b><br>涨跌比&lt;0.3 / 涨停&lt;80 / 首板无溢价 → 主仓≤2只、总仓≤100%，只留绝对核心</div>
+<div class="step"><b>行业派发</b><br>板块派发家数≫P3家数（如半导体53派发vs2 P3）→ 该板块不推，哪怕个股P2</div>
+<div class="step"><b>宽度验证</b><br>方向内≥2对触发或≥1共振才叫有宽度；单点脉冲（无宽度）只看不动</div>
+</div>
+
+<h3>2.5 每日流程（对齐你盘前/盘后发持仓）</h3>
+<div class="flow">
+<div class="step"><b>盘前</b><br>你发持仓/计划 → 我对每只定阶（最新理论）→ 出双名单＋大盘/行业门控＋推仓建议</div>
+<div class="step"><b>盘中</b><br>节点卡位/打野信号（竞价、Pair共振、宽度背驰预警）</div>
+<div class="step"><b>盘后</b><br>复盘：3日是否达标？拐点是否兑现？归因（个股阶段 or 行业贝塔错）</div>
+</div>
+
+<!-- ============ 三、回测 ============ -->
+<h2>三、回测：按你真实持仓，框架胜率多高？</h2>
+
+<h3>3.1 方法 & 数据</h3>
+<ul>
+<li><b>数据源</b>：新浪日K（真实成交）；个股阶段用买入日 c5/c10/c20/c60/距高 跑模块11修正分类器。</li>
+<li><b>买入日</b>＝你每晚发的持仓快照收盘；<b>收益</b>＝未来 3 个交易日（对齐你「3天基准」）。</li>
+<li><b>样本</b>：5 个快照（8/21→8/30）。可回测＝8/21(10笔)＋8/25(11笔)＝<b>21笔</b>；8/26 起因 8/31 后数据未出，仅定阶、收益标「待观察」。</li>
+<li><b>框架判定</b>：P1/P1→P2/P2＝可推仓；P3/派发/退潮/次新/弱势＝不推。</li>
+</ul>
+
+<h3>3.2 总体结果</h3>
+<div class="cards">
+<div class="card"><b>23.8%</b><span class="t">总体 3日胜率（5/21）</span><span class="bar" style="width:100%"><i style="width:23.8%;background:var(--red)"></i></span></div>
+<div class="card"><b>42.9%</b><span class="t">框架「可推仓」胜率（3/7）</span><span class="bar" style="width:100%"><i style="width:42.9%;background:var(--yel)"></i></span></div>
+<div class="card"><b>14.3%</b><span class="t">框架「不推」胜率（2/14）</span><span class="bar" style="width:100%"><i style="width:14.3%;background:var(--red)"></i></span></div>
+<div class="card"><b>-6.70%</b><span class="t">加权(净资比)3日收益</span></div>
+</div>
+<table><thead><tr><th>分组</th><th>笔数</th><th>胜率</th><th>平均收益</th><th>加权收益</th></tr></thead>
+<tbody>
+<tr><td>总体</td><td>21</td><td>23.8%</td><td class="neg">-4.28%</td><td class="neg">-6.70%</td></tr>
+<tr><td><span class="pill p-go">可推仓(P1/P2)</span></td><td>7</td><td><b>42.9%</b></td><td class="neg">-1.81%</td><td class="neg">-2.09%</td></tr>
+<tr><td><span class="pill p-no">不推(P3/派发/次新)</span></td><td>14</td><td>14.3%</td><td class="neg">-5.52%</td><td class="neg">-9.49%</td></tr>
+</tbody></table>
+<div class="good lead">框架的判别力是真实的：<b>「可推仓」胜率是不推的 3 倍、平均亏损只有不推的 1/3</b>。你实际持仓里大量是框架会说「不推」的 P3/派发/次新，所以整体被拉低。</div>
+
+<h3>3.3 分快照</h3>
+<table><thead><tr><th>快照(买入日)</th><th>胜率</th><th>平均收益</th><th>杠杆</th><th>主线</th><th>复盘</th></tr></thead>
+<tbody>
+<tr><td>8/21（周五）</td><td><b>0/10 = 0%</b></td><td class="neg">-8.48%</td><td>1.87x</td><td>医药生物 10只</td><td class="neg">行业整体派发，连框架判「可推」的4只也全跌</td></tr>
+<tr><td>8/25（周二）</td><td><b>5/11 = 45%</b></td><td class="neg">-0.47%</td><td>1.68x</td><td>液冷/散热/激光</td><td class="pos">框架「可推」的液冷3只全赢（中石/同飞/飞龙）</td></tr>
+</tbody></table>
+
+<h3>3.4 逐条回测（21 笔，可验证）</h3>
+<table><thead><tr><th>买入日</th><th>名称</th><th>阶段</th><th>框架</th><th>3日收益</th><th>备注</th></tr></thead>
+<tbody>
+<tr><td>8/21</td><td>北陆药业</td><td><span class="pill p2">P2</span></td><td><span class="pill p-go">推仓</span></td><td class="neg">-9.3%</td><td rowspan="10">医药板块 8/21→8/26 整体崩（行业派发），个股P2也无效</td></tr>
+<tr><td>8/21</td><td>华大智造</td><td><span class="pill p3">P3</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-11.0%</td></tr>
+<tr><td>8/21</td><td>百普赛斯</td><td><span class="pill p3">P3</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-10.7%</td></tr>
+<tr><td>8/21</td><td>沃森生物</td><td><span class="pill p2">P2</span></td><td><span class="pill p-go">推仓</span></td><td class="neg">-5.2%</td></tr>
+<tr><td>8/21</td><td>华兰股份</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-8.9%</td></tr>
+<tr><td>8/21</td><td>阿莱德</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-9.6%</td></tr>
+<tr><td>8/21</td><td>义翘神州</td><td><span class="pill p2">P2</span></td><td><span class="pill p-go">推仓</span></td><td class="neg">-9.7%</td></tr>
+<tr><td>8/21</td><td>联得装备</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-7.6%</td></tr>
+<tr><td>8/21</td><td>新开源</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-6.4%</td></tr>
+<tr><td>8/21</td><td>海森药业</td><td><span class="pill p2">P2</span></td><td><span class="pill p-go">推仓</span></td><td class="neg">-6.4%</td></tr>
+<tr><td>8/25</td><td>键凯科技</td><td><span class="pill p3">P3</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-18.4%</td><td>单票54.6%净资+追P3，惨案</td></tr>
+<tr><td>8/25</td><td>中石科技</td><td><span class="pill p2">P2</span></td><td><span class="pill p-go">推仓</span></td><td class="pos">+6.5%</td><td rowspan="3" class="pos">液冷/散热：框架「可推」且3日全赢——抓到你错过的PTFE/液冷</td></tr>
+<tr><td>8/25</td><td>飞龙股份</td><td><span class="pill p2">P2</span></td><td><span class="pill p-go">推仓</span></td><td class="pos">+3.4%</td></tr>
+<tr><td>8/25</td><td>同飞股份</td><td><span class="pill p1">P1→P2</span></td><td><span class="pill p-go">推仓</span></td><td class="pos">+8.0%</td></tr>
+<tr><td>8/25</td><td>申菱环境</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-1.0%</td><td rowspan="8">8/25液冷/激光集群多为派发（c60转负），框架不推→避开</td></tr>
+<tr><td>8/25</td><td>频准激光</td><td><span class="pill px">次新</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-6.2%</td></tr>
+<tr><td>8/25</td><td>和胜股份</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="pos">+3.4%</td></tr>
+<tr><td>8/25</td><td>瑞松科技</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-0.3%</td></tr>
+<tr><td>8/25</td><td>电连技术</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-2.0%</td></tr>
+<tr><td>8/25</td><td>英诺激光</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="pos">+5.4%</td></tr>
+<tr><td>8/25</td><td>博杰股份</td><td><span class="pill pdf">派发</span></td><td><span class="pill p-no">不推</span></td><td class="neg">-4.0%</td></tr>
+</tbody></table>
+<div class="note">8/26、8/27、8/30 快照（迈为/正帆/强一/C高凯/频准等）已定阶：迈为8/27已升 P3（钝化风险）、强一/C高凯为次新（不进主仓）、正帆 P2·钝化。3日收益待 8/31 后市场开出再补。</div>
+
+<h3>3.5 结论（给你的）</h3>
+<div class="bad lead">
+<b>①你的问题不在框架，在「买错了阶段」。</b> 真实持仓 3 日胜率 24%，但亏损几乎全来自框架判定「不推」的 P3/派发/次新——满仓次新、追 P3 键凯（-18.4%，单票54.6%）。<b>照框架只做 P1/P2，胜率能翻到 43%、亏损砍 2/3。</b>
+</div>
+<div class="good lead">
+<b>②框架抓到了你错过的机会。</b> 8/25 液冷/散热（中石+6.5%、同飞+8.0%、飞龙+3.4%）正是你说的「PTFE/液冷周一没拿住」——它们当时是 P2 可推且 3 日赢了。<b>新题材节点 + P2，就是你要的拐点满仓机会。</b>
+</div>
+<div class="warn lead">
+<b>③最大残差风险：行业派发。</b> 8/21 医药 10 只全灭（0/10），连框架判「可推」的 4 只也跌——因为医药整体派发，个股 P2 挡不住。<b>所以你让我判的「大盘+行业贝塔」不是锦上添花，是必加门控：板块派发家数≫P3 时，该板块不推，哪怕个股漂亮。</b>
+</div>
+
+<!-- ============ 四、行动 ============ -->
+<h2>四、落地建议（10分制自评）</h2>
+<table><thead><tr><th>动作</th><th>紧迫度</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>主仓只买 P1→P2 / P2，满仓单/双票</td><td>🔴 必做</td><td>框架「可推」胜率43%，是你挣钱的主引擎</td></tr>
+<tr><td>次新 / 追 P3 = 禁区，只进打野小仓</td><td>🔴 必做</td><td>你 24% 胜率的最大失血点（频准/键凯）</td></tr>
+<tr><td>每笔买入先判行业派发（板块级）</td><td>🔴 必做</td><td>挡住 8/21 医药式全灭</td></tr>
+<tr><td>新题材（PTFE/散热/液冷）给早期观察名单升级权</td><td>🟡 加分</td><td>对齐你「新东西优先、节点位置」</td></tr>
+<tr><td>总杠杆压到≤150%、单票≤50%净资</td><td>🟡 加分</td><td>不压你到15%，但设激进版红线</td></tr>
+</tbody></table>
+
+<div class="foot">
+数据：新浪日K（真实成交）｜ 阶段判定：pair-pricing-framework 模块11 修正分类器 ｜ 回测样本 21 笔（8/21+8/25）｜ 8/26+ 收益待 8/31 后补 ｜ 本报告为模型信号，决策由你定。
+</div>
+</div></body></html>

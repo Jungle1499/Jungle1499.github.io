@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260902</title>
+<style>
+  :root{
+    --bg:#F5F7FA;
+    --card-white:#FFFFFF;
+    --card-border:#DBE3EC;
+    --card-border-strong:#ACB6C5;
+    --ink:#1F2937;
+    --sub:#64748B;
+    --heading:#1E3A5F;
+    --up:#DC2626;
+    --down:#16A34A;
+    --accent-blue:#2563EB;
+    --p0:#DC2626;
+    --p1:#B45309;
+    --tui:#64748B;
+    --thead-bg:#F1F5F9;
+    --callout-bg:#F8FAFC;
+    --fs-title:16.8px;
+    --fs-section:13.0px;
+    --fs-subhead:11.4px;
+    --fs-body:10.8px;
+    --fs-table:10.5px;
+    --fs-idx-name:9.6px;
+    --fs-idx-val:17.4px;
+    --fs-idx-sub:9.8px;
+    --fs-foot:9.0px;
+    --fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:#FFFFFF;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .page{
+    width:840px;
+    margin:0 auto;
+    background:var(--bg);
+    padding-bottom:30px;
+  }
+
+  /* ===== HEADER ===== */
+  .header{
+    background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);
+    color:#FFFFFF;
+    text-align:center;
+    padding:26px 0 24px;
+  }
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+
+  /* ===== GENERIC CARD (white, light border) ===== */
+  .card{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    margin:0 12px 14px;
+  }
+  .card-inner{padding:14px 16px;}
+
+  /* ===== 首屏结论 card ===== */
+  .summary-card{
+    background:var(--card-white);
+    border:1px solid var(--card-border-strong);
+    border-radius:4px;
+    margin:0 12px 16px;
+    padding:16px 18px;
+  }
+  .summary-head{
+    font-size:var(--fs-subhead);
+    color:var(--heading);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{
+    display:inline-block;
+    color:#fff;
+    font-size:var(--fs-chip);
+    font-weight:700;
+    padding:1px 8px;
+    border-radius:3px;
+    margin-right:6px;
+    vertical-align:middle;
+  }
+  .chip-p0{background:var(--p0);}
+  .chip-p1{background:var(--p1);}
+  .chip-tui{background:var(--tui);}
+  .sum-text{color:var(--ink);}
+
+  /* ===== SECTION HEADING ===== */
+  .section{margin-bottom:14px;}
+  .sec-title{
+    font-size:var(--fs-section);
+    color:var(--heading);
+    font-weight:700;
+    padding:0 12px 6px;
+    border-bottom:2px solid var(--heading);
+    margin:0 12px 10px;
+  }
+
+  /* ===== INDEX GRID ===== */
+  .idx-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    margin:0 12px 12px;
+  }
+  .idx-cell{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    padding:8px 10px;
+    text-align:left;
+  }
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}
+  .idx-val.down{color:var(--down);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+
+  /* ===== STATS / CALLOUT ===== */
+  .stats-line{
+    font-size:var(--fs-idx-sub);
+    color:var(--sub);
+    margin:0 12px 8px;
+    line-height:1.8;
+  }
+  .callout{
+    background:var(--callout-bg);
+    border-left:3px solid var(--accent-blue);
+    border-radius:0 4px 4px 0;
+    padding:10px 14px;
+    margin:0 12px 14px;
+    font-size:var(--fs-idx-sub);
+    color:var(--sub);
+    line-height:1.8;
+  }
+  .callout b{color:var(--ink);}
+  .callout-warn{
+    background:#FEF3C7;
+    border-left:3px solid #D97706;
+  }
+
+  /* ===== TABLES ===== */
+  .tbl{
+    width:calc(100% - 24px);
+    margin:0 12px 14px;
+    border-collapse:collapse;
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    font-size:var(--fs-table);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .tbl thead th{
+    background:var(--thead-bg);
+    color:var(--sub);
+    font-weight:600;
+    text-align:left;
+    padding:7px 10px;
+    border-bottom:1px solid var(--card-border);
+    font-size:var(--fs-table);
+  }
+  .tbl tbody td{
+    padding:7px 10px;
+    border-bottom:1px solid #EEF1F4;
+    color:var(--ink);
+    vertical-align:top;
+    font-size:var(--fs-table);
+  }
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}
+  .down{color:var(--down);font-weight:600;}
+  .badge-in{color:var(--up);}
+  .badge-out{color:var(--down);}
+
+  table.tbl{table-layout:fixed;}
+
+  /* board tags */
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}
+  .tag-p1{background:var(--p1);}
+  .tag-p2{background:#7C3AED;}
+  .tag-p3{background:#475569;}
+
+  .lhb-buy{color:var(--up);font-weight:700;}
+  .lhb-sell{color:var(--down);font-weight:700;}
+
+  /* ===== DRIVER ===== */
+  .driver{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    margin:0 12px 12px;
+    padding:12px 16px;
+  }
+  .driver-h{
+    font-size:var(--fs-body);
+    font-weight:700;
+    color:var(--heading);
+    margin-bottom:6px;
+  }
+  .driver-h .lv{font-size:var(--fs-chip);font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .lv-p0{background:var(--p0);}
+  .lv-p1{background:var(--p1);}
+  .dblk{font-size:var(--fs-body);line-height:1.7;margin-bottom:5px;}
+  .dblk b{color:var(--heading);}
+
+  /* ===== FOOTER ===== */
+  .disclaimer{
+    font-size:var(--fs-foot);
+    color:var(--sub);
+    margin:0 12px 10px;
+    line-height:1.7;
+  }
+  .foot-line{
+    font-size:var(--fs-foot);
+    color:var(--sub);
+    text-align:center;
+    margin:0 12px;
+    line-height:1.8;
+  }
+  .foot-src{font-size:8.6px;color:#9aa3ad;margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-09-02（周三）· 数据源：腾讯自选股 / 东方财富 / 证券时报 / 证券日报 · 收盘后全维复盘</div>
+  </div>
+
+  <!-- 首屏结论 -->
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）</div>
+    <div class="sum-row"><span class="chip chip-p0">P0 最强主线</span><span class="sum-text"><b>军工（兵装重组 / 地面兵装 / 军贸链）</b> —— 普跌日唯一成建制逆势主线：地面兵装Ⅱ <span class="up">+6.48%</span>（全市场行业第一 · 热度榜第1 · 11/12只上涨）、兵装重组概念 <span class="up">+4.52%</span>（主力+8.26亿）、中兵系 <span class="up">+2.70%</span>、印巴冲突概念 <span class="up">+2.88%</span>；<b>军民融合主力净流入 +30.98亿 = 全市场概念资金第一</b>（128/268只上涨）。内蒙一机2连板（1.81亿大单直线封板）、长城军工/建设工业/博云新材涨停、北方长龙 <span class="up">+13.90%</span>。军工概念涨停9只、军工集团3只、国防军工（申万一）3只。驱动五重：地缘冲突事件 + 珠海航展临近 + 军贸"十五五"增量 + 2027建军百年备货 + 兵装重组预期。符合 ㊽ 事件驱动新主线 P1。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1</span><span class="sum-text"><b>北证50 事件脉冲</b> —— 全市场唯一红盘指数 <span class="up">+2.50%</span>（1106.57点），驱动为 9月2日北交所宣布设立五周年；微盘股概念 <span class="up">+0.72%</span>（125/447上涨）。属 ㊼ 脉冲一日游预警范畴，事件兑现即走，<b>不追高</b>。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1</span><span class="sum-text"><b>玻璃玻纤 / 电网设备 / PCB（机构低位承接）</b> —— 玻璃玻纤 <span class="up">+1.23%</span>（主力+10.92亿 · 九鼎新材涨停）；电网设备 -0.45% 但主力 <span class="badge-in">+14.17亿</span>（价跌钱进=底背离吸筹，神马电力/太阳电缆涨停）；PCB 沃特股份 5天4板 <span class="up">+9.99%</span>。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="sum-text"><b>农业转基因（昨日 P0 · 一日崩塌）</b> —— 种植业 <span class="down">-5.93%</span>（全市场行业倒数第1 · 主力-13.07亿）、转基因概念 <span class="down">-5.34%</span>、玉米 <span class="down">-5.25%</span>、大豆 <span class="down">-4.24%</span>；敦煌种业、国投丰乐 <b>双双跌停</b>，昨日20cm龙头神农种业 <span class="down">-11.39%</span>（主力-4.13亿），万向德农冲高回落仅 <span class="up">+3.30%</span>（换手34.86%天量、振幅11.75%、主力-1.56亿 = ⑳高位放量出货）。独苗新赛股份涨停但主力 <span class="badge-out">-1.21亿</span> → <b>三-⑦ 独苗豁免不适用（资金证伪）</b>。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="sum-text"><b>科技硬件 + 资源金属系统性杀跌</b> —— 半导体 <span class="down">-1.76%</span>（主力 <span class="badge-out">-88.07亿</span> 全市场第一流出，20日 -840.76亿）、通信设备 <span class="down">-2.53%</span>（-66.60亿，"易中天"新易盛/中际旭创/天孚通信盘中跌超5%）、元件 <span class="down">-1.74%</span>（-43.81亿）、软件开发 <span class="down">-2.17%</span>；资源端焦炭Ⅱ <span class="down">-3.71%</span>、能源金属 <span class="down">-3.44%</span>、小金属 <span class="down">-3.07%</span>、钨概念 <span class="down">-3.11%</span>（-18.45亿）。㊸ 20日资金门控全部关闭。</span></div>
+    <div class="sum-row"><span class="sum-text"><b>市场状态：普跌调整 + 主线大切换（军工接棒农业）</b> —— 沪指 <span class="down">-0.97%</span>（3941.39，守住3932低点）、创业板 <span class="down">-2.39%</span> 破位、科创50 <span class="down">-1.82%</span>；涨跌 1541:3901（涨股比仅27%）、涨停55只、跌停9只；成交 17911.78亿 <b>缩量2422.24亿（-11.9%）</b> —— 缩量下跌=抛压不重而非恐慌出逃。外围：纳指-1.03%、日韩盘中跌超2%、美元走强+地缘风险升温。风格：<b>科技成长 → 军工事件 + 银行红利防御</b>（国有大行+0.57%，6/6全涨，工行/建行复权价再创历史新高）。</span></div>
+  </div>
+
+  <!-- 一、市场概览 -->
+  <div class="section">
+    <div class="sec-title">一、市场概览</div>
+    <div class="idx-grid">
+      <div class="idx-cell"><div class="idx-name">上证指数</div><div class="idx-val down">3941.39</div><div class="idx-sub">-0.97% · 成交 8354 亿</div></div>
+      <div class="idx-cell"><div class="idx-name">深证成指</div><div class="idx-val down">13611.55</div><div class="idx-sub">-1.88% · 成交 9558 亿</div></div>
+      <div class="idx-cell"><div class="idx-name">创业板指</div><div class="idx-val down">3312.24</div><div class="idx-sub">-2.39% · 破位</div></div>
+      <div class="idx-cell"><div class="idx-name">科创50</div><div class="idx-val down">1617.60</div><div class="idx-sub">-1.82%</div></div>
+      <div class="idx-cell"><div class="idx-name">沪深300</div><div class="idx-val down">4547.96</div><div class="idx-sub">-1.38%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证500</div><div class="idx-val down">7729.23</div><div class="idx-sub">-1.65%</div></div>
+      <div class="idx-cell"><div class="idx-name">上证50</div><div class="idx-val down">2914.44</div><div class="idx-sub">-0.93%</div></div>
+      <div class="idx-cell"><div class="idx-name">北证50</div><div class="idx-val up">1106.57</div><div class="idx-sub">+2.50% · 唯一红盘</div></div>
+      <div class="idx-cell"><div class="idx-name">全市场</div><div class="idx-val down">27%</div><div class="idx-sub">涨股比 · 情绪偏低</div></div>
+    </div>
+    <div class="stats-line">两市成交额 17911.78 亿（较昨日 20334 亿 <b>缩量 2422.24 亿，-11.9%</b>）；涨跌家数 1541 涨 / 3901 跌 / 112 平（涨股比 27.0%），涨停 55 只、跌停 9 只（注：中新经纬/证券日报口径为 54 涨停 / 8 跌停，沪深北三市成交 18203 亿，差异源于北交所是否计入，<b>此处以腾讯自选股口径为准并标注差异</b>）。指数普跌，仅北证50 单骑绝尘。</div>
+    <div class="callout"><b>市场画像：</b>情绪偏低（涨股比27%）、缩量下跌（量能-11.9%但无恐慌盘）、板块宽度极窄（仅军工+银行+玻璃玻纤成建制上涨）、风格从科技成长切向<b>军工事件驱动 + 银行红利防御</b>、外围风险偏好降温（纳指-1.03%/日韩跌超2%/美元走强）、存量博弈特征显著。<br><b>关键结构信号：</b>价跌量缩 + 涨停仍有55只 + 军工成建制涨停9只 = <b>结构性切换而非系统性崩塌</b>（㉒跷跷板）。</div>
+  </div>
+
+  <!-- 二、最强主线分级 -->
+  <div class="section">
+    <div class="sec-title">二、最强主线分级（P0→P3 · 含三阶段判定与 Pair 配对）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:5%">级别</th><th style="width:14%">方向</th><th style="width:19%">今日强度</th><th style="width:15%">资金（今日/5日/20日）</th><th style="width:22%">三阶段判定 + Pair 相对强弱</th><th style="width:25%">操作建议</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tag-mini tag-p0">P0</span></td>
+          <td><b>军工<br>兵装重组/地面兵装/军贸</b></td>
+          <td>地面兵装Ⅱ <span class="up">+6.48%</span><br>兵装重组 <span class="up">+4.52%</span><br>中兵系 <span class="up">+2.70%</span><br>印巴冲突 <span class="up">+2.88%</span><br>航空装备Ⅱ <span class="up">+0.93%</span></td>
+          <td><span class="badge-in">今日+30.98亿</span><br><span class="badge-in">5D+18.81亿</span><br><span class="badge-in">20D+7.27亿</span><br>（军民融合口径）</td>
+          <td><b>【三-①】P1 启动</b>（事件驱动 · ㊽）<br><b>Pair：内蒙一机(228亿) vs 长城军工(265亿)</b><br>市值匹配 · 地面兵装同业务<br><b>龙头=内蒙一机</b>（2连板+1.81亿大单封板，1天领先）<br>补涨=长城军工（首板）</td>
+          <td><b>重点参与</b>。P1 启动段为最佳介入窗口（三-③）。盯内蒙一机能否3连板、涨停家数维持≥6；回踩不破5日线低吸，<b>禁市价追高</b>。</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p1">P1</span></td>
+          <td><b>北证50<br>（北交所五周年）</b></td>
+          <td>北证50 <span class="up">+2.50%</span><br>微盘股概念 <span class="up">+0.72%</span><br>125/447 上涨</td>
+          <td>N/A（指数口径）<br>次新股主力 <span class="badge-out">-26.46亿</span></td>
+          <td><b>【三-①】P1 事件脉冲</b><br>㊼ 脉冲一日游预警<br>Pair：N/A（北交所个股数据未取到，<b>不编造</b>）</td>
+          <td><b>观望不追</b>。事件已兑现（五周年当日），次新股主力净流出26.46亿 = 资金不认。若明日冲高即为 ㉓ 减仓窗口。</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p1">P1</span></td>
+          <td><b>玻璃玻纤 / 电网设备 / PCB</b></td>
+          <td>玻璃玻纤 <span class="up">+1.23%</span><br>电网设备 <span class="down">-0.45%</span><br>PCB 沃特股份 <span class="up">+9.99%</span></td>
+          <td>玻璃玻纤 <span class="badge-in">+10.92亿</span><br>电网设备 <span class="badge-in">+14.17亿</span><br><b>价跌钱进</b>（20D -73.23亿）</td>
+          <td><b>【三-①】P2 分化</b><br><b>Pair：九鼎新材 vs 神马电力</b><br>电网设备=底背离吸筹象限<br>玻璃玻纤 20D <span class="badge-out">-74.33亿</span> 门控未全开</td>
+          <td><b>分歧低吸、不追高</b>。电网设备「价跌+主力+14.17亿」= 底背离吸筹信号；但20日仍-73.23亿，仓位≤5%试探。</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p2">P2</span></td>
+          <td><b>银行红利（防御）</b></td>
+          <td>国有大型银行Ⅱ <span class="up">+0.57%</span><br>6/6 全涨<br>邮储 <span class="up">+1.46%</span></td>
+          <td>今日 <span class="badge-out">-3.58亿</span><br>5D <span class="badge-in">+4.82亿</span><br>20D <span class="badge-in">+22.69亿</span></td>
+          <td><b>【三-①】P2→P3 高潮初期</b><br>工行/建行复权价创历史新高<br><b>⚠️量价背离：</b>价涨+主力-3.58亿<br>Pair：工商银行 vs 邮储银行</td>
+          <td><b>防御性配置，非进攻主线</b>。价涨钱出需警惕，若明日出现放量阴线即为 ㉓ 减仓窗口。</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>农业转基因<br>（昨日 P0）</b></td>
+          <td>种植业 <span class="down">-5.93%</span><br>转基因 <span class="down">-5.34%</span><br>玉米 <span class="down">-5.25%</span><br>大豆 <span class="down">-4.24%</span></td>
+          <td>种植业 <span class="badge-out">-13.07亿</span><br>粮食概念 <span class="badge-out">-18.30亿</span><br>玉米 <span class="badge-out">-16.30亿</span></td>
+          <td><b>【三-①】P3 → 退潮（一日完成）</b><br>㊺ P3 加速段锁盈已触发<br>⑳ 万向德农高位放量出货<br>Pair：新赛股份(涨停独苗) vs 敦煌种业(<span class="down">-9.98%</span>跌停)</td>
+          <td><b>清仓回避，反抽即走</b>。三-⑦ 独苗豁免不适用：新赛涨停但主力-1.21亿=资金证伪。敦煌种业/国投丰乐跌停封死=退潮确认。</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>科技硬件 + 资源金属</b></td>
+          <td>半导体 <span class="down">-1.76%</span><br>通信设备 <span class="down">-2.53%</span><br>元件 <span class="down">-1.74%</span><br>小金属 <span class="down">-3.07%</span></td>
+          <td>半导体 <span class="badge-out">-88.07亿</span>（全市场第一）<br>通信设备 <span class="badge-out">-66.60亿</span><br>元件 <span class="badge-out">-43.81亿</span><br>钨概念 <span class="badge-out">-18.45亿</span></td>
+          <td><b>【三-①】退潮中继</b><br>㊸ 20日资金门控关闭：<br>半导体 20D <span class="badge-out">-840.76亿</span><br>通信设备 20D <span class="badge-out">-280.48亿</span></td>
+          <td><b>严格回避</b>。20日资金线大幅为负，任何反弹按 ㉓ 减仓窗口处理，不参与抄底。</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-warn"><b>⚠️ R-Judge 归因（对 9/1 报告的自我校验 · 命中 4/5 = 80%）：</b><br>
+    ✅ <b>正确</b>：9/1 判「数字媒体/传媒 P1 + ㊼脉冲预警」→ 9/2 影视院线-3.10%/出版-2.80%/广告营销-2.73% 全面退潮，预警生效。<br>
+    ✅ <b>正确</b>：9/1 判「退潮=元件/半导体/消费电子」→ 9/2 半导体-1.76%资金-88.07亿、元件-1.74%，退潮延续。<br>
+    ✅ <b>正确</b>：9/1 判「P2=保险/银行红利防御」→ 9/2 国有大行+0.57%、6/6全涨。<br>
+    ❌ <b>严重误判</b>：9/1 判「P0=农业转基因 P2→P3 加速 + ㊹真趋势豁免」→ 9/2 种植业-5.93% 全市场倒数第一，一日崩塌。<b>根因（三-④确认滞后认知）</b>：龙头已6连板、板块20日涨幅+41.5%、换手率爆至34.86%天量，此三项同时出现时已属 P3 顶部特征，却误判为"加速"。<br>
+    ❌ <b>漏判</b>：9/1 未将军工升格（当日地面兵装已列 5日涨幅 TOP 第5位 +6.7%、内蒙一机 +10.02%，线索已存在但未识别）。<br>
+    <b>修正建议（供 20:30 归因固化）</b>：① 事件驱动型主线的 P3 顶部识别阈值需量化（龙头连板≥6板 + 板块20日涨幅>40% + 龙头单日换手>30% 三项命中两项即判 P3 顶部，不得再给"加速"评级）；② 5日涨幅 TOP10 内的板块，若当日出现涨停且资金正流入，应强制升格为 P1 候选做二段确认，不得遗漏。</div>
+  </div>
+
+  <!-- 三、概念板块涨幅 TOP（趋势强度） -->
+  <div class="section">
+    <div class="sec-title">三、今日概念板块涨幅 TOP（趋势强度 · 同花顺概念口径）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:20%">概念板块</th><th style="width:12%">今日</th><th style="width:16%">主力净流入</th><th style="width:14%">5日资金</th><th style="width:12%">涨/总</th><th style="width:26%">龙头（涨幅）</th></tr></thead>
+      <tbody>
+        <tr><td><b>昨日连板</b></td><td class="up">+3.51%</td><td class="down">-10.76亿</td><td class="down">-37.73亿</td><td>12/18</td><td>大晟文化 <span class="up">+10.08%</span></td></tr>
+        <tr><td><b>印巴冲突概念</b></td><td class="up">+2.88%</td><td class="up">+7.42亿</td><td class="up">+16.76亿</td><td>9/11</td><td>内蒙一机 <span class="up">+10.01%</span>（2连板）</td></tr>
+        <tr><td><b>无人战机</b></td><td class="up">+2.76%</td><td class="up">+2.33亿</td><td class="up">+5.21亿</td><td>5/6</td><td>晶品特装 <span class="up">+9.20%</span></td></tr>
+        <tr><td><b>中兵系</b></td><td class="up">+2.70%</td><td class="up">+11.38亿</td><td class="up">+16.93亿</td><td>14/19</td><td>建设工业 <span class="up">+10.01%</span></td></tr>
+        <tr><td><b>军民融合</b></td><td class="up">+0.69%</td><td class="up"><b>+30.98亿</b></td><td class="up">+36.71亿</td><td>128/268</td><td>北方长龙 <span class="up">+13.90%</span></td></tr>
+        <tr><td><b>新质战斗力</b></td><td class="up">+0.75%</td><td class="up">+3.20亿</td><td class="up">+10.93亿</td><td>8/11</td><td>北方导航 <span class="up">+4.59%</span></td></tr>
+        <tr><td><b>军工央企</b></td><td class="up">+0.66%</td><td class="up">+9.26亿</td><td class="up">+21.13亿</td><td>49/89</td><td>建设工业 <span class="up">+10.01%</span></td></tr>
+        <tr><td><b>军工集团</b></td><td class="up">+0.64%</td><td class="up">+9.19亿</td><td class="up">+20.94亿</td><td>49/89</td><td>建设工业 <span class="up">+10.01%</span></td></tr>
+        <tr><td><b>碳纤维概念</b></td><td class="up">+0.56%</td><td class="up">+5.98亿</td><td class="up">+2.91亿</td><td>25/50</td><td>博云新材 <span class="up">+10.01%</span></td></tr>
+        <tr><td><b>中航系</b></td><td class="up">+0.53%</td><td class="up">+5.00亿</td><td class="up">+16.76亿</td><td>11/18</td><td>中航成飞 <span class="up">+4.34%</span></td></tr>
+        <tr><td><b>稳定币概念</b></td><td class="up">+0.56%</td><td class="up">+0.64亿</td><td class="down">-3.70亿</td><td>1/7</td><td>恒宝股份 <span class="up">+10.02%</span>（2连板）</td></tr>
+        <tr><td colspan="6" style="background:#FEF3C7;color:#92400E;font-weight:700;">— 跌幅榜（退潮确认）—</td></tr>
+        <tr><td><b>转基因</b></td><td class="down">-5.34%</td><td class="down">-12.17亿</td><td class="up">+6.23亿</td><td>3/20</td><td>万向德农 <span class="up">+3.30%</span>（冲高回落）</td></tr>
+        <tr><td><b>玉米</b></td><td class="down">-5.25%</td><td class="down">-16.30亿</td><td>—</td><td>—</td><td>万向德农 <span class="up">+3.30%</span></td></tr>
+        <tr><td><b>大豆</b></td><td class="down">-4.24%</td><td class="down">-4.27亿</td><td>—</td><td>—</td><td>祖名股份 <span class="up">+1.34%</span></td></tr>
+        <tr><td><b>粮食概念</b></td><td class="down">-4.06%</td><td class="down">-18.30亿</td><td>—</td><td>—</td><td>天禾股份 <span class="up">+10.06%</span></td></tr>
+        <tr><td><b>钨概念</b></td><td class="down">-3.11%</td><td class="down">-18.45亿</td><td>—</td><td>—</td><td>西部材料 <span class="up">+0.69%</span></td></tr>
+        <tr><td><b>农业种植</b></td><td class="down">-2.89%</td><td class="down">-19.11亿</td><td>—</td><td>—</td><td>天禾股份 <span class="up">+10.06%</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>板块选择说明：</b>本节全部板块均为 <b>2026-09-02 当日真实盘面扫描</b>得出（westock 概念板块全量 801 个排序 + 申万二级 124 个排序 + 热度榜交叉），<b>未沿用任何历史模板板块列表</b>。同花顺问财通道今日触发 429 限流（Exceeded the limit of 1000 times），已按韧性铁律降级至 westock + Wind + 东方财富妙想 + WebSearch（证券时报/中新经纬/证券日报/券商中国）四源交叉，≥4 源一致方采用。</div>
+  </div>
+
+  <!-- 四、主力资金流向 -->
+  <div class="section">
+    <div class="sec-title">四、主力资金流向（申万二级行业 · 单位：亿元）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:8%">方向</th><th style="width:17%">板块</th><th style="width:14%">今日涨跌</th><th style="width:15%">今日净流入</th><th style="width:15%">5日</th><th style="width:15%">20日</th><th style="width:16%">领涨股</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge-in">流入</span></td><td><b>军民融合</b>（概念）</td><td class="up">+0.69%</td><td class="up"><b>+30.98</b></td><td class="up">+36.71</td><td class="up">+36.71</td><td>北方长龙 <span class="up">+13.90%</span></td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>电网设备</b></td><td class="down">-0.45%</td><td class="up">+14.17</td><td class="down">-24.96</td><td class="down">-73.24</td><td>神马电力 <span class="up">+10.00%</span></td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>地面兵装Ⅱ</b></td><td class="up">+6.48%</td><td class="up">+12.81</td><td class="up">+18.81</td><td class="up">+7.27</td><td>北方长龙 <span class="up">+13.90%</span></td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>航空装备Ⅱ</b></td><td class="up">+0.93%</td><td class="up">+12.50</td><td class="up">+30.38</td><td class="up">+5.88</td><td>博云新材 <span class="up">+10.01%</span></td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>玻璃玻纤</b></td><td class="up">+1.23%</td><td class="up">+10.92</td><td class="up">+17.70</td><td class="down">-74.33</td><td>九鼎新材 <span class="up">+10.02%</span></td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>医疗服务</b></td><td class="up">+0.06%</td><td class="up">+10.41</td><td class="down">-13.64</td><td class="down">-70.57</td><td>阳光诺和 <span class="up">+4.01%</span></td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>消费电子</b></td><td class="down">-0.18%</td><td class="up">+8.25</td><td class="up">+21.33</td><td class="down">-82.05</td><td>奥尼电子 <span class="up">+11.56%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>半导体</b></td><td class="down">-1.76%</td><td class="down"><b>-88.07</b></td><td class="down">-167.51</td><td class="down"><b>-840.76</b></td><td>盛景微 <span class="up">+10.00%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>通信设备</b></td><td class="down">-2.53%</td><td class="down">-66.60</td><td class="down">-66.01</td><td class="down">-280.48</td><td>恒宝股份 <span class="up">+10.02%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>元件</b></td><td class="down">-1.74%</td><td class="down">-43.81</td><td class="up">+4.70</td><td class="down">-203.62</td><td>华正新材 <span class="up">+5.99%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>证券Ⅱ</b></td><td class="down">-2.13%</td><td class="down">-38.07</td><td class="down">-31.21</td><td class="down">-139.24</td><td>红塔证券 <span class="up">+0.14%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>工业金属</b></td><td class="down">-2.20%</td><td class="down">-37.72</td><td class="down">-103.25</td><td class="down">-144.45</td><td>海亮股份 <span class="up">+4.28%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>软件开发</b></td><td class="down">-2.17%</td><td class="down">-29.23</td><td class="up">+4.59</td><td class="down">-184.91</td><td>中电鑫龙 <span class="up">+5.23%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>电池</b></td><td class="down">-2.54%</td><td class="down">-29.00</td><td class="down">-84.99</td><td class="down">-198.49</td><td>金杨精密 <span class="up">+4.65%</span></td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>种植业</b></td><td class="down">-5.93%</td><td class="down">-13.07</td><td class="up">+6.23</td><td class="up">+29.25</td><td>新赛股份 <span class="up">+9.97%</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>⑪ 资金三档判据应用：</b>军民融合 +30.98亿 = <b>超大档流入</b>（&gt;30亿），构成 P0 资金确权；半导体 -88.07亿 = <b>超大档流出</b>，且 20日 -840.76亿 → ㊸ 门控永久关闭，任何反弹不予参与。<b>电网「价跌 -0.45% + 主力 +14.17亿」= 背离四象限之「底背离吸筹（低吸）」</b>，是今日唯一干净的低吸信号，但受 20日 -73.24亿 约束仅能小仓试探。</div>
+  </div>
+
+  <!-- 五、主线强度对比 -->
+  <div class="section">
+    <div class="sec-title">五、主线强度对比（军工链 vs 农业链 · 切换验证）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:20%">主线</th><th style="width:14%">今日板块</th><th style="width:14%">今日资金</th><th style="width:16%">龙头表现</th><th style="width:18%">梯队完整性（㉛）</th><th style="width:18%">结论</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>军工（新主线）</b></td>
+          <td>地面兵装 <span class="up">+6.48%</span></td>
+          <td class="up">+30.98亿</td>
+          <td>内蒙一机 <b>2连板</b><br>北方长龙 <span class="up">+13.90%</span></td>
+          <td><b>完整</b>：涨停9只（军工概念）<br>2连板1只 · 首板8只<br>无开板炸板</td>
+          <td class="up"><b>P1 启动 · 梯队健康</b><br>（三-① 主链路）</td>
+        </tr>
+        <tr>
+          <td><b>农业转基因（旧主线）</b></td>
+          <td>种植业 <span class="down">-5.93%</span></td>
+          <td class="down">-13.07亿</td>
+          <td>神农种业 <span class="down">-11.39%</span><br>敦煌种业 <span class="down">跌停</span></td>
+          <td><b>崩塌</b>：3/20 上涨<br>2只跌停（敦煌/国投丰乐）<br>独苗新赛主力 <span class="badge-out">-1.21亿</span></td>
+          <td class="down"><b>P3 → 退潮 · 一日完成</b><br>（㊺ 锁盈信号已触发）</td>
+        </tr>
+        <tr>
+          <td><b>科技硬件（退潮延续）</b></td>
+          <td>半导体 <span class="down">-1.76%</span></td>
+          <td class="down">-88.07亿</td>
+          <td>"易中天"盘中跌超5%<br>（新易盛/中际旭创/天孚）</td>
+          <td><b>无梯队</b>：21/180 上涨<br>20日 -840.76亿</td>
+          <td class="down"><b>退潮中继 · 门控关闭</b><br>（㊸）</td>
+        </tr>
+        <tr>
+          <td><b>银行红利（防御）</b></td>
+          <td>国有大行 <span class="up">+0.57%</span></td>
+          <td class="down">-3.58亿</td>
+          <td>邮储 <span class="up">+1.46%</span><br>工行/建行创历史新高</td>
+          <td><b>6/6 全涨</b>但资金净流出<br>= 量价背离</td>
+          <td><b>P2→P3 高潮初期 · 防御</b><br>警惕价涨钱出</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 六、连板天梯 -->
+  <div class="section">
+    <div class="sec-title">六、连板天梯（最强主线辨识度 · ㉛梯队完整性）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:8%">高度</th><th style="width:16%">个股</th><th style="width:10%">代码</th><th style="width:11%">今日</th><th style="width:13%">成交额</th><th style="width:13%">换手率</th><th style="width:29%">所属主线 / 备注</th></tr></thead>
+      <tbody>
+        <tr><td><b>5天4板</b></td><td><b>沃特股份</b></td><td>sz002886</td><td class="up">+9.99%</td><td>11.58亿</td><td>18.78%</td><td>PCB 概念 · 5日 <span class="up">+41.34%</span> / 20日 <span class="up">+63.09%</span>（独立妖股，非主线）</td></tr>
+        <tr><td><b>2连板</b></td><td><b>内蒙一机</b></td><td>sh600967</td><td class="up">+10.01%</td><td>8.46亿</td><td>3.82%</td><td><b>军工 P0 龙头</b> · 1.81亿大单直线封板 · 5日 <span class="up">+21.03%</span></td></tr>
+        <tr><td><b>2连板</b></td><td><b>恒宝股份</b></td><td>sz002104</td><td class="up">+10.02%</td><td>17.72亿</td><td>22.99%</td><td>互联金融/稳定币 · 主力 <span class="up">+2.11亿</span>（全市场第30）</td></tr>
+        <tr><td><b>首板</b></td><td><b>长城军工</b></td><td>sh601606</td><td class="up">+10.00%</td><td>21.40亿</td><td>8.20%</td><td>地面兵装 · <b>Pair 补涨位</b> · 5日 <span class="up">+19.56%</span></td></tr>
+        <tr><td><b>首板</b></td><td><b>建设工业</b></td><td>sz002265</td><td class="up">+10.01%</td><td>3.78亿</td><td>1.73%</td><td>中兵系/兵装重组 · 机构龙虎榜净买 <span class="up">+0.79亿</span></td></tr>
+        <tr><td><b>首板</b></td><td><b>博云新材</b></td><td>sz002297</td><td class="up">+10.01%</td><td>13.16亿</td><td>12.02%</td><td>航空装备/碳纤维 · 主力 <span class="up">+3.32亿</span>（全市场第16）</td></tr>
+        <tr><td><b>首板</b></td><td><b>杭电股份</b></td><td>sh603618</td><td class="up">+9.99%</td><td>47.22亿</td><td>19.13%</td><td>光纤概念 · 年初 <span class="up">+361.79%</span>（高位）</td></tr>
+        <tr><td><b>首板</b></td><td><b>神马电力</b></td><td>sh603530</td><td class="up">+10.00%</td><td>3.93亿</td><td>1.88%</td><td>电网设备 · 底背离吸筹象限</td></tr>
+        <tr><td><b>首板</b></td><td><b>太阳电缆</b></td><td>sz002300</td><td class="up">+9.94%</td><td>4.24亿</td><td>7.86%</td><td>电网设备 · 量比 4.28</td></tr>
+        <tr><td><b>首板</b></td><td><b>顺控发展</b></td><td>sz003039</td><td class="up">+9.98%</td><td>2.58亿</td><td>3.22%</td><td>地下管网 · 量比 3.54</td></tr>
+        <tr><td><b>4板独苗</b></td><td><b>新赛股份</b></td><td>sh600540</td><td class="up">+9.97%</td><td>14.44亿</td><td>37.50%</td><td><b>农业退潮独苗</b> ⚠️ 主力 <span class="badge-out">-1.21亿</span> = 涨停出货，<b>三-⑦ 豁免不适用</b></td></tr>
+        <tr><td colspan="7" style="background:#FEF3C7;color:#92400E;font-weight:700;">— 跌停 / 崩塌榜（旧主线瓦解证据）—</td></tr>
+        <tr><td><b>跌停</b></td><td>敦煌种业</td><td>sh600354</td><td class="down">-9.98%</td><td>11.33亿</td><td>25.63%</td><td>农业 · 5日仍 <span class="up">+16.79%</span> → 高位跌停=⑳出货确认</td></tr>
+        <tr><td><b>跌停</b></td><td>国投丰乐</td><td>sz000713</td><td class="down">-9.94%</td><td>3.42亿</td><td>8.54%</td><td>农业 · 机构席位龙虎榜净卖 <span class="down">-272.57万</span></td></tr>
+        <tr><td><b>崩塌</b></td><td>神农种业</td><td>sz300189</td><td class="down">-11.39%</td><td>25.58亿</td><td>42.00%</td><td><b>昨日20cm龙头</b> · 主力 <span class="down">-4.13亿</span>（20日仍+8.83亿→派发中）</td></tr>
+        <tr><td><b>冲高回落</b></td><td>万向德农</td><td>sh600371</td><td class="up">+3.30%</td><td>14.53亿</td><td><b>34.86%</b></td><td>最高14.97→收14.42，<b>振幅11.75%</b> · 主力 <span class="down">-1.56亿</span> = ⑳ 教科书出货</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>㉛ 连板梯队完整性判读：</b>军工梯队 = 2连板1只（内蒙一机）+ 首板8只（长城军工/建设工业/博云新材等），<b>梯队完整、无炸板、龙头封单1.81亿</b> → P1 启动段标准形态。农业梯队 = 4板独苗1只 + 2只跌停 + 龙头-11.39% ，<b>梯队断裂</b>（高标崩塌、无中位衔接）→ 退潮确认。全市场涨停 55 只（昨日 86 只），㊱ 情绪缩圈至军工单一主线。</div>
+  </div>
+
+  <!-- 七、龙虎榜博弈 -->
+  <div class="section">
+    <div class="sec-title">七、龙虎榜博弈（机构 vs 游资 · 2026-09-02）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:16%">个股</th><th style="width:10%">代码</th><th style="width:11%">今日</th><th style="width:15%">机构净买</th><th style="width:15%">席位净买</th><th style="width:33%">解读</th></tr></thead>
+      <tbody>
+        <tr><td><b>飞龙股份</b></td><td>sz002536</td><td class="up">+10.00%</td><td class="up">+1.44亿（4家）</td><td class="up">+1.44亿</td><td><b>机构净买全市场第1</b> · 成交32.60亿 · 主力 <span class="up">+6.12亿</span>（全市场第5）· 液冷/热管理</td></tr>
+        <tr><td><b>鸿合科技</b></td><td>sz002955</td><td class="up">+2.28%</td><td class="up">+1.19亿（5家）</td><td class="up">+1.19亿</td><td>3日榜 · 5家机构齐买 · 教育信息化</td></tr>
+        <tr><td><b>博云新材</b></td><td>sz002297</td><td class="up">+10.01%</td><td class="up">+0.79亿（4家）</td><td class="up">+0.79亿</td><td><b>军工链唯一机构重仓打板</b> · 4家机构买入，印证 P0 主线机构认可</td></tr>
+        <tr><td><b>捷荣技术</b></td><td>sz002855</td><td class="up">+7.34%</td><td class="up">+0.59亿（4家）</td><td class="up">+0.59亿</td><td>3日榜累计净买 +1.14亿</td></tr>
+        <tr><td><b>康盛股份</b></td><td>sz002418</td><td class="up">+2.29%</td><td class="down">-0.21亿</td><td class="up"><b>+2.25亿</b></td><td>游资主导 · 席位净买全市场第1 · 3日榜 <span class="up">+2.25亿</span></td></tr>
+        <tr><td><b>新朋股份</b></td><td>sz002328</td><td class="up">+3.61%</td><td class="down">-0.34亿</td><td class="up">+1.95亿</td><td>游资接力 · 机构小幅派发</td></tr>
+        <tr><td><b>通源石油</b></td><td>sz300164</td><td class="up">+1.13%</td><td class="down">-1.33亿</td><td class="up">+1.90亿</td><td>游资接盘 · <b>机构大额派发 -1.33亿</b>（油服工程）</td></tr>
+        <tr><td><b>恒宝股份</b></td><td>sz002104</td><td class="up">+10.02%</td><td class="down">-0.85亿</td><td class="up">+1.30亿</td><td>2连板 · 机构派发 vs 游资接盘 · 主力仍 <span class="up">+2.11亿</span></td></tr>
+        <tr><td><b>楚天龙</b></td><td>sz003040</td><td class="up">+7.87%</td><td class="down">-0.51亿</td><td class="up">+0.83亿</td><td>3日榜机构累计派发 <span class="down">-0.73亿</span></td></tr>
+        <tr><td><b>神农种业</b></td><td>sz300189</td><td class="down">-11.39%</td><td class="down">-0.20亿</td><td class="up">+0.49亿</td><td><b>农业崩塌证据</b>：机构席位净卖1955万，散户接盘（小单净买 <span class="up">+3.47亿</span>）= 典型派发</td></tr>
+        <tr><td><b>国投丰乐</b></td><td>sz000713</td><td class="down">-9.94%</td><td class="down">-0.03亿</td><td class="up">+0.10亿</td><td>跌停 · 机构净卖272.57万</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>㊱ 游资席位拆解：</b>今日机构资金 <b>明确站在军工一侧</b>——博云新材 4家机构净买 +0.79亿 是军工链唯一的机构打板席位，叠加飞龙股份 4家机构 +1.44亿（液冷/高端制造同源），说明<b>机构在普跌中主动加仓军工与高端制造</b>；反观农业链，神农种业机构席位净卖、小单净买 +3.47亿，<b>机构派发 → 散户接盘</b>结构清晰，为退潮终局确认。</div>
+  </div>
+
+  <!-- 八、核心驱动（四层拆解 + 四理论合一） -->
+  <div class="section">
+    <div class="sec-title">八、核心驱动（四层拆解）</div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>军工（兵装重组 / 地面兵装 / 军贸链）</div>
+      <div class="dblk"><b>① 事件层：</b>地缘冲突持续（印巴冲突概念 <span class="up">+2.88%</span>）+ 珠海航展临近 + 军贸"十五五"增量方向 + 2027建军百年备货周期 + 兵装重组预期（兵装重组概念 <span class="up">+4.52%</span>，主力 +8.26亿）。</div>
+      <div class="dblk"><b>② 资金层：</b>军民融合主力 <span class="up">+30.98亿</span>（全市场概念第一）· 地面兵装 <span class="up">+12.81亿</span> · 航空装备 <span class="up">+12.50亿</span> · 中兵系 <span class="up">+11.38亿</span> · 军工央企 <span class="up">+9.26亿</span> —— <b>五口径同步正流入，非单点脉冲</b>。</div>
+      <div class="dblk"><b>③ 技术层：</b>地面兵装Ⅱ 20日资金 <span class="up">+7.27亿</span>、航空装备Ⅱ 20日 <span class="up">+5.88亿</span> —— <b>20日线为正，㊸ 门控开启</b>（对比半导体 20日 -840.76亿）。板块此前沉寂较久，位置低、筹码干净。</div>
+      <div class="dblk"><b>④ 情绪层：</b>军工概念涨停 9 只（全市场主题第一）、梯队完整（2连板1 + 首板8）、龙头封单 1.81亿。<b>㊱ 情绪缩圈至军工单一主线</b>，符合 ㊽ 事件驱动新主线 P1 特征。</div>
+      <div class="dblk"><b>⑤ 三阶段判定（三-①）：P1 启动</b> —— 首次成建制涨停（9只）+ 机构同步介入（博云新材4家机构）+ 20日资金转正。T+1 演进预判：<b>P1→P2 推进</b>（需内蒙一机3连板 + 涨停家数维持≥6 确认）。</div>
+      <div class="dblk"><b>⑥ Pair 配对（三-②）：内蒙一机（sh600967，228亿） vs 长城军工（sh601606，265亿）</b> —— 市值匹配、同属地面兵装/弹药业务、今日涨幅最大两只（均涨停）。<b>相对强弱：内蒙一机 2连板领先 1 天 = 龙头</b>；长城军工首板 21.40亿成交更大 = 补涨弹性位。<b>操作：做龙头回踩，补涨位仅作情绪温度计，不单独重仓</b>。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">退潮</span>农业转基因（9/1 的 P0 → 9/2 单日崩塌）</div>
+      <div class="dblk"><b>① 崩塌证据：</b>种植业 <span class="down">-5.93%</span>（全市场倒数第1）· 转基因 <span class="down">-5.34%</span> · 玉米 <span class="down">-5.25%</span> · 大豆 <span class="down">-4.24%</span> · 粮食概念主力 <span class="down">-18.30亿</span> · 农业种植 <span class="down">-19.11亿</span>。</div>
+      <div class="dblk"><b>② 个股瓦解：</b>敦煌种业 <span class="down">跌停</span>、国投丰乐 <span class="down">跌停</span>、神农种业 <span class="down">-11.39%</span>（昨日20cm龙头，今日主力 -4.13亿）、万向德农换手 <b>34.86% 天量</b> 冲高回落（振幅11.75%，主力 -1.56亿）。</div>
+      <div class="dblk"><b>③ 规则命中：</b><b>⑳ 高位放量出货=反转不接飞刀</b>（万向德农换手34.86% + 天量振幅 + 主力净流出）；<b>㊺ P3 加速段锁盈</b>；<b>三-④ 确认滞后认知</b>（9/1 误判"加速"实为 P3 顶部）。</div>
+      <div class="dblk"><b>④ 独苗处理（三-⑦）：</b>新赛股份 4板涨停，但主力 <span class="badge-out">-1.21亿</span>、换手 37.50% —— <b>资金证伪，独苗豁免条款不适用</b>。涨停 ≠ 资金进场（对抗自检命中）。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">市场层面：为什么是「缩量普跌 + 结构切换」而非系统性风险</div>
+      <div class="dblk"><b>量能证据：</b>成交 17911.78亿，<b>缩量 2422.24亿（-11.9%）</b> —— 缩量下跌说明<b>抛压不重，无恐慌盘出逃</b>；若为系统性风险必伴放量。</div>
+      <div class="dblk"><b>结构证据：</b>涨停仍有 55 只、军工成建制涨停 9 只、国有大行 6/6 全涨、北证50 <span class="up">+2.50%</span> —— <b>资金未离场，只是换方向</b>（㉒ 风格切换跷跷板）。</div>
+      <div class="dblk"><b>外围扰动：</b>纳指 -1.03%、日韩盘中跌超2%、美元走强 + 地缘风险升温 → 全球风险偏好降温，A股顺势技术性调整（巨丰投顾张翠霞观点，已交叉验证）。</div>
+      <div class="dblk"><b>关键位：</b>沪指最低 3932.25 未破 3930，收 3941.39 —— <b>守住 20日线上方，尚未触发铁律B（跌破3850降仓至30%）</b>，但已跌破 3950 整数关，需明日确认。</div>
+    </div>
+  </div>
+
+  <!-- 九、次日(T+1)预判推导（四理论合一） -->
+  <div class="section">
+    <div class="sec-title">九、次日（T+1）预判推导 · 四理论合一</div>
+    <div class="driver">
+      <div class="driver-h">① 交易框架（⑪~㊳）：规则如何支撑 T+1 方向</div>
+      <div class="dblk"><b>㊽ 事件驱动新主线 P1</b> → 军工事件（地缘冲突 + 珠海航展 + 军贸 + 兵装重组）<b>均未兑现</b>，P1 启动段具备延续性，支撑「国防军工 T+1 = 多」。</div>
+      <div class="dblk"><b>㉒ 风格切换跷跷板</b> → 今日科技杀跌（半导体 -88.07亿）释放的资金，若 AI 链不止跌将继续流向军工/防御，支撑军工延续、电子继续承压。</div>
+      <div class="dblk"><b>㊸ 20日资金门控</b> → 半导体 20日 -840.76亿、通信设备 -280.48亿、元件 -203.62亿，<b>门控全部关闭</b>，任何反弹按 ㉓ 减仓窗口处理，支撑「电子 T+1 = 空」。</div>
+      <div class="dblk"><b>㉓ 反弹=减仓窗口非反转确认</b> → 农业崩塌后 T+1 若技术性反抽，属减仓窗口而非反转，支撑「农林牧渔 T+1 = 空」。</div>
+      <div class="dblk"><b>㉕ 政策脉冲不追连板</b> + <b>㊼ 脉冲一日游预警</b> → 北交所五周年事件已兑现，北证50 T+1 冲高即减。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">② 自我学习（R-Judge 闭环）：历史命中率对置信度的约束</div>
+      <div class="dblk"><b>本次自我校验命中率 4/5 = 80%</b>（退潮预警3项全中 + P0 严重误判1项 + 漏判军工1项）。</div>
+      <div class="dblk"><b>关键教训：</b>事件驱动型 P0（农业转基因）在「龙头6连板 + 板块20日涨幅41.5% + 龙头单日换手34.86%」三项同时出现时已属 <b>P3 顶部</b>，9/1 却误判为"P2→P3 加速" → <b>事件驱动类 P0 的持仓周期必须压缩至 1-2 日，不得跨 P3</b>。</div>
+      <div class="dblk"><b>对本次置信度的约束：</b>军工同样属事件驱动型（㊽），因此本次「国防军工=多」的<b>置信度下调半档</b>——方向看多但仓位控制，且必须以「内蒙一机3连板 + 涨停家数≥6」作为 T+1 盘中确认条件，不预设满仓。</div>
+      <div class="dblk"><b>普跌日教训：</b>今日普跌（涨股比27%）若判"中性"将踏空军工 +6.48% → <b>普跌日更需给出明确结构性多头方向，禁止用"中性"回避判断</b>。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">③ 完善理论（规则固化迭代）：已吸收 vs 待归因盲区</div>
+      <div class="dblk"><b>已吸收并本次生效：</b>㊽ 事件驱动新主线 P1（军工判定依据）· ㊼ 脉冲一日游预警（北交所五周年、培育钻石）· ㊸ 20日资金门控（电子/通信回避）· ⑳ 高位放量出货（万向德农/敦煌种业）。</div>
+      <div class="dblk"><b>本次验证有效：</b>㊼ 对培育钻石的预警被盘面证实——黄河旋风盘中最高 <span class="up">+9%</span>（15.99元）收盘仅 <span class="up">+0.75%</span>（14.75元），振幅12.50%，典型冲高回落一日游。</div>
+      <div class="dblk"><b>待 20:30 归因固化盲区：</b>① 军工涨停家数≥9 后的次日衰减规律缺乏历史样本，无法给出精确衰减系数；② 北交所与主板的跷跷板关系无既定规则；③ 电网设备「价跌 + 主力+14.17亿 + 20日-73.24亿」的矛盾组合（底背离吸筹 vs 门控未开）缺乏优先级裁决规则。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">④ 三阶段理论（三-①~三-⑧）：阶段演进预判</div>
+      <div class="dblk"><b>军工：P1 启动 → T+1 预判 P1→P2 推进。</b>确认条件：内蒙一机 3连板 + 涨停家数维持≥6 + 军民融合主力续流入；证伪条件：龙头开板炸板 或 涨停家数腰斩至≤4。</div>
+      <div class="dblk"><b>农业转基因：P3 → 退潮（已确认）。</b>T+1 若有反抽 = ㉓ 减仓窗口，不参与。</div>
+      <div class="dblk"><b>北证50：P1 事件脉冲 → T+1 兑现回落</b>（㊼）。</div>
+      <div class="dblk"><b>半导体/元件/通信设备：退潮中继</b>，20日资金门控关闭，T+1 反弹不追。</div>
+      <div class="dblk"><b>银行红利：P2→P3 高潮初期</b>，价涨钱出（今日主力-3.58亿）需警惕，T+1 若放量阴线即减。</div>
+      <div class="dblk"><b>三-⑥ stage-aware 方向表（明日权重）：</b>军工 P1（进攻，可配）· 电网/玻璃玻纤 P2（试探≤5%）· 银行 P2→P3（防御，减）· 农业/电子 P3→退潮（回避，0仓位）。</div>
+    </div>
+    <div class="callout callout-warn">
+      <b>【T+1 结论（供 20:30 回测机械解析）】</b><br>
+      <b>大势：</b>沪指 = <b>中性</b>（缩量调整守住3932、无恐慌盘，但跌破3950整数关需确认）· 创业板 = <b>空</b>（-2.39%破位、科技链20日门控关闭、"易中天"杀跌未止）<br>
+      <b>板块：</b>国防军工 = <b>多</b> · 电子 = <b>空</b> · 农林牧渔 = <b>空</b><br>
+      <b>主线：</b>兵装重组 / 地面兵装，军工装备<br>
+      <b>仓位建议：</b>军工 10-15%（单票≤10%，回踩低吸不追高）· 电网/玻璃玻纤试探≤5% · 农业/电子 0 仓位 · 总仓位较今日<b>不主动加仓</b>，等军工 T+1 确认后再决定是否升配。
+    </div>
+  </div>
+
+  <!-- 十、次日关注清单 -->
+  <div class="section">
+    <div class="sec-title">十、次日（9月3日）关注清单</div>
+    <table class="tbl">
+      <thead><tr><th style="width:6%">优先级</th><th style="width:20%">方向 / 标的</th><th style="width:26%">关注要点（可证伪条件）</th><th style="width:22%">触发动作</th><th style="width:26%">风险控制</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag-mini tag-p0">①</span></td><td><b>内蒙一机</b> sh600967<br><span style="color:#64748B">（军工龙头 · 2连板）</span></td><td>能否 <b>3连板</b>；封单是否≥1亿；若开板炸板 → P1 证伪</td><td>3连板且封单稳 → 持有/回踩5日线低吸；炸板 → 不参与</td><td>单票≤10%；破 5日线（约12.6）止损</td></tr>
+        <tr><td><span class="tag-mini tag-p0">②</span></td><td><b>军工梯队完整性</b><br><span style="color:#64748B">（长城军工/建设工业/博云新材）</span></td><td>军工概念涨停家数是否<b>维持≥6</b>（今日9只）；腰斩至≤4 → 退潮</td><td>≥6 → P1→P2 确认，可加仓至15%；≤4 → 降至5%</td><td>梯队断裂即整体降仓，不看单票</td></tr>
+        <tr><td><span class="tag-mini tag-p1">③</span></td><td><b>长城军工</b> sh601606<br><span style="color:#64748B">（Pair 补涨位）</span></td><td>能否跟涨;与内蒙一机相对强弱是否收敛</td><td>仅作龙头的<b>情绪温度计</b>，不单独重仓</td><td>≤5% 仓位；龙头炸板同步清</td></tr>
+        <tr><td><span class="tag-mini tag-p1">④</span></td><td><b>电网设备</b><br><span style="color:#64748B">神马电力/太阳电缆</span></td><td>「价跌+主力+14.17亿」底背离是否延续；20日 -73.24亿能否收窄</td><td>续流入 → 小仓试探（≤5%）；转流出 → 放弃</td><td>仓位≤5%；20日线未转正前不加大</td></tr>
+        <tr><td><span class="tag-mini tag-p2">⑤</span></td><td><b>沪指 3930 关键位</b></td><td>今日最低 3932.25，明日是否有效跌破 3930；跌破 3900 → 铁律B 降至25%防御</td><td>守住 → 维持；破 3930 → 降仓至50%；破 3900 → 降至25%</td><td>铁律B 阈值硬执行，不做主观豁免</td></tr>
+        <tr><td><span class="tag-mini tag-p3">⑥</span></td><td><b>农业反抽</b><br><span style="color:#64748B">新赛股份/万向德农</span></td><td>是否有技术性反抽；新赛能否 5板（主力已-1.21亿证伪）</td><td><b>反抽即减仓窗口（㉓）</b>，绝不参与抄底</td><td>0 仓位；若已持有，反抽当日清仓</td></tr>
+        <tr><td><span class="tag-mini tag-p3">⑦</span></td><td><b>科技链反弹</b><br><span style="color:#64748B">半导体/通信设备/元件</span></td><td>20日资金门控全关（半导体-840.76亿）；"易中天"是否止跌</td><td><b>任何反弹均按减仓窗口处理</b>，不新开仓</td><td>0 仓位；反弹不追（㊸）</td></tr>
+        <tr><td><span class="tag-mini tag-p3">⑧</span></td><td><b>北证 50 / 培育钻石</b></td><td>事件兑现后是否冲高回落（㊼）；黄河旋风已现冲高回落</td><td>冲高即减，<b>不追高</b></td><td>不新开仓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ⚠️ 框架待更新 -->
+  <div class="section">
+    <div class="sec-title">⚠️ 框架待更新（提交 20:30 整体回测统一归因固化）</div>
+    <div class="callout callout-warn">
+      <b>⚠️框架待更新 1（三阶段）：</b>事件驱动型主线的 <b>P3 顶部识别阈值缺失</b>。9/1 将农业转基因判为「P2→P3 加速 + ㊹真趋势豁免」，9/2 即崩塌（种植业 -5.93% 全市场倒数第一）。<b>建议固化新规则</b>：当「龙头连板≥6板」+「板块20日涨幅&gt;40%」+「龙头单日换手&gt;30%」三项命中<b>任两项</b>时，强制判为 <b>P3 顶部</b>，禁止再给"加速/趋势豁免"评级，且持仓周期压缩至 1-2 日。<br><br>
+      <b>⚠️框架待更新 2（三阶段）：</b>5日涨幅 TOP10 内的板块，若当日同时满足「出现涨停」+「主力资金正流入」，应<b>强制升格为 P1 候选做二段确认</b>。9/1 地面兵装已位列 5日涨幅 TOP 第5（+6.7%）、内蒙一机 +10.02%，线索齐备但未被识别，导致 9/2 军工 P0 漏判。<br><br>
+      <b>⚠️框架待更新 3：</b>现有框架<b>无「北交所事件脉冲与主板跷跷板」规则</b>。9/2 北证50 +2.50%（五周年事件）而沪深普跌，此类「指数级背离」的持续性判定与资金承接关系需新规则覆盖。<br><br>
+      <b>⚠️框架待更新 4：</b>「价跌 + 主力大幅流入 + 20日资金为负」的矛盾组合（今日电网设备：价 -0.45%、主力 +14.17亿、20日 -73.24亿）缺乏<b>优先级裁决规则</b>——底背离吸筹（低吸）与 ㊸ 门控未开（回避）同时成立，需明确以何者为准。
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <b>数据说明与免责声明：</b>本报告数据快照时点为 <b>2026-09-02 15:00 收盘</b>，全部指标均取收盘定值，未使用盘后变动数据。涨跌家数与涨停/跌停数存在口径差异（腾讯自选股：1541涨/3901跌/55涨停/9跌停；中新经纬·证券日报：1541涨/3901跌/54涨停/8跌停；沪深北三市成交18203亿 vs 沪深两市17911.78亿），差异源于北交所是否计入，报告中已分别标注，主口径采用腾讯自选股。<b>同花顺问财通道今日触发 429 限流（Exceeded the limit of 1000 times），已按韧性铁律降级至 westock + Wind + 东方财富妙想 + WebSearch（证券时报/中新经纬/证券日报/券商中国/央广财经）多源交叉，≥4 源一致方采用，无编造数据</b>。北证50 成分股 Pair 因数据未取到已标注 N/A，未做任何推测填充。<br><br>
+    本报告基于公开数据的客观复盘与规则推演，<b>所有"预判"均为概率性判断，不构成任何投资建议</b>。三阶段判定（P1/P2/P3/退潮）与资金门控为内部框架工具，存在失效可能。市场有风险，投资需谨慎，据此操作风险自担。
+  </div>
+
+  <div class="foot-line">
+    阿Q · 量化复盘系统 · 最强主线每日复盘<br>
+    2026-09-02（周三）19:15 · 框架 v2.8 · 报告 v3.3<br>
+    <span class="foot-src">数据源：腾讯自选股 westock（主）· Wind 万得 · 东方财富妙想 · 证券时报 · 中新经纬 · 证券日报 · 券商中国 · 央广财经</span><br>
+    <span class="foot-src">【框架应用】本报告引用规则：⑪ ⑳ ㉒ ㉓ ㉕ ㉚ ㉛ ㊱ ㊸ ㊺ ㊼ ㊽ ㊹（证伪） 三-① 三-② 三-③ 三-④ 三-⑤ 三-⑥ 三-⑦ 三-⑧</span>
+  </div>
+
+</div>
+</body>
+</html>

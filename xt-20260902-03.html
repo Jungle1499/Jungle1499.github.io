@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>新交易体系 · 回测报告 2026-07-01~08-31</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--sub:#8b949e;--red:#f85149;--green:#3fb950;--gold:#d29922;--blue:#58a6ff;--purple:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.7;font-size:13px;padding:24px 16px}
+.wrap{max-width:1280px;margin:0 auto}
+h1{font-size:22px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:var(--sub);font-size:12px;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:20px}
+.card h2{font-size:16px;margin-bottom:12px;padding-left:10px;border-left:4px solid var(--gold);color:var(--gold)}
+.card h3{font-size:14px;margin:12px 0 8px;color:var(--blue)}
+.card h4{font-size:13px;margin:10px 0 6px;color:var(--sub);font-weight:600}
+p{font-size:13px;margin:6px 0}
+.up{color:var(--red);font-weight:600}
+.down{color:var(--green);font-weight:600}
+.flat{color:var(--sub)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin-right:6px;font-weight:700}
+.stage-tag{padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+th{background:var(--card2);color:var(--gold);padding:6px 8px;text-align:left;font-size:12px;border-bottom:1px solid var(--border);font-weight:600;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top;font-size:12px}
+.warn{background:rgba(248,81,73,.1);border:1px solid var(--red);border-radius:6px;padding:10px 14px;margin:10px 0}
+.ok{background:rgba(63,185,80,.1);border:1px solid var(--green);border-radius:6px;padding:10px 14px;margin:10px 0}
+.note{background:rgba(88,166,255,.1);border:1px solid var(--blue);border-radius:6px;padding:10px 14px;margin:10px 0;margin-left:6px;border-left-width:4px}
+.verdict{font-size:16px;font-weight:700;margin:14px 0 6px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.metric{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.metric .label{color:var(--sub);font-size:11px;margin-bottom:4px}
+.metric .val{font-size:18px;font-weight:700}
+.metric .val.up{color:var(--red)}
+.metric .val.down{color:var(--green)}
+.perf-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.perf-row:last-child{border-bottom:none}
+.perf-row .name{flex:1;font-size:12px}
+.perf-row .val{font-weight:600;font-size:13px;min-width:80px;text-align:right}
+.stat-bar{display:inline-block;height:6px;background:var(--card2);border-radius:3px;width:60px;vertical-align:middle;margin-left:6px}
+.stat-bar-fill{height:100%;border-radius:3px}
+.toc{background:var(--card2);padding:10px 14px;border-radius:8px;margin-bottom:20px}
+.toc a{color:var(--blue);text-decoration:none;font-size:13px}
+.toc li{margin:4px 0}
+.footer{text-align:center;color:var(--sub);font-size:11px;margin:24px 0 8px}
+.disclaimer{font-size:11px;color:var(--sub);text-align:center;font-style:italic}
+.scroll-x{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>新交易体系 · 7.1~8.31 两个月回测报告</h1>
+<div class="sub">轻量版 · v3.77 框架验证 · 模型 Hy4-preview · 生成时间 2026-09-02 01:07</div>
+
+<div class="toc card">
+<h3>📑 目录</h3>
+<ol>
+<li><a href="#s1">回测结论（先看这）</a></li>
+<li><a href="#s2">回测方法与数据</a></li>
+<li><a href="#s3">市场背景（弱市 regime）</a></li>
+<li><a href="#s4">7 状态机按日滚动 · 聚合命中率</a></li>
+<li><a href="#s5">逐 ETF 命中详情</a></li>
+<li><a href="#s6">框架可不可行？三项判定</a></li>
+<li><a href="#s7">数据源铁律校验 · errata</a></li>
+</ol>
+</div>
+
+<a id="s1"></a>
+<div class="card">
+<h2>① 回测结论（先看这）</h2>
+
+<h3>1.1 框架在「过去2个月（弱市/震荡）」是否可行？— <span class="down">部分不可行</span></h3>
+
+<div class="warn">
+<strong>⚠️ 关键结论</strong>：在 7.1~8.31 这段 <strong>弱市/震荡市</strong>：
+<ul style="margin-left:18px;margin-top:6px">
+<li>框架的 <span class="up" style="color:#58a6ff">P2 确认加仓补涨</span> → 1 周前瞻 <span class="down">亏 -4.28%</span>，命中率仅 35%（抛硬币水平）</li>
+<li>框架的 <span class="up" style="color:#3fb950">P1 确认试错买入龙头</span> → 1 周前瞻 <span class="down">亏 -1.55%</span>，命中率 39.6%</li>
+<li>框架的 <span style="color:#f85149">P3 确认清仓</span> → 1 周前瞻 <span class="down">跌 -0.86%</span>，命中率 56.2%（勉强及格）</li>
+</ul>
+</div>
+
+<h4>直接答复用户原话「推测的公司 / 推测的派尔 可不可行，实不实际」</h4>
+<p><strong>在弱市 regime 不实际</strong>。框架的"试错"和"加仓"动作在 7.1~8.31 这个 regime 是<span class="down">负 alpha</span>，光看均价就已经跑输。但这不否定框架在牛市 regime 的有效性——只是这段窗口恰好是阴跌+震荡，全市场的"加仓补涨"都打脸（基线对照 mean_fwd=-1.73%，框架 buy_leader=-1.55%，add=-4.28%）— 框架比基线更差，<strong>这是 alpha 信号的负证据，不是 regime 误读</strong>。</p>
+
+<h4>三个 regime 下的预期表现</h4>
+<table>
+<th>regime</th><th>P2确认加仓</th><th>P3确认清仓</th><th>框架状态</th>
+<tr><td>牛市 (像 6 月初段)</td><td>正 alpha 预期（补涨加速）</td><td>中性（清仓错过夜草）</td><td>实盘可推</td></tr>
+<tr style="background:rgba(248,81,73,.08)"><td><strong>弱市/震荡（7.1~8.31 当前）</strong></td><td><span class="down">负 alpha（追顶）</span></td><td>勉强及格 56.2%</td><td><span class="down">不推</span></td></tr>
+<tr><td>P3 退潮 (像 8 月底)</td><td>严禁</td><td>正 alpha（避后续跌）</td><td>防守</td></tr>
+</table>
+
+<p><strong>所以，在 regime 不明朗时，框架的默认行为应该是「空仓」</strong>。这与 working memory 中"激进框架·8月窗口全程不推"的发现完全一致——但本框架给出了更细的状态机抽象，而不是单一规则「下跌就看空」。</p>
+
+<h4>实际可立即采取的改进行动</h4>
+<ol>
+<li><strong>加 regime 门控</strong>（最强信号=大盘在 P3 退潮 或 弱势派发时，框架 P1/P2 信号强制标"失信"并降级为"观察"）。</li>
+<li><strong>P2 确认加仓需补「龙头 vs 补涨」实股对比验证</strong>——当前用「ETF vs 上证」过于粗糙，缺真实龙头/补涨对的鉴别。</li>
+<li><strong>弱市的唯一稳定 alpha=低吸反弹</strong>（working memory 8/31 验证：距高≤-20% 且 c5 由负转正 → 1 周胜率 89.5%）——新框架应明确把「低吸」单列节点，不能只靠 P2 确认。</li>
+</ol>
+</div>
+
+<a id="s2"></a>
+<div class="card">
+<h2>② 回测方法与数据</h2>
+
+<h3>2.1 轻量版方法论</h3>
+<ul>
+<li><strong>框架版本</strong>：v3.77（2026-09-02 初始化）。</li>
+<li><strong>窗口</strong>：2026-07-01 → 2026-08-31，共 44 个交易日。</li>
+<li><strong>采样</strong>：16 个行业 ETF 各跑 7 状态机 + 1 周前瞻评估。</li>
+<li><strong>状态判定输入</strong>：单个 ETF 当日涨跌幅 vs 上证指数当日涨跌幅（即「龙头 vs 落后」近似为「ETF vs 市场」）。</li>
+<li><strong>前瞻窗口</strong>：5 个交易日 = 1 周。</li>
+<li><strong>样本总规模</strong>：16 ETF × 39 评估日 ≈ 624 个预测动作。</li>
+</ul>
+
+<h3>2.2 数据源（铁律 §6.1 双源交叉）</h3>
+<table>
+<th>数据</th><th>主源</th><th>兜底认证</th><th>状态</th>
+<tr><td>上证指数 (sh.000001) 日 K</td><td>baostock</td><td>westock + 腾讯 qt.gtimg.cn</td><td>✅ 双源已交叉</td></tr>
+<tr><td>16 个行业 ETF 日 K</td><td>baostock（pctChg 链式重建复权）</td><td>腾讯 qt 当日快照对账</td><td>✅ 主源 + 当日快照兜底</td></tr>
+<tr><td>同花顺问财（叙事/板块/资金）</td><td>kuaicha-search MCP</td><td>已降级 → 429</td><td>⚠️ 当日不可用，记录 errata</td></tr>
+</table>
+<p class="note"><strong>说明</strong>：同花顺问财（kuaicha-search MCP）今天返回 HTTP 429 "Exceeded the limit of 1000 times"，按铁律 §6.1 走降级路径——ETF 行情层全走 baostock（程序化稳定）+ 腾讯 qt 当日快照对账，已达成"两轨以上"。叙事/资金层今天没用上（轻量版不需要），下次跑全量版时再用。</p>
+
+<h3>2.3 7 状态机简化（单 ETF vs 指数）</h3>
+<table>
+<th>状态</th><th>触发条件（简化版）</th><th>动作</th><th>颜色</th>
+<tr><td><span class="stage-tag" style="background:#3fb950">P1预警</span></td><td>ETF 当日 rs > 0 且 ETF 当日涨幅 > 上证</td><td>观察（wait）</td><td>绿</td></tr>
+<tr><td><span class="stage-tag" style="background:#3fb950">P1确认</span></td><td>连续 2 天 P1 预警</td><td>试错买入龙头（buy_leader）</td><td>绿</td></tr>
+<tr><td><span class="stage-tag" style="background:#58a6ff">P2预警</span></td><td>ETF 当日 rs < 前日 rs 且前日 rs > 0</td><td>观察加仓（wait_add）</td><td>蓝</td></tr>
+<tr><td><span class="stage-tag" style="background:#58a6ff">P2确认</span></td><td>连续 2 天 P2 预警</td><td>加仓补涨（add）</td><td>蓝</td></tr>
+<tr><td><span class="stage-tag" style="background:#f85149">P3预警</span></td><td>rs 转正向上 + 前日 ≤ 0</td><td>减仓（sell_warn）</td><td>红</td></tr>
+<tr><td><span class="stage-tag" style="background:#f85149">P3确认</span></td><td>连续 2 天 P3 预警</td><td>清仓（sell）</td><td>红</td></tr>
+<tr><td><span class="stage-tag" style="background:#d29922">中断</span></td><td>连续 2 天 rs < -0.5</td><td>清仓（sell）</td><td>金</td></tr>
+</table>
+<p class="note"><strong>限制</strong>：本简化版用「ETF vs 指数」作为龙头/补涨的代理，不如"同叙事下 ETF A vs ETF B" 精准，是轻量版的已知精度上限。完整版建议落 8.5 叙事总结 + 8.6 pair 推荐的真实龙头/补涨鉴别。</p>
+</div>
+
+<a id="s3"></a>
+<div class="card">
+<h2>③ 市场背景（弱市 regime 验证）</h2>
+
+<h3>3.1 指数窗口表现</h3>
+<div class="metric-grid">
+<div class="metric"><div class="label">窗口起点 (7.1)</div><div class="val">4112.45</div></div>
+<div class="metric"><div class="label">窗口终点 (8.29)</div><div class="val">3986.30</div></div>
+<div class="metric"><div class="label">窗口累计（adj 重建）</div><div class="val down">-3.07%</div></div>
+<div class="metric"><div class="label">窗口交易日</div><div class="val">44</div></div>
+</div>
+<p>上证指数 7.1→8.29 <span class="down">跌 -3.07%</span>，属于<span class="down">弱市/震荡 regime</span>（最大回撤 7.20 见到 7.9、7.17 → -7%）。</p>
+
+<h3>3.2 ETF 端 16 个行业·窗口累计</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div>
+<h4 style="color:var(--green)">🔺 涨幅前5</h4><div class="perf-row"><span class="name">黄金ETF</span><span class="val up">+10.45%</span></div>
+<div class="perf-row"><span class="name">中概互联ETF</span><span class="val up">+9.55%</span></div>
+<div class="perf-row"><span class="name">农业ETF</span><span class="val up">+9.45%</span></div>
+<div class="perf-row"><span class="name">有色ETF(小金属)</span><span class="val up">+6.70%</span></div>
+<div class="perf-row"><span class="name">畜牧ETF(猪肉)</span><span class="val up">+6.00%</span></div>
+</div>
+<div>
+<h4 style="color:var(--red)">🔻 跌幅前5</h4><div class="perf-row"><span class="name">军工ETF</span><span class="val down">-11.54%</span></div>
+<div class="perf-row"><span class="name">机器人ETF</span><span class="val down">-15.54%</span></div>
+<div class="perf-row"><span class="name">人工智能ETF</span><span class="val down">-18.76%</span></div>
+<div class="perf-row"><span class="name">消费电子ETF</span><span class="val down">-24.27%</span></div>
+<div class="perf-row"><span class="name">半导体ETF</span><span class="val down">-28.10%</span></div>
+</div>
+</div>
+
+<h3>3.3 regime 体感</h3>
+<div class="note">
+这条窗口里能跑赢指数的板块是 <strong>防御性</strong>（黄金 +10.45%、农业 +9.45%、中概互联 +9.55%、有色 +6.70%、畜牧 +6.00%、酒 +5.28%），
+进攻板块全部 <span class="down">负收益</span>（半导体 -28.10%、消费电子 -24.27%、人工智能 -18.76%、机器人 -15.54%、军工 -11.54%、化工 -6.31%）。
+这是典型的 <strong>P3 退潮 + 资金回避</strong> 阶段，框架的 P1/P2 加仓信号天然被市场噪音误读。
+</div>
+</div>
+
+<a id="s4"></a>
+<div class="card">
+<h2>④ 7 状态机按日滚动 · 聚合命中率</h2>
+
+<table>
+<th style="width:14%">动作</th><th style="width:14%">样本数</th><th style="width:14%">命中数</th><th style="width:14%">命中率</th><th style="width:18%">1 周前瞻均值</th><th style="width:26%">判定</th>
+<tr>
+  <td><span class="tag stage-tag" style="background:#3fb950">P1确认·试错买入龙头</span></td>
+  <td>48</td>
+  <td>19</td>
+  <td>
+    39.6%
+    <div class="stat-bar"><div class="stat-bar-fill" style="width:39.6%;background:#f85149"></div></div>
+  </td>
+  <td><span class="down">-1.55%</span></td>
+  <td><span class="down">❌ 命中率<50%</span></td>
+</tr>
+<tr>
+  <td><span class="tag stage-tag" style="background:#58a6ff">P2确认·加仓补涨</span></td>
+  <td>20</td>
+  <td>7</td>
+  <td>
+    35.0%
+    <div class="stat-bar"><div class="stat-bar-fill" style="width:35.0%;background:#f85149"></div></div>
+  </td>
+  <td><span class="down">-4.28%</span></td>
+  <td><span class="down">❌ 负 alpha，实盘亏损</span></td>
+</tr>
+<tr>
+  <td><span class="tag stage-tag" style="background:#f85149">P3确认/中断·清仓</span></td>
+  <td>64</td>
+  <td>36</td>
+  <td>
+    56.2%
+    <div class="stat-bar"><div class="stat-bar-fill" style="width:56.2%;background:#3fb950"></div></div>
+  </td>
+  <td><span class="down">-0.86%</span></td>
+  <td><span class="up" style="color:#3fb950">⚠️ 勉强及格 56.2%</span></td>
+</tr>
+<tr>
+  <td><span class="tag stage-tag" style="background:#8b949e">P1预警·观察</span></td>
+  <td>208</td>
+  <td>0</td>
+  <td>
+    0.0%
+    <div class="stat-bar"><div class="stat-bar-fill" style="width:0%;background:#f85149"></div></div>
+  </td>
+  <td><span class="up">+0.35%</span></td>
+  <td>样本保留</td>
+</tr>
+<tr>
+  <td><span class="tag stage-tag" style="background:#8b949e">P2预警·观察</span></td>
+  <td>176</td>
+  <td>0</td>
+  <td>
+    0.0%
+    <div class="stat-bar"><div class="stat-bar-fill" style="width:0%;background:#f85149"></div></div>
+  </td>
+  <td><span class="up">+0.30%</span></td>
+  <td>样本保留</td>
+</tr>
+<tr>
+  <td><span class="tag stage-tag" style="background:#8b949e">中性·持有观望</span></td>
+  <td>108</td>
+  <td>0</td>
+  <td>
+    0.0%
+    <div class="stat-bar"><div class="stat-bar-fill" style="width:0%;background:#f85149"></div></div>
+  </td>
+  <td><span class="down">-1.73%</span></td>
+  <td>基线对照</td>
+</tr>
+</table>
+
+<div class="warn">
+<strong>核心解读</strong>：
+<ul style="margin-left:18px;margin-top:6px">
+<li><span class="down">P2确认加仓（add）</span>：仅 20 次样本，1 周前瞻平均 <span class="down">-4.28%</span>，命中率 35% — 与 working memory 8/31 结论「S2=追顶」一致。</li>
+<li><span style="color:#3fb950">P1确认试错（buy_leader）</span>：48 次样本，命中率 39.6% — 弱市里"试错"也打脸。</li>
+<li><span class="down">P3确认清仓（sell）</span>：64 次样本，命中率 <strong>56.2%</strong> — 唯一勉强及格的动作，但也只是「多对6次」的微弱优势，不如 P2「加仓」被打脸的安全边际。</li>
+</ul>
+</div>
+</div>
+
+<a id="s5"></a>
+<div class="card">
+<h2>⑤ 逐 ETF 命中详情</h2>
+<p>把每个 ETF 拆开后能看出：<strong>框架对不同叙事的判定差异极大</strong>。下面这张表展示每个 ETF 在 add / buy_leader / sell 三个关键动作上的样本数 + 命中率 + 平均 1 周前瞻：</p>
+
+<div class="scroll-x">
+<table>
+<th>叙事 / ETF</th><th>窗口累计</th><th>add(P2确认)</th><th></th><th>buy_leader(P1确认)</th><th></th><th>sell(P3/中断)</th><th></th>
+<tr>
+  <td><strong>半导体ETF</strong><br><span class="flat" style="font-size:11px">半导体ETF</span></td>
+  <td><span class="down">-28.10%</span></td>
+  <td>n=2<br>命中0.0%</td>
+  <td><span class="down">-16.00%</span></td>
+  <td>n=3<br>命中0.0%</td>
+  <td><span class="down">-8.72%</span></td>
+  <td>n=4<br>命中50.0%</td>
+  <td><span class="down">-0.71%</span></td>
+</tr>
+<tr>
+  <td><strong>农业ETF</strong><br><span class="flat" style="font-size:11px">农业ETF</span></td>
+  <td><span class="up">+9.45%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+5.33%</span></td>
+  <td>n=3<br>命中66.7%</td>
+  <td><span class="up">+1.32%</span></td>
+  <td>n=4<br>命中75.0%</td>
+  <td><span class="down">-0.88%</span></td>
+</tr>
+<tr>
+  <td><strong>机器人ETF</strong><br><span class="flat" style="font-size:11px">机器人ETF</span></td>
+  <td><span class="down">-15.54%</span></td>
+  <td>n=1<br>命中0.0%</td>
+  <td><span class="down">-7.21%</span></td>
+  <td>n=3<br>命中0.0%</td>
+  <td><span class="down">-8.38%</span></td>
+  <td>n=4<br>命中75.0%</td>
+  <td><span class="down">-1.85%</span></td>
+</tr>
+<tr>
+  <td><strong>黄金ETF</strong><br><span class="flat" style="font-size:11px">黄金ETF</span></td>
+  <td><span class="up">+10.45%</span></td>
+  <td>n=1<br>命中0.0%</td>
+  <td><span class="down">-2.12%</span></td>
+  <td>n=3<br>命中33.3%</td>
+  <td><span class="down">-0.48%</span></td>
+  <td>n=4<br>命中25.0%</td>
+  <td><span class="up">+0.83%</span></td>
+</tr>
+<tr>
+  <td><strong>军工ETF</strong><br><span class="flat" style="font-size:11px">军工ETF</span></td>
+  <td><span class="down">-11.54%</span></td>
+  <td>n=1<br>命中0.0%</td>
+  <td><span class="down">-9.90%</span></td>
+  <td>n=3<br>命中0.0%</td>
+  <td><span class="down">-6.70%</span></td>
+  <td>n=4<br>命中50.0%</td>
+  <td><span class="down">-0.05%</span></td>
+</tr>
+<tr>
+  <td><strong>汽车ETF</strong><br><span class="flat" style="font-size:11px">汽车ETF</span></td>
+  <td><span class="up">+0.73%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+2.16%</span></td>
+  <td>n=3<br>命中33.3%</td>
+  <td><span class="down">-1.11%</span></td>
+  <td>n=4<br>命中100.0%</td>
+  <td><span class="down">-0.86%</span></td>
+</tr>
+<tr>
+  <td><strong>消费电子ETF</strong><br><span class="flat" style="font-size:11px">消费电子ETF</span></td>
+  <td><span class="down">-24.27%</span></td>
+  <td>n=2<br>命中0.0%</td>
+  <td><span class="down">-12.54%</span></td>
+  <td>n=3<br>命中0.0%</td>
+  <td><span class="down">-7.26%</span></td>
+  <td>n=4<br>命中50.0%</td>
+  <td><span class="down">-0.98%</span></td>
+</tr>
+<tr>
+  <td><strong>人工智能ETF</strong><br><span class="flat" style="font-size:11px">人工智能ETF</span></td>
+  <td><span class="down">-18.76%</span></td>
+  <td>n=2<br>命中0.0%</td>
+  <td><span class="down">-10.79%</span></td>
+  <td>n=3<br>命中33.3%</td>
+  <td><span class="down">-2.87%</span></td>
+  <td>n=4<br>命中25.0%</td>
+  <td><span class="down">-1.20%</span></td>
+</tr>
+<tr>
+  <td><strong>化工ETF(氟化工)</strong><br><span class="flat" style="font-size:11px">化工ETF</span></td>
+  <td><span class="down">-6.31%</span></td>
+  <td>n=1<br>命中0.0%</td>
+  <td><span class="down">-6.49%</span></td>
+  <td>n=3<br>命中33.3%</td>
+  <td><span class="down">-1.12%</span></td>
+  <td>n=4<br>命中75.0%</td>
+  <td><span class="down">-1.56%</span></td>
+</tr>
+<tr>
+  <td><strong>有色ETF(小金属)</strong><br><span class="flat" style="font-size:11px">有色ETF</span></td>
+  <td><span class="up">+6.70%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+0.92%</span></td>
+  <td>n=3<br>命中100.0%</td>
+  <td><span class="up">+1.04%</span></td>
+  <td>n=4<br>命中50.0%</td>
+  <td><span class="down">-0.13%</span></td>
+</tr>
+<tr>
+  <td><strong>电力ETF</strong><br><span class="flat" style="font-size:11px">电力ETF</span></td>
+  <td><span class="down">-1.24%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+0.40%</span></td>
+  <td>n=3<br>命中100.0%</td>
+  <td><span class="up">+5.75%</span></td>
+  <td>n=4<br>命中75.0%</td>
+  <td><span class="down">-0.91%</span></td>
+</tr>
+<tr>
+  <td><strong>畜牧ETF(猪肉)</strong><br><span class="flat" style="font-size:11px">畜牧ETF</span></td>
+  <td><span class="up">+6.00%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+6.04%</span></td>
+  <td>n=3<br>命中33.3%</td>
+  <td><span class="down">-0.47%</span></td>
+  <td>n=4<br>命中50.0%</td>
+  <td><span class="down">-0.27%</span></td>
+</tr>
+<tr>
+  <td><strong>锂电池ETF(锂矿)</strong><br><span class="flat" style="font-size:11px">锂电池ETF</span></td>
+  <td><span class="down">-0.55%</span></td>
+  <td>n=1<br>命中0.0%</td>
+  <td><span class="down">-0.42%</span></td>
+  <td>n=3<br>命中0.0%</td>
+  <td><span class="down">-2.26%</span></td>
+  <td>n=4<br>命中25.0%</td>
+  <td><span class="up">+0.03%</span></td>
+</tr>
+<tr>
+  <td><strong>云计算ETF(液冷)</strong><br><span class="flat" style="font-size:11px">云计算ETF</span></td>
+  <td><span class="down">-1.19%</span></td>
+  <td>n=2<br>命中0.0%</td>
+  <td><span class="down">-5.30%</span></td>
+  <td>n=3<br>命中33.3%</td>
+  <td><span class="up">+0.57%</span></td>
+  <td>n=4<br>命中50.0%</td>
+  <td><span class="down">-1.35%</span></td>
+</tr>
+<tr>
+  <td><strong>酒ETF</strong><br><span class="flat" style="font-size:11px">白酒ETF</span></td>
+  <td><span class="up">+5.28%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+9.66%</span></td>
+  <td>n=3<br>命中100.0%</td>
+  <td><span class="up">+4.22%</span></td>
+  <td>n=4<br>命中25.0%</td>
+  <td><span class="up">+0.66%</span></td>
+</tr>
+<tr>
+  <td><strong>中概互联ETF</strong><br><span class="flat" style="font-size:11px">互联网ETF</span></td>
+  <td><span class="up">+9.55%</span></td>
+  <td>n=1<br>命中100.0%</td>
+  <td><span class="up">+5.24%</span></td>
+  <td>n=3<br>命中66.7%</td>
+  <td><span class="up">+1.65%</span></td>
+  <td>n=4<br>命中100.0%</td>
+  <td><span class="down">-4.46%</span></td>
+</tr>
+</table>
+</div>
+
+<div class="note">
+<strong>观察</strong>：对<strong>真正强趋势叙事</strong>（黄金 +10.45%、农业 +9.45%），框架 add/buy_leader 命中率才会显著高于 50%；
+对<strong>弱势叙事</strong>（半导体 -28.10%、消费电子 -24.27%），框架 buy_leader 多半被打脸。
+这指向一个核心改进：<strong>框架的 P1/P2 信号必须先过「叙事本身是否在正确 stage」过滤</strong>——而不是看单一 ETF 的相对强度。
+</div>
+</div>
+
+<a id="s6"></a>
+<div class="card">
+<h2>⑥ 框架可不可行？三项判定</h2>
+
+<h3>判定 1：弱市 regime 内 alpha 显著为负 → <span class="down">不可行</span></h3>
+<p>add / buy_leader 两个主要进攻动作 1 周前瞻均值 <span class="down">分别为 -4.28%、-1.55%</span>，均跑输基线（hold=-1.73%、上证-3.07%）。这是连续 44 个交易日的统计，<strong>非 regime 误读，负 alpha 是真的</strong>。</p>
+
+<h3>判定 2：但「清仓信号」勉强及格 → <span style="color:#d29922">半可行</span></h3>
+<p>sell 命中率 56.2%（比随机 50% 高 6 个点）。结合 working memory "P3 清仓退潮" 的一致性，框架至少能做<strong>一件事</strong>：告诉你什么时候该退出。</p>
+
+<h3>判定 3：防守价值已具备 → <span class="up" style="color:#3fb950">可推的子集</span></h3>
+<p><strong>弱市唯一可推子集</strong>：
+<ul>
+<li><strong>低吸反弹</strong>（距高≤-20% 且 c5 由负转正） → 1 周胜率 89.5%（已 8/31 验证，本框架未实现）</li>
+<li><strong>P3 退潮确认就退出</strong>（哪怕是错的，多错几次也比晚退好）</li>
+<li><strong>防守板块轮动</strong>：黄金 / 农业 / 中概互联这类防御性叙事作为「相对 alpha」的暴露</li>
+</ul>
+</p>
+
+<h3>改进方向（已识别·待落地）</h3>
+<div class="ok">
+<ol>
+<li><strong>Regime 门控</strong>：当大盘处于 P3 退潮/弱势派发时，强制 P1/P2 信号降级为"观察"，避免负 alpha 暴露。</li>
+<li><strong>叙事 stage 锁定</strong>：加仓的 P2 信号必须先过滤「叙事本身是不是真的 P2」，而不是看单 ETF 相对强度。</li>
+<li><strong>低吸节点单列</strong>：把「超跌反弹」（距高≤-20% + c5 转正）单列为独立节点，独立打分，与 P2 确认解耦。</li>
+<li><strong>扩大回测窗口到含 6 月高点</strong>（完整版）：把 4.1→8.31 一起测，能看到 P1→P2→P3 完整 Wave，证明框架不是「只在弱市负 alpha」。</li>
+</ol>
+</div>
+</div>
+
+<a id="s7"></a>
+<div class="card">
+<h2>⑦ 数据源铁律校验 · errata</h2>
+
+<h3>7.1 数据源 status snapshot</h3>
+<table>
+<th>源</th><th>status</th><th>备注</th>
+<tr><td>同花顺问财（kuaicha-search）</td><td><span class="down">❌ HTTP 429</span></td><td>已降级；errata 第 1 条</td></tr>
+<tr><td>baostock（14 源主 ETF + 指数）</td><td>✅ OK</td><td>程序化稳定，pctChg 链式重建复权</td></tr>
+<tr><td>westock（指数交叉）</td><td>✅ OK</td><td>上证指数已双源对账</td></tr>
+<tr><td>腾讯 qt.gtimg.cn</td><td>✅ OK</td><td>ETF 当日快照兜底对账</td></tr>
+</table>
+
+<h3>7.2 errata JSON 摘要</h3>
+<pre style="background:#0a0e13;padding:10px;border-radius:6px;overflow-x:auto;font-size:11px;color:var(--sub)">{
+  "timestamp": "2026-09-02T01:02:58.611561",
+  "model_in_use": "Hy4-preview",
+  "降级事件": [
+    "sz.512010 拉空，已降级兜底",
+    "sz.512670 拉空，已降级兜底"
+  ],
+  "data_sources_status": {
+    "kuaicha-search": "429 Exceeded limit (今天)",
+    "westock_index": "已通，44 天日 K",
+    "baostock_etf": "已通，复权 quality 验证通过"
+  }
+}...</pre>
+
+<h3>7.3 模型降级铁律 · 当前状态</h3>
+<div class="warn">
+本次回测当前会话模型 = <strong>Hy4-preview</strong>（免费期）。
+本次未触发 429（仅同花顺接口触发，已降级到 baostock）。
+用户指定 L1 fallback = <strong>DeepSeek V4 fresh</strong>，<strong>需用户在 WorkBuddy 账户 → 插件设置 → 模型 fallback 中添加</strong>（agent 无法在自己会话内硬切模型）。
+一旦账户级 fallback 配好，下次跑回测中途遇限额，平台自动接管继续，<strong>无需用户干预</strong>。
+</div>
+
+</div>
+
+<div class="footer">
+本报告基于 <code>铁律.md v3.77</code> + <code>报告结构规范.md</code> 框架生成 · 两天 7.1~8.31 共 44 个交易日 · 16 ETF × 624 个样本
+</div>
+<div class="disclaimer">⚠️ 本报告仅作新框架理论可行性验证，不构成投资建议。弱市 regime 实盘应空仓或低吸反弹，不应按 P2 加仓信号操作。</div>
+
+</div>
+</body></html>

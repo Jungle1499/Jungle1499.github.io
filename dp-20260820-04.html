@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260820</title>
+<style>
+  :root{
+    --bg:#F5F7FA;
+    --card-white:#FFFFFF;
+    --card-border:#DBE3EC;
+    --card-border-strong:#ACB6C5;
+    --ink:#1F2937;
+    --sub:#64748B;
+    --heading:#1E3A5F;
+    --up:#DC2626;
+    --down:#16A34A;
+    --accent-blue:#2563EB;
+    --p0:#DC2626;
+    --p1:#B45309;
+    --tui:#64748B;
+    --thead-bg:#F1F5F9;
+    --callout-bg:#F8FAFC;
+    --fs-title:16.8px;
+    --fs-section:13.0px;
+    --fs-subhead:11.4px;
+    --fs-body:10.8px;
+    --fs-table:10.5px;
+    --fs-idx-name:9.6px;
+    --fs-idx-val:17.4px;
+    --fs-idx-sub:9.8px;
+    --fs-foot:9.0px;
+    --fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:#FFFFFF;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .page{
+    width:840px;
+    margin:0 auto;
+    background:var(--bg);
+    padding-bottom:30px;
+  }
+
+  /* ===== HEADER ===== */
+  .header{
+    background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);
+    color:#FFFFFF;
+    text-align:center;
+    padding:26px 0 24px;
+  }
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+
+  /* ===== GENERIC CARD ===== */
+  .card{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    margin:0 12px 14px;
+  }
+  .card-inner{padding:14px 16px;}
+
+  /* ===== 首屏结论 card ===== */
+  .summary-card{
+    background:var(--card-white);
+    border:1px solid var(--card-border-strong);
+    border-radius:4px;
+    margin:0 12px 16px;
+    padding:16px 18px;
+  }
+  .summary-head{
+    font-size:var(--fs-subhead);
+    color:var(--heading);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{
+    display:inline-block;
+    color:#fff;
+    font-size:var(--fs-chip);
+    font-weight:700;
+    padding:1px 8px;
+    border-radius:3px;
+    margin-right:6px;
+    vertical-align:middle;
+  }
+  .chip-p0{background:var(--p0);}
+  .chip-p1{background:var(--p1);}
+  .chip-tui{background:var(--tui);}
+  .sum-text{color:var(--ink);}
+
+  /* ===== SECTION HEADING ===== */
+  .section{margin-bottom:14px;}
+  .sec-title{
+    font-size:var(--fs-section);
+    color:var(--heading);
+    font-weight:700;
+    padding:0 12px 6px;
+    border-bottom:2px solid var(--heading);
+    margin:0 12px 10px;
+  }
+
+  /* ===== INDEX GRID ===== */
+  .idx-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    margin:0 12px 12px;
+  }
+  .idx-cell{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    padding:8px 10px;
+    text-align:left;
+  }
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}
+  .idx-val.down{color:var(--down);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+
+  /* ===== STATS / CALLOUT ===== */
+  .stats-line{
+    font-size:var(--fs-idx-sub);
+    color:var(--sub);
+    margin:0 12px 8px;
+    line-height:1.8;
+  }
+  .callout{
+    background:var(--callout-bg);
+    border-left:3px solid var(--accent-blue);
+    border-radius:0 4px 4px 0;
+    padding:10px 14px;
+    margin:0 12px 14px;
+    font-size:var(--fs-idx-sub);
+    color:var(--sub);
+    line-height:1.8;
+  }
+  .callout b{color:var(--ink);}
+  .callout.red{border-left-color:var(--p0);background:#FEF2F2;}
+  .callout.green{border-left-color:var(--down);background:#F0FDF4;}
+
+  /* ===== TABLES ===== */
+  .tbl{
+    width:calc(100% - 24px);
+    margin:0 12px 14px;
+    border-collapse:collapse;
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    font-size:var(--fs-table);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .tbl thead th{
+    background:var(--thead-bg);
+    color:var(--sub);
+    font-weight:600;
+    text-align:left;
+    padding:7px 10px;
+    border-bottom:1px solid var(--card-border);
+    font-size:var(--fs-table);
+  }
+  .tbl tbody td{
+    padding:7px 10px;
+    border-bottom:1px solid #EEF1F4;
+    color:var(--ink);
+    vertical-align:top;
+    font-size:var(--fs-table);
+  }
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}
+  .down{color:var(--down);font-weight:600;}
+  .badge-in{color:var(--up);}
+  .badge-out{color:var(--down);}
+
+  table.tbl{table-layout:fixed;}
+
+  /* column width presets */
+  .w-mainline th:nth-child(1){width:5%;}
+  .w-mainline th:nth-child(2){width:18%;}
+  .w-mainline th:nth-child(3){width:14%;}
+  .w-mainline th:nth-child(4){width:16%;}
+  .w-mainline th:nth-child(5){width:22%;}
+  .w-mainline th:nth-child(6){width:25%;}
+
+  .w-sector th:nth-child(1){width:22%;}
+  .w-sector th:nth-child(2){width:13%;}
+  .w-sector th:nth-child(3){width:13%;}
+  .w-sector th:nth-child(4){width:13%;}
+  .w-sector th:nth-child(5){width:39%;}
+
+  .w-fund th:nth-child(1){width:8%;}
+  .w-fund th:nth-child(2){width:18%;}
+  .w-fund th:nth-child(3){width:24%;}
+  .w-fund th:nth-child(4){width:24%;}
+  .w-fund th:nth-child(5){width:26%;}
+
+  .w-board th:nth-child(1){width:8%;}
+  .w-board th:nth-child(2){width:10%;}
+  .w-board th:nth-child(3){width:12%;}
+  .w-board th:nth-child(4){width:44%;}
+  .w-board th:nth-child(5){width:26%;}
+
+  .w-lhb th:nth-child(1){width:12%;}
+  .w-lhb th:nth-child(2){width:18%;}
+  .w-lhb th:nth-child(3){width:18%;}
+  .w-lhb th:nth-child(4){width:52%;}
+
+  .w-watch th:nth-child(1){width:18%;}
+  .w-watch th:nth-child(2){width:45%;}
+  .w-watch th:nth-child(3){width:37%;}
+
+  .w-pair th:nth-child(1){width:18%;}
+  .w-pair th:nth-child(2){width:16%;}
+  .w-pair th:nth-child(3){width:16%;}
+  .w-pair th:nth-child(4){width:16%;}
+  .w-pair th:nth-child(5){width:34%;}
+
+  /* board tags */
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}
+  .tag-p1{background:var(--p1);}
+  .tag-p2{background:#7C3AED;}
+  .tag-p3{background:#475569;}
+
+  .lhb-buy{color:var(--up);font-weight:700;}
+  .lhb-sell{color:var(--down);font-weight:700;}
+
+  /* ===== DRIVER ===== */
+  .driver{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    margin:0 12px 12px;
+    padding:12px 16px;
+  }
+  .driver-h{
+    font-size:var(--fs-body);
+    font-weight:700;
+    color:var(--heading);
+    margin-bottom:6px;
+  }
+  .driver-h .lv{font-size:var(--fs-chip);font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .lv-p0{background:var(--p0);}
+  .lv-p1{background:var(--p1);}
+  .dblk{font-size:var(--fs-body);line-height:1.7;margin-bottom:5px;}
+  .dblk b{color:var(--heading);}
+
+  /* ===== EMPTY CHART CARD ===== */
+  .empty-chart{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-top:2px solid var(--heading);
+    border-radius:4px;
+    margin:0 12px 14px;
+    height:300px;
+  }
+
+  /* ===== FOOTER ===== */
+  .disclaimer{
+    font-size:var(--fs-foot);
+    color:var(--sub);
+    margin:0 12px 10px;
+    line-height:1.7;
+  }
+  .foot-line{
+    font-size:var(--fs-foot);
+    color:var(--sub);
+    text-align:center;
+    margin:0 12px;
+    line-height:1.8;
+  }
+  .foot-src{font-size:8.6px;color:#9aa3ad;margin-top:4px;}
+
+  .frame-ref{
+    display:inline-block;
+    background:#E0E7FF;
+    color:#3730A3;
+    font-size:9px;
+    font-weight:600;
+    padding:0 5px;
+    border-radius:3px;
+    margin-right:4px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-08-20（周四）· 数据源：同花顺问财 / 腾讯自选股 / Wind · 收盘后全维复盘</div>
+  </div>
+
+  <!-- 首屏结论 -->
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）</div>
+    <div class="sum-row"><span class="chip chip-p0">P0 最强主线</span><span class="sum-text"><b>医药大主线（CRO / 创新药 / 生物疫苗 / 细胞免疫治疗 / 基因测序）</b>—— 概念涨幅 TOP 被医药包揽，创新药主力净流入 +50.39亿断层第一，CRO +30.35亿；CRO 成分股 5 只 20cm 涨停（康希诺 / 近岸蛋白 / 博腾股份 / 诺唯赞 / 和元生物），二线扩散确立，与 08:00 盘前→14:30 盘中连续看多链条完全吻合 <span class="frame-ref">【框架应用⑪资金三档】</span>。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1</span><span class="sum-text"><b>贵金属 / 工业金属（资源线）</b>—— 贵金属 +5.50%（山东黄金 +8.59%、赤峰黄金 +7.91%），黄金主力 +39.82亿；工业金属铜/铅/锌净流入各约 +28~30亿。但 52 周涨幅 +57.78% 已处加速段 <span class="frame-ref">【框架应用三-④】</span>，标注 P3 退潮预警/鱼尾，只低吸不追涨。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="sum-text"><b>AI 硬件 / 半导体 / 存储 / CPO / 焦炭Ⅱ / 农业</b>—— 芯片概念主力净流出 -66.81亿（断层第一），半导体 -7.00亿、先进封装 -40.76亿、PCB -26.60亿、存储 -36.63亿，板块微涨=诱多出货 <span class="frame-ref">【框架应用㉓反弹=减仓窗口】</span>；焦炭Ⅱ -4.01% 崩盘，验证昨日预判失败，纳入 R-Judge 归因 <span class="frame-ref">【框架应用⑳高位放量出货不接飞刀】</span>；农业仅金健米业 4 板活口，转基因主力 -20.13亿。</span></div>
+    <div class="sum-row"><span class="sum-text"><b>市场状态：情绪修复 + 主线切换</b>—— 上证 +0.24% / 创业板 +0.64%，个股普涨 4096 只、涨停 83 只，成交约 2.09 万亿；资金从 8/19 防御抱团（煤炭/银行/航运）切换到医药+资源进攻主线，防御抱团模型瓦解 <span class="frame-ref">【框架应用㉒风格切换】</span>。</span></div>
+  </div>
+
+  <!-- 一、市场概览 -->
+  <div class="section">
+    <div class="sec-title">一、市场概览</div>
+    <div class="idx-grid">
+      <div class="idx-cell"><div class="idx-name">上证指数</div><div class="idx-val up">3903.72</div><div class="idx-sub">+0.24% · 成交 10185.68 亿</div></div>
+      <div class="idx-cell"><div class="idx-name">深证成指</div><div class="idx-val up">13972.78</div><div class="idx-sub">+0.59% · 成交 10607.95 亿</div></div>
+      <div class="idx-cell"><div class="idx-name">创业板指</div><div class="idx-val up">3495.59</div><div class="idx-sub">+0.64%</div></div>
+      <div class="idx-cell"><div class="idx-name">科创50</div><div class="idx-val down">1652.97</div><div class="idx-sub">-0.87%</div></div>
+      <div class="idx-cell"><div class="idx-name">沪深300</div><div class="idx-val up">4592.75</div><div class="idx-sub">+0.09%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证1000</div><div class="idx-val up">7589.78</div><div class="idx-sub">+0.96%</div></div>
+    </div>
+    <div class="stats-line">两市成交额约 <b>20,939 亿</b>（同花顺口径），上证+深成合计 20,793.63 亿（口径差异约 0.7%）；上涨家数 <b>4096</b> 家，涨停 <b>83</b> 只；科创50 独跌 -0.87%，显示科技成长继续被医药/资源抽血。</div>
+    <div class="callout"><b>市场画像：</b>指数窄幅震荡但个股赚钱效应极好，中证1000 +0.96% 强于沪深300 +0.09%，风格明显偏向中小盘/题材；医药板块出现批量 20cm 涨停，情绪进入亢奋区间 <span class="frame-ref">【框架应用㊱情绪缩圈】</span>。</div>
+  </div>
+
+  <!-- 二、最强主线分级 -->
+  <div class="section">
+    <div class="sec-title">二、最强主线分级（P0 / P1 / P2 / 退潮）</div>
+    <table class="tbl w-mainline">
+      <thead><tr><th>级别</th><th>方向</th><th>今日强度</th><th>三阶段判定</th><th>资金 / Pair / 相对强弱</th><th>操作建议</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tag-mini tag-p0">P0</span></td>
+          <td><b>医药大主线</b><br>CRO / 创新药 / 生物疫苗 / 细胞免疫 / 基因测序</td>
+          <td>CRO <span class="up">+5.91%</span><br>创新药 <span class="up">+4.52%</span><br>生物疫苗 <span class="up">+7.50%</span><br>细胞免疫治疗 <span class="up">+7.16%</span></td>
+          <td><b>P2 二线扩散确立</b><br>（14:30 已确认）<br><span class="frame-ref">三-②</span></td>
+          <td>创新药净流入 <span class="badge-in">+50.39亿</span>（同花顺）/ +7.88亿（westock）；CRO +30.35亿。<br><b>Pair：</b>康希诺/近岸蛋白（20cm 疫苗双雄）、博腾股份/诺唯赞（CRO）。<br><b>强弱：</b>5 只 20cm + 约 20+ 只 10cm，强度断层领先。</td>
+          <td>重点参与，盯连板高度与容量中军；若前排批量炸板则降仓 <span class="frame-ref">三-③</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p1">P1</span></td>
+          <td><b>贵金属 / 黄金</b></td>
+          <td>贵金属 <span class="up">+5.50%</span><br>黄金概念 <span class="up">+2.13%</span></td>
+          <td><b>P3 退潮预警 / 鱼尾加速</b><br>52周 +57.78%<br><span class="frame-ref">三-④</span></td>
+          <td>黄金主力净流入 <span class="badge-in">+39.82亿</span>；山东黄金 +8.59%、赤峰黄金 +7.91%。<br><b>Pair：</b>山东黄金 / 赤峰黄金。<br><b>强弱：</b>板块 5日 +11.52% / 20日 +20.69%，趋势极强但已处高位。</td>
+          <td>只低吸不追涨，止损→金价跌破 5日线或放量长上影</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p2">P2</span></td>
+          <td><b>工业金属 / 资源</b><br>铜 / 铅 / 锌 / 盐湖提锂</td>
+          <td>金属铅 +4.26%（同花顺）<br>紫金矿业 +4.55%<br>锡业股份 +2.10%</td>
+          <td><b>P1 启动→P2 扩散</b></td>
+          <td>金属铜 +29.69亿、金属铅 +29.87亿、金属锌 +28.03亿、盐湖提锂 +26.69亿。<br><b>Pair：</b>紫金矿业 / 洛阳钼业（铜）、锡业股份 / 云南锗业（小金属）。</td>
+          <td>观察持续性，若医药分歧时资源线承接资金可轻仓试</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>AI 硬件 / 半导体 / 存储 / CPO / PCB</b></td>
+          <td>半导体 <span class="down">-0.36%</span><br>芯片概念 +0.90%<br>存储芯片 +0.25%</td>
+          <td><b>P3→退潮确认</b></td>
+          <td>芯片概念净流出 <span class="badge-out">-66.81亿</span>、先进封装 -40.76亿、PCB -26.60亿、存储芯片 -36.63亿。<br><span class="frame-ref">【框架应用㉓】</span> 板块微涨 + 资金大出 = 反弹出货。</td>
+          <td>坚决回避，等 20日资金线转正再说</td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>焦炭Ⅱ / 煤炭</b></td>
+          <td>焦炭Ⅱ <span class="down">-4.01%</span><br>煤炭概念 -0.23%<br>宝泰隆 +5.26%</td>
+          <td><b>P3→退潮确认</b><br>昨日预判失败</td>
+          <td>煤炭主力净流出 -8.76亿；宝泰隆独立活口但板块崩盘。<br><span class="frame-ref">【R-Judge归因】</span> 昨日误判焦炭为 P2→P3 主升，实际为高位放量出货。</td>
+          <td>规避，不接飞刀 <span class="frame-ref">⑳</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>农业 / 转基因</b></td>
+          <td>转基因 +0.86%<br>金健米业 4 板 +9.97%</td>
+          <td><b>P3 退潮 / 龙头独舞</b></td>
+          <td>转基因主力净流出 <span class="badge-out">-20.13亿</span>；金健米业为全市场最高板，但板块跟风极弱。<br><span class="frame-ref">【框架应用㊲退潮修复窗口】</span></td>
+          <td>只把金健米业当情绪标杆，板块不碰</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pair 配对 -->
+  <div class="section">
+    <div class="sec-title">二·一、主线 Pair 配对（三-②）</div>
+    <table class="tbl w-pair">
+      <thead><tr><th>主线</th><th>Pair A</th><th>Pair B</th><th>今日涨幅</th><th>配对逻辑</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag-mini tag-p0">P0 医药</span></td><td>康希诺 688185</td><td>近岸蛋白 688137</td><td>+20.00% / +20.00%</td><td>同属性疫苗/生命科学上游，20cm 双龙头，市值差异适中，业务同类 <span class="frame-ref">三-②</span></td></tr>
+        <tr><td><span class="tag-mini tag-p0">P0 CRO</span></td><td>博腾股份 300363</td><td>诺唯赞 688105</td><td>+20.00% / +19.98%</td><td>CRO/CDMO + 生命科学试剂，当日最强 20cm，业务同属医药研发服务链</td></tr>
+        <tr><td><span class="tag-mini tag-p1">P1 贵金属</span></td><td>山东黄金 600547</td><td>赤峰黄金 600988</td><td>+8.59% / +7.91%</td><td>黄金双龙头，市值差 1.9 倍（≤5倍），业务同类，涨幅前二 <span class="frame-ref">三-②</span></td></tr>
+        <tr><td><span class="tag-mini tag-p2">P2 资源</span></td><td>紫金矿业 601899</td><td>锡业股份 000960</td><td>+4.55% / +2.10%</td><td>铜/锡工业金属代表，资金净流入靠前，趋势 intact</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 三、概念板块涨幅 TOP -->
+  <div class="section">
+    <div class="sec-title">三、概念板块涨幅 TOP（趋势强度）</div>
+    <table class="tbl w-sector">
+      <thead><tr><th>板块（同花顺概念代码）</th><th>今日</th><th>5日</th><th>20日</th><th>领涨股</th></tr></thead>
+      <tbody>
+        <tr><td>生物疫苗 885845</td><td class="up">+7.50%</td><td class="up">+3.76%</td><td class="up">+12.78%</td><td>百克生物 <span class="up">+20.01%</span></td></tr>
+        <tr><td>细胞免疫治疗 885769</td><td class="up">+7.16%</td><td class="up">+3.23%</td><td class="up">+18.93%</td><td>优宁维 <span class="up">+20.01%</span></td></tr>
+        <tr><td>干细胞 886062</td><td class="up">+6.47%</td><td class="up">+3.00%</td><td class="up">+19.98%</td><td>优宁维 <span class="up">+20.01%</span></td></tr>
+        <tr><td>基因测序 885578</td><td class="up">+6.31%</td><td class="up">+2.41%</td><td class="up">+15.91%</td><td>优宁维 <span class="up">+20.01%</span></td></tr>
+        <tr><td>精准医疗 886024</td><td class="up">+6.30%</td><td class="up">+1.72%</td><td class="up">+15.40%</td><td>华大智造 <span class="up">+20.00%</span></td></tr>
+        <tr><td>CRO概念 885927</td><td class="up">+5.91%</td><td class="down">-0.09%</td><td class="up">+30.01%</td><td>博腾股份 <span class="up">+20.00%</span></td></tr>
+        <tr><td>单抗概念 886015</td><td class="up">+6.03%</td><td class="up">+1.30%</td><td class="up">+8.19%</td><td>优宁维 <span class="up">+20.01%</span></td></tr>
+        <tr><td>贵金属 885431</td><td class="up">+5.50%</td><td class="up">+11.52%</td><td class="up">+20.69%</td><td>山东黄金 <span class="up">+8.59%</span></td></tr>
+        <tr><td>医疗器械 885539</td><td class="up">+4.27%</td><td class="up">+0.87%</td><td class="up">+6.71%</td><td>华大智造 <span class="up">+20.00%</span></td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">概念涨幅 TOP 几乎全被医药包揽，前 9 名中 8 只是医药；贵金属为唯一非医药前排。CRO 5日 -0.09% 但今日 +5.91%，是典型的 P2 二线扩散日 <span class="frame-ref">三-②</span>。</div>
+  </div>
+
+  <!-- 四、主力资金流向 -->
+  <div class="section">
+    <div class="sec-title">四、主力资金流向（行业 / 概念）</div>
+    <table class="tbl w-fund">
+      <thead><tr><th>方向</th><th>板块</th><th>今日净流入</th><th>5日净流入</th><th>20日净流入</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge-in">流入</span></td><td><b>创新药</b></td><td class="up">+50.39亿</td><td class="down">—</td><td class="down">—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>黄金</b></td><td class="up">+39.82亿</td><td class="down">—</td><td class="down">—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>医疗服务</b></td><td class="up">+3.87亿</td><td class="down">-22.16亿</td><td class="down">-11.26亿</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>生物制品</b></td><td class="up">+3.31亿</td><td class="up">+15.74亿</td><td class="down">-2.94亿</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>化学制药</b></td><td class="up">+2.77亿</td><td class="down">-37.79亿</td><td class="down">-103.54亿</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>芯片概念</b></td><td class="down">-66.81亿</td><td class="down">-115.84亿</td><td class="down">-104.21亿</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>先进封装</b></td><td class="down">-40.76亿</td><td class="down">—</td><td class="down">—</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>东数西算</b></td><td class="down">-40.11亿</td><td class="down">—</td><td class="down">—</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>半导体</b></td><td class="down">-7.00亿</td><td class="down">-39.21亿</td><td class="down">-837.70亿</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>煤炭</b></td><td class="down">-8.76亿</td><td class="down">—</td><td class="down">—</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">注：同花顺概念净流入与 westock 行业净流入口径不同，数值差异大，但方向一致——医药流入、AI 硬件流出。20日资金线显示半导体 -837.70亿，符合 <span class="frame-ref">资金背离四象限 · 20日资金线降级规则</span>：即使单日反抽，也非反转。</div>
+  </div>
+
+  <!-- 五、资金背离与风险点 -->
+  <div class="section">
+    <div class="sec-title">五、资金背离与风险点（对抗性自检）</div>
+    <div class="callout red"><b>⚠️ 医药板块内部背离：</b>医药板块大涨，但龙头 <b>恒瑞医药 -6.00%</b>（成交 119.30 亿），药明康德仅 +2.38%。资金从传统大市值医药向中小盘/CXO/疫苗 20cm 标的迁移，属于主线内的"高低切+风格切"；恒瑞大跌不是医药主线结束，而是资金在板块内部寻找弹性 <span class="frame-ref">【框架应用㉝双轨选股】</span>。</div>
+    <div class="callout"><b>贵金属 P3 鱼尾：</b>贵金属 52周 +57.78%、5日 +11.52%，今日再涨 +5.50%，进入加速段。虽资金仍净流入，但按三-④应视为 P3 退潮预警，而非 P1 启动；建议只低吸、不追高，若次日放量长上影则确认退潮 <span class="frame-ref">三-④</span>。</div>
+    <div class="callout green"><b>AI 硬件诱多：</b>芯片概念今日 +0.90%、存储芯片 +0.25%，但主力分别净流出 -66.81亿、-36.63亿。典型"涨 + 资金出"= 诱多出货 <span class="frame-ref">资金背离四象限</span>；20日资金线均为巨额负值，反弹只是减仓窗口 <span class="frame-ref">㉓</span>。</div>
+    <div class="callout red"><b>8/19 防御抱团模型瓦解：</b>昨日预判"周期防御抱团模型"（煤炭/银行/航运/贵金属），今日贵金属延续但煤炭 -8.76亿净流出、航运港口仅 +0.26%、银行/高股息未领涨。资金从防御抱团切向医药+资源进攻，防御抱团在情绪修复日被进攻主线替代 <span class="frame-ref">【框架应用㉒风格切换】</span>。</div>
+  </div>
+
+  <!-- 六、连板天梯 -->
+  <div class="section">
+    <div class="sec-title">六、连板天梯（最强主线辨识度）</div>
+    <table class="tbl w-board">
+      <thead><tr><th>连板</th><th>代码</th><th>名称</th><th>属性</th><th>主线归类</th></tr></thead>
+      <tbody>
+        <tr><td><b>4板</b></td><td>sh600127</td><td><b>金健米业</b></td><td>农业/粮食（全市场最高板）</td><td><span class="tag-mini tag-p3">退潮 农业</span></td></tr>
+        <tr><td><b>2板</b></td><td>sz001277</td><td><b>速达股份</b></td><td>工程机械/工业机械</td><td><span class="tag-mini tag-p2">P2 工业</span></td></tr>
+        <tr><td><b>2板</b></td><td>sz002412</td><td><b>汉森制药</b></td><td>化学制药</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>2板</b></td><td>sz002667</td><td><b>*ST威领</b></td><td>锂矿/摘帽</td><td><span class="tag-mini tag-p2">P2 资源</span></td></tr>
+        <tr><td><b>2板</b></td><td>sh603801</td><td><b>志邦家居</b></td><td>家居/消费</td><td><span class="tag-mini tag-p2">P2 消费</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh688185</td><td><b>康希诺</b></td><td>疫苗（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh688276</td><td><b>百克生物</b></td><td>疫苗（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz300122</td><td><b>智飞生物</b></td><td>疫苗（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz300142</td><td><b>沃森生物</b></td><td>疫苗（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz300363</td><td><b>博腾股份</b></td><td>CRO（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz300006</td><td><b>莱美药业</b></td><td>创新药（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz301166</td><td><b>优宁维</b></td><td>生命科学（20cm）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh600547</td><td><b>山东黄金</b></td><td>贵金属</td><td><span class="tag-mini tag-p1">P1 贵金属</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh601899</td><td><b>紫金矿业</b></td><td>工业金属</td><td><span class="tag-mini tag-p2">P2 资源</span></td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">83 只涨停中，医药占约 20+ 只（含 7 只 20cm），为绝对主线；金健米业 4 板为全市场高度标杆，但农业板块跟风弱，属于龙头独舞 <span class="frame-ref">㊲</span>。</div>
+  </div>
+
+  <!-- 七、龙虎榜博弈 -->
+  <div class="section">
+    <div class="sec-title">七、龙虎榜博弈（机构 vs 游资）</div>
+    <table class="tbl w-lhb">
+      <thead><tr><th>类型</th><th>个股</th><th>机构净买(万)</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td><b>机构净买</b></td><td>惠泰医疗 688617（3日）</td><td class="lhb-buy">+26,137.69</td><td>医疗器械龙头，三日榜机构持续买入，医药主线获机构加持</td></tr>
+        <tr><td><b>机构净买</b></td><td>神农种业 300189</td><td class="lhb-buy">+7,873.89</td><td>农业活口，机构买入（同花顺口径 1.02亿，存在数据源差异）</td></tr>
+        <tr><td><b>机构净买</b></td><td>安科生物 300009</td><td class="lhb-buy">+3,572.02</td><td>生物制品，机构净流入（同花顺口径 6,742万，差异较大）</td></tr>
+        <tr><td><b>机构净买</b></td><td>康泰生物 300601</td><td class="lhb-buy">+1,379.38</td><td>疫苗，机构共振</td></tr>
+        <tr><td><b>机构净买</b></td><td>博腾股份 300363</td><td class="lhb-buy">+125.29</td><td>CRO 20cm，机构小幅净买，游资主导</td></tr>
+        <tr><td><b>机构净卖</b></td><td>石药创新 300765</td><td class="lhb-sell">-35,437.62</td><td>医药内部分化，高位创新药被机构派发</td></tr>
+        <tr><td><b>机构净卖</b></td><td>博济医药 300404</td><td class="lhb-sell">-7,430.48</td><td>CRO 高位获利了结</td></tr>
+        <tr><td><b>机构净卖</b></td><td>神奇制药 600613</td><td class="lhb-sell">-3,852.26</td><td>中药/仿制药，机构分歧</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">龙虎榜呈现"医药内部分化"：机构加仓医疗器械/疫苗，但派发部分 CRO/创新药高位股。这与 P2 二线扩散阶段"龙头补涨、高位震荡"的特征一致 <span class="frame-ref">三-②</span>。</div>
+  </div>
+
+  <!-- 八、核心驱动 -->
+  <div class="section">
+    <div class="sec-title">八、核心驱动（四层拆解）</div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>医药大主线（CRO / 创新药 / 疫苗）</div>
+      <div class="dblk"><b>1. 事实：</b>美股 MRNA 因癌症疫苗数据超预期一夜 +177%（8/19 美股复盘已提示映射 US-④）；国内 CXO 海外订单回暖、创新药出海 BD 持续落地；药明康德 H1 收入 +38.9%、全年指引上调。</div>
+      <div class="dblk"><b>2. 解读：</b>创新药从"政策预期"转向"业绩+出海"双驱动，CXO 从海外政治风险压制中修复；今日批量 20cm 涨停是情绪亢奋+二线扩散的共同结果 <span class="frame-ref">三-②</span>。</div>
+      <div class="dblk"><b>3. 映射：</b>美股生物科技映射 → A 股疫苗/CXO/创新药；国内医保谈判边际缓和、创新药支付端改善。</div>
+      <div class="dblk"><b>4. 操作：</b>主线趋势 intact（CRO 20日 +30.01%），参与以 20cm 弹性龙头（康希诺/博腾/优宁维）+ 容量中军（药明康德/泰格医药）为锚；止损→若前排批量炸板或恒瑞/药明双破位则降仓。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">P1</span>贵金属 / 工业金属</div>
+      <div class="dblk"><b>1. 事实：</b>国际金价维持高位，降息预期反复；国内贵金属板块 5日 +11.52%、20日 +20.69%；工业金属铜/铅/锌资金净流入各约 +28~30亿。</div>
+      <div class="dblk"><b>2. 解读：</b>贵金属是 8/19 防御抱团中唯一延续的方向，但已处 P3 鱼尾；工业金属属于资源线补涨，承接部分从 AI 硬件撤离的资金。</div>
+      <div class="dblk"><b>3. 映射：</b>宏观降息周期 + 供给约束 + 算力/电网金属需求；与医药形成"进攻+防御"双主线并行的过渡结构。</div>
+      <div class="dblk"><b>4. 操作：</b>贵金属只低吸不追涨（三-④ 鱼尾）；工业金属观察能否在医药分歧时承接资金。</div>
+    </div>
+  </div>
+
+  <!-- 九、昨日预判回测（R-Judge） -->
+  <div class="section">
+    <div class="sec-title">九、昨日（8/19）预判回测与 R-Judge 归因</div>
+    <table class="tbl w-watch">
+      <thead><tr><th>预判方向</th><th>8/20 实际</th><th>结果 / 归因</th></tr></thead>
+      <tbody>
+        <tr><td>焦炭/煤炭 = 多（P2→P3 主升）</td><td>焦炭Ⅱ <span class="down">-4.01%</span>，煤炭净流出 -8.76亿</td><td><b>错误</b>。误把高位放量当主升，实际为出货；宝泰隆独立活口但板块崩盘。<span class="frame-ref">【R-Judge】</span> 根因：未严格执行 ⑳"高位放量出货不接飞刀"，过度依赖昨日资金惯性。</td></tr>
+        <tr><td>AI 硬件 = 空</td><td>芯片概念资金净流出 -66.81亿，板块微涨</td><td><b>正确</b>。资金持续流出，反弹即减仓窗口 <span class="frame-ref">㉓</span>。</td></tr>
+        <tr><td>银行/高股息 = 防御抱团</td><td>银行未领涨，资金切医药/资源</td><td><b>部分错误</b>。防御抱团在情绪修复日中被进攻主线替代 <span class="frame-ref">㉒</span>。</td></tr>
+        <tr><td>医药 CXO = 多</td><td>CRO +5.91%，创新药 +4.52%，批量 20cm</td><td><b>正确</b>。美股 MRNA +177% 映射 + 国内 CXO 业绩回暖。</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>5-Why 归因（焦炭预判失败）：</b><br>Why1：为什么看多的焦炭跌了？→ 因为板块资金净流出、龙头宝泰隆虽涨停但后排崩塌。<br>Why2：为什么资金会流出？→ 因为市场情绪从防御切换至进攻，煤炭作为防御品种被抛弃。<br>Why3：为什么没识别切换？→ 因为过度依赖前一日资金数据，未结合早盘竞价与开盘方向确认。<br>Why4：为什么没有早盘确认机制？→ 因为当前流程缺少"9:30 后 15 分钟主线确认"门控。<br>Why5：如何固化？→ 新增规则：前一晚防御抱团预判，次日必须经 9:30-9:45 资金方向确认，否则降权处理 <span class="frame-ref">㊳机构试错期</span>。</div>
+  </div>
+
+  <!-- 十、次日(T+1)预判推导（四理论合一） -->
+  <div class="section">
+    <div class="sec-title">十、次日(T+1)预判推导（四理论合一）</div>
+    <div class="callout"><b>① 交易框架（规则⑪~㊴）：</b>医药主线资金流入断层第一，且出现批量 20cm，符合 ⑪"资金三档"最强档；但 ㊱"情绪缩圈"提示亢奋阶段需防分化。贵金属 52周 +57.78% 触发 ⑳"高位放量出货不接飞刀"预警。AI 硬件 20日资金线巨额流出，维持 ㉓"反弹=减仓窗口"。</div>
+    <div class="callout"><b>② 自我学习（R-Judge 命中率）：</b>昨日 4 项预判 2 对 1 错 1 部分错，命中率 50%~62.5%，低于 47.5% 随机基准上方。最大败笔"焦炭=多"根因是未在次日开盘确认防御抱团是否瓦解；已产出固化规则：防御/抱团类预判次日需经 9:30-9:45 方向确认，否则降权。</div>
+    <div class="callout"><b>③ 完善理论（规则固化迭代）：</b>新增/强化两条规则：A）"情绪修复日，防御抱团自动降权"——当全市场上涨家数&gt;4000、涨停&gt;80 时，煤炭/银行/航运等防御品种即使前一日强势，次日也倾向被进攻主线替代；B）"20cm 批量出现=主线 P2 确立"，可作为次日继续看多的正向信号。</div>
+    <div class="callout"><b>④ 三阶段理论（三-①~三-⑧）：</b>医药 = P2 二线扩散确立（龙头 20cm + 后排补涨 + 资金断层），T+1 大概率进入 P2 末段或 P3 高潮，操作原则是"去弱留强、不追后排"；贵金属 = P3 退潮预警，T+1 若放量滞涨则确认退潮；AI 硬件 = 退潮期，T+1 任何反抽都是减仓；焦炭 = 退潮确认，不再参与。Pair 强弱：医药 Pair 康希诺/近岸蛋白、博腾/诺唯赞；贵金属 Pair 山东黄金/赤峰黄金。</div>
+
+    <table class="tbl w-watch">
+      <thead><tr><th>方向</th><th>T+1 预判</th><th>触发 / 证伪条件</th></tr></thead>
+      <tbody>
+        <tr><td><b>大势</b></td><td>沪指/创业板 中性偏多</td><td>触发：量能维持 2 万亿、个股涨多跌少；证伪：上证跌破 3880 且创业板跌破 3450。</td></tr>
+        <tr><td><b>板块</b></td><td>医药大主线 多（P2 末段→P3）</td><td>触发：康希诺/博腾/优宁维至少 2 只连板或大涨，创新药资金继续流入；证伪：前排批量炸板 + 恒瑞/药明双破位。</td></tr>
+        <tr><td><b>板块</b></td><td>贵金属 中性偏多但 P3 鱼尾</td><td>触发：金价维持高位、山东黄金/赤峰黄金沿 5 日线上行；证伪：放量长上影或跌破 5 日线。</td></tr>
+        <tr><td><b>板块</b></td><td>AI 硬件 空</td><td>触发：芯片/半导体资金继续流出；证伪：连续 2 日资金净流入且放量突破 20日线。</td></tr>
+        <tr><td><b>板块</b></td><td>焦炭/煤炭 空</td><td>触发：资金继续流出、宝泰隆不能连板；证伪：板块放量反包。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 十一、操作建议与次日关注 -->
+  <div class="section">
+    <div class="sec-title">十一、操作建议与次日关注清单</div>
+    <table class="tbl w-watch">
+      <thead><tr><th>类别</th><th>观测要点</th><th>信号含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>必须强于旧主线</b></td><td>医药 20cm 前排（康希诺、博腾、优宁维）次日是否继续强势</td><td>P2→P3 是否延续</td></tr>
+        <tr><td><b>容量票不能破位</b></td><td>药明康德、泰格医药、山东黄金、紫金矿业</td><td>中军破位 = 主线松动</td></tr>
+        <tr><td><b>高度票不能炸板</b></td><td>金健米业（4板）</td><td>断板 = 情绪退潮前兆</td></tr>
+        <tr><td><b>资金切换信号</b></td><td>若医药分歧，资金是否流向资源/贵金属</td><td>主线切换还是全面退潮</td></tr>
+        <tr><td><b>风险预警</b></td><td>两市成交能否维持 2 万亿、AI 硬件是否继续失血</td><td>缩量 = 追高性价比下降</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line"><b>操作策略：</b>医药主线持仓者去弱留强，未持仓者只低吸前排核心或等分歧转一致；贵金属仅作低吸套利；AI 硬件/焦炭坚决不抄底；关注医药与资源之间的资金跷跷板。</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="disclaimer">免责声明：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。</div>
+  <div class="foot-line">数据时点：2026-08-20 收盘 · 来源：同花顺问财（iwencai）、腾讯自选股（westock-mcp）、Wind 金融终端 · 生成时间 2026-08-20 19:15<br><span class="foot-src">交叉验证：同花顺问财 ↔ 腾讯自选股(westock-mcp) ↔ Wind；缺失标 N/A，多源分歧已在正文标注。</span></div>
+
+</div>
+</body>
+</html>

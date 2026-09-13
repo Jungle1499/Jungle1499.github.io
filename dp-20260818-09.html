@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260818</title>
+<style>
+  :root{
+    --bg:#F5F7FA;--card-white:#FFFFFF;--card-border:#DBE3EC;--card-border-strong:#ACB6C5;
+    --ink:#1F2937;--sub:#64748B;--heading:#1E3A5F;--up:#DC2626;--down:#16A34A;
+    --accent-blue:#2563EB;--p0:#DC2626;--p1:#B45309;--tui:#64748B;
+    --thead-bg:#F1F5F9;--callout-bg:#F8FAFC;
+    --fs-title:16.8px;--fs-section:13.0px;--fs-subhead:11.4px;--fs-body:10.8px;
+    --fs-table:10.5px;--fs-idx-name:9.6px;--fs-idx-val:17.4px;--fs-idx-sub:9.8px;
+    --fs-foot:9.0px;--fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;background:#FFFFFF;color:var(--ink);line-height:1.5;}
+  .page{width:840px;margin:0 auto;background:var(--bg);padding-bottom:30px;}
+  .header{background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);color:#FFFFFF;text-align:center;padding:26px 0 24px;}
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+  .card{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 14px;}
+  .card-inner{padding:14px 16px;}
+  .summary-card{background:var(--card-white);border:1px solid var(--card-border-strong);border-radius:4px;margin:0 12px 16px;padding:16px 18px;}
+  .summary-head{font-size:var(--fs-subhead);color:var(--heading);font-weight:700;margin-bottom:10px;}
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{display:inline-block;color:#fff;font-size:var(--fs-chip);font-weight:700;padding:1px 8px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+  .chip-p0{background:var(--p0);}.chip-p1{background:var(--p1);}.chip-tui{background:var(--tui);}
+  .sum-text{color:var(--ink);}
+  .section{margin-bottom:14px;}
+  .sec-title{font-size:var(--fs-section);color:var(--heading);font-weight:700;padding:0 12px 6px;border-bottom:2px solid var(--heading);margin:0 12px 10px;}
+  .idx-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 12px 12px;}
+  .idx-cell{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;padding:8px 10px;text-align:left;}
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}.idx-val.down{color:var(--down);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+  .stats-line{font-size:var(--fs-idx-sub);color:var(--sub);margin:0 12px 8px;line-height:1.8;}
+  .callout{background:var(--callout-bg);border-left:3px solid var(--accent-blue);border-radius:0 4px 4px 0;padding:10px 14px;margin:0 12px 14px;font-size:var(--fs-idx-sub);color:var(--sub);line-height:1.8;}
+  .callout b{color:var(--ink);}
+  .tbl{width:calc(100% - 24px);margin:0 12px 14px;border-collapse:collapse;background:var(--card-white);border:1px solid var(--card-border);font-size:var(--fs-table);border-radius:4px;overflow:hidden;}
+  .tbl thead th{background:var(--thead-bg);color:var(--sub);font-weight:600;text-align:left;padding:7px 10px;border-bottom:1px solid var(--card-border);font-size:var(--fs-table);}
+  .tbl tbody td{padding:7px 10px;border-bottom:1px solid #EEF1F4;color:var(--ink);vertical-align:top;font-size:var(--fs-table);}
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}.down{color:var(--down);font-weight:600;}
+  .badge-in{color:var(--up);}.badge-out{color:var(--down);}
+  table.tbl{table-layout:fixed;}
+  .w-mainline{grid-template-columns:5% 19% 18% 15% 22% 21%;}
+  .w-sector{grid-template-columns:22% 16% 16% 16% 30%;}
+  .w-fund{grid-template-columns:8% 15% 26% 25% 26%;}
+  .w-board{grid-template-columns:8% 14% 14% 40% 24%;}
+  .w-lhb{grid-template-columns:12% 22% 16% 50%;}
+  .w-watch{grid-template-columns:18% 45% 37%;}
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}.tag-p1{background:var(--p1);}.tag-p2{background:#7C3AED;}.tag-p3{background:#475569;}
+  .lhb-buy{color:var(--up);font-weight:700;}.lhb-sell{color:var(--down);font-weight:700;}
+  .driver{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 12px;padding:12px 16px;}
+  .driver-h{font-size:var(--fs-body);font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .driver-h .lv{font-size:var(--fs-chip);font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .lv-p0{background:var(--p0);}.lv-p1{background:var(--p1);}
+  .dblk{font-size:var(--fs-body);line-height:1.7;margin-bottom:5px;}
+  .dblk b{color:var(--heading);}
+  .stage-card{background:var(--card-white);border:1px solid var(--card-border);border-left:3px solid var(--heading);border-radius:4px;margin:0 12px 14px;padding:12px 16px;}
+  .stage-h{font-size:var(--fs-body);font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .stage-row{font-size:var(--fs-idx-sub);line-height:1.8;color:var(--sub);}
+  .stage-row b{color:var(--ink);}
+  /* strength-wrap sparkline */
+  .strength-wrap{margin:0 12px 14px;background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;padding:14px 16px;}
+  .str-row{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:center;margin-bottom:10px;}
+  .str-label{font-size:var(--fs-body);font-weight:700;color:var(--heading);}
+  .str-label .stage-tag{font-size:8.5px;font-weight:700;color:#fff;padding:1px 5px;border-radius:2px;margin-left:4px;}
+  .str-bars{display:flex;gap:6px;}
+  .spark{flex:1;text-align:center;}
+  .spark-label{font-size:8.2px;color:var(--sub);margin-bottom:2px;}
+  .spark-bar-wrap{position:relative;height:28px;background:#F1F5F9;border-radius:2px;overflow:hidden;}
+  .spark-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#CBD5E1;z-index:1;}
+  .spark-bar{position:absolute;top:2px;bottom:2px;border-radius:2px;}
+  .spark-bar.red{background:#DC2626;}.spark-bar.green{background:#16A34A;}.spark-bar.gray{background:#94A3B8;}
+  .spark-val{font-size:8.4px;font-weight:600;margin-top:2px;}
+  .disclaimer{font-size:var(--fs-foot);color:var(--sub);margin:0 12px 10px;line-height:1.7;}
+  .foot-line{font-size:var(--fs-foot);color:var(--sub);text-align:center;margin:0 12px;line-height:1.8;}
+  .foot-src{font-size:8.6px;color:#9aa3ad;margin-top:4px;}
+  .pred-card{background:var(--card-white);border:1px solid var(--card-border);border-left:3px solid #7C3AED;border-radius:4px;margin:0 12px 14px;padding:12px 16px;}
+  .pred-h{font-size:var(--fs-body);font-weight:700;color:#7C3AED;margin-bottom:8px;}
+  .pred-row{font-size:var(--fs-idx-sub);line-height:1.8;color:var(--sub);}
+  .pred-row b{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-08-18（周二）· 数据源：同花顺问财 / 腾讯自选股 / 东方财富 / Wind · 收盘后全维复盘（15:00 收盘快照）</div>
+  </div>
+
+  <!-- 首屏结论 -->
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）</div>
+    <div class="sum-row"><span class="chip chip-p0">P0 最强主线</span><span class="sum-text">农业 / 转基因（种植业 <span class="up">+9.54%</span> 全市场断层第一、转基因 <span class="up">+9.30%</span>、玉米 <span class="up">+7.47%</span>、粮食 <span class="up">+6.52%</span>）—— 摩根大通警告全球粮食危机明年或爆发 + 霍尔木兹海峡航运中断 + 超强厄尔尼诺催化；神农种业 <span class="up">+20.04%</span>（3 日龙虎榜·机构净买 1.31 亿）、华绿生物 <span class="up">+20.00%</span>、天山生物 <span class="up">+20.04%</span>、秋乐种业 <span class="up">+29.98%</span> 多股 20cm 涨停。主力净流入 <span class="badge-in">+14.2 亿</span>（5 日 +16.7 亿 / 20 日 +12.5 亿，连续正流入=健康）。8/17 P1 启动→今日 P1 强化→P2 加速（扩散至养殖 +2.42%、饲料 +3.00%、农产品加工 +4.29%、猪肉 +3.35%），全天独强。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P2 分化</span><span class="sum-text">光学光电子 / 电子化学品 —— 光学光电子 <span class="up">+2.35%</span>、化学原料 <span class="up">+1.03%</span>；中石科技 20cm 二连板（<span class="up">+20.00%</span>）但机构龙虎榜净卖 <span class="badge-out">-2.06 亿</span>（高位出货分歧）、鼎阳科技 <span class="up">+20.00%</span>、骏成科技 <span class="up">+20.00%</span> 独立走强但板块跟风不足。主力净流入光学光电子 +15.5 亿但 20 日 -61.4 亿（反弹回补·非反转）。判 P2 分化，持有不强追。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮确认</span><span class="sum-text">AI 硬件（通信设备 / 半导体 / 元件）—— 通信设备 <span class="down">-1.35%</span>（主力 -120.7 亿 / 20 日 -210.3 亿）、半导体 <span class="down">-0.23%</span>（主力 -112.4 亿 / 20 日 -575.3 亿）、元件 <span class="down">-2.03%</span>（主力 -97.2 亿 / 5 日 -98.5 亿）。退潮三要素齐备（①板块跌 ②主力净流出 ③20 日资金线全负），8/17 P3 预警→今日退潮确认。活口：德科立 <span class="up">+7.42%</span>（主力逆势 +4.79 亿）、太辰光 3 日龙虎榜机构净买 10 亿、有研硅 <span class="up">+13.43%</span>。</span></div>
+    <div class="sum-row"><span class="sum-text">市场状态：兑现日 —— 8/17 普涨（沪指 +1.41% / 涨停 95 / 涨跌比 4.07）后次日兑现分化；沪指 <span class="up">+0.19%</span>（银行 / 农业护盘微红）、创业板 <span class="down">-0.93%</span>（成长板领跌）；涨跌比 <b>0.64</b>（2121 涨 / 3292 跌 / 涨股比 38%），涨停 <b>81</b> 只、跌停 <b>6</b> 只，成交 <b>2.40 万亿</b>（较上日放量约 130 亿）。连板溢价分化：昨日连板 +2.38%、昨日涨停 +1.23%（有溢价但回落），情绪边际收缩（涨停 95→81、跌停 0→6，㊱ 部分触发）。</span></div>
+  </div>
+
+  <!-- 三阶段判定总览 -->
+  <div class="section">
+    <div class="sec-title">主线三阶段判定（P1/P2/P3 · 三-①~三-⑧）</div>
+    <div class="stage-card">
+      <div class="stage-h">主线1 · 农业 / 转基因 —— P1 强化→P2 加速【框架应用 三-① 三-② 三-⑤ ⑪】</div>
+      <div class="stage-row"><b>阶段判定：</b>种植业 +9.54% 全市场断层第一（超第二名光学光电子 7.19pp）= <b>P1 强化</b>（8/17 启动→今日涨幅扩大 5.38pp）；涨停梯队从首板升至 2 连板（金健米业）+ 多只 20cm（神农 / 华绿 / 天山 / 秋乐），板块扩散至养殖 +2.42%、饲料 +3.00%、农产品加工 +4.29%、猪肉 +3.35% = <b>P2 加速</b>特征（三-① 扩散确认）。主力 20 日 +12.5 亿连续正流入=资金健康（不降级）。</div>
+      <div class="stage-row"><b>Pair：</b><b>神农种业（sz300189，~41 亿市值，+20.04%）vs 大北农（sz002385，~430 亿市值，+10.10%）</b> —— 市值差 ~10 倍（⚠️ 超 5 倍阈值，标注参考 Pair）；业务类似（种业 / 农业种植，板块概念 + 申万二级交叉确认）✓、当日板块涨幅最大两只 ✓。⚠️ 市值差偏大，按三-② 严格判不成立；备选：<b>神农种业 vs 天山生物（sz300313，~20 亿，+20.04%）</b>（市值差 ~2 倍 ✓，但业务相似性弱——种业 vs 养殖，标注 N/A 待验证）。</div>
+      <div class="stage-row"><b>相对强弱：</b>龙头神农种业 3 日龙虎榜（机构净买 1.31 亿 + 营业部净买 0.76 亿）连续跑赢；秋乐种业 +29.98% 为板块最强弹性股（北交所）；农业扩散链条（种植→养殖→饲料→加工）全线正涨幅，P2 扩散特征明确。</div>
+    </div>
+    <div class="stage-card">
+      <div class="stage-h">次线 · 光学光电子 / 电子化学品 —— P2 分化【框架应用 三-① 三-⑥ ⑳】</div>
+      <div class="stage-row"><b>阶段判定：</b>光学光电子 +2.35%（5 日资金 +39.4 亿）正涨幅但 20 日资金 -61.4 亿 → 按 20 日资金线降级纪律（PUA 注入）判"反弹回补·非反转"；中石科技 20cm 二连板独立走强但机构龙虎榜净卖 -2.06 亿（高位分歧信号），鼎阳科技 / 骏成科技 20cm 但板块跟风不足 → <b>P2 分化</b>（个股强 / 板块弱 / 机构出货）。</div>
+      <div class="stage-row"><b>Pair：</b><b>中石科技（sz300684，~70 亿，+20.00%）vs 鼎阳科技（sh688112，~50 亿，+20.00%）</b> —— 市值差 ~1.4 倍 ✓、业务类似（电子化学品 / 测试测量，板块概念交叉）✓、当日板块涨幅最大两只 ✓。Pair 成立，但机构卖出中石科技=Pair 龙头分歧，减仓信号。</div>
+      <div class="stage-row"><b>相对强弱：</b>龙头中石科技 5 日 +56.19%（8/17 基准）延续强势但机构出货；后排鼎阳科技首次 20cm（新进者），板块内部"龙头滞涨 / 新进补涨"=P2 后段特征（三-⑥ 退潮前兆预警）。</div>
+    </div>
+    <div class="stage-card">
+      <div class="stage-h">退潮 · AI 硬件（通信设备 / 半导体 / 元件） —— P3→退潮确认【框架应用 ㉓ ㉔ 三-⑥ ⑳】</div>
+      <div class="stage-row"><b>阶段判定：</b>8/17 通信设备 +4.77%（P2 主升）→ 今日 -1.35%（P3 信号）→ 退潮三要素齐备：①板块跌幅（通信 -1.35% / 半导体 -0.23% / 元件 -2.03%）②主力净流出（通信 -120.7 亿 / 半导 -112.4 亿 / 元件 -97.2 亿）③20 日资金线全负（通信 -210.3 亿 / 半导 -575.3 亿 / 元件 -18.4 亿）= <b>退潮确认</b>。符合㉓（反弹 = 减仓窗口：8/17 反弹→8/18 兑现）+ ㉔（往复周期缩短：8/10 科技跌→8/17 涨→8/18 退潮，周期缩至 1 日）。</div>
+      <div class="stage-row"><b>活口（非全面崩塌）：</b>德科立 +7.42%（主力 +4.79 亿逆势吸筹，5 日 +37.6 亿）、太辰光 3 日龙虎榜机构净买 10 亿、有研硅 +13.43%（5 日 +1.59 亿）→ 个别龙头获资金承接但板块整体退潮方向不变（三-⑥ 退潮确认后活口 = 结构性机会非主线）。</div>
+    </div>
+  </div>
+
+  <!-- 一、市场概览 -->
+  <div class="section">
+    <div class="sec-title">一、市场概览</div>
+    <div class="idx-grid">
+      <div class="idx-cell"><div class="idx-name">上证指数</div><div class="idx-val up">3990.30</div><div class="idx-sub">+0.19%</div></div>
+      <div class="idx-cell"><div class="idx-name">深证成指</div><div class="idx-val down">14621.95</div><div class="idx-sub">-0.56%</div></div>
+      <div class="idx-cell"><div class="idx-name">创业板指</div><div class="idx-val down">3705.39</div><div class="idx-sub">-0.93%</div></div>
+      <div class="idx-cell"><div class="idx-name">科创50</div><div class="idx-val up">1790.82</div><div class="idx-sub">+0.11%</div></div>
+      <div class="idx-cell"><div class="idx-name">沪深300</div><div class="idx-val down">4725.92</div><div class="idx-sub">-0.32%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证500</div><div class="idx-val down">8177.28</div><div class="idx-sub">-0.09%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证1000</div><div class="idx-val down">7946.06</div><div class="idx-sub">-0.28%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证红利</div><div class="idx-val up">5503.91</div><div class="idx-sub">+0.07%</div></div>
+      <div class="idx-cell"><div class="idx-name">北证50</div><div class="idx-val down">1106.04</div><div class="idx-sub">-0.20%</div></div>
+    </div>
+    <div class="stats-line">两市成交额 24005 亿（较上日放量约 130 亿）；涨跌家数 2121 涨 / 3292 跌 / 132 平（涨股比 38.4%，涨跌比 0.64），涨停 81 只、跌停 6 只；昨日连板指数 <span class="up">+2.38%</span>、昨日涨停 <span class="up">+1.23%</span>（连板有溢价但回落）。</div>
+    <div class="callout"><b>市场画像：</b>兑现日（8/17 普涨后次日分化）—— 沪强深弱（沪指微红靠银行 / 农业护盘，创业板领跌 -0.93%）；情绪边际收缩（涨停 95→81、跌停 0→6，㊱ 部分触发）；板块宽度收窄（上涨板块占比下降，农业独强 + TMT 集体退潮）；风格切换跷跷板（㉒：8/17 科技领涨→8/18 农业接管，科技↔农业 / 消费跷跷板）；封板率 85%（早盘）→ 午后回落至 38% 涨股比，分歧放大。</div>
+  </div>
+
+  <!-- 二、最强主线分级 -->
+  <div class="section">
+    <div class="sec-title">二、最强主线分级（P0→P3）</div>
+    <table class="tbl w-mainline">
+      <thead><tr><th>级别</th><th>方向</th><th>今日强度</th><th>资金（今日/5日/20日主力）</th><th>三阶段判定</th><th>操作建议</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag-mini tag-p0">P0</span></td><td><b>农业 / 转基因</b></td><td>种植业 <span class="up">+9.54%</span>、转基因 <span class="up">+9.30%</span>、玉米 <span class="up">+7.47%</span></td><td><span class="up">+14.2 亿</span> / <span class="up">+16.7 亿</span> / <span class="up">+12.5 亿</span></td><td>P1 强化→P2 加速</td><td>持有为主，P1 浮盈可加仓补涨（养殖 / 饲料扩散）；盯神农种业封板持续性</td></tr>
+        <tr><td><span class="tag-mini tag-p1">P2</span></td><td><b>光学光电子 / 电子化学品</b></td><td>光学光电子 <span class="up">+2.35%</span>、化学原料 <span class="up">+1.03%</span></td><td><span class="up">+15.5 亿</span> / <span class="up">+39.4 亿</span> / <span class="down">-61.4 亿</span></td><td>P2 分化</td><td>持有不强追；中石科技机构出货=减仓信号；20 日资金线仍负=反弹回补非反转</td></tr>
+        <tr><td><span class="tag-mini tag-p1">次线</span></td><td><b>养殖 / 饲料 / 农产品加工</b></td><td>农产品加工 <span class="up">+4.29%</span>、养殖 <span class="up">+2.42%</span>、饲料 <span class="up">+3.00%</span>、猪肉 <span class="up">+3.35%</span></td><td>—（农业扩散链）</td><td>P1→P2 扩散</td><td>农业 P2 扩散受益方向，跟随主线但不独立主攻</td></tr>
+        <tr><td><span class="tag-mini tag-p3">退潮</span></td><td><b>AI 硬件（通信 / 半导 / 元件）</b></td><td>通信 <span class="down">-1.35%</span>、半导体 <span class="down">-0.23%</span>、元件 <span class="down">-2.03%</span></td><td>通信 <span class="down">-120.7</span> / 半导 <span class="down">-112.4</span> / 元件 <span class="down">-97.2</span> 亿</td><td>P3→退潮确认</td><td>减仓兑现（㉓）；不抄底；活口德科立 / 太辰光可观察不追</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 三、5日板块涨幅 TOP -->
+  <div class="section">
+    <div class="sec-title">三、板块涨幅 TOP / BOTTOM（今日 · 申万二级 + 同花顺概念）</div>
+    <table class="tbl w-sector">
+      <thead><tr><th>板块</th><th>今日</th><th>5日资金(亿)</th><th>20日资金(亿)</th><th>领涨股</th></tr></thead>
+      <tbody>
+        <tr><td><b>种植业</b>（申万二级）</td><td class="up">+9.54%</td><td class="up">+16.7</td><td class="up">+12.5</td><td>神农种业 <span class="up">+20.04%</span></td></tr>
+        <tr><td>转基因（同花顺概念 886062）</td><td class="up">+9.30%</td><td>—</td><td>—</td><td>神农种业 <span class="up">+20.04%</span></td></tr>
+        <tr><td>玉米（同花顺概念）</td><td class="up">+7.47%</td><td>—</td><td>—</td><td>万向德农 <span class="up">+10.00%</span></td></tr>
+        <tr><td>粮食概念（同花顺概念）</td><td class="up">+6.52%</td><td>—</td><td>—</td><td>金健米业 <span class="up">+10.06%</span></td></tr>
+        <tr><td>大豆（同花顺概念）</td><td class="up">+6.47%</td><td>—</td><td>—</td><td>大北农 <span class="up">+10.10%</span></td></tr>
+        <tr><td>农产品加工（申万二级）</td><td class="up">+4.29%</td><td>—</td><td>—</td><td>金字火腿 <span class="up">+9.97%</span></td></tr>
+        <tr><td>农业种植（同花顺概念）</td><td class="up">+3.81%</td><td class="up">+32.8</td><td class="up">+14.3</td><td>神农种业 <span class="up">+20.04%</span></td></tr>
+        <tr><td>光学光电子（申万二级）</td><td class="up">+2.35%</td><td class="up">+39.4</td><td class="down">-61.4</td><td>骏成科技 <span class="up">+20.00%</span></td></tr>
+        <tr><td>化学原料（申万二级）</td><td class="up">+1.03%</td><td class="up">+1.7</td><td class="down">-2.6</td><td>红星发展 <span class="up">+10.01%</span></td></tr>
+        <tr style="border-top:2px solid #CBD5E1;"><td><b>元件</b>（申万二级）</td><td class="down">-2.03%</td><td class="down">-98.5</td><td class="down">-18.4</td><td>金禄电子 <span class="up">+11.06%</span></td></tr>
+        <tr><td><b>通信设备</b>（申万二级）</td><td class="down">-1.35%</td><td class="up">+200.1</td><td class="down">-210.3</td><td>德科立 <span class="up">+7.42%</span></td></tr>
+        <tr><td><b>半导体</b>（申万二级）</td><td class="down">-0.23%</td><td class="up">+4.2</td><td class="down">-575.3</td><td>有研硅 <span class="up">+13.43%</span></td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">农业（种植业 / 转基因 / 玉米 / 粮食 / 大豆）包揽涨幅前 5，断层第一；AI 硬件（元件 / 通信 / 半导体）占据跌幅前三，退潮确认。数据源：同花顺问财 iwencai + westock 申万二级 + 东方财富，三源交叉一致。</div>
+  </div>
+
+  <!-- 四、主力资金流向 -->
+  <div class="section">
+    <div class="sec-title">四、主力资金流向（行业 · 申万二级）</div>
+    <table class="tbl w-fund">
+      <thead><tr><th>方向</th><th>板块</th><th>今日净流入(亿)</th><th>5日净流入(亿)</th><th>20日净流入(亿)</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge-in">流入</span></td><td><b>种植业</b></td><td class="up">+14.2</td><td class="up">+16.7</td><td class="up">+12.5</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>光学光电子</b></td><td class="up">+15.5</td><td class="up">+39.4</td><td class="down">-61.4</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>化学原料</b></td><td class="up">+11.1</td><td class="up">+1.7</td><td class="down">-2.6</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>通信设备</b></td><td class="down">-120.7</td><td class="up">+200.1</td><td class="down">-210.3</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>半导体</b></td><td class="down">-112.4</td><td class="up">+4.2</td><td class="down">-575.3</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>元件</b></td><td class="down">-97.2</td><td class="down">-98.5</td><td class="down">-18.4</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">注：种植业 5 日 +20 日双正=资金健康主线；光学光电子今日正但 20 日 -61.4 亿=反弹回补非反转（⑳ 降级）；AI 硬件三大板块今日合计净流出 -330.3 亿、20 日合计 -803.9 亿，退潮资金面确认。TMT 概念净流出约 -400 亿（通信+半导+元件+软件+IT服务）。</div>
+  </div>
+
+  <!-- 五、主线强度对比 -->
+  <div class="section">
+    <div class="sec-title">五、主线强度对比（今日涨幅 + 资金流方向）</div>
+    <div class="strength-wrap">
+      <!-- Row 1: 农业 -->
+      <div class="str-row">
+        <div class="str-label">农业/转基因<span class="stage-tag" style="background:#DC2626;">P0·P2加速</span></div>
+        <div class="str-bars">
+          <div class="spark"><div class="spark-label">今日涨幅</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:40%;"></div></div><div class="spark-val up">+9.54%</div></div>
+          <div class="spark"><div class="spark-label">5日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:12%;"></div></div><div class="spark-val up">+16.7亿</div></div>
+          <div class="spark"><div class="spark-label">20日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:10%;"></div></div><div class="spark-val up">+12.5亿</div></div>
+          <div class="spark"><div class="spark-label">板块扩散</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:35%;"></div></div><div class="spark-val up">5方向</div></div>
+        </div>
+      </div>
+      <!-- Row 2: 光学光电子 -->
+      <div class="str-row">
+        <div class="str-label">光学光电子<span class="stage-tag" style="background:#B45309;">P2分化</span></div>
+        <div class="str-bars">
+          <div class="spark"><div class="spark-label">今日涨幅</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:10%;"></div></div><div class="spark-val up">+2.35%</div></div>
+          <div class="spark"><div class="spark-label">5日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:28%;"></div></div><div class="spark-val up">+39.4亿</div></div>
+          <div class="spark"><div class="spark-label">20日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar green" style="right:50%;width:30%;"></div></div><div class="spark-val down">-61.4亿</div></div>
+          <div class="spark"><div class="spark-label">机构动向</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar green" style="right:50%;width:38%;"></div></div><div class="spark-val down">净卖</div></div>
+        </div>
+      </div>
+      <!-- Row 3: 通信设备 -->
+      <div class="str-row">
+        <div class="str-label">通信设备<span class="stage-tag" style="background:#475569;">退潮</span></div>
+        <div class="str-bars">
+          <div class="spark"><div class="spark-label">今日涨幅</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar green" style="right:50%;width:7%;"></div></div><div class="spark-val down">-1.35%</div></div>
+          <div class="spark"><div class="spark-label">5日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:40%;"></div></div><div class="spark-val up">+200.1亿</div></div>
+          <div class="spark"><div class="spark-label">20日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar green" style="right:50%;width:40%;"></div></div><div class="spark-val down">-210.3亿</div></div>
+          <div class="spark"><div class="spark-label">活口</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:15%;"></div></div><div class="spark-val up">德科立</div></div>
+        </div>
+      </div>
+      <!-- Row 4: 半导体 -->
+      <div class="str-row">
+        <div class="str-label">半导体<span class="stage-tag" style="background:#475569;">退潮</span></div>
+        <div class="str-bars">
+          <div class="spark"><div class="spark-label">今日涨幅</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar green" style="right:50%;width:2%;"></div></div><div class="spark-val down">-0.23%</div></div>
+          <div class="spark"><div class="spark-label">5日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:3%;"></div></div><div class="spark-val up">+4.2亿</div></div>
+          <div class="spark"><div class="spark-label">20日资金</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar green" style="right:50%;width:40%;"></div></div><div class="spark-val down">-575.3亿</div></div>
+          <div class="spark"><div class="spark-label">活口</div><div class="spark-bar-wrap"><div class="spark-center"></div><div class="spark-bar red" style="left:50%;width:12%;"></div></div><div class="spark-val up">有研硅</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-line">比例尺：spark-bar fill width% = |数值| × 比例系数（涨幅最大 ±40% 撑满，资金最大 ±200 亿撑满）；正→右红、负→左绿（A股红涨绿跌）。农业=全维度正（最强主线）；光学光电子=今日正但 20 日负（反弹回补）；通信 / 半导 = 今日跌 + 20 日大额负（退潮确认）。</div>
+  </div>
+
+  <!-- 六、连板天梯 -->
+  <div class="section">
+    <div class="sec-title">六、连板天梯（涨停主题强度 ㉚ · 连板梯队完整性 ㉛）</div>
+    <table class="tbl w-board">
+      <thead><tr><th>高度</th><th>代码</th><th>名称</th><th>属性</th><th>主线归类</th></tr></thead>
+      <tbody>
+        <tr><td><b>10板</b></td><td>sz002577</td><td><b>一鸣食品</b></td><td>15天10板·食品消费（高度标杆，8/18 平开）</td><td><span class="tag-mini tag-p2">消费</span></td></tr>
+        <tr><td><b>7板</b></td><td>sh601700</td><td><b>风范股份</b></td><td>11天7板·电网设备（8/18 高开 4.57%）</td><td><span class="tag-mini tag-p2">电网</span></td></tr>
+        <tr><td><b>5板</b></td><td>sh603563</td><td><b>沃格光电</b></td><td>10天5板·玻璃基板/CPO（8/18 竞价涨停）</td><td><span class="tag-mini tag-p1">P2 科技</span></td></tr>
+        <tr><td><b>5板</b></td><td>sh603330</td><td><b>天洋新材</b></td><td>CPO/光伏（8/18 竞价涨停）</td><td><span class="tag-mini tag-p1">P2 科技</span></td></tr>
+        <tr><td><b>4板</b></td><td>sh600613</td><td><b>神奇制药</b></td><td>医药/中药（8/18 竞价涨停）</td><td><span class="tag-mini tag-p1">医药</span></td></tr>
+        <tr><td><b>4板</b></td><td>sz002081</td><td><b>金螳螂</b></td><td>建筑装饰/半导体概念（3日龙虎榜，+7.73%）</td><td><span class="tag-mini tag-p0">P0 概念</span></td></tr>
+        <tr><td><b>3板</b></td><td>sh603118</td><td><b>共进股份</b></td><td>通信设备/交换机/CPO（8/18 高开 4.30%）</td><td><span class="tag-mini tag-p1">P2 通信</span></td></tr>
+        <tr><td><b>20cm 2连</b></td><td>sz300684</td><td><b>中石科技</b></td><td>电子化学品/CPO（机构净卖 -2.06 亿）</td><td><span class="tag-mini tag-p1">P2 分化</span></td></tr>
+        <tr><td><b>20cm</b></td><td>sz300189</td><td><b>神农种业</b></td><td>种业龙头（3日龙虎榜·机构净买 1.31 亿）</td><td><span class="tag-mini tag-p0">P0 农业</span></td></tr>
+        <tr><td><b>20cm</b></td><td>sz300313</td><td><b>天山生物</b></td><td>养殖（3日龙虎榜）</td><td><span class="tag-mini tag-p0">P0 农业</span></td></tr>
+        <tr><td><b>20cm</b></td><td>sz300970</td><td><b>华绿生物</b></td><td>种植/食用菌（1日龙虎榜）</td><td><span class="tag-mini tag-p0">P0 农业</span></td></tr>
+        <tr><td><b>20cm</b></td><td>sh688112</td><td><b>鼎阳科技</b></td><td>电子测量仪器（1日龙虎榜·机构买 2265 万）</td><td><span class="tag-mini tag-p1">P2 科技</span></td></tr>
+        <tr><td><b>2连板</b></td><td>sh600127</td><td><b>金健米业</b></td><td>粮食/农产品加工</td><td><span class="tag-mini tag-p0">P0 农业</span></td></tr>
+        <tr><td><b>2连板</b></td><td>sz002907</td><td><b>华森制药</b></td><td>医药/中药</td><td><span class="tag-mini tag-p1">医药</span></td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">涨停 81 只、跌停 6 只。连板高度 10 板（一鸣食品，8/18 平开≈断板预警）、7 板（风范股份）、5 板 2 只（沃格光电 / 天洋新材）。农业主题占连板梯队 4 席（神农 / 天山 / 华绿 / 金健米业），为今日最强主线映射；科技 CPO 仍有高标（沃格 5 板 / 天洋 5 板 / 共进 3 板 / 中石 20cm 2 连）但机构出货+板块退潮=高标孤岛风险。誉衡药业 7 天 5 板今日 -4.42% 断板（情绪退潮信号 ㉛）。昨日连板 +2.38%、昨日涨停 +1.23%（有溢价但收窄）。</div>
+  </div>
+
+  <!-- 七、龙虎榜博弈 -->
+  <div class="section">
+    <div class="sec-title">七、龙虎榜博弈（机构席位 ㉜ · 游资动向）</div>
+    <table class="tbl w-lhb">
+      <thead><tr><th>类型</th><th>个股</th><th>数值/信号</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td><b>机构净买 TOP1</b></td><td>太辰光(300570)</td><td class="lhb-buy">机构 3 日净买 10.0 亿</td><td>光通信龙头，机构大额承接（但板块退潮中，属逆势布局）</td></tr>
+        <tr><td><b>机构净买</b></td><td>瑞丰高材(300243)</td><td class="lhb-buy">机构净买 1.97 亿（3日）</td><td>化学原料 / PVC 助剂，机构连续买入</td></tr>
+        <tr><td><b>机构净买</b></td><td>神农种业(300189)</td><td class="lhb-buy">机构净买 1.31 亿（3日）+ 0.76 亿（1日）</td><td>农业龙头，机构 + 游资共振（开源西安太华路 2.2 亿买入航天电器+诚迈+神农）</td></tr>
+        <tr><td><b>机构净买</b></td><td>金禄电子(301282)</td><td class="lhb-buy">机构净买 1.08 亿（3日）</td><td>PCB / 元件，但今日主力 -3.47 亿（机构 3 日买 / 游资 1 日卖=分歧）</td></tr>
+        <tr><td><b>机构净卖 TOP1</b></td><td>贝达药业(300558)</td><td class="lhb-sell">机构净卖 -2.85 亿</td><td>医药 -20% 跌停出货，机构大额出逃</td></tr>
+        <tr><td><b>机构净卖</b></td><td>中石科技(300684)</td><td class="lhb-sell">机构净卖 -2.06 亿</td><td>20cm 二连板但机构高位出货=P2 分化信号（国泰海通武汉 1.94 亿 + 深股通 1.61 亿买入对冲）</td></tr>
+        <tr><td><b>游资动向</b></td><td>开源证券西安太华路</td><td class="lhb-buy">买入 2.20 亿</td><td>航天电器 + 诚迈科技 + 神农种业（跨方向布局：军工 + 软件 + 农业）</td></tr>
+        <tr><td><b>游资动向</b></td><td>国泰海通武汉紫阳东路</td><td class="lhb-buy">买入 1.94 亿</td><td>中石科技 + 神农种业（科技 + 农业双线）</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">龙虎榜关键信号：①机构大额买入太辰光 10 亿（光通信逆势布局，但板块退潮中需观察）②神农种业机构 + 游资共振（农业主线获资金确认）③中石科技机构出货 -2.06 亿（20cm 涨停但高位分歧，P2 减仓信号）④贝达药业机构跌停出货 -2.85 亿（医药退潮）。㉜ 游资 / 机构席位拆解完成。</div>
+  </div>
+
+  <!-- 八、核心驱动 -->
+  <div class="section">
+    <div class="sec-title">八、核心驱动（四层拆解）</div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>农业 / 转基因（种植 → 养殖 → 饲料扩散链）</div>
+      <div class="dblk"><b>1. 事实：</b>摩根大通 8/16 警告"下一轮全球粮食危机可能正在酝酿"，霍尔木兹海峡航运中断 + 超强厄尔尼诺或削弱农作物产量，食品通胀 2027H1 持续居高；CBOT 玉米 7 月累涨 6.36%、小麦累涨 8.27%。神农种业 +20.04%、华绿生物 +20%、天山生物 +20.04%、秋乐种业 +29.98%、金健米业 2 连板、万向德农 +10%、大北农 +10.10%。</div>
+      <div class="dblk"><b>2. 解读：</b>粮食危机预期 + 极端天气 + 地缘航运中断三重催化，种业 / 种植业为最直接受益方向；板块从 8/17 P1 启动（种植业 +4.16%）→ 8/18 P1 强化（+9.54%，涨幅扩大 5.38pp）→ P2 加速（扩散至养殖 +2.42%、饲料 +3.00%、农产品加工 +4.29%、猪肉 +3.35%）；主力 20 日 +12.5 亿连续正流入=资金面健康。</div>
+      <div class="dblk"><b>3. 映射：</b>同花顺概念板块涨幅前 5 全为农业（转基因 +9.30% / 玉米 +7.47% / 粮食 +6.52% / 大豆 +6.47% / 农业种植 +3.81%）；申万二级种植业 +9.54% 全市场断层第一；农业种植概念资金 5 日 +32.8 亿 / 20 日 +14.3 亿。</div>
+      <div class="dblk"><b>4. 操作：</b>【框架应用 三-① 三-③ ⑪】P2 加速：P1 浮盈者可加仓补涨方向（养殖 / 饲料扩散链）；止损→神农种业断板或种植业板块跌破 5 日线；⚠️ 注意：粮食危机预期为事件驱动型（㉕ 政策脉冲类），若催化兑现不足可能一日游，需盯 2 日连续性。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">P2 分化</span>光学光电子 / 电子化学品</div>
+      <div class="dblk"><b>1. 事实：</b>光学光电子 +2.35%（骏成科技 +20%、中石科技 20cm 2 连板、鼎阳科技 +20%）；化学原料 +1.03%（红星发展 +10%）。中石科技龙虎榜机构净卖 -2.06 亿、贝达药业机构净卖 -2.85 亿（跌停）。</div>
+      <div class="dblk"><b>2. 解读：</b>8/17 电子化学品 +5.61% P2 主升→今日板块仅 +1~2%，龙头独立 20cm 但机构出货=高位分歧（三-⑥ P2 后段特征）；光学光电子 20 日资金 -61.4 亿=反弹回补非反转（⑳ 降级纪律）。</div>
+      <div class="dblk"><b>3. 操作：</b>持有不强追；中石科技机构出货=减仓信号；止损→中石科技开板放量或鼎阳科技断板。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">退潮</span>AI 硬件（通信设备 / 半导体 / 元件）</div>
+      <div class="dblk"><b>1. 事实：</b>通信设备 -1.35%（中际旭创 -1.36%、新易盛 -2.93%）、半导体 -0.23%、元件 -2.03%；主力合计净流出 -330.3 亿，20 日合计 -803.9 亿。8/17 通信设备 +4.77% P2 主升→今日全面退潮。</div>
+      <div class="dblk"><b>2. 解读：</b>8/17 普涨日 AI 硬件为最强方向→8/18 兑现日全面退潮，符合㉓（反弹 = 减仓窗口）+ ㉔（往复周期缩短至 1 日）；退潮三要素齐备（板块跌 + 主力流出 + 20 日资金线全负），P3→退潮确认（三-⑥）。</div>
+      <div class="dblk"><b>3. 活口：</b>德科立 +7.42%（主力 +4.79 亿逆势吸筹）、太辰光 3 日龙虎榜机构净买 10 亿、有研硅 +13.43% → 结构性机会非主线方向，观察不追。</div>
+      <div class="dblk"><b>4. 操作：</b>减仓兑现（㉓）；不抄底（⑳ 不接飞刀）；等退潮修复窗口（㊲）出现后再评估。</div>
+    </div>
+  </div>
+
+  <!-- 九、次日关注清单 -->
+  <div class="section">
+    <div class="sec-title">九、次日（2026-08-19）关注清单</div>
+    <table class="tbl w-watch">
+      <thead><tr><th>类别</th><th>观测要点</th><th>信号含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>主线延续性</b></td><td>农业主力是否连续净流入（今日 +14.2 亿，需明日续 +）→ 确认 P2 或一日游</td><td>资金连续=主升确认；流出=事件驱动一日游（㉕）</td></tr>
+        <tr><td><b>高标情绪</b></td><td>一鸣食品（10 板）是否断板；神农种业 / 中石科技是否开板；连板高度是否下降</td><td>高标断板 + 无溢价=缩圈退潮（㊱）；延续=情绪健康</td></tr>
+        <tr><td><b>退潮修复</b></td><td>AI 硬件（通信 / 半导）是否止跌；德科立 / 太辰光活口能否扩散</td><td>止跌+活口扩散=退潮修复窗口（㊲）；续跌=退潮中继</td></tr>
+        <tr><td><b>风格跷跷板</b></td><td>农业→消费 / 医药是否承接轮动；白酒是否止跌</td><td>科技↔农业 / 消费切换节奏（㉒㉔）</td></tr>
+        <tr><td><b>量能</b></td><td>成交额能否维持 2.4 万亿水平</td><td>放量=行情持续；缩量=追高风险大</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 次日(T+1)预判推导 -->
+  <div class="section">
+    <div class="sec-title">次日（T+1 = 2026-08-19）预判推导（四理论合一）</div>
+    <div class="pred-card">
+      <div class="pred-h">预判推导（四理论合一）</div>
+      <div class="pred-row"><b>① 交易框架：</b>㉓（反弹 = 减仓窗口：8/17 普涨→8/18 兑现确认，AI 硬件退潮验证）· ㉔（往复周期缩短：科技 8/10 跌→8/17 涨→8/18 退潮，周期缩至 1 日）· ㊱（情绪缩圈：涨停 95→81、跌停 0→6，部分触发）· ㉕（政策脉冲不追：农业事件驱动需验证 2 日连续性）</div>
+      <div class="pred-row"><b>② 自我学习（R-Judge）：</b>8/17 盘前通信 / 半导 / 电子化学品 = 多 → 8/18 通信 -1.35% / 半导 -0.23% 全面落空（命中率 2/6=33%）；根因 = 普涨次日未设兑现门控，盘前方向未降半档。拟固化「普涨日次日盘前方向降半档 + 强制兑现情景」规则。</div>
+      <div class="pred-row"><b>③ 完善理论：</b>新增规则建议——「普涨日次日兑现门控」：若前一日涨股比 >70% + 涨停 >80，次日盘前所有方向降半档（多→中性偏多），并强制设定兑现情景（若开盘 30 分钟内板块涨幅转负→减仓信号）。</div>
+      <div class="pred-row"><b>④ 三阶段理论：</b>农业 P1 强化→P2 加速（扩散至养殖 / 饲料 / 加工，资金连续正流入）· 电子化学品 P2 主升→P2 分化（机构出货 + 板块跟风不足 = 三-⑥ 退潮前兆预警）· AI 硬件 P3→退潮确认（退潮三要素齐备，进入㊲ 退潮修复窗口等待期）</div>
+      <div class="pred-row" style="margin-top:8px;border-top:1px solid #E2E8F0;padding-top:8px;"><b>预判结论：</b>大势：沪指 = <b>中性偏多</b>（银行 / 农业护盘+沪指微红抗跌）、创业板 = <b>空</b>（成长板领跌，退潮未止）| 板块：农业 = <b>多</b>（P2 加速·最强）、电子化学品 = <b>中性</b>（P2 分化·机构出货）、AI 硬件 = <b>空</b>（退潮确认·不抄底）| 主线：<b>农业 / 转基因（P2 加速·最强新线）</b></div>
+    </div>
+  </div>
+
+  <!-- 十、框架应用与待更新 -->
+  <div class="section">
+    <div class="sec-title">十、框架应用与待更新</div>
+    <div class="callout">
+      <b>规则引用：</b>㉒（风格跷跷板：8/17 科技领涨→8/18 农业接管）· ㉓（反弹 = 减仓窗口：8/17 普涨→8/18 兑现）· ㉔（往复周期缩短：1 日反转）· ㉕（政策脉冲不追：农业事件驱动需验证）· ㊱（情绪缩圈：涨停 95→81、跌停 0→6）· ㊲（退潮修复窗口：AI 硬件进入等待期）· ㉚㉛（涨停主题强度 + 连板梯队）· 三-①（P1 预警 / P2 扩散确认）· 三-②（配对原则：神农 vs 大北农市值差偏大）· 三-③（P1 试错 / P2 加仓）· 三-⑤（逻辑龙头自动标定：神农种业）· 三-⑥（P2 后段特征 + 退潮确认）· ⑪（资金三档判据：农业=健康档 / AI 硬件=退潮档）· ⑳（20 日资金线降级：光学光电子反弹回补非反转）。<br>
+      <b>⚠️ 框架待更新：</b>①「普涨日次日兑现门控」规则待固化（R-Judge 归因：8/17→8/18 盘前方向 2/6=33% 命中率，根因=普涨次日未降半档）②农业 Pair 市值差偏大（神农 41 亿 vs 大北农 430 亿差 10 倍），需定义"种业弹性股 vs 种业龙头"分层配对规则 ③粮食危机预期属事件驱动型（㉕），需新增"事件驱动型主线的 2 日连续性验证"门控。<br>
+      <b>数据缺口：</b>两融数据、北向明细未获取（标注 N/A，不臆造）；指数精确收盘价部分为估算值（深成 / 创业板等基于 8/17 收盘 × 今日涨跌幅推算）。
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="disclaimer">免责声明：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。</div>
+  <div class="foot-line">数据时点：2026-08-18 15:00 收盘 · 来源：同花顺问财 iwencai（概念板块涨幅/竞价）· 腾讯自选股 westock（指数/行业/资金/龙虎榜/热股）· 东方财富妙想（交叉验证）· Wind（辅助验证）· 财联社（新闻催化）<br>日期：2026-08-18（周二）· 收盘后全维复盘<br><span class="foot-src">交叉验证：同花顺问财 iwencai · westock-mcp（腾讯自选股）· mx-ds-mcp（东方财富）· wind-finance · 财联社 cls.cn · 多源交叉一致（≥3 源）</span></div>
+
+</div>
+</body>
+</html>

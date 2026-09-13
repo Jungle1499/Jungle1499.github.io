@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=975, initial-scale=1.0">
+<title>主线分析_20260817 · 三阶段框架 P2 确认</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;background:#1a1a2e;color:#a0a0c0;min-width:975px;padding-bottom:60px}
+.num{font-family:"Segoe UI","Arial",sans-serif}
+.report{width:975px;margin:0 auto;background:#1a1a2e}
+
+/* ===== Header ===== */
+.header{width:975px;height:170px;background:linear-gradient(135deg,#1a2a6c 0%,#2d4a8a 40%,#1a1a2e 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #2a2a4a;border-radius:6px 6px 0 0}
+.header::before{content:"";position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(233,69,96,.28) 0%,transparent 70%);border-radius:50%}
+.header::after{content:"";position:absolute;bottom:-60px;left:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(126,200,255,.18) 0%,transparent 70%);border-radius:50%}
+.header-title{position:relative;z-index:2;font-size:33.4px;font-weight:700;color:#ffffff;letter-spacing:.5px;text-align:center}
+.header-title .accent{color:#e94560}
+.header-sub{position:relative;z-index:2;font-size:18.4px;color:#c0c0d0;margin-top:14px;text-align:center}
+.header-pill{display:inline-block;position:relative;z-index:2;background:rgba(233,69,96,.18);border:1px solid rgba(233,69,96,.45);color:#ff8fa0;padding:6px 18px;border-radius:20px;font-size:15.0px;margin-top:14px}
+
+/* ===== Section ===== */
+.section{padding:24px 18px;border-bottom:1px solid #22223c}
+.section-title{font-size:25.0px;font-weight:700;color:#e94560;margin-bottom:18px;padding-left:12px;border-left:3px solid #e94560}
+
+/* ===== 三阶段框架卡片 ===== */
+.framework{background:linear-gradient(135deg,rgba(233,69,96,.08),rgba(233,69,96,.02));border:1px solid #2a2a5a;border-radius:8px;padding:20px 24px;margin-bottom:24px}
+.framework-title{font-size:25.0px;font-weight:700;color:#faad14;margin-bottom:14px}
+.framework p{font-size:15.3px;line-height:1.85;margin-bottom:8px;color:#c0c0d0}
+.framework b{color:#e94560}
+.framework .yellow{color:#faad14}
+.framework .white{color:#fff}
+.framework .green{color:#52c41a}
+
+/* ===== 市场概况 ===== */
+.index-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.index-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 12px;text-align:center}
+.index-name{font-size:14.4px;color:#9aa3c0;margin-bottom:8px}
+.index-price{font-size:25.0px;font-weight:700;margin-bottom:6px;color:#e0e0e0}
+.index-pct{font-size:14.8px;font-weight:700}
+.up{color:#e94560}
+.down{color:#52c41a}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 16px;text-align:center}
+.stat-name{font-size:14.4px;color:#9aa3c0;margin-bottom:8px}
+.stat-value{font-size:33.4px;font-weight:700;margin-bottom:6px;color:#e0e0e0}
+.stat-sub{font-size:13.7px;color:#e94560}
+
+.judgment-line{font-size:15.3px;line-height:1.9;margin-bottom:6px;color:#c0c0d0}
+.judgment-line .ok{color:#52c41a}
+.judgment-line .yellow{color:#faad14}
+.judgment-line .red{color:#e94560}
+.judgment-line .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#e94560;margin-right:6px;vertical-align:middle}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.chart-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 16px}
+.chart-title{font-size:17.6px;color:#faad14;font-weight:700;margin-bottom:10px}
+.chart{width:100%;height:316px}
+
+/* ===== 主线确认 ===== */
+.confirm-text{font-size:15.3px;line-height:1.85;margin-bottom:14px;color:#c0c0d0}
+.confirm-text b{color:#fff}
+.confirm-text .red{color:#e94560}
+.confirm-text .yellow{color:#faad14}
+
+.table-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.data-table{width:100%;border-collapse:collapse;font-size:14.4px}
+.data-table th{background:#22223c;color:#a0a0c0;font-weight:400;padding:8px 10px;border:1px solid #2a2a4a;text-align:left}
+.data-table td{background:#16162e;color:#c0c0d0;padding:8px 10px;border:1px solid #2a2a4a}
+.data-table tr td:first-child{color:#8888aa;text-align:center;width:32px}
+.data-table .num{font-family:"Segoe UI","Arial",sans-serif}
+.up-pct{color:#e94560;font-weight:700}
+
+/* ===== 催化剂 2x2 ===== */
+.driver-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.driver-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #e94560;border-radius:6px;padding:16px 18px}
+.driver-title{font-size:15.3px;font-weight:700;color:#e94560;margin-bottom:10px}
+.driver-text{font-size:14.4px;line-height:1.8;color:#c0c0d0}
+.driver-text b{color:#faad14}
+
+/* ===== 龙头 hero ===== */
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.hero-card{background:#22223c;border:1px solid #2a2a4a;border-radius:8px;padding:18px 20px;position:relative}
+.hero-badge{position:absolute;top:14px;right:14px;background:#e94560;color:#fff;font-size:14.8px;padding:4px 12px;border-radius:14px;font-weight:700}
+.hero-name{font-size:20.1px;font-weight:700;color:#fff;margin-bottom:6px}
+.hero-code{font-size:14.8px;color:#9aa3c0;margin-bottom:14px}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;font-size:14.4px;margin-bottom:14px}
+.hero-stat-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #2a2a4a}
+.hero-label{color:#9aa3c0}
+.hero-val{color:#e0e0e0;font-weight:700}
+.hero-val.up{color:#e94560}
+.hero-val.down{color:#52c41a}
+.hero-reason{font-size:14.4px;line-height:1.85;color:#c0c0d0;border-top:1px solid #2a2a4a;padding-top:12px}
+.hero-reason b{color:#faad14}
+.hero-reason .red{color:#e94560}
+.hero-reason .green{color:#52c41a}
+.hero-reason .yellow{color:#faad14}
+
+/* ===== 飞书策略群 ===== */
+.strategy-intro{font-size:15.3px;color:#c0c0d0;margin-bottom:14px;padding:10px 14px;background:rgba(233,69,96,.05);border-left:2px solid #e94560;border-radius:4px}
+.p-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #faad14;border-radius:6px;padding:14px 18px;margin-bottom:14px}
+.p-card.p3{background:linear-gradient(135deg,rgba(233,69,96,.1),rgba(233,69,96,.03));border-left-color:#e94560}
+.p-card.p2{border-left-color:#faad14}
+.p-card.p1{border-left-color:#52c41a}
+.p-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.p-stage{font-size:14.8px;font-weight:700;color:#faad14;padding:3px 10px;border-radius:12px;background:rgba(250,173,20,.15);border:1px solid rgba(250,173,20,.4)}
+.p-stage.p3-confirm{color:#ff8fa0;background:rgba(233,69,96,.18);border-color:rgba(233,69,96,.45)}
+.p-stage.p3-warn{color:#faad14;background:rgba(250,173,20,.15);border-color:rgba(250,173,20,.4)}
+.p-stage.p2-stage{color:#faad14;background:rgba(250,173,20,.15);border-color:rgba(250,173,20,.4)}
+.p-stage.p1-stage{color:#52c41a;background:rgba(82,196,26,.15);border-color:rgba(82,196,26,.4)}
+.p-stage.p2-withdraw{color:#8888aa;background:rgba(136,136,170,.15);border-color:rgba(136,136,170,.4)}
+.p-stage.p2-defense{color:#7ec8ff;background:rgba(126,200,255,.15);border-color:rgba(126,200,255,.4)}
+.p-title{font-size:18.4px;font-weight:700;color:#fff;flex:1;margin:0 14px}
+.p-advice{font-size:15.3px;font-weight:700;color:#faad14;text-align:right;white-space:nowrap}
+.p-advice.sell{color:#e94560}
+.p-advice.hold{color:#52c41a}
+.p-advice.watch{color:#8888aa}
+.p-pairs{font-size:14.4px;color:#a0a0c0;margin-bottom:10px;line-height:1.7}
+.p-pairs b{color:#faad14}
+.p-stock-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.p-stock{background:#16162e;border:1px solid #2a2a4a;border-radius:4px;padding:8px 10px;text-align:center}
+.p-stock-name{font-size:14.8px;color:#c0c0d0;font-weight:700;margin-bottom:4px}
+.p-stock-val{font-size:14.4px;color:#e94560;font-weight:700}
+.p-stock-price{font-size:13.1px;color:#8888aa;margin-top:2px}
+.p-verify{font-size:14.4px;line-height:1.85;color:#c0c0d0;margin-bottom:6px;padding:8px 12px;background:rgba(0,0,0,.15);border-radius:4px}
+.p-verify b{color:#faad14}
+.p-verify .red{color:#e94560}
+.p-verify .green{color:#52c41a}
+.p-op{font-size:14.4px;line-height:1.7;color:#a0a0c0}
+.p-op b{color:#faad14}
+
+/* ===== 七大板块网格 ===== */
+.segment-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.segment-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #e94560;border-radius:6px;padding:14px 18px}
+.segment-card.b2{border-left-color:#faad14}
+.segment-card.b3{border-left-color:#52c41a}
+.segment-card.b4{border-left-color:#7ec8ff}
+.segment-card.b5{border-left-color:#52c41a}
+.segment-card.b6{border-left-color:#faad14}
+.segment-card.b7{border-left-color:#8888aa}
+.segment-name{font-size:18.4px;font-weight:700;color:#fff;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #2a2a4a}
+.segment-text{font-size:14.4px;line-height:1.85;color:#c0c0d0;margin-bottom:8px}
+.segment-text b{color:#faad14}
+.segment-text .red{color:#e94560}
+.segment-pair{font-size:14.4px;color:#52c41a;font-weight:700;padding:6px 10px;background:rgba(82,196,26,.08);border-radius:4px;margin-bottom:6px}
+.segment-pair b{color:#fff}
+.segment-pair-detail{font-size:14.4px;line-height:1.7;color:#a0a0c0;margin-top:4px}
+.segment-pair-detail b{color:#faad14}
+
+/* ===== 综合研判 ===== */
+.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.final-card{background:#22223c;border:1px solid #2a2a4a;border-radius:6px;padding:16px 20px}
+.final-title{font-size:18.4px;font-weight:700;color:#faad14;margin-bottom:12px;padding-bottom:8px;border-bottom:1px dashed #2a2a4a}
+.final-list{list-style:none;font-size:14.4px;line-height:1.85;color:#c0c0d0}
+.final-list li{margin-bottom:8px;padding-left:18px;position:relative}
+.final-list li::before{content:counter(li);counter-increment:li;position:absolute;left:0;top:0;color:#faad14;font-weight:700}
+.final-list{counter-reset:li}
+.final-list b{color:#fff}
+.final-list .red{color:#e94560}
+.final-list .green{color:#52c41a}
+
+.key-op-box{background:linear-gradient(135deg,rgba(250,173,20,.08),rgba(250,173,20,.02));border:1.5px solid #faad14;border-radius:6px;padding:16px 22px;margin-top:14px}
+.key-op-title{font-size:18.4px;font-weight:700;color:#faad14;margin-bottom:12px}
+.key-op-list{list-style:none;font-size:14.8px;line-height:1.95;color:#c0c0d0}
+.key-op-list li{padding-left:16px;position:relative;margin-bottom:6px}
+.key-op-list li::before{content:"●";position:absolute;left:0;top:0;color:#faad14}
+.key-op-list b{color:#fff}
+.key-op-list .red{color:#e94560}
+.key-op-list .green{color:#52c41a}
+.key-op-list .yellow{color:#faad14}
+
+/* ===== Footer ===== */
+.footer{padding:24px 18px;text-align:center;font-size:14.4px;color:#8888aa;line-height:1.85}
+.disclaimer b{color:#e94560}
+.footer-time{margin-top:8px;color:#a0a0c0}
+.footer-task{margin-top:4px;color:#e94560;font-weight:700}
+</style>
+</head>
+<body>
+<div class="report">
+
+<!-- ===== Header ===== -->
+<div class="header">
+  <div class="header-title">2026年8月17日 A股<span class="accent">最强主线</span></div>
+  <div class="header-sub">AI 算力硬件全产业链（半导体 / 存储 / CPO / 先进封装）— 多极共振，<span class="accent" style="color:#e94560;font-weight:700">P2 确认扩散</span></div>
+  <div class="header-pill">2026年8月17日（周一）收盘 · <span class="num">三阶段框架</span> <span style="color:#e94560;font-weight:700">P2 确认</span></div>
+</div>
+
+<div style="padding:0 18px">
+
+<!-- ===== 三阶段理论框架 ===== -->
+<div class="framework" style="margin-top:20px">
+  <div class="framework-title">三阶段理论框架<span style="color:#e94560">（一性原理 = 人性的扩张与收缩）</span></div>
+  <p>板块行情的完整周期分为三个阶段：<span class="yellow">犹豫期</span> → <span class="yellow">共识期</span> → <span class="yellow">加速期</span>。</p>
+  <p><span class="yellow">P1（启动）</span>：逻辑龙头先涨；<span class="yellow">P2（二线）</span>：后排补涨，涨速反超龙头 = 人性扩张；<span class="yellow">P3（高潮）</span>：龙头涨速反超，群体狂热。</p>
+  <p><span class="yellow">配对原则</span>：选择市值可匹配、业务类似、涨幅最大的两个标的，例如光模块主升浪时 <span style="color:#fff">Pair = 中际旭创 / 新易盛</span>，PCB 主升浪时 <span style="color:#fff">Pair = 胜宏股份 / 沪电股份</span>。</p>
+  <p><span class="yellow">起涨/阶段确认</span>：板块进入全市场涨幅前三 = <span class="green">P1 预警</span>；Pair 中的标的连续两天跑赢另一个 = 阶段确认（龙头连续 2 天跑赢补涨 = <span class="green">P1 确认</span>；补涨连续 2 天跑赢龙头 = <span class="green">P2 确认</span>；龙头再连续 2 天跑赢补涨 = <span class="green">P3 确认</span>）。否则 P1 预警后，后排跑赢 1 天仅是 P2 预警，需重新计数。</p>
+  <p><span class="yellow">买卖</span>：P1 试错买入；P2 加仓补涨；上涨情绪周期可拿到 P3，退潮周期 P2 确认即陆续卖出。</p>
+</div>
+
+<!-- ===== 一、市场概况 ===== -->
+<div class="section">
+  <div class="section-title">一、市场概况</div>
+  <div class="index-grid">
+    <div class="index-card"><div class="index-name">上证指数</div><div class="index-price num">3982.65</div><div class="index-pct up num">+1.41%</div></div>
+    <div class="index-card"><div class="index-name">深证成指</div><div class="index-price num">14704.27</div><div class="index-pct up num">+2.44%</div></div>
+    <div class="index-card"><div class="index-name">创业板指</div><div class="index-price num">3740.16</div><div class="index-pct up num">+3.14%</div></div>
+    <div class="index-card"><div class="index-name">科创50</div><div class="index-price num">1788.85</div><div class="index-pct up num">+4.14%</div></div>
+    <div class="index-card"><div class="index-name">上证50</div><div class="index-price num">2945.41</div><div class="index-pct up num">+1.00%</div></div>
+    <div class="index-card"><div class="index-name">沪深300</div><div class="index-price num">4741.10</div><div class="index-pct up num">+1.61%</div></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-name">两市成交额</div><div class="stat-value num">23875 亿</div><div class="stat-sub num">放量 2446 亿（+11.4%）</div></div>
+    <div class="stat-card"><div class="stat-name">涨停 / 跌停</div><div class="stat-value num">106 / 1</div><div class="stat-sub num">自然涨停106 · 跌停仅1（北京文化）</div></div>
+    <div class="stat-card"><div class="stat-name">上涨 / 下跌 / 平</div><div class="stat-value num">4335 / 1064 / 145</div><div class="stat-sub num">上涨家数占比 78.2%</div></div>
+  </div>
+  <div class="judgment-line"><span class="dot"></span>大盘小绿：<span class="ok">无</span>（上涨 78.2%，连续 0 天；需下跌家数占比 &gt; 65% 且连续 2 天触发）</div>
+  <div class="judgment-line"><span class="dot"></span>市场情绪：<span class="yellow">火热（普涨偏热）</span>（恐贪指数约 78；涨停 106 家 + 涨股比 78% + 主力净流入 497.7 亿 + 北向净流入 53.66 亿连 3 日）</div>
+  <div class="judgment-line"><span class="dot"></span>主线轮动速度：AI 算力硬件全产业链共振（<span class="yellow">8/12 光通信 → 8/14 通信设备/小金属 → 8/17 半导体+存储+CPO+先进封装全面爆发</span>），科技内部由点及面扩散</div>
+  <div class="chart-row">
+    <div class="chart-card"><div class="chart-title">六大指数 · 上证50 / 沪深300 涨跌幅</div><div id="chart-index" class="chart"></div></div>
+    <div class="chart-card"><div class="chart-title">涨跌家数分布（4335 涨 / 1064 跌 / 106 涨停）</div><div id="chart-dist" class="chart"></div></div>
+  </div>
+</div>
+
+<!-- ===== 二、主线确认 ===== -->
+<div class="section">
+  <div class="section-title">二、主线确认：<span style="color:#fff">AI 算力硬件全产业链（半导体 / 存储 / CPO / 先进封装）</span></div>
+  <div class="confirm-text">今日无单一断层领涨（申万二级第 1 <span class="red">电子化学品Ⅱ +5.61%</span> vs 第 2 <span class="red">半导体 +5.46%</span>，差 <span class="yellow">0.15%</span>；概念第 1 <span class="red">靶材 +6.22%</span> vs 第 2 <span class="red">博通概念 +5.98%</span>，差 <span class="yellow">0.24%</span>，均未达 3% 断层标准）。但五维综合判定<span class="red">AI 算力硬件全产业链</span>为今日最强主线——申万一级 <span class="red">电子 +4.61% / 通信 +4.19%</span> 双双领涨，半导体主力净流入 <span class="yellow">200.49 亿全行业第一</span>，通信设备 5 日主力 <span class="yellow">+337.27 亿</span>，存储（长鑫科技 +12% 市值重回 4 万亿）、先进封装（通富微电涨停）、CPO（太辰光 20cm）多点开花，涨停前三行业电子 17 只 / 基础化工 17 只 / 机械设备 10 只。</div>
+  <div class="table-row">
+    <div>
+      <div class="chart-title">申万二级行业 Top 6</div>
+      <table class="data-table">
+        <tr><th>排名</th><th>板块</th><th>涨幅</th><th class="num">主力净流入(亿)</th></tr>
+        <tr><td>1</td><td>电子化学品Ⅱ</td><td class="up-pct num">+5.61%</td><td class="num">+31.81</td></tr>
+        <tr><td>2</td><td>半导体</td><td class="up-pct num">+5.46%</td><td class="num">+200.49</td></tr>
+        <tr><td>3</td><td>通信设备</td><td class="up-pct num">+4.77%</td><td class="num">+59.74</td></tr>
+        <tr><td>4</td><td>其他电子Ⅱ</td><td class="up-pct num">+4.22%</td><td class="num">—</td></tr>
+        <tr><td>5</td><td>种植业</td><td class="up-pct num">+4.16%</td><td class="num">—</td></tr>
+        <tr><td>6</td><td>橡胶</td><td class="up-pct num">+4.06%</td><td class="num">—</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="chart-title">概念板块 Top 8（剔除涨停/连板类）</div>
+      <table class="data-table">
+        <tr><th>排名</th><th>概念</th><th>涨幅</th><th>5日涨幅</th><th>代表标的</th></tr>
+        <tr><td>1</td><td>靶材</td><td class="up-pct num">+6.22%</td><td class="up-pct num">+5.79%</td><td>有研新材 <span class="up-pct num">+10.00%</span></td></tr>
+        <tr><td>2</td><td>博通概念</td><td class="up-pct num">+5.98%</td><td class="up-pct num">+7.43%</td><td>太辰光 <span class="up-pct num">+20.00%</span></td></tr>
+        <tr><td>3</td><td>长鑫存储</td><td class="up-pct num">+5.86%</td><td class="up-pct num">+6.07%</td><td>长鑫科技 <span class="up-pct num">+12.00%</span></td></tr>
+        <tr><td>4</td><td>国家大基金持股</td><td class="up-pct num">+5.68%</td><td class="up-pct num">+5.55%</td><td>德邦科技 <span class="up-pct num">+14.40%</span></td></tr>
+        <tr><td>5</td><td>高带宽存储器HBM</td><td class="up-pct num">+5.62%</td><td class="up-pct num">+7.62%</td><td>概伦电子 <span class="up-pct num">+16.38%</span></td></tr>
+        <tr><td>6</td><td>光芯片</td><td class="up-pct num">+4.54%</td><td class="up-pct num">+14.90%</td><td>仕佳光子 <span class="up-pct num">+13.67%</span></td></tr>
+        <tr><td>7</td><td>模拟芯片</td><td class="up-pct num">+4.50%</td><td class="up-pct num">+9.75%</td><td>芯朋微 <span class="up-pct num">+13.89%</span></td></tr>
+        <tr><td>8</td><td>共封装光模块(CPO)</td><td class="up-pct num">+4.12%</td><td class="up-pct num">+9.25%</td><td>太辰光 <span class="up-pct num">+20.00%</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-top:14px"><div class="chart-title">概念板块涨幅排行 Top 8（AI 算力硬件共振）</div><div id="chart-sector" class="chart" style="height:316px"></div></div>
+</div>
+
+<!-- ===== 三、四重核心驱动因素 ===== -->
+<div class="section">
+  <div class="section-title">三、四重核心驱动因素</div>
+  <div class="driver-grid">
+    <div class="driver-card"><div class="driver-title">催化剂 1</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">英伟达 Spectrum-X 硅光交换机全面量产，全球首款 200G/lane CPO</div><div class="driver-text">英伟达宣布 <b>Spectrum-X 以太网硅光交换机进入全面量产阶段</b>，这是全球首款进入量产的 <b>200G/lane CPO 以太网交换机系统</b>，直接点燃 CPO、光模块、PCB 等算力硬件板块。太辰光 20cm 涨停（MDC 连接器 + CPO）、中石科技 20cm 涨停（光模块散热 / 液冷散热模组）、共进股份 3 连板（CPO 概念 + 数据中心交换机），AI 算力需求从应用层向硬件上游深度传导。</div></div>
+    <div class="driver-card"><div class="driver-title">催化剂 2</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">长鑫科技大涨 12% 市值重回 4 万亿，存储超级周期确认</div><div class="driver-text">存储龙头长鑫科技今日 <b>+12.00% 报 61.80 元，总市值再次突破 4 万亿</b>，创历史新高，成交 335 亿。HBM / 长鑫存储概念分别 +5.62% / +5.86% 领涨，兆易创新、中芯国际、北方华创等千亿巨头集体上涨，半导体板块出现涨停潮。存储芯片周期上行 + AI 加速卡对 HBM 需求爆发，存储成为 AI 算力硬件中基本面最硬的细分。</div></div>
+    <div class="driver-card"><div class="driver-title">催化剂 3</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">央行"适度宽松 + 增量政策"定调，流动性预期升温</div><div class="driver-text">央行二季度货币政策执行报告明确<b>"继续实施适度宽松货币政策、及时谋划出台务实管用的增量政策"</b>，7 月政治局会议定调"适度宽松"。叠加 A 股半年报密集披露期，<b>1-6 月规模以上工业企业利润同比 +18.7%</b>，中金 / 申万宏源预计上半年 A 股非金融企业盈利有望实现双位数增长——政策 + 基本面双重托底，流动性宽裕支撑科技成长估值扩张。</div></div>
+    <div class="driver-card"><div class="driver-title">催化剂 4</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">全球风险偏好共振回暖 + A 股 TMT 拥挤度回落</div><div class="driver-text">8 月以来全球风险偏好回暖：<b>韩国综指 7/29-8/14 最大上涨 33% 技术性转牛、费城半导体指数同期涨超 20%、日经 225 涨超 10%、美股道指与标普先后创历史新高</b>。机构研报指出 A 股 TMT 成交额占比由 52% 的历史高位回落至 42%，<b>拥挤度下降后科技成长的风险收益比反而改善</b>，资金从防御性板块（煤炭 -1.2% / 银行 -0.8% / 白酒）撤出，集中涌入科技成长。</div></div>
+  </div>
+</div>
+
+<!-- ===== 四、核心龙头 ===== -->
+<div class="section">
+  <div class="section-title">四、核心龙头：<span style="color:#fff">3 只标的精选</span></div>
+  <div class="hero-grid">
+    <div class="hero-card">
+      <div class="hero-badge">产业总龙头 · P2 确认</div>
+      <div class="hero-name">中际旭创</div>
+      <div class="hero-code num">300308.SZ <span style="color:#8888aa">|</span> 光模块全球龙头</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">1001.03 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+6.15%（破千元）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">352.74 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">3.27%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">11709 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+15.78%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val num">78.33</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+64.37%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>今日光模块 / CPO 链<span class="red">绝对产业总龙头</span>，股价突破 1000 元整数关口，成交 352.74 亿居两市第一。英伟达 Spectrum-X 硅光交换机量产直接利好（CPO 交换机核心光模块供应商），5 日 +15.78% 领涨光模块双雄。北向连续加仓半导体设备与 CPO（中际旭创为重点方向）。<span class="yellow">1000 元上方估值不低（PE 78），但产业地位与全球 AI Capex 共振支撑其主线核心卡位。</span></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-badge">存储总龙头 · P2 确认</div>
+      <div class="hero-name">长鑫科技</div>
+      <div class="hero-code num">688825.SH <span style="color:#8888aa">|</span> 存储芯片龙头</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">61.80 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+12.00%（创新高）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">335.18 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">12.57%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">41332 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+20.47%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val num">146.59</span></div>
+        <div class="hero-stat-row"><span class="hero-label">10 日涨幅</span><span class="hero-val up num">+12.38%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>存储芯片绝对总龙头，今日 <span class="red">+12.00% 创历史新高，总市值重回 4 万亿</span>。存储超级周期（涨价 + HBM 需求爆发）叠加国产替代逻辑共振，HBM / 长鑫存储概念领涨全市场。5 日 +20.47% 显示资金持续进攻。<span class="red">注：PE(TTM) 146.59 估值偏高，属成长股定价；A 股流通盘占比小（流通市值 2783 亿 vs 总市值 4.13 万亿），波动放大。</span></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-badge">CPO 情绪龙头 · P2</div>
+      <div class="hero-name">太辰光</div>
+      <div class="hero-code num">300570.SZ <span style="color:#8888aa">|</span> CPO 光连接 / MDC</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">193.80 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+20.00%（20cm）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">45.08 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">12.70%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">440 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+36.49%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val num">145.79</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+69.18%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>CPO / 博通概念 <span class="red">双料情绪龙头</span>，今日 20cm 涨停，5 日 +36.49% 领跑光通信板块。英伟达 200G/lane CPO 交换机量产是直接催化——公司主营 MPO/MDC 高密度光连接器，为 CPO 交换机核心配套。通信设备板块 5 日主力净流入 <span class="yellow">+337.27 亿</span>，是资金最持续的方向。<span class="red">注：5 日 +36.49% 短线涨幅巨大，PE 145.79 高估值，P2 阶段不追高、回调关注。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 五、飞书策略群 ===== -->
+<div class="section">
+  <div class="section-title">五、飞书策略群 · <span style="color:#fff">七大板块 Pairs + 三阶段判定</span></div>
+  <div class="strategy-intro">基于飞书 8/12 框架（<span class="red">光 / 磷化铟 / MSAP / 覆铜板 / 半导体</span>）+ 8/17 新增存储方向，结合三阶段理论（<span class="yellow">犹豫 → 共识 → 加速</span>）与今日盘面综合研判。逐板块给出 <b>P1/P2/P3 阶段判定与 Pair 相对强弱方向【框架应用 三-①】</b>。</div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2 确认</span><div class="p-title">光（光芯片 / 光模块 / CPO / 光器件）</div><div class="p-advice hold">建议：持有，回调关注</div></div>
+    <div class="p-pairs"><b>Pairs：</b>太辰光(300570) +20.00% / 仕佳光子(688313) +13.67% P2 <span style="color:#8888aa">|</span> 中际旭创(300308) +6.15% / 新易盛(300502) +4.15% P2</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">太辰光</div><div class="p-stock-val num">+20.00%</div><div class="p-stock-price num">193.80</div></div>
+      <div class="p-stock"><div class="p-stock-name">仕佳光子</div><div class="p-stock-val num">+13.67%</div><div class="p-stock-price num">160.00</div></div>
+      <div class="p-stock"><div class="p-stock-name">中际旭创</div><div class="p-stock-val num">+6.15%</div><div class="p-stock-price num">1001.03</div></div>
+      <div class="p-stock"><div class="p-stock-name">新易盛</div><div class="p-stock-val num">+4.15%</div><div class="p-stock-price num">466.68</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 太辰光 <span class="red">20cm 涨停</span>、仕佳光子 <span class="red">+13.67%</span>，二线补涨爆发 = <span class="yellow">P2 扩散特征</span>；② 中际旭创突破千元（+6.15%）与补涨股同步走强，光通信板块 5 日主力 <span class="green">+337 亿</span>；③ 英伟达 Spectrum-X 硅光交换机量产出炉 = 硬催化落地。CPO 概念 5 日 +9.25%、光芯片 5 日 +14.90%，产业链全面扩散。</div>
+    <div class="p-op"><b>操作：</b>P2 确认阶段，持有为主、回调关注；<span class="red">短线涨幅巨大（太辰光 5 日 +36%）不追 20cm 高标</span>。中际旭创 1000 元上方作为产业中枢观察。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2</span><div class="p-title">磷化铟 / 锗镓（化合物半导体材料）</div><div class="p-advice hold">建议：持有，龙头切换观察</div></div>
+    <div class="p-pairs"><b>Pairs：</b>云南锗业(002428) +7.93% / 光智科技(300489) +2.56% P2 <span style="color:#8888aa">|</span> 靶材（有研新材涨停 +10.00% 领涨）</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">云南锗业</div><div class="p-stock-val num">+7.93%</div><div class="p-stock-price num">109.65</div></div>
+      <div class="p-stock"><div class="p-stock-name">光智科技</div><div class="p-stock-val num">+2.56%</div><div class="p-stock-price num">258.45</div></div>
+      <div class="p-stock"><div class="p-stock-name">有研新材</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">55.86</div></div>
+      <div class="p-stock"><div class="p-stock-name">海川智能</div><div class="p-stock-val num">—</div><div class="p-stock-price num">—</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 云南锗业 <span class="red">+7.93% 跑赢光智科技 +2.56%</span>，锗镓概念 +3.46%（5 日 +34.54%），材料端继续扩散；② 靶材概念 <span class="red">+6.22% 全概念第一</span>，有研新材涨停（高纯溅射靶材 + 剥离非核心资产聚焦集成电路材料）；③ 磷化铟衬底（光智科技）高位滞涨，资金向锗 / 靶材扩散 = P2 内部高低切。</div>
+    <div class="p-op"><b>操作：</b>P2 阶段持有，<span class="red">光智科技高位（10 日 +83%）注意滞涨风险</span>；关注云南锗业连续跑赢光智的 P2 确认延续，以及靶材（有研新材）扩散强度。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2</span><div class="p-title">PCB / MSAP / 覆铜板（算力硬件基板）</div><div class="p-advice hold">建议：持有，聚焦 CCL 涨价</div></div>
+    <div class="p-pairs"><b>Pairs：</b>华正新材(603186) +10.00% 2连板 / 中石科技(300684) +20.00% 2连板 P2 <span style="color:#8888aa">|</span> 金禄电子(301282) +19.99%</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">华正新材</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">184.31</div></div>
+      <div class="p-stock"><div class="p-stock-name">中石科技</div><div class="p-stock-val num">+20.00%</div><div class="p-stock-price num">80.83</div></div>
+      <div class="p-stock"><div class="p-stock-name">金禄电子</div><div class="p-stock-val num">+19.99%</div><div class="p-stock-price num">35.17</div></div>
+      <div class="p-stock"><div class="p-stock-name">景旺电子</div><div class="p-stock-val down num">-1.10%</div><div class="p-stock-price num">96.93</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 华正新材 <span class="red">2 连板 +10%（CCL 涨价 + 高等级覆铜板 + AI 算力）</span>、中石科技 <span class="red">2 连板 20cm（CPO 散热）</span>、金禄电子 <span class="red">+19.99%</span>——PCB / 覆铜板二线全面补涨 = <span class="yellow">P2 扩散确认</span>；② 元件 / 电子化学品Ⅱ（覆铜板上游）申万二级分别 +3.22% / +5.61%；③ 景旺电子 -1.10% 高位回调，前期涨幅大的 MSAP 龙头暂歇。</div>
+    <div class="p-op"><b>操作：</b>P2 阶段持有 PCB / 覆铜板，<span class="red">聚焦 CCL 涨价逻辑（华正新材 / 生益科技方向）与 CPO 散热（中石科技）</span>；景旺电子高位震荡，不追高。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2 确认</span><div class="p-title">半导体（设备 / 材料 / 封测 / 存储）</div><div class="p-advice hold">建议：主线核心，持有</div></div>
+    <div class="p-pairs"><b>Pairs：</b>中微半导(688380) +16.81% / 通富微电(002156) +10.01% P2 <span style="color:#8888aa">|</span> 北方华创(002371) +3.70% / 中芯国际(688981) +2.93%</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">中微半导</div><div class="p-stock-val num">+16.81%</div><div class="p-stock-price num">47.05</div></div>
+      <div class="p-stock"><div class="p-stock-name">通富微电</div><div class="p-stock-val num">+10.01%</div><div class="p-stock-price num">69.26</div></div>
+      <div class="p-stock"><div class="p-stock-name">北方华创</div><div class="p-stock-val num">+3.70%</div><div class="p-stock-price num">765.97</div></div>
+      <div class="p-stock"><div class="p-stock-name">中芯国际</div><div class="p-stock-val num">+2.93%</div><div class="p-stock-price num">136.76</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 半导体 <span class="red">+5.46% 主力净流入 200.49 亿全行业第一</span>，板块涨停潮（有研新材 / 通富微电涨停）；② 中微半导 <span class="red">+16.81%</span>（模拟芯片 +4.50%）、通富微电 <span class="red">涨停（先进封装 + AMD 产业链）</span>；③ 长鑫科技 +12% 市值破 4 万亿带动存储链（HBM +5.62%）；④ 北向重点加仓半导体设备（北方华创 / 中微公司）。</div>
+    <div class="p-op"><b>操作：</b>主线核心 P2 确认，持有为主。⚠️注意：半导体 20D 主力累计仍为 <span class="red">-287.78 亿（单日 +200 亿但 20 日仍净流出）</span>——按资金线降级规则属于"资金回流初期 / 反弹性质"，不追高、回踩 5 日线关注。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2</span><div class="p-title">通信设备 / 光器件（5G + 算力网络）</div><div class="p-advice hold">建议：持有</div></div>
+    <div class="p-pairs"><b>Pairs：</b>共进股份 3 连板 / 太辰光 20cm P2 <span style="color:#8888aa">|</span> 中瓷电子(2连板) / 兴森科技</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">太辰光</div><div class="p-stock-val num">+20.00%</div><div class="p-stock-price num">193.80</div></div>
+      <div class="p-stock"><div class="p-stock-name">共进股份</div><div class="p-stock-val num">3连板</div><div class="p-stock-price num">19.32</div></div>
+      <div class="p-stock"><div class="p-stock-name">中瓷电子</div><div class="p-stock-val num">2连板</div><div class="p-stock-price num">143.09</div></div>
+      <div class="p-stock"><div class="p-stock-name">沃格光电</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">104.49</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 通信设备 <span class="red">+4.77%（5 日 +14.69% 领涨全市场）</span>，主力 5 日 <span class="green">+337.27 亿</span> 连续大幅回流；② 太辰光 20cm、共进股份 3 连板（CPO + 数据中心交换机）、中瓷电子 2 连板——算力网络设备多点开花；③ 5G 概念涨停 14 只居概念涨停数第二。</div>
+    <div class="p-op"><b>操作：</b>P2 阶段持有，通信设备是本轮资金最持续的方向（5 日 +337 亿）；<span class="red">高标连板（共进 3 板）注意分歧，不追板</span>，回踩关注。</div>
+  </div>
+
+  <div class="p-card p1">
+    <div class="p-card-head"><span class="p-stage p1-stage">P1 → P2</span><div class="p-title">医药（创新药 / CXO / 医疗服务）</div><div class="p-advice watch">建议：观察，药明创新高</div></div>
+    <div class="p-pairs"><b>Pairs：</b>药明康德(603259) +4.80% 创新高 / 百普赛斯(301080) +6.29% P1-P2 <span style="color:#8888aa">|</span> 誉衡药业 7天5板 / 华森制药 2连板</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">药明康德</div><div class="p-stock-val num">+4.80%</div><div class="p-stock-price num">166.89</div></div>
+      <div class="p-stock"><div class="p-stock-name">百普赛斯</div><div class="p-stock-val num">+6.29%</div><div class="p-stock-price num">95.88</div></div>
+      <div class="p-stock"><div class="p-stock-name">誉衡药业</div><div class="p-stock-val num">7天5板</div><div class="p-stock-price num">4.98</div></div>
+      <div class="p-stock"><div class="p-stock-name">华森制药</div><div class="p-stock-val num">2连板</div><div class="p-stock-price num">16.79</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 药明康德 <span class="red">A+H 双双涨超 4% 创历史新高，A+H 总市值突破 5000 亿</span>；② CXO / 科研试剂扩散：百普赛斯 +6.29%、毕得医药走强；③ 医药生物申万一级 +0.68%，涨幅不及算力硬件，但药明新高具独立主线特征。</div>
+    <div class="p-op"><b>操作：</b>P1→P2 过渡，药明康德创新高是板块强信号；<span class="yellow">算力硬件吸金下医药非主攻方向，观察为主</span>，若连续 2 日跑赢大盘则升级。</div>
+  </div>
+
+  <div class="p-card p1">
+    <div class="p-card-head"><span class="p-stage p1-stage">P1</span><div class="p-title">机器人（减速器 / 具身智能）</div><div class="p-advice watch">建议：观察</div></div>
+    <div class="p-pairs"><b>Pairs：</b>中大力德(002896) +3.15% / 双环传动(002472) +2.01% P1</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">中大力德</div><div class="p-stock-val num">+3.15%</div><div class="p-stock-price num">80.00</div></div>
+      <div class="p-stock"><div class="p-stock-name">双环传动</div><div class="p-stock-val num">+2.01%</div><div class="p-stock-price num">38.65</div></div>
+      <div class="p-stock"><div class="p-stock-name">春光科技</div><div class="p-stock-val num">+10.02%</div><div class="p-stock-price num">29.21</div></div>
+      <div class="p-stock"><div class="p-stock-name">创元科技</div><div class="p-stock-val num">涨停</div><div class="p-stock-price num">—</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>机器人温和上行，减速器双雄中大力德 +3.15% / 双环传动 +2.01%；具身智能零星活跃（春光科技涨停：家庭具身机器人 / 小米概念；创元科技涨停：机器人轴承）。板块非今日主攻方向，无涨停潮。</div>
+    <div class="p-op"><b>操作：</b>P1 观察阶段，不追；等板块进涨幅前三或 Pair 连续 2 日跑赢再介入。</div>
+  </div>
+</div>
+
+<!-- ===== 六、七大板块 ===== -->
+<div class="section">
+  <div class="section-title">六、七大板块前三强细分环节 + 最优 Pair 配对</div>
+
+  <div class="segment-grid">
+    <div class="segment-card">
+      <div class="segment-name">① 光 / 算力网络（光模块 · CPO · 光芯片）</div>
+      <div class="segment-text"><b>前三强：</b>① CPO（太辰光 <span class="red">+20.00%</span> / 中际旭创 +6.15%）② 光芯片（仕佳光子 +13.67% / 炬光科技 +7.47%）③ 光器件（光库科技 / 天孚通信）</div>
+      <div class="segment-pair"><b>最优配对：</b>中际旭创 (11709 亿) + 新易盛 (6507 亿) —— 光模块双雄"易中天"组合，P2 阶段。</div>
+      <div class="segment-pair-detail"><b>小盘高弹性配对：</b>太辰光 (440 亿) + 仕佳光子 (723 亿) —— 5 日 +36.49% / +19.39% 同步，逻辑同链、弹性最大。</div>
+    </div>
+    <div class="segment-card b2">
+      <div class="segment-name">② 磷化铟 / 锗镓 / 靶材</div>
+      <div class="segment-text"><b>前三强：</b>① 靶材（有研新材涨停 +10.00% / 欧莱新材）② 锗材料（云南锗业 +7.93% / 海川智能）③ 磷化铟衬底（光智科技 +2.56%）</div>
+      <div class="segment-pair"><b>最优配对：</b>云南锗业 (716 亿) + 光智科技 (360 亿) —— 市值 2 倍内匹配，5 日锗业 +6.89% vs 光智 +9.05%，材料端龙头切换观察。</div>
+    </div>
+    <div class="segment-card b3">
+      <div class="segment-name">③ PCB / MSAP / 覆铜板</div>
+      <div class="segment-text"><b>前三强：</b>① 覆铜板 CCL（华正新材 2连板 +10% / 生益科技 / 宏昌电子涨停）② 散热材料（中石科技 20cm 2连板 / 天通股份涨停）③ PCB（金禄电子 +19.99% / 博敏电子涨停 / 兴森科技涨停）</div>
+      <div class="segment-pair"><b>最优配对：</b>华正新材 (289 亿) + 中石科技 (242 亿) —— CCL 涨价 + CPO 散热双逻辑，市值匹配，P2 扩散。</div>
+      <div class="segment-pair-detail"><b>大票配对：</b>深南电路 (2676 亿) + 鹏鼎控股 (2283 亿) —— 算力 PCB 平台，+3.94% / +3.29% 温和上行。</div>
+    </div>
+    <div class="segment-card b4">
+      <div class="segment-name">④ 半导体（设备 / 材料 / 封测）</div>
+      <div class="segment-text"><b>前三强：</b>① 封测（通富微电涨停 +10.01% / 长电科技）② 模拟芯片（中微半导 +16.81% / 芯朋微 +13.89%）③ 设备（北方华创 +3.70% / 中芯国际 +2.93%）</div>
+      <div class="segment-pair"><b>最优配对：</b>中微半导 (188 亿) + 通富微电 (1051 亿) —— P2 确认，弹性与市值互补；北向重点加仓半导体设备。</div>
+    </div>
+    <div class="segment-card b5">
+      <div class="segment-name">⑤ 存储（长鑫链 / HBM）</div>
+      <div class="segment-text"><b>前三强：</b>① 长鑫科技 +12.00% 创新高（市值破 4 万亿）② HBM（概伦电子 +16.38% / 长鑫存储概念 +5.86%）③ 存储模组（兆易创新 / 江波龙）</div>
+      <div class="segment-pair"><b>最优配对：</b>长鑫科技 (4.13 万亿) + 中芯国际 (1.17 万亿) —— 晶圆制造双龙头，存储超级周期核心卡位。</div>
+      <div class="segment-pair-detail"><b>弹性配对：</b>概伦电子 (55 亿) + 德邦科技 (市值匹配待核) —— HBM 设计链，+16.38% / +14.40% 同步爆发。</div>
+    </div>
+    <div class="segment-card b6">
+      <div class="segment-name">⑥ 医药（创新药 / CXO / 医疗服务）</div>
+      <div class="segment-text"><b>前三强：</b>① CXO（药明康德 +4.80% 创新高 / 康龙化成）② 科研试剂（百普赛斯 +6.29% / 毕得医药）③ 医疗服务（澳洋健康 4连板 / 誉衡药业 7天5板）</div>
+      <div class="segment-pair"><b>最优配对：</b>药明康德 (4980 亿) + 百普赛斯 (161 亿) —— CXO 龙头 + 科研试剂上游，市值差超 5 倍不构成严格 Pair，仅作方向参考（<span class="red">药明单独观察</span>）。</div>
+      <div class="segment-pair-detail"><b>情绪票：</b>誉衡药业 7天5板（医药重组+中药）、澳洋健康 4连板（脑机接口+国企改革）——纯情绪不参与。</div>
+    </div>
+    <div class="segment-card b7" style="grid-column:1/-1">
+      <div class="segment-name">⑦ 机器人 / 具身智能</div>
+      <div class="segment-text"><b>前三强：</b>① 减速器（中大力德 +3.15% / 双环传动 +2.01%）② 关节模组（中原内配 / 今飞凯达）③ 家电具身（春光科技涨停 / TCL智家）</div>
+      <div class="segment-pair"><b>最优配对：</b>中大力德 (157 亿) + 双环传动 (329 亿) —— 减速器双雄，P1 观察。</div>
+      <div class="segment-pair-detail"><b>今日观察：</b><span class="red">板块非主攻，无涨停潮，不进入主线优选池。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 七、综合研判 ===== -->
+<div class="section">
+  <div class="section-title">七、综合研判与操作建议</div>
+  <div class="final-grid">
+    <div class="final-card">
+      <div class="final-title">飞书 + 盘面综合结论</div>
+      <ol class="final-list">
+        <li><b>放量普涨：</b>成交 23875 亿 <b>放量 2446 亿（+11.4%）</b>，上涨占比 78.2%，涨停 106 家创近期新高，跌停仅 1 家，炸板率约 12%——<b>增量资金实质性入场，量价齐升健康格局。</b></li>
+        <li><b>市场情绪：</b>恐贪指数约 78（偏热），主力净流入 497.7 亿、北向净流入 53.66 亿连 3 日——情绪由"偏热"跃升"火热"。<span class="yellow">⚠️情绪已到偏热区，注意一致性风险。</span></li>
+        <li><b>主线确认：</b>AI 算力硬件全产业链（半导体 +5.46% 主力 +200.49 亿 / 通信设备 +4.77% 5日 +337 亿 / 存储 / CPO / 先进封装 / PCB）多极共振，<b>P2 确认扩散阶段</b>。催化：英伟达 Spectrum-X CPO 量产 + 长鑫市值破 4 万亿 + 央行适度宽松。</li>
+        <li><b>风格切换：</b>科技成长 vs 消费防御跷跷板极致化——白酒 -3.18%（茅台 -3.64% 失守 1300）、传媒 -0.84%、影视（北京文化跌停）走弱；<span class="green">资金由防御切科技，TMT 拥挤度 52%→42% 回落后再聚。</span></li>
+        <li><b>次线：</b>创新药 / CXO（药明康德 A+H 新高，市值破 5000 亿）独立走强；<b>分歧：</b>大消费（白酒领跌 vs 妖股一鸣食品 15天10板 情绪抱团）两极分化。</li>
+      </ol>
+    </div>
+    <div class="final-card">
+      <div class="final-title">风险提示</div>
+      <ol class="final-list">
+        <li><span class="red"><b>估值高估：</b></span>中证全指 PE-TTM 21.63（10 年分位 <b>93.37% ≥ 90%</b>，⑭ 触发），半导体 / 光模块 / 存储 PE 普遍 70-150 倍，<b>估值压制仓位上限。</b></li>
+        <li><b>半导体资金线待验证：</b>单日主力 +200.49 亿但 <span class="red">20D 累计仍 -287.78 亿</span>——按资金线降级规则属"回流初期 / 反弹性质"，<span class="yellow">非反转确认，防止一日游。</span></li>
+        <li><b>连板结构偏弱：</b>晋级率仅 <span class="red">26.31%</span>，连板高度压缩至 4 板（金螳螂 / 澳洋健康 / 天洋新材），一鸣食品 15 天 10 板系情绪独苗——<span class="yellow">高位连板分歧风险（㊱ 缩圈监控）。</span></li>
+        <li><b>4000 点关口：</b>沪指 3982.65 逼近 4000 整数关，上方套牢盘压力；<b>7 月经济数据（社零 / 工业增加值偏弱）</b>构成基本面扰动。</li>
+        <li><b>风格极致化反噬：</b>科技单日独大，若分歧资金无处承接，或引发"科技杀跌 + 消费企稳"跷跷板反转（㉒㉔）。</li>
+        <li><b>妖股情绪风险：</b>一鸣食品 15 天 10 板 / 誉衡药业 7 天 5 板——<span class="red">纯情绪抱团，政策脉冲类不追连板（㉕）。</span></li>
+      </ol>
+    </div>
+  </div>
+  <div class="key-op-box">
+    <div class="key-op-title">关键操作建议（明日 8/18 框架草稿）</div>
+    <ul class="key-op-list">
+      <li><b>AI 算力硬件（主线 P2 确认）：</b><span class="green">持有为主，回踩 5 日线关注。</span>半导体 / 存储 / CPO / 先进封装多极共振，但 <span class="yellow">半导体 20D 资金线为负 + 板块已 +5.46%，不追高。</span></li>
+      <li><b>光模块 / CPO：</b>中际旭创破千元为产业中枢信号，<span class="yellow">太辰光等 20cm 高标不追</span>，回调关注光芯片（仕佳光子 / 炬光）。</li>
+      <li><b>存储链：</b>长鑫科技创新高（市值破 4 万亿），HBM / 存储超级周期，<span class="green">持有</span>，关注长鑫存储概念扩散。</li>
+      <li><b>PCB / 覆铜板：</b>华正新材 2 连板（CCL 涨价），中石科技 2 连板（散热），P2 持有，<span class="yellow">聚焦 CCL 涨价与散热材料。</span></li>
+      <li><b>医药 / CXO：</b>药明康德创新高（A+H 破 5000 亿），<span class="yellow">观察升级信号，非主攻。</span></li>
+      <li><b>回避：</b>白酒（茅台失守 1300）/ 传媒影视（北京文化跌停）/ 高位连板妖股（一鸣 15 天 10 板、誉衡 7 天 5 板）——<span class="red">不接飞刀、不追连板（⑳㉕）。</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div class="footer">
+  <div class="disclaimer">以上内容由 AI（WorkBuddy + StockPartnerTeam Expert）基于公开信息自动整理生成，数据来源包括腾讯自选股 westock-mcp、东方财富 mx-ds-mcp、新浪财经、每经网、财联社、证券时报·数据宝等，多源交叉验证。所有分析仅供参考，<b>不构成任何投资建议或个股推荐。</b></div>
+  <div>投资有风险，决策需谨慎。过往表现不代表未来收益。</div>
+  <div class="footer-time">生成时间：<span class="num">2026-08-17 19:30 CST（手动补跑）</span> | 自动化任务：A股每日主线分析 | 主线结论：<span class="footer-task">AI 算力硬件全产业链 P2 确认扩散</span></div>
+</div>
+
+</div><!-- /padding -->
+
+</div><!-- /report -->
+
+<script>
+// 6 指数涨跌幅柱状图
+var chartIndex = echarts.init(document.getElementById('chart-index'));
+chartIndex.setOption({
+  grid: { top: 30, bottom: 30, left: 40, right: 15 },
+  xAxis: { type: 'category', data: ['上证指数','深证成指','创业板指','科创50','上证50','沪深300'], axisLabel: { color: '#9aa3c0', fontSize:13 }, axisLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize:13, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{ type: 'bar',
+    data: [
+      { value: 1.41, itemStyle: { color: '#e94560' } },
+      { value: 2.44, itemStyle: { color: '#e94560' } },
+      { value: 3.14, itemStyle: { color: '#e94560' } },
+      { value: 4.14, itemStyle: { color: '#e94560' } },
+      { value: 1.00, itemStyle: { color: '#e94560' } },
+      { value: 1.61, itemStyle: { color: '#e94560' } }
+    ],
+    barWidth: '45%',
+    label: { show: true, position: 'top', color: '#e0e0e0', fontSize:14, formatter: function(p){ return p.value+'%'; } }
+  }]
+});
+
+// 涨跌家数饼图（4335 / 1064 / 145）
+var chartDist = echarts.init(document.getElementById('chart-dist'));
+chartDist.setOption({
+  tooltip: { trigger: 'item' },
+  legend: { bottom: 0, textStyle: { color: '#9aa3c0', fontSize:13 } },
+  series: [{
+    type: 'pie',
+    radius: ['38%', '70%'],
+    center: ['50%', '45%'],
+    label: { color: '#e0e0e0', fontSize:14 },
+    data: [
+      { value: 4335, name: '上涨家数', itemStyle: { color: '#e94560' } },
+      { value: 1064, name: '下跌家数', itemStyle: { color: '#52c41a' } },
+      { value: 145,  name: '平盘家数', itemStyle: { color: '#8888aa' } }
+    ],
+    labelLine: { lineStyle: { color: '#2c2c4a' } }
+  }]
+});
+
+// 概念板块涨幅 Top 8 横向条形图
+var chartSector = echarts.init(document.getElementById('chart-sector'));
+chartSector.setOption({
+  grid: { top: 10, bottom: 25, left: 80, right: 50 },
+  xAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize:13, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'category',
+    data: ['CPO','光芯片','模拟芯片','HBM','国家大基金','长鑫存储','博通概念','靶材'],
+    axisLabel: { color: '#c0c0d0', fontSize:14 },
+    axisLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{ type: 'bar',
+    data: [4.12, 4.54, 4.50, 5.62, 5.68, 5.86, 5.98, 6.22],
+    itemStyle: {
+      color: function(p){ return p.value >= 5.5 ? '#e94560' : (p.value >= 4.5 ? '#ff8fa0' : '#8888aa'); }
+    },
+    barWidth: '55%',
+    label: { show: true, position: 'right', color: '#e0e0e0', fontSize:14, formatter: '{c}%' }
+  }]
+});
+
+window.addEventListener('resize', function(){
+  chartIndex.resize(); chartDist.resize(); chartSector.resize();
+});
+</script>
+</body>
+</html>

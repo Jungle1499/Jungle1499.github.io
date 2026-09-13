@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>午盘速览 2026-08-27（周四）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f4ee; --card:#ffffff; --ink:#1a1a1a; --ink-soft:#555;
+    --line:#e3dfd3; --accent:#7a4f1f; --head:#3a2e1f;
+    --red:#c0392b; --red-soft:#f4d7d2; --green:#1f7a3a; --green-soft:#d6ead9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);line-height:1.6;font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 28px 60px}
+  header.top{border-bottom:2px solid var(--head);padding-bottom:14px;margin-bottom:22px}
+  header.top h1{margin:0;font-size:24px;color:var(--head);letter-spacing:0.5px}
+  header.top .sub{font-size:13px;color:var(--ink-soft);margin-top:4px}
+  header.top .meta{font-size:12px;color:var(--ink-soft);margin-top:6px;font-style:italic}
+
+  .summary-card{background:var(--card);border-left:5px solid var(--accent);padding:16px 20px;border-radius:4px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+  .summary-card .lbl{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:6px}
+  .summary-card .verdict{font-size:17px;font-weight:700;color:var(--head);margin-bottom:8px}
+  .summary-card .verdict strong.red{color:var(--red)}
+  .summary-card .verdict strong.green{color:var(--green)}
+  .summary-card .points{font-size:13.5px;color:var(--ink-soft)}
+  .summary-card .points ul{margin:6px 0 0;padding-left:22px}
+  .summary-card .points li{margin-bottom:3px}
+
+  section{margin-bottom:28px}
+  section h2{font-size:17px;color:var(--head);border-left:4px solid var(--accent);padding-left:10px;margin:0 0 14px}
+  section h3{font-size:14px;color:var(--ink);margin:14px 0 8px}
+
+  .card{background:var(--card);padding:16px 18px;border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;background:var(--card)}
+  th{background:#efe9d8;color:var(--head);font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  td{padding:8px 10px;border-bottom:1px dashed var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.red{color:var(--red);font-weight:700}
+  td.green{color:var(--green);font-weight:700}
+  .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11.5px;font-weight:600;margin-right:4px}
+  .tag.ok{background:var(--green-soft);color:var(--green)}
+  .tag.bad{background:var(--red-soft);color:var(--red)}
+  .tag.partial{background:#fbeed5;color:#8a6a14}
+  .tag.none{background:#e9e5d8;color:#7a7a7a}
+  .tag.rev{background:#e6d7ed;color:#5e3268}
+  .tag.q1{background:#dbeafe;color:#1e3a8a}
+  .tag.q2{background:#fef3c7;color:#92400e}
+  .tag.q3{background:#dcfce7;color:#166534}
+  .tag.q4{background:#fce7f3;color:#9d174d}
+  .quadrant-intro{font-size:14px;color:var(--ink);padding:10px 14px;background:#f4eed8;border-radius:4px;margin-bottom:12px;border-left:3px solid var(--accent)}
+
+  .idx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  .idx{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+  .idx .name{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
+  .idx .val{font-size:22px;font-weight:700;color:var(--ink)}
+  .idx .chg{font-size:14px;font-weight:700;margin-top:4px}
+  .idx .chg.red{color:var(--red)}
+  .idx .chg.green{color:var(--green)}
+  .idx .meta{font-size:11px;color:var(--ink-soft);margin-top:4px}
+
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi .box{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px 12px;text-align:center}
+  .kpi .box .lbl{font-size:11.5px;color:var(--ink-soft)}
+  .kpi .box .num{font-size:20px;font-weight:700;margin-top:4px}
+  .kpi .box .num.red{color:var(--red)}
+  .kpi .box .num.green{color:var(--green)}
+  .kpi .box .sub{font-size:10.5px;color:var(--ink-soft);margin-top:2px}
+
+  .src{font-size:11px;color:var(--ink-soft);font-style:italic;margin-left:4px}
+  .chart{width:100%;height:320px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px}
+
+  .stock-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12.5px}
+  .stock-list .item{padding:6px 10px;border:1px dashed var(--line);border-radius:3px;background:var(--card)}
+  .stock-list .item .nm{font-weight:700;color:var(--head)}
+  .stock-list .item .pct.red{color:var(--red);font-weight:700}
+  .stock-list .item .pct.green{color:var(--green);font-weight:700}
+
+  .warn{background:#fff8e1;border:1px solid #f1d99a;padding:10px 14px;border-radius:4px;font-size:12.5px;color:#7a5a14;margin-top:14px}
+  .disc{margin-top:32px;padding:14px 18px;background:#efe9d8;border-radius:4px;font-size:11.5px;color:var(--ink-soft);border-left:3px solid var(--accent)}
+  .footer{margin-top:18px;font-size:11px;color:var(--ink-soft);text-align:center}
+
+  .points-box{background:#fbf6e8;border:1px solid #ebd9a4;border-radius:4px;padding:12px 14px;margin-top:10px;font-size:13px}
+  .points-box h4{margin:0 0 6px;color:#8a6a14;font-size:13px}
+  .points-box ol{margin:4px 0 0;padding-left:20px}
+  .points-box li{margin-bottom:3px}
+
+  .vline{background:#f5e9d8;border-left:4px solid var(--accent);padding:10px 14px;border-radius:3px;margin:10px 0;font-size:13px;color:var(--ink-soft)}
+  .vline strong{color:var(--head)}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>午盘速览 2026-08-27（周四）</h1>
+  <div class="sub">11:30 午间收盘 · 数据口径全部锁定当日 11:30 收盘快照（指数/成交/板块/资金均为 11:30 一刻，严禁采用 11:30 后价格）</div>
+  <div class="meta">生成时间：2026-08-27 11:40（GMT+8） · 数据源：westock(11:30 锁定价) + 同花顺问财 iwencai + 东方财富妙想 mx + Wind 四源交叉核对（≥2 源一致）</div>
+</header>
+
+<div class="summary-card">
+  <div class="lbl">▌半日小结</div>
+  <div class="verdict">
+    <strong class="green">放量单边上行</strong>：沪指<strong class="red">+0.60%</strong>/深成指<strong class="red">+1.19%</strong>/创业板<strong class="red">+1.51%</strong>/科创50<strong class="red">+3.45%</strong>；半日成交 <strong>1.35 万亿</strong>（放量 1208 亿 / +9.8%）→ <strong>增量资金进场</strong>（区别于 8/25 缩量企稳）；普涨率 <strong class="green">55.2%</strong>（2862 涨 / 65 涨停）；科技硬件（电子+4.02% / 通信+3.08%）+ 资源金属（有色+2.13% / 贵金属+4.4%）双主线共振。但 <strong class="red">港股背离</strong>（恒科+0.14% vs 科创+3.45%）+ <strong class="red">半导体 20D 深负（-488 亿）</strong>埋藏午后分歧隐患。
+  </div>
+  <div class="points">
+    <ul>
+      <li><strong>早盘→午盘形态</strong>：单边震荡上行（非 V 型、非横盘）。沪指盘中最低 <strong>3909.31</strong>（较昨收 3912.52 仅 -0.08% 浅坑）→ 11:30 收 3935.99（+0.60%），修复 +0.68pp；创业板、科创 50 同步高开高走，无恐慌出清。</li>
+      <li><strong>量能环比（D②）</strong>：半日成交 <strong>1.35 万亿</strong>，较前一交易日同期（约 1.229 万亿）<strong class="red">放量 1208 亿（+9.8%）</strong> → 增量确认上行，非存量博弈。</li>
+      <li><strong>市场风格</strong>：① 科技硬件 P1 启动（光刻机+4.60% / CPO+4.54% / PCB+4.28% / 先进封装+4.28% / 存储芯片+4.24%）；② 资源金属（铜 P2 + 贵金属 P3 锁盈）共振；③ 银行（-1.43%）/ 电力设备（-0.99%）拖累，防御退潮、进攻主线占优。</li>
+      <li><strong>新增主线</strong>：科技硬件右侧启动（英伟达财报落地 US-⑫ 升档）+ 工业金属铜（有色+2.13% · 5日+104.74 亿双正）+ 贵金属 P3 加速（湖南黄金涨停 · 20日+318.7 亿双正）。</li>
+      <li><strong>午后关注</strong>：① 三道支撑位站稳（沪 3935 / 创 3466 / 科创 1688）；② 港股背离是否引 A 股科技冲高回落；③ 半导体 20D 深负防高开低走；④ 成交能否维持 2.1 万亿+；⑤ 连板高度金健米业 9 天 6 板能否延续。</li>
+    </ul>
+  </div>
+</div>
+
+<section id="link-table">
+  <h2>〇、策略衔接对照</h2>
+  <div class="vline">
+    <strong>核心叙事：</strong>盘前定调"中性偏多 · 结构性轮动（不升档）"（工业金属铜 P2 主攻 / 贵金属 P3 锁盈 / CPO 中性偏多试错）→ 10:00 监控确认"科技硬件 P1 启动 + 贵金属 P3 加速 + 种植业 P2" → 11:30 验证"电子+4.02% / 通信+3.08% 放量单边上行，涨停 65 只，普涨 55.2%，主力净流入 345.69 亿"。三者构成完整的"英伟达财报落地 → 科技硬件右侧启动"剧本，但<strong>港股背离 + 半导体 20D 深负</strong>提示午后分歧风险，仓位升档至 50-55% 但保留现金安全垫。
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th style="width:16%">维度</th><th style="width:27%">08:30 盘前预判</th><th style="width:18%">10:00 盘中监控判断</th><th style="width:23%">11:30 午间实际</th><th style="width:16%">兑现情况</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>整体策略</td>
+          <td>中性偏多 · 结构性轮动（不升档），30-35% 试错为主，严禁追高</td>
+          <td><span class="tag ok">维持偏多</span>沪指+0.11% 站稳 MA20，量能未放→反弹试错</td>
+          <td>单边上行放量：沪+0.60% / 创+1.51% / 科创+3.45%；成交放量 1208 亿；普涨 55.2%</td>
+          <td><span class="tag ok">兑现·升档至 50-55%</span></td>
+        </tr>
+        <tr>
+          <td>科技硬件（CPO/PCB/存储）</td>
+          <td>中性偏多试错（英伟达盘后+4% 催化 · US-⑫）</td>
+          <td><span class="tag ok">P1 启动</span>通信设备+3.42%，元件+2.41%</td>
+          <td>电子+4.02%（+308.61 亿）/ 通信+3.08%；光刻机+4.60% / CPO+4.54% / 存储+4.24%</td>
+          <td><span class="tag ok">兑现·升档确认</span></td>
+        </tr>
+        <tr>
+          <td>工业金属（铜）</td>
+          <td>多（P2 双正主攻）：LME 铜新高 + 板块 5日+127.6 亿</td>
+          <td><span class="tag partial">延续</span>有色金属未单列，贵金属强</td>
+          <td>有色金属+2.13%（+9.19 亿）；贵金属二级+4.4%（湖南黄金涨停）</td>
+          <td><span class="tag ok">兑现·温和双正</span></td>
+        </tr>
+        <tr>
+          <td>贵金属（P3 锁盈）</td>
+          <td>88 分 · 持有不加仓（山东黄金/湖南黄金/赤峰）</td>
+          <td><span class="tag ok">P3 加速</span>贵金属+3.53%，湖南黄金涨停</td>
+          <td>贵金属二级+4.4%，湖南黄金主力净流入+0.70 亿（锁盈持有）</td>
+          <td><span class="tag ok">兑现·锁盈正确</span></td>
+        </tr>
+        <tr>
+          <td>种植业 / 农林牧渔</td>
+          <td>多（P2 双正）：转基因 / 玉米趋势资金进场</td>
+          <td><span class="tag ok">P2 主升</span>种植业+2.90%，新赛二连板</td>
+          <td>农林牧渔+1.35%（种植业二级+3.79%）；金健米业 9 天 6 板</td>
+          <td><span class="tag ok">兑现·连板延续</span></td>
+        </tr>
+        <tr>
+          <td>半导体（20D 深负）</td>
+          <td>中性（P0 · 20D -613 亿禁给多）</td>
+          <td><span class="tag bad">诱多确认</span>+1.79% 但 20D -488.6 亿深负</td>
+          <td>电子整体+4.02% 但 20D -173.48 亿；元件强、半导体 20D 深负未解</td>
+          <td><span class="tag partial">部分兑现·防诱多</span></td>
+        </tr>
+        <tr>
+          <td>医药生物 / CRO</td>
+          <td>中性偏空（20D 负，仅事件驱动 P1）</td>
+          <td><span class="tag partial">分化</span>化学制药+0.12% / 医疗服务-0.37%</td>
+          <td>医药生物-0.29%（净流出 -23.82 亿）；个股强板块弱防兑现</td>
+          <td><span class="tag partial">部分兑现·回避正确</span></td>
+        </tr>
+        <tr>
+          <td>消费（白酒 / 小家电）</td>
+          <td>空（20D 深负）</td>
+          <td><span class="tag ok">退潮</span>白酒-0.76%（0/19 涨）</td>
+          <td>食品饮料-0.45% / 家电+0.60%（弱）；消费维持弱势</td>
+          <td><span class="tag ok">兑现·回避正确</span></td>
+        </tr>
+        <tr>
+          <td>券商并购脉冲</td>
+          <td>P1 并购催化 · 仅首板防诱多（中金并东兴/信达 8/27 上会）</td>
+          <td><span class="tag partial">仅首板</span>锦龙涨停，证券Ⅱ仅+0.29%</td>
+          <td>锦龙股份 2 板 / 湘财 2 板；证券Ⅱ -0.17%（脉冲未扩散）</td>
+          <td><span class="tag partial">部分兑现·2 板防诱多</span></td>
+        </tr>
+        <tr>
+          <td>铁律 A 复核</td>
+          <td>低开&gt;1% + 4300+ 下跌 → 降仓至 25-30%</td>
+          <td><span class="tag ok">未触发</span>低开均&lt;1%、下跌未达 4300+</td>
+          <td>高开（非低开）；下跌约 2327 &lt; 4300；涨停 65 &gt; 40</td>
+          <td><span class="tag ok">未触发·维持升档</span></td>
+        </tr>
+        <tr>
+          <td>港股映射二次校验</td>
+          <td>美股科技强（英伟达+4%）理应外溢港股</td>
+          <td><span class="tag partial">偏弱</span>未单列</td>
+          <td>恒科+0.14% / 恒指-0.44% / 小米-2.04%（背离 A 股科创+3.45%）</td>
+          <td><span class="tag partial">二次校验·港股背离⚠️</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="quadrant">
+  <h2>零点五、节点卡位四象限（11:30 修正版）</h2>
+  <div class="card">
+    <div class="quadrant-intro">半日放量单边上行后修正象限权重。当前建议总仓位 <strong>由 30-35% 升至 50-55%</strong>，结构由"防御主导"切换为"科技硬件 P1 主攻 + 资源金属主线 + 防御降维"三核；现金安全垫保留 45%。</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:7%">象限</th>
+          <th style="width:15%">名称</th>
+          <th style="width:20%">代表标的（名+代码）</th>
+          <th style="width:10%">阶段</th>
+          <th style="width:13%">当前权重→建议权重</th>
+          <th style="width:35%">盘中触发器 / 动作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag q1">Q1</span></td>
+          <td>防御底仓（红利/银行/公用事业）</td>
+          <td>长江电力 600900 / 工商银行 601398</td>
+          <td><span class="tag ok">P1</span></td>
+          <td>10% → <span class="red">8%（↓降防）</span></td>
+          <td>· 银行-1.43% / 公用事业-0.64% 今日拖累，防御退潮<br>· 触发器：沪指失守 3900 → 降至 5%（避险）</td>
+        </tr>
+        <tr>
+          <td><span class="tag q2">Q2</span></td>
+          <td>科技硬件（CPO/PCB/存储/元件）</td>
+          <td>中际旭创 300308 / 沪电股份 002463 / 澜起科技 688008</td>
+          <td><span class="tag q2">P1 启动</span></td>
+          <td>20% → <span class="red">28%（↑主攻）</span></td>
+          <td>· 电子+4.02%（+308.61 亿）/ 通信+3.08% 放量<br>· 触发器：半导体 20D 深负（-488 亿）拖累 → 减至 20%；成交回升 2.1 万亿+ 站稳 → 加至 35%</td>
+        </tr>
+        <tr>
+          <td><span class="tag q3">Q3</span></td>
+          <td>超跌反转（医药/消费）</td>
+          <td>迈威生物 688062</td>
+          <td><span class="tag none">退潮/观察</span></td>
+          <td>0% → <span class="red">2%（试错）</span></td>
+          <td>· 医药生物-0.29%（净流出 -23.82 亿），20D 负未转<br>· 触发器：医药板块 20D 主力净流入转正 → 加至 5%</td>
+        </tr>
+        <tr>
+          <td><span class="tag q4">Q4</span></td>
+          <td>主线二波（工业金属铜 / 贵金属）</td>
+          <td>江西铜业 600362 / 湖南黄金 002155</td>
+          <td><span class="tag q4">P2 主升<br>贵金属 P3</span></td>
+          <td>15% → <span class="red">17%（↑持有）</span></td>
+          <td>· 有色+2.13%（5日+104.74 亿双正）/ 贵金属 P3 加速<br>· 触发器：LME 铜新高延续 → 加至 22%；金价失守 4600 → 贵金属减仓至 10%</td>
+        </tr>
+        <tr style="background:#f4eed8">
+          <td colspan="2"><strong>合计（含现金）</strong></td>
+          <td colspan="2">Q1 8% + Q2 28% + Q3 2% + Q4 17% = <strong>55%</strong></td>
+          <td><strong>100%</strong></td>
+          <td><strong>现金 45%</strong>（较盘前 55% 释放 10% 进攻，保留安全垫）</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>象限切换触发条件（盘中触发器）</h3>
+    <ul>
+      <li><strong>Q2 加仓至 35%</strong>：① 科技硬件午后延续（CPO/PCB 板块 +1.5% 以上为有效）；② 半日成交维持 2.1 万亿+ 全日推算；③ 半导体 20D 深负未引发冲高回落（沪指守住 3935）。</li>
+      <li><strong>Q4 加仓至 22%</strong>：① LME 铜延续新高、板块净流入扩大；② 贵金属 P3 锁盈不破 5 日线（湖南黄金不跌穿涨停板）。</li>
+      <li><strong>触发铁律 A 紧急降仓至 25-30%</strong>（维持红线）：① 三大指数午后跳水至 <strong>沪指 &lt; 3900 / 创业板 &lt; 3430 / 科创 50 &lt; 1630</strong>；② 跌停扩散至 10 家以上；③ 港股恒科转跌超 -1.5% 共振。当前距红线均有安全垫。</li>
+    </ul>
+    <div class="src">来源：11:30 收盘数据 + 07:00 盘前策略权重映射 + 10:00 盘中监控；算法：节点卡位四象限 + 半凯利（确定性×弹性）。</div>
+  </div>
+</section>
+
+<section id="index-section">
+  <h2>一、主要指数</h2>
+  <div class="idx-grid" id="indexGrid"></div>
+  <h3>指数涨跌幅可视化</h3>
+  <div class="chart" id="indexChart"></div>
+  <div class="src">数据源：westock 11:30 行情快照（2026-08-27）；6 大指数数据口径统一为 11:30 收盘。</div>
+</section>
+
+<section id="breadth">
+  <h2>二、成交与市场广度</h2>
+  <div class="kpi" id="breadthKpi"></div>
+  <div class="points-box">
+    <h4>半日成交与市场宽度解读</h4>
+    <ol>
+      <li><strong>量能（D②）</strong>：半日成交 <strong>1.35 万亿</strong>，较前一交易日同期（约 1.229 万亿）<strong>放量 1208 亿（+9.8%）</strong> → 增量资金进场确认，明显区别于 8/25 缩量 16.3% 的弱势企稳。</li>
+      <li><strong>涨跌家数（11:30 收盘）</strong>：上涨 <strong class="green">2862（占 55.2%）</strong> / 下跌约 2327 / 平盘少量；涨停 <strong class="red">65 只</strong> → 普涨格局，但非全面逼空（仍有 45% 个股下跌）。</li>
+      <li><strong>涨跌停</strong>：涨停 <strong class="red">约 65 只</strong>（连板高度：金健米业 9 天 6 板 / 万向德农 3 板 / 锦龙股份 2 板 / 湘财 2 板）/ 跌停 <strong>较少</strong>（连板股主力净流入 7 只全为正，无涨停背离信号）。</li>
+      <li><strong>主力资金</strong>：全市场主力净流入合计 <strong class="red">+345.69 亿</strong>（真实资金进场，非单纯情绪）；电子（+308.61 亿）一家占近 90%，资金高度集中于科技硬件。</li>
+      <li><strong>推算全日</strong>：若午后维持放量，全天成交有望达 2.1-2.3 万亿（较 8/26 全日放量）；若冲高回落缩量，警惕"放量长上影"分歧。</li>
+    </ol>
+  </div>
+  <div class="src">来源：westock 市场广度统计 11:30 / 同花顺问财 iwencai 板块资金 / WebSearch（成交 1.35 万亿·放量 1208 亿）交叉核对。</div>
+</section>
+
+<section id="sectors">
+  <h2>三、板块表现</h2>
+  <h3>领涨板块（科技硬件 + 资源金属 双主线）</h3>
+  <div class="chart" id="upSectorChart"></div>
+  <h3>领跌板块（防御退潮 + 消费/新能源弱势）</h3>
+  <div class="chart" id="downSectorChart"></div>
+
+  <h3 style="margin-top:20px">B、申万一级全行业排名（31 行业 · 11:30 涨跌幅 + 主力净流入）</h3>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th style="width:6%">#</th><th style="width:24%">申万一级行业</th><th style="width:18%">11:30 涨跌幅</th><th style="width:20%">主力净流入(亿)</th><th style="width:20%">20日主力净流入(亿)</th><th style="width:12%">阶段判定</th></tr>
+      </thead>
+      <tbody id="swTable"></tbody>
+    </table>
+    <div class="warn" style="margin-top:10px">
+      <strong>⚠️ 资金语境对抗自检：</strong>① <strong>电子（+4.02% 但 20D -173.48 亿）</strong>与 <strong>计算机（+1.47% 但 20D -313.01 亿）</strong>属"当日强 + 20D 深负"——涨停≠资金进，盘中冲高需防诱多出货（背离四象限：诱多出货·减仓）；② 通信（+3.08% / 20D +128.46 亿双正）资金真实，P1 启动可信；③ 银行/公用事业当日绿盘且 20D 负，防御退潮确认。
+    </div>
+  </div>
+
+  <div class="src">
+    数据源：westock data_sector scope=sw1（2026-08-27 11:30）· 申万宏源/方正证券策略观点交叉核对。
+    颜色约定：A 股惯例——<strong style="color:var(--red)">涨=红</strong>、<strong style="color:var(--green)">跌=绿</strong>。
+  </div>
+</section>
+
+<section id="hotspot">
+  <h2>四、涨停热点与资金动向</h2>
+  <h3>涨停热点股（连板高度 + 主线龙头）</h3>
+  <div class="stock-list" id="limitUpList"></div>
+  <h3 style="margin-top:14px">主力资金净流入居前板块（板块层面）</h3>
+  <div class="stock-list" id="inflowList"></div>
+  <h3 style="margin-top:14px">主力资金净流入居前个股（连板股核验 · TOP7 · 全为正无背离）</h3>
+  <div class="stock-list" id="stockFlowList"></div>
+  <div class="src">来源：westock 个股资金流向（2026-08-27 半日 11:30 收盘）；连板股主力净额 7 只全为正 → <strong style="color:var(--green)">无"涨停≠资金进"背离信号</strong>。</div>
+</section>
+
+<section id="commentary">
+  <h2>五、简评与后市观察</h2>
+  <div class="card">
+    <h3>本轮上行的核心逻辑</h3>
+    <p>早盘在<strong>英伟达财报超预期（营收 962 亿 +106% / 数据中心 890 亿 +117% / Q3 指引 1080 亿首破千亿）盘后 +4%</strong>催化下，A 股科技硬件直接右侧启动——电子 +4.02% / 通信 +3.08% 放量领涨，光刻机 / CPO / PCB / 先进封装 / 存储芯片概念集体 +4% 以上。资源侧，工业金属铜（有色 +2.13% · 5日 +104.74 亿双正）与贵金属 P3 加速（湖南黄金涨停）延续趋势。最终 11:30 收盘<strong>上涨 2862 vs 下跌约 2327</strong>（普涨 55.2%），主力净流入 +345.69 亿，属"外盘催化 + 增量资金 + 双主线共振"的放量上行，而非 8/25 的缩量企稳。但<strong>港股背离 + 半导体 20D 深负</strong>决定午后不宜盲目追高。</p>
+
+    <h3>机构观点（午间发酵期）</h3>
+    <ul style="margin:4px 0; padding-left:22px">
+      <li><strong>承接盘前/10:00 自有判断</strong>：科技硬件 P1 启动（英伟达 US-⑫ 升档）+ 工业金属 P2 双正 + 贵金属 P3 锁盈 三线得到 11:30 数据全面验证；半导体 20D 深负"诱多"预警同步验证。</li>
+      <li><strong>方正证券（延续 8/25 观点）</strong>：弱美元 + 实际利率下行支撑贵金属与重资产 HALO 资产；但 A 股贵金属已高位，宜锁盈不追。</li>
+      <li><strong>申万宏源</strong>：AI 产业链中非机构重仓方向（国产算力链、PCB、存储）具新增催化；但需警惕"买预期卖事实"高开低走。</li>
+    </ul>
+
+    <h3>新增主线 / 隐象限（盘中异动）</h3>
+    <ul style="margin:4px 0; padding-left:22px">
+      <li><strong>科技硬件（光刻机 +4.60% / CPO +4.54% / PCB +4.28% / 先进封装 +4.28% / 存储芯片 +4.24%）</strong>：英伟达映射右侧启动，今日最强主线，资金净流入 +308.61 亿（电子）集中进场。</li>
+      <li><strong>工业金属铜（有色 +2.13%）</strong>：LME 铜高位 + 5日 +104.74 亿双正，趋势资金真实，P2 主升延续。</li>
+      <li><strong>贵金属（二级 +4.4%）</strong>：湖南黄金涨停 · 20日 +318.7 亿双正，P3 加速锁盈。</li>
+      <li><strong>种植业（二级 +3.79%）</strong>：金健米业 9 天 6 板 / 万向德农 3 板，P2 主升活口。</li>
+      <li><strong>券商并购（锦龙 2 板 / 湘财 2 板）</strong>：中金并东兴/信达 8/27 上会，脉冲未全面扩散，防诱多。</li>
+    </ul>
+
+    <h3>E、午后关注点与触发条件</h3>
+    <ol style="margin:4px 0; padding-left:22px">
+      <li><strong>① 铁律 A 复核</strong>：条件"低开&gt;1% + 4300+ 下跌 → 降仓"今日<strong style="color:var(--green)">未触发</strong>（高开、下跌约 2327&lt;4300、涨停 65&gt;40）→ 维持当前 50-55% 仓位，不紧急降仓。</li>
+      <li><strong>② 港股映射二次校验</strong>：恒科 +0.14% / 恒指 -0.44% / 小米 -2.04% <strong style="color:var(--red)">显著背离</strong> A 股科创 +3.45% → 离岸/外资情绪谨慎，警惕午后 A 股科技冲高回落（港股未同步确认 = 上行动能外溢不足）。</li>
+      <li><strong>③ 三道关键支撑位（午后观察锚）</strong>：
+        <ul style="margin:4px 0; padding-left:22px">
+          <li>沪指：支撑 <strong>3912（昨收）/ 3902（MA20）</strong>，当前 3935.99 → 距 MA20 约 <strong>34 点</strong>；守住 = 升档有效。</li>
+          <li>创业板：支撑 <strong>3415（昨收）/ 3430（平台）</strong>，当前 3466.4 → 距约 <strong>36-51 点</strong>；守住 = P1 启动确认。</li>
+          <li>科创 50：支撑 <strong>1632（昨收）/ 1600（MA20）</strong>，当前 1688.38 → 距约 <strong>56-88 点</strong>；守住 = 科技硬件行情延续。</li>
+        </ul>
+      </li>
+      <li><strong>④ 半导体 20D 深负防诱多</strong>：电子当日 +4.02% 但 20D -173.48 亿，元件强、半导体整体弱；若午后冲高回落，优先减 Q2 至 20%。</li>
+      <li><strong>⑤ 量能维持</strong>：半日 1.35 万亿放量，若全日维持 2.1 万亿+ → 升档有效；若缩量长上影 → 警惕分歧。</li>
+      <li><strong>⑥ 连板高度延续</strong>：金健米业 9 天 6 板 / 万向德农 3 板能否延续，决定种植业 P2 主线强度；券商 2 板防仅脉冲。</li>
+    </ol>
+
+    <h3>关键事件跟踪（本周）</h3>
+    <ul style="margin:4px 0; padding-left:22px">
+      <li><strong>8/27（今日）中金并购东兴/信达证券上会</strong>：券商脉冲催化，仅首板防诱多。</li>
+      <li><strong>8/28（周五）鲍威尔杰克逊霍尔年会</strong>：9 月降息路径（25bp vs 50bp）指引，美债利率走向决定成长股估值压力。</li>
+      <li><strong>本周主线</strong>：① 科技硬件（CPO/PCB/存储）能否从 P1 启动升级为 P2 主升；② 工业金属铜 / 贵金属趋势延续性；③ 港股背离是否修复。</li>
+    </ul>
+
+    <div class="warn">
+      <strong>⚠️ 风险提示：</strong>① 港股（恒科 +0.14% vs 科创 +3.45%）显著背离，离岸情绪未确认 A 股科技行情，午后冲高回落风险上升；② 半导体 20D 深负（-488 亿）≠ 当日强势，防"涨停≠资金进"诱多；③ 放量上行但仍有 45% 个股下跌，非全面逼空；④ 鲍威尔 8/28 讲话前夜，成长股估值波动加大。
+    </div>
+  </div>
+  <div class="src">
+    来源：申万宏源/方正证券策略观点（同花顺/东方财富午评）· westock 11:30 行情 · 自有多源交叉判断。
+  </div>
+</section>
+
+<div class="disc">
+  <strong>免责声明：</strong>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+<div class="footer">
+  报告生成：WorkBuddy · 自动化 ID：automation-1786405752050 · 文件：<code>午盘速览-20260827.html</code>
+</div>
+
+</div>
+
+<script>
+  // —— 指数卡片 ——
+  const indices = [
+    {name:'上证指数', code:'000001.SH', val:3935.99, chg:0.60, src:'westock 11:30'},
+    {name:'深证成指', code:'399001.SZ', val:14005.93, chg:1.19, src:'westock 11:30'},
+    {name:'创业板指', code:'399006.SZ', val:3466.40, chg:1.51, src:'westock 11:30'},
+    {name:'科创50',   code:'000688.SH', val:1688.38, chg:3.45, src:'westock 11:30'},
+    {name:'沪深300',  code:'000300.SH', val:4613.71, chg:0.50, src:'westock 11:30'},
+    {name:'中证500',  code:'000905.SH', val:7903.49, chg:1.71, src:'westock 11:30'}
+  ];
+  const grid = document.getElementById('indexGrid');
+  indices.forEach(i=>{
+    const cls = i.chg >= 0 ? 'red' : 'green';
+    const arrow = i.chg >= 0 ? '▲' : '▼';
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="idx">
+        <div class="name">${i.name} <span style="color:#999">${i.code}</span></div>
+        <div class="val">${i.val.toLocaleString('zh-CN', {maximumFractionDigits:2})}</div>
+        <div class="chg ${cls}">${arrow} ${i.chg > 0 ? '+' : ''}${i.chg.toFixed(2)}%</div>
+        <div class="meta">11:30 收盘 · ${i.src}</div>
+      </div>
+    `);
+  });
+
+  // —— 指数条形图 ——
+  const idxChart = echarts.init(document.getElementById('indexChart'));
+  const idxData = indices.map(i=>({name:i.name, value:i.chg}));
+  idxChart.setOption({
+    title:{text:'主要指数半日涨跌幅（% · 11:30 收盘）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:40, left:60, right:30, bottom:30},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: idxData.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:18, label:{show:true, position:'right', formatter:p=>p.value.toFixed(2)+'%'},
+      data: idxData.map(d=>({value:d.value, itemStyle:{color: d.value>=0 ? '#c0392b' : '#1f7a3a'}})).reverse()
+    }]
+  });
+
+  // —— 成交与市场广度 KPI ——
+  document.getElementById('breadthKpi').innerHTML = `
+    <div class="box"><div class="lbl">半日成交额</div><div class="num red">1.35 万亿</div><div class="sub">较昨同期放量 1208 亿（+9.8%）</div></div>
+    <div class="box"><div class="lbl">上涨家数</div><div class="num green">2862</div><div class="sub">占 55.2% · 涨停约 65 只</div></div>
+    <div class="box"><div class="lbl">下跌家数</div><div class="num">约 2327</div><div class="sub">非全面逼空</div></div>
+    <div class="box"><div class="lbl">主力净流入</div><div class="num red">+345.69 亿</div><div class="sub">真实资金进场</div></div>
+  `;
+
+  // —— 领涨板块条形图 ——
+  const upSectors = [
+    {name:'光刻机（概念）', v:4.60},
+    {name:'CPO（概念）', v:4.54},
+    {name:'PCB（概念）', v:4.28},
+    {name:'先进封装（概念）', v:4.28},
+    {name:'存储芯片（概念）', v:4.24},
+    {name:'贵金属（申万二级）', v:4.40},
+    {name:'电子（申万一级）', v:4.02},
+    {name:'种植业（申万二级）', v:3.79},
+    {name:'通信设备（申万二级）', v:4.40},
+    {name:'通信（申万一级）', v:3.08},
+    {name:'机械设备（申万一级）', v:2.35},
+    {name:'有色金属（申万一级）', v:2.13},
+    {name:'农林牧渔（申万一级）', v:1.35},
+    {name:'国防军工（申万一级）', v:1.77}
+  ];
+  echarts.init(document.getElementById('upSectorChart')).setOption({
+    title:{text:'领涨板块涨幅（% · 11:30 收盘）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:30, left:140, right:40, bottom:20},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: upSectors.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:14, label:{show:true, position:'right', formatter:p=>'+'+p.value.toFixed(2)+'%'},
+      data: upSectors.map(d=>({value:d.v, itemStyle:{color:'#c0392b'}})).reverse()
+    }]
+  });
+
+  // —— 领跌板块条形图 ——
+  const downSectors = [
+    {name:'银行（申万一级）', v:-1.43},
+    {name:'电力设备（申万一级）', v:-0.99},
+    {name:'交通运输（申万一级）', v:-0.89},
+    {name:'钢铁（申万一级）', v:-0.82},
+    {name:'公用事业（申万一级）', v:-0.64},
+    {name:'美容护理（申万一级）', v:-0.63},
+    {name:'食品饮料（申万一级）', v:-0.45},
+    {name:'医药生物（申万一级）', v:-0.29},
+    {name:'非银金融（申万一级）', v:-0.28},
+    {name:'传媒（申万一级）', v:-0.25}
+  ];
+  echarts.init(document.getElementById('downSectorChart')).setOption({
+    title:{text:'领跌板块涨跌幅（% · 11:30 收盘）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:30, left:150, right:40, bottom:20},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: downSectors.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:14, label:{show:true, position:'right', formatter:p=>p.value.toFixed(2)+'%'},
+      data: downSectors.map(d=>({value:d.v, itemStyle:{color:'#1f7a3a'}})).reverse()
+    }]
+  });
+
+  // —— B、申万一级 31 行业排名表 ——
+  const sw1 = [
+    {n:'电子', c:4.02, net:308.61, n20:-173.48},
+    {n:'通信', c:3.08, net:91.98, n20:128.46},
+    {n:'机械设备', c:2.35, net:26.29, n20:109.92},
+    {n:'有色金属', c:2.13, net:9.19, n20:-17.68},
+    {n:'综合', c:2.01, net:0.20, n20:1.48},
+    {n:'建筑材料', c:1.84, net:17.41, n20:-51.76},
+    {n:'国防军工', c:1.77, net:4.41, n20:-130.22},
+    {n:'计算机', c:1.47, net:16.90, n20:-313.01},
+    {n:'基础化工', c:1.46, net:11.02, n20:-69.35},
+    {n:'农林牧渔', c:1.35, net:5.52, n20:23.45},
+    {n:'煤炭', c:1.30, net:-0.74, n20:9.76},
+    {n:'汽车', c:0.72, net:6.19, n20:-22.96},
+    {n:'石油石化', c:0.67, net:-2.78, n20:-34.25},
+    {n:'家用电器', c:0.60, net:0.80, n20:-39.59},
+    {n:'社会服务', c:0.55, net:-0.31, n20:-15.46},
+    {n:'环保', c:0.40, net:0.17, n20:-13.97},
+    {n:'纺织服饰', c:0.20, net:0.25, n20:-15.83},
+    {n:'商贸零售', c:0.20, net:-0.47, n20:-17.65},
+    {n:'房地产', c:0.10, net:0.50, n20:-13.48},
+    {n:'轻工制造', c:-0.04, net:-0.70, n20:-14.03},
+    {n:'建筑装饰', c:-0.04, net:-3.95, n20:-28.62},
+    {n:'传媒', c:-0.25, net:-4.21, n20:-146.01},
+    {n:'非银金融', c:-0.28, net:-18.49, n20:-188.61},
+    {n:'医药生物', c:-0.29, net:-23.82, n20:-169.58},
+    {n:'食品饮料', c:-0.45, net:-9.37, n20:-93.63},
+    {n:'美容护理', c:-0.63, net:-1.03, n20:-6.31},
+    {n:'公用事业', c:-0.64, net:-16.73, n20:-146.56},
+    {n:'钢铁', c:-0.82, net:-1.19, n20:-16.60},
+    {n:'交通运输', c:-0.89, net:-9.14, n20:-51.12},
+    {n:'电力设备', c:-0.99, net:-47.51, n20:-225.60},
+    {n:'银行', c:-1.43, net:-13.31, n20:-51.94}
+  ];
+  function stageTag(c, n20){
+    if(c>0 && n20>0) return '<span class="tag ok">P1/P2 双正</span>';
+    if(c>0 && n20<0) return '<span class="tag bad">诱多·防</span>';
+    if(c<0 && n20<0) return '<span class="tag none">退潮</span>';
+    return '<span class="tag partial">中性</span>';
+  }
+  document.getElementById('swTable').innerHTML = sw1.map((s,i)=>{
+    const cc = s.c>=0?'red':'green';
+    const nc = s.net>=0?'red':'green';
+    const n20c = s.n20>=0?'red':'green';
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${s.n}</strong></td>
+      <td class="${cc}">${s.c>0?'+':''}${s.c.toFixed(2)}%</td>
+      <td class="${nc}">${s.net>=0?'+':''}${s.net.toFixed(2)}</td>
+      <td class="${n20c}">${s.n20>=0?'+':''}${s.n20.toFixed(2)}</td>
+      <td>${stageTag(s.c, s.n20)}</td>
+    </tr>`;
+  }).join('');
+
+  // —— 涨停热点股 ——
+  const limitUp = [
+    {nm:'金健米业', pct:'9天6板', note:'种植业·主线高度龙'},
+    {nm:'万向德农', pct:'3板', note:'种植业·转基因'},
+    {nm:'新赛股份', pct:'2板', note:'种植业·20D双正'},
+    {nm:'锦龙股份', pct:'2板', note:'券商并购·防诱多'},
+    {nm:'湘财股份', pct:'2板', note:'券商·并购脉冲'},
+    {nm:'湖南黄金', pct:'涨停', note:'贵金属·P3锁盈'},
+    {nm:'联瑞新材', pct:'+调研', note:'半导体材料·+4.62亿'},
+    {nm:'赛微电子', pct:'+异动', note:'半导体·+4.90亿'},
+    {nm:'长芯博创', pct:'+异动', note:'CPO·+4.74亿'},
+    {nm:'中际旭创', pct:'+强', note:'CPO龙头·英伟达映射'},
+    {nm:'沪电股份', pct:'+强', note:'PCB·AI硬件'},
+    {nm:'澜起科技', pct:'+强', note:'存储接口·20D负防诱多'}
+  ];
+  document.getElementById('limitUpList').innerHTML = limitUp.map(s=>
+    `<div class="item"><span class="nm">${s.nm}</span> <span class="pct red">▲${s.pct}</span><br><span style="color:#888;font-size:11px">${s.note}</span></div>`
+  ).join('');
+
+  // —— 资金流入居前（板块口径） ——
+  const inflow = [
+    {nm:'电子（申万一级）', pct:'+4.02%', flow:'+308.61 亿', note:'元件/半导体材料领涨'},
+    {nm:'通信（申万一级）', pct:'+3.08%', flow:'+91.98 亿', note:'通信设备+4.40%'},
+    {nm:'机械设备', pct:'+2.35%', flow:'+26.29 亿', note:'通用设备+3.11%'},
+    {nm:'建筑材料', pct:'+1.84%', flow:'+17.41 亿', note:'非金属材料+8.45%'},
+    {nm:'计算机', pct:'+1.47%', flow:'+16.90 亿', note:'设备+2.22%·20D深负'},
+    {nm:'农林牧渔', pct:'+1.35%', flow:'+5.52 亿', note:'种植业+3.79%'},
+    {nm:'有色金属', pct:'+2.13%', flow:'+9.19 亿', note:'贵金属+4.4%'},
+    {nm:'基础化工', pct:'+1.46%', flow:'+11.02 亿', note:'塑料+3.27%'},
+    {nm:'国防军工', pct:'+1.77%', flow:'+4.41 亿', note:'军工电子+2.68%'},
+    {nm:'汽车', pct:'+0.72%', flow:'+6.19 亿', note:'零部件+0.93%'},
+    {nm:'煤炭', pct:'+1.30%', flow:'-0.74 亿', note:'龙头强板块弱'},
+    {nm:'贵金属（二级）', pct:'+4.40%', flow:'双正', note:'湖南黄金涨停'}
+  ];
+  document.getElementById('inflowList').innerHTML = inflow.map(s=>{
+    const pctVal = parseFloat(s.pct);
+    const isUp = pctVal >= 0;
+    return `<div class="item"><span class="nm">${s.nm}</span> <span class="pct ${isUp?'red':'green'}">${isUp?'▲':'▼'}${s.pct}</span> · 流入 <strong>${s.flow}</strong><br><span style="color:#888;font-size:11px">${s.note}</span></div>`;
+  }).join('');
+
+  // —— 主力净流入居前个股（连板股核验 TOP7 · 全为正）——
+  const stockFlow = [
+    {nm:'赛微电子', code:'300456.SZ', flow:'+4.90 亿', pct:'+异动', sector:'半导体·MEMS'},
+    {nm:'长芯博创', code:'300548.SZ', flow:'+4.74 亿', pct:'+异动', sector:'CPO·光模块'},
+    {nm:'联瑞新材', code:'688300.SH', flow:'+4.62 亿', pct:'+调研', sector:'半导体材料·硅微粉'},
+    {nm:'金健米业', code:'600127.SH', flow:'+2.58 亿', pct:'9天6板', sector:'种植业·主线高度龙'},
+    {nm:'湖南黄金', code:'002155.SZ', flow:'+0.70 亿', pct:'涨停', sector:'贵金属·P3锁盈'},
+    {nm:'锦龙股份', code:'000712.SZ', flow:'+0.61 亿', pct:'2板', sector:'券商并购·防诱多'},
+    {nm:'新赛股份', code:'600540.SH', flow:'+0.25 亿', pct:'2板', sector:'种植业·20D双正'}
+  ];
+  document.getElementById('stockFlowList').innerHTML = stockFlow.map(s=>{
+    const pctVal = parseFloat(s.pct);
+    const isUp = !isNaN(pctVal) ? pctVal >= 0 : true;
+    return `<div class="item"><span class="nm">${s.nm}</span> <span class="pct red">▲${s.pct}</span> · 净额 <strong style="color:#c0392b">${s.flow}</strong><br><span style="color:#888;font-size:11px">${s.sector} · ${s.code}</span></div>`;
+  }).join('');
+
+  // —— 响应式 ——
+  window.addEventListener('resize', ()=>{
+    idxChart.resize();
+    echarts.getInstanceByDom(document.getElementById('upSectorChart')).resize();
+    echarts.getInstanceByDom(document.getElementById('downSectorChart')).resize();
+  });
+</script>
+
+</body>
+</html>

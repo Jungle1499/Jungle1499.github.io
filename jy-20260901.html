@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>pair 生命周期回测报告 · 前100标的 × 730对 × 过去3个月</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f4f5f7;color:#1a1a1a;margin:0;padding:22px}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-size:21px;margin:0 0 4px}
+.meta{color:#888;font-size:13px;margin-bottom:16px}
+.kpi{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.k{flex:1;min-width:180px;background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.k .t{color:#888;font-size:12px;margin-bottom:4px}
+.k .v{font-size:22px;font-weight:800}
+.k .s{color:#aaa;font-size:11px;margin-top:3px}
+.red{color:#c0392b}.grn{color:#1e8449}.org{color:#ca6510}
+.sec{background:#fff;border-radius:10px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.sec h2{font-size:16px;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #f0f0f0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#2c3e50;color:#fff;padding:8px;text-align:center;font-weight:600}
+td{padding:7px 8px;border-bottom:1px solid #f0f0f0;text-align:center}
+td:first-child{text-align:left}
+tr:hover td{background:#fafbfc}
+.bar{position:relative;background:#eee;border-radius:8px;height:16px;min-width:90px;display:inline-block;vertical-align:middle}
+.bar span{position:absolute;left:0;top:0;bottom:0;border-radius:8px;opacity:.85}
+.bar i{position:absolute;right:5px;top:0;font-size:11px;font-style:normal;line-height:16px;color:#333;font-weight:700}
+.warn{background:#fff8f0;border-left:4px solid #e67e22;padding:12px 16px;border-radius:8px;margin-bottom:16px;line-height:1.7;font-size:13px}
+.ok{background:#f0f8f4;border-left:4px solid #27ae60;padding:12px 16px;border-radius:8px;margin-bottom:16px;line-height:1.7;font-size:13px}
+.bad{background:#fdf0ee;border-left:4px solid #c0392b;padding:12px 16px;border-radius:8px;margin-bottom:16px;line-height:1.7;font-size:13px}
+.foot{color:#999;font-size:12px;text-align:center;margin-top:18px}
+.tag{display:inline-block;padding:1px 7px;border-radius:9px;font-size:11px;font-weight:700;color:#fff}
+</style></head><body><div class="wrap">
+<h1>pair 生命周期回测报告</h1>
+<div class="meta">前100标的 · 同板块配对 730 对 · 回测窗口 2026-06-01 ~ 2026-08-31（3个月）· 数据源 腾讯行情(qfq) · 引擎已修正前视偏差(信号T日→收益T+1日)</div>
+
+<div class="kpi">
+<div class="k"><div class="t">配对总数</div><div class="v">730</div><div class="s">同板块内两两配对</div></div>
+<div class="k"><div class="t">策略收益(中位)</div><div class="v">+2.1%</div><div class="s">回撤中位 5.5%</div></div>
+<div class="k"><div class="t">等权基准(中位)</div><div class="v">+7.9%</div><div class="s">回撤中位 10.4%</div></div>
+<div class="k"><div class="t">卡玛比率 策略/基准</div><div class="v"><span class="red">0.39</span> / <span class="grn">0.76</span></div><div class="s">风险调整后基准更优</div></div>
+<div class="k"><div class="t">跑赢基准</div><div class="v">130<span style="font-size:14px;color:#888">/730</span></div><div class="s">18% · 超额中位 -4.1pp</div></div>
+</div>
+
+<div class="bad"><b>核心结论（诚实）：</b>本状态机版本在 6–8 月<b>上涨行情</b>中，<b>整体跑输"买入不动"</b>——策略收益中位 +2.1% vs 基准 +7.9%，超额中位 -4.1pp，仅 <b>130/730（18%）</b>跑赢。
+风险调整后差距更大：策略卡玛 <b>0.39</b> vs 基准 <b>0.76</b>。<b>策略回撤小（5.5% vs 10.4%）是"长期空仓"造成的，不是择时能力。</b></div>
+
+<div class="ok"><b>但深挖后有决定性发现——状态机不是普适的，它有明确适用边界：</b>
+在<b>下跌市（基准&lt;0%）</b>胜率高达 <b>78%</b>、平均超额 <b>+3.1pp</b>；而在<b>暴涨市（基准&gt;50%）</b>胜率仅 <b>8%</b>、平均超额 <b>−31.9pp</b>。
+<b>这是"熊市/震荡市保护型"策略，不是"牛市进攻型"策略。</b>在单边上涨行情跑输是结构性的，不是参数问题（A/B 两套参数验证：严格版 21% vs 宽松版 18%，参数不是主因）。</div>
+
+<div class="sec"><h2>① A/B 参数对比（验证是否为参数问题）</h2>
+<table><thead><tr><th>参数版本</th><th>策略收益中位</th><th>策略回撤中位</th><th>策略卡玛</th><th>基准收益中位</th><th>基准卡玛</th><th>跑赢基准</th></tr></thead><tbody><tr><td>A严格(止损-6%,无反包)</td><td>2.1%</td><td>5.5%</td><td>0.38</td><td>7.9%</td><td>0.76</td><td>153/730 = 21%</td></tr><tr><td>B宽松(止损-8%,有反包)</td><td>2.1%</td><td>5.5%</td><td>0.39</td><td>7.9%</td><td>0.76</td><td>130/730 = 18%</td></tr></tbody></table>
+<div style="color:#666;font-size:12px;margin-top:10px">结论：B 版（放宽止损+反包）反而更差（18% &lt; 21%），<b>说明跑输的根因不是参数敏感度，而是策略结构本身在上涨市中过于保守</b>——仓位长时间为 0（等待信号/退潮/中断），严重踏空。</div>
+</div>
+
+<div class="sec"><h2>② 决定性发现：按市场环境分组（何时该用状态机）</h2>
+<table><thead><tr><th>市场环境</th><th>跑赢/总数</th><th>胜率</th><th>平均超额</th></tr></thead><tbody><tr><td>下跌市 基准<0%</td><td>21/27</td><td><div class='bar'><span style='width:78%;background:#27ae60'></span><i>78%</i></div></td><td>+3.1pp</td></tr><tr><td>小涨 0~10%</td><td>49/438</td><td><div class='bar'><span style='width:11%;background:#c0392b'></span><i>11%</i></div></td><td>-4.1pp</td></tr><tr><td>中涨 10~25%</td><td>48/188</td><td><div class='bar'><span style='width:26%;background:#e67e22'></span><i>26%</i></div></td><td>-4.7pp</td></tr><tr><td>大涨 25~50%</td><td>11/64</td><td><div class='bar'><span style='width:17%;background:#c0392b'></span><i>17%</i></div></td><td>-10.4pp</td></tr><tr><td>暴涨 >50%</td><td>1/13</td><td><div class='bar'><span style='width:8%;background:#c0392b'></span><i>8%</i></div></td><td>-31.9pp</td></tr></tbody></table>
+<div style="color:#666;font-size:12px;margin-top:10px">★ <b>条件化策略铁律</b>：基准下跌/震荡时启用状态机（胜率78%）；基准大涨（&gt;25%）时<b>应改为买入不动</b>，状态机会严重拖累（−10 ~ −32pp）。</div>
+</div>
+
+<div class="sec"><h2>③ 按板块看胜率（选对板块）</h2>
+<table><thead><tr><th>板块</th><th>跑赢/总数</th><th>胜率</th><th>平均超额</th></tr></thead><tbody><tr><td>数字人民币</td><td>17/21</td><td><div class='bar'><span style='width:81%;background:#27ae60'></span><i>81%</i></div></td><td>+3.3pp</td></tr><tr><td>多元金融</td><td>3/6</td><td><div class='bar'><span style='width:50%;background:#27ae60'></span><i>50%</i></div></td><td>-0.4pp</td></tr><tr><td>材料</td><td>12/28</td><td><div class='bar'><span style='width:43%;background:#e67e22'></span><i>43%</i></div></td><td>-0.2pp</td></tr><tr><td>零部件</td><td>4/10</td><td><div class='bar'><span style='width:40%;background:#e67e22'></span><i>40%</i></div></td><td>-4.9pp</td></tr><tr><td>券商</td><td>83/528</td><td><div class='bar'><span style='width:16%;background:#c0392b'></span><i>16%</i></div></td><td>-3.7pp</td></tr><tr><td>设计</td><td>1/10</td><td><div class='bar'><span style='width:10%;background:#c0392b'></span><i>10%</i></div></td><td>-18.8pp</td></tr><tr><td>设备</td><td>7/78</td><td><div class='bar'><span style='width:9%;background:#c0392b'></span><i>9%</i></div></td><td>-15.5pp</td></tr><tr><td>银行</td><td>0/45</td><td><div class='bar'><span style='width:0%;background:#c0392b'></span><i>0%</i></div></td><td>-6.0pp</td></tr></tbody></table>
+<div style="color:#666;font-size:12px;margin-top:10px">★ 数字人民币 <b>81%</b>、材料 43%、零部件 40% 适合；<b>银行 0/45 = 0% 全败</b>、设计 10%、设备 9% 不适合（银行低波动+高同质，状态机无差价可套）。</div>
+</div>
+
+<div class="sec"><h2>④ 波动率 与 龙头切换（选对 pair）</h2>
+<div style="display:flex;gap:16px;flex-wrap:wrap">
+<div style="flex:1;min-width:300px"><b style='font-size:13px'>按波动率</b><table><thead><tr><th>分组</th><th>跑赢/总数</th><th>胜率</th><th>平均超额</th></tr></thead><tbody><tr><td>低波 <1.8</td><td>10/182</td><td><div class='bar'><span style='width:5%;background:#c0392b'></span><i>5%</i></div></td><td>-4.2pp</td></tr><tr><td>中低 1.8~2.5</td><td>16/183</td><td><div class='bar'><span style='width:9%;background:#c0392b'></span><i>9%</i></div></td><td>-4.0pp</td></tr><tr><td>中高 2.5~3.6</td><td>48/182</td><td><div class='bar'><span style='width:26%;background:#27ae60'></span><i>26%</i></div></td><td>-4.4pp</td></tr><tr><td>高波 >3.6</td><td>56/183</td><td><div class='bar'><span style='width:31%;background:#27ae60'></span><i>31%</i></div></td><td>-7.6pp</td></tr></tbody></table></div>
+<div style="flex:1;min-width:300px"><b style='font-size:13px'>按龙头切换次数</b><table><thead><tr><th>分组</th><th>跑赢/总数</th><th>胜率</th><th>平均超额</th></tr></thead><tbody><tr><td>切换0-2次(龙头稳)</td><td>78/238</td><td><div class='bar'><span style='width:33%;background:#27ae60'></span><i>33%</i></div></td><td>-1.0pp</td></tr><tr><td>切换3-7次</td><td>40/319</td><td><div class='bar'><span style='width:13%;background:#c0392b'></span><i>13%</i></div></td><td>-6.1pp</td></tr><tr><td>切换8次+(频繁)</td><td>12/173</td><td><div class='bar'><span style='width:7%;background:#c0392b'></span><i>7%</i></div></td><td>-8.6pp</td></tr></tbody></table></div>
+</div>
+<div style="color:#666;font-size:12px;margin-top:10px">★ 高波动 pair（&gt;3.6）胜率 31% vs 低波 5%——状态机靠波动中的择时获利，没波动就没机会。
+★ <b>龙头切换越少越好</b>：切换0-2次胜率33%，切换8次以上仅7%——频繁换龙头=追涨杀跌，损耗巨大。</div>
+</div>
+
+<div class="sec"><h2>⑤ 超额收益 Top20（真 alpha 榜）</h2>
+<table><thead><tr><th>#</th><th>pair</th><th>板块</th><th>策略收益</th><th>基准</th><th>超额</th><th>波动</th><th>切换</th><th>当前状态</th></tr></thead><tbody><tr><td>1</td><td>新莱应材 / 神工股份</td><td>零部件</td><td><span class='red'>+85.8%</span></td><td>+18.7%</td><td><span class='grn'>+67.1pp</span></td><td>7.9</td><td>3</td><td>中断</td></tr><tr><td>2</td><td>神工股份 / 富创精密</td><td>零部件</td><td><span class='red'>+98.6%</span></td><td>+36.1%</td><td><span class='grn'>+62.5pp</span></td><td>7.7</td><td>13</td><td>P2预警</td></tr><tr><td>3</td><td>阿石创 / 雅克科技</td><td>材料</td><td><span class='red'>+68.1%</span></td><td>+21.7%</td><td><span class='grn'>+46.4pp</span></td><td>6.4</td><td>3</td><td>P2预警</td></tr><tr><td>4</td><td>鼎龙股份 / 雅克科技</td><td>材料</td><td><span class='red'>+57.2%</span></td><td>+23.1%</td><td><span class='grn'>+34.1pp</span></td><td>6.1</td><td>1</td><td>P2预警</td></tr><tr><td>5</td><td>神工股份 / 江丰电子</td><td>零部件</td><td><span class='red'>+62.4%</span></td><td>+28.9%</td><td><span class='grn'>+33.4pp</span></td><td>8.1</td><td>5</td><td>中断</td></tr><tr><td>6</td><td>彤程新材 / 雅克科技</td><td>材料</td><td><span class='red'>+61.8%</span></td><td>+29.7%</td><td><span class='grn'>+32.1pp</span></td><td>6.0</td><td>3</td><td>P2预警</td></tr><tr><td>7</td><td>阿石创 / 安集科技</td><td>材料</td><td><span class='red'>+43.2%</span></td><td>+12.0%</td><td><span class='grn'>+31.2pp</span></td><td>6.4</td><td>1</td><td>P1确认</td></tr><tr><td>8</td><td>清溢光电 / 雅克科技</td><td>材料</td><td><span class='red'>+60.9%</span></td><td>+30.2%</td><td><span class='grn'>+30.6pp</span></td><td>6.0</td><td>3</td><td>P2预警</td></tr><tr><td>9</td><td>阿石创 / 鼎龙股份</td><td>材料</td><td><span class='red'>+36.6%</span></td><td>+9.2%</td><td><span class='grn'>+27.3pp</span></td><td>6.4</td><td>3</td><td>P2预警</td></tr><tr><td>10</td><td>长江证券 / 华安证券</td><td>券商</td><td><span class='red'>+45.2%</span></td><td>+19.0%</td><td><span class='grn'>+26.2pp</span></td><td>4.7</td><td>6</td><td>P1预警</td></tr><tr><td>11</td><td>南大光电 / 雅克科技</td><td>材料</td><td><span class='red'>+49.4%</span></td><td>+24.4%</td><td><span class='grn'>+24.9pp</span></td><td>6.0</td><td>3</td><td>P2预警</td></tr><tr><td>12</td><td>安集科技 / 雅克科技</td><td>材料</td><td><span class='red'>+47.3%</span></td><td>+25.9%</td><td><span class='grn'>+21.4pp</span></td><td>6.1</td><td>1</td><td>P2预警</td></tr><tr><td>13</td><td>神工股份 / 正帆科技</td><td>零部件</td><td><span class='red'>+71.3%</span></td><td>+52.5%</td><td><span class='grn'>+18.8pp</span></td><td>8.3</td><td>5</td><td>P2预警</td></tr><tr><td>14</td><td>金宏气体 / 雅克科技</td><td>材料</td><td><span class='red'>+41.5%</span></td><td>+23.1%</td><td><span class='grn'>+18.4pp</span></td><td>6.0</td><td>3</td><td>P2预警</td></tr><tr><td>15</td><td>招商证券 / 华安证券</td><td>券商</td><td><span class='red'>+30.2%</span></td><td>+14.6%</td><td><span class='grn'>+15.6pp</span></td><td>4.6</td><td>7</td><td>P1确认</td></tr><tr><td>16</td><td>广发证券 / 华安证券</td><td>券商</td><td><span class='red'>+33.0%</span></td><td>+17.5%</td><td><span class='grn'>+15.6pp</span></td><td>4.5</td><td>10</td><td>退潮</td></tr><tr><td>17</td><td>盛美上海 / 北方华创</td><td>设备</td><td><span class='red'>+43.4%</span></td><td>+29.7%</td><td><span class='grn'>+13.7pp</span></td><td>6.3</td><td>0</td><td>P2预警</td></tr><tr><td>18</td><td>华安证券 / 东方证券</td><td>券商</td><td><span class='red'>+21.8%</span></td><td>+9.0%</td><td><span class='grn'>+12.8pp</span></td><td>4.8</td><td>2</td><td>P1预警</td></tr><tr><td>19</td><td>天风证券 / 华安证券</td><td>券商</td><td><span class='red'>+28.2%</span></td><td>+15.8%</td><td><span class='grn'>+12.4pp</span></td><td>4.6</td><td>3</td><td>P1预警</td></tr><tr><td>20</td><td>华安证券 / 东北证券</td><td>券商</td><td><span class='red'>+21.8%</span></td><td>+9.6%</td><td><span class='grn'>+12.2pp</span></td><td>4.8</td><td>2</td><td>P1预警</td></tr></tbody></table>
+</div>
+
+<div class="sec"><h2>⑥ 当前最终状态分布（730对）</h2>
+<table><thead><tr><th>最终状态</th><th>对数</th><th>占比</th></tr></thead><tbody><tr><td><span class="tag" style="background:#e67e22">P1预警</span></td><td>227</td><td>31%</td></tr><tr><td><span class="tag" style="background:#f39c12">P1确认</span></td><td>208</td><td>28%</td></tr><tr><td><span class="tag" style="background:#7f8c8d">退潮</span></td><td>154</td><td>21%</td></tr><tr><td><span class="tag" style="background:#e74c3c">P2预警</span></td><td>83</td><td>11%</td></tr><tr><td><span class="tag" style="background:#c0392b">P2确认</span></td><td>38</td><td>5%</td></tr><tr><td><span class="tag" style="background:#a04000">派发</span></td><td>18</td><td>2%</td></tr><tr><td><span class="tag" style="background:#95a5a6">中断</span></td><td>2</td><td>0%</td></tr></tbody></table>
+</div>
+
+<div class="warn"><b>引擎设计说明（防前视偏差）：</b>状态判定用 T 日收盘数据，<b>收益滞后到 T+1 日执行</b>（T日收盘定信号→T+1日吃收益）。首版未做滞后时结果虚高（98%盈利、最高182%），修正后回归真实（72%盈利、中位2.1%）。<br>
+<b>状态机：</b>等待信号(0仓) → P1预警(0.3试错) → P1确认(0.5加试错) → P2预警(0.7加仓) → P2确认(1.0调仓加仓) → 派发(0.3减仓) / 退潮·中断(0清仓)。持有标的 = 累计涨幅领先者（龙头）。<br>
+<b>基准：</b>pair 等权买入持有，同窗口不做择时。</div>
+
+<div class="foot">本回测为基于公开行情的策略模拟，非投资建议。结论受 6–8 月特定行情影响，需在其他窗口继续验证。</div>
+</div></body></html>

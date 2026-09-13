@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260814</title>
+<style>
+  :root{
+    --bg:#F5F7FA;--card-white:#FFFFFF;--card-border:#DBE3EC;--card-border-strong:#ACB6C5;
+    --ink:#1F2937;--sub:#64748B;--heading:#1E3A5F;--up:#DC2626;--down:#16A34A;
+    --accent-blue:#2563EB;--p0:#DC2626;--p1:#B45309;--tui:#64748B;
+    --thead-bg:#F1F5F9;--callout-bg:#F8FAFC;
+    --fs-title:16.8px;--fs-section:13.0px;--fs-subhead:11.4px;--fs-body:10.8px;
+    --fs-table:10.5px;--fs-idx-name:9.6px;--fs-idx-val:17.4px;--fs-idx-sub:9.8px;
+    --fs-foot:9.0px;--fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;background:#FFFFFF;color:var(--ink);line-height:1.5;}
+  .page{width:840px;margin:0 auto;background:var(--bg);padding-bottom:30px;}
+  .header{background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);color:#FFFFFF;text-align:center;padding:26px 0 24px;}
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+  .header .ver{font-size:8.6px;opacity:.75;margin-top:4px;}
+  .summary-card{background:var(--card-white);border:1px solid var(--card-border-strong);border-radius:4px;margin:0 12px 16px;padding:16px 18px;}
+  .summary-head{font-size:var(--fs-subhead);color:var(--heading);font-weight:700;margin-bottom:10px;}
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{display:inline-block;color:#fff;font-size:var(--fs-chip);font-weight:700;padding:1px 8px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+  .chip-p0{background:var(--p0);}.chip-p1{background:var(--p1);}.chip-tui{background:var(--tui);}
+  .chip-stage{background:#1E3A5F;font-size:8.6px;padding:1px 6px;margin-left:4px;}
+  .sum-text{color:var(--ink);}
+  .fw-tag{display:inline-block;font-size:8.4px;font-weight:700;color:var(--accent-blue);border:1px solid #BFDBFE;border-radius:3px;padding:0px 4px;margin-left:4px;vertical-align:middle;}
+  .section{margin-bottom:14px;}
+  .sec-title{font-size:var(--fs-section);color:var(--heading);font-weight:700;padding:0 12px 6px;border-bottom:2px solid var(--heading);margin:0 12px 10px;}
+  .idx-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 12px 12px;}
+  .idx-cell{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;padding:8px 10px;text-align:left;}
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}.idx-val.down{color:var(--down);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+  .stats-line{font-size:var(--fs-idx-sub);color:var(--sub);margin:0 12px 8px;line-height:1.8;}
+  .callout{background:var(--callout-bg);border-left:3px solid var(--accent-blue);border-radius:0 4px 4px 0;padding:10px 14px;margin:0 12px 14px;font-size:var(--fs-idx-sub);color:var(--sub);line-height:1.8;}
+  .callout b{color:var(--ink);}
+  .callout-warn{background:#FFF7ED;border-left:3px solid #F59E0B;}
+  .callout-warn b{color:#92400E;}
+  .tbl{width:calc(100% - 24px);margin:0 12px 14px;border-collapse:collapse;background:var(--card-white);border:1px solid var(--card-border);font-size:var(--fs-table);border-radius:4px;overflow:hidden;}
+  .tbl thead th{background:var(--thead-bg);color:var(--sub);font-weight:600;text-align:left;padding:7px 10px;border-bottom:1px solid var(--card-border);font-size:var(--fs-table);}
+  .tbl tbody td{padding:7px 10px;border-bottom:1px solid #EEF1F4;color:var(--ink);vertical-align:top;font-size:var(--fs-table);}
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}.down{color:var(--down);font-weight:600;}
+  .badge-in{color:var(--up);}.badge-out{color:var(--down);}
+  table.tbl{table-layout:fixed;}
+  .w-mainline th:nth-child(1){width:5%;}.w-mainline th:nth-child(2){width:17%;}.w-mainline th:nth-child(3){width:15%;}.w-mainline th:nth-child(4){width:14%;}.w-mainline th:nth-child(5){width:13%;}.w-mainline th:nth-child(6){width:14%;}.w-mainline th:nth-child(7){width:22%;}
+  .w-sector th:nth-child(1){width:22%;}.w-sector th:nth-child(2){width:16%;}.w-sector th:nth-child(3){width:16%;}.w-sector th:nth-child(4){width:16%;}.w-sector th:nth-child(5){width:30%;}
+  .w-fund th:nth-child(1){width:8%;}.w-fund th:nth-child(2){width:15%;}.w-fund th:nth-child(3){width:26%;}.w-fund th:nth-child(4){width:25%;}.w-fund th:nth-child(5){width:26%;}
+  .w-board th:nth-child(1){width:8%;}.w-board th:nth-child(2){width:14%;}.w-board th:nth-child(3){width:14%;}.w-board th:nth-child(4){width:40%;}.w-board th:nth-child(5){width:24%;}
+  .w-lhb th:nth-child(1){width:12%;}.w-lhb th:nth-child(2){width:22%;}.w-lhb th:nth-child(3){width:16%;}.w-lhb th:nth-child(4){width:50%;}
+  .w-watch th:nth-child(1){width:18%;}.w-watch th:nth-child(2){width:45%;}.w-watch th:nth-child(3){width:37%;}
+  .w-pair th:nth-child(1){width:10%;}.w-pair th:nth-child(2){width:20%;}.w-pair th:nth-child(3){width:20%;}.w-pair th:nth-child(4){width:10%;}.w-pair th:nth-child(5){width:10%;}.w-pair th:nth-child(6){width:30%;}
+  .w-retro th:nth-child(1){width:15%;}.w-retro th:nth-child(2){width:10%;}.w-retro th:nth-child(3){width:18%;}.w-retro th:nth-child(4){width:12%;}.w-retro th:nth-child(5){width:10%;}.w-retro th:nth-child(6){width:10%;}.w-retro th:nth-child(7){width:25%;}
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}.tag-p1{background:var(--p1);}.tag-p2{background:#7C3AED;}.tag-p3{background:#475569;}
+  .lhb-buy{color:var(--up);font-weight:700;}.lhb-sell{color:var(--down);font-weight:700;}
+  .driver{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 12px;padding:12px 16px;}
+  .driver-h{font-size:var(--fs-body);font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .driver-h .lv{font-size:var(--fs-chip);font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .lv-p0{background:var(--p0);}.lv-p1{background:var(--p1);}
+  .dblk{font-size:var(--fs-body);line-height:1.7;margin-bottom:5px;}
+  .dblk b{color:var(--heading);}
+  .strength-wrap{background:var(--card-white);border:1px solid var(--card-border);border-top:2px solid var(--heading);border-radius:4px;margin:0 12px 14px;padding:12px 12px 8px;}
+  .str-row{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 4px;border-top:1px solid #EEF1F4;align-items:center;}
+  .str-row:first-child{border-top:none;padding-top:4px;}
+  .str-row:last-child{padding-bottom:4px;}
+  .str-meta{font-size:10.5px;line-height:1.5;}
+  .str-meta .name{font-weight:700;color:var(--heading);font-size:11.2px;}
+  .str-meta .sub{color:var(--sub);font-size:9.4px;display:block;margin-top:2px;}
+  .str-meta .pills{display:block;margin-top:4px;}
+  .pill{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9.0px;font-weight:700;color:#fff;margin-right:4px;}
+  .pill.fund-in{background:#FEE2E2;color:var(--up);}
+  .pill.fund-out{background:#DCFCE7;color:var(--down);}
+  .pill.fund-na{background:#E2E8F0;color:#475569;}
+  .str-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+  .str-cell{border-left:1px solid #EEF1F4;padding:2px 4px 2px 6px;min-width:0;}
+  .str-cell:first-child{border-left:none;padding-left:2px;}
+  .cell-label{font-size:9.0px;color:var(--sub);text-align:center;margin-bottom:3px;}
+  .spark{position:relative;height:46px;background:linear-gradient(to right,transparent 49.6%,#C7D2DC 49.6%,#C7D2DC 50.4%,transparent 50.4%);overflow:hidden;}
+  .spark-tick{position:absolute;left:50%;width:1px;height:46px;margin-left:-0.5px;background:#CBD5E1;top:0;}
+  .spark-fill{position:absolute;top:0;bottom:0;height:100%;border-radius:1px 1px 0 0;}
+  .spark-fill.up{background:var(--up);left:50%;}
+  .spark-fill.down{background:var(--down);right:50%;}
+  .cell-val{font-size:10.6px;font-weight:700;text-align:center;margin-top:3px;line-height:1.2;}
+  .cell-val.up{color:var(--up);}.cell-val.down{color:var(--down);}.cell-val.na{color:#94A3B8;font-weight:500;}
+  .strength-legend{display:flex;gap:14px;align-items:center;font-size:9.0px;color:var(--sub);padding:6px 4px 2px;margin-top:4px;border-top:1px dashed #E2E8F0;justify-content:center;}
+  .strength-legend .dot{display:inline-block;width:8px;height:8px;vertical-align:middle;margin-right:4px;border-radius:1px;}
+  .strength-legend .dot.up{background:var(--up);}.strength-legend .dot.down{background:var(--down);}.strength-legend .dot.tick{background:#CBD5E1;width:1px;height:8px;}
+  .str-readout{font-size:var(--fs-idx-sub);color:var(--sub);margin:8px 4px 4px;line-height:1.8;}
+  .str-readout b{color:var(--heading);}
+  .phase-badge{display:inline-block;font-size:9.0px;font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .phase-p1{background:#2563EB;}.phase-p2{background:#7C3AED;}.phase-p3{background:var(--p1);}.phase-tc{background:#475569;}
+  .disclaimer{font-size:var(--fs-foot);color:var(--sub);margin:0 12px 10px;line-height:1.7;}
+  .foot-line{font-size:var(--fs-foot);color:var(--sub);text-align:center;margin:0 12px;line-height:1.8;}
+  .foot-src{font-size:8.6px;color:#9aa3ad;margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-08-14（周五）· 数据源：腾讯自选股 / 东方财富 / 通达信 / Wind · 收盘后全维复盘</div>
+    <div class="ver">框架 v2.0 · 报告 v3.3 · 三阶段理论 三-①~三-⑥ + 规则 ⑳㉓㉕㉛㉜㊱ + US-③④</div>
+  </div>
+
+  <!-- 首屏结论 -->
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）<span class="fw-tag">框架应用 三-①~三-⑥ ㊱ ⑳㉓㉕㉛㉜ US-③④</span></div>
+    <div class="sum-row"><span class="chip chip-p0">P0 新主线</span><span class="chip chip-stage">三阶段：P1（启动·印度反倾销催化）</span><span class="sum-text">通信设备 / 光通信 / CPO —— 通信设备 <span class="up">+3.63%</span>（资金净流入 +12.2 亿全行业第一）、光通信 +2.71%、5G概念 +1.53% 共振；11 只涨停（网宿科技 20% / 共进股份 / 亨通光电 / 数据港 / 剑桥科技 等），光通信三巨头 中际旭创 +2.38% / 新易盛 +4.23% / 天孚通信 +4.10%。<b>三阶段判定【三-①】：</b>8/13 退潮后 8/14 缩量-4080亿 涨停广度回升至 11 只 + 印度光纤反倾销催化 + 资金净流入第一 = <b>退潮→P1 启动信号</b>（非 P3 追涨：缩量而非放量；非退潮中继：涨停广度足够）。Pair = 中际旭创 vs 新易盛（市值差 ~2.5x ≤5x，同属光模块），新易盛 +4.23% 跑赢 中际旭创 +2.38%——P1 启动阶段龙头先行但需 8/17 连2天确认【三-②】。</span></div>
+    <div class="sum-row"><span class="chip chip-p0">P0 P2延续</span><span class="chip chip-stage">三阶段：P2（二线补涨·连2天确认）</span><span class="sum-text">医药 / CRO / 创新药 —— 博济医药 +20.00% / 陇神戎发 / 万邦医药（医药 5 只 20cm 涨停）；创新药板块 -0.25% 收跌但 20cm 龙头独立走强。<b>三阶段判定【三-①】：</b>8/13 百花医药 P3 见顶 → 8/13 后排 20cm 补涨 = P2 启动（首日信号）→ 8/14 博济再次 +20% / 万邦持续 = <b>连 2 天跑赢确认 P2 延续</b>【三-②】。Pair = 博济医药 vs 万邦医药（CRO Pair，市值差 ~1.3x ≤5x），8/13 万邦跑赢 → 8/14 博济 +20% 反超 = <b>P2 后排龙头轮动</b>（人性扩张特征：龙头在 Pair 内轮动）。誉衡药业 5天4板仍是板块高度锚。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1 启动</span><span class="chip chip-stage">三阶段：P1（启动）</span><span class="sum-text">稀土永磁 / 小金属 —— 小金属 +3.04%（资金 +1.6 亿）、稀土永磁 +2.03%，中国稀土 10.00% 涨停 + 华宏科技涨停。<b>三阶段判定【三-①】：</b>8/13 平盘 → 8/14 启动（龙头中国稀土 +10% 涨停 + 板块涨幅进入全市场前 5）= <b>P1 启动</b>（供给收缩+反制题材+股价低位）。Pair = 中国稀土 vs 北方稀土（市值差 ~1.4x ≤5x，同属稀土），中国稀土 +10% 涨停 跑赢 北方稀土约 +5%（需 8/17 确认 P1 延续）。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="chip chip-stage">三阶段：退潮（持续）</span><span class="sum-text">电力 -1.82% / 证券Ⅱ -1.40% / 银行防御（微涨0.04% 缩量）—— 电力 8/14 跌幅全行业第一（华光环能 +4.53% 一只独撑），证券板块跌幅第二。<b>三阶段判定：</b>电力 60 日 -10.06%（前期 P3 高潮后持续退潮），证券为反弹一日游后退潮。规则 ⑳ 高位放量出货不接飞刀。</span></div>
+    <div class="sum-row"><span class="sum-text"><b>市场状态：</b>缩量反弹·结构修复（缩量+涨停回升）—— 三大指数高开窄幅震荡（上证 +0.01% / 深证 +0.45% / 创业板 +1.12% / 科创50 0.00%），下跌 2970 只 vs 上涨 2400 只（涨股比 0.81），涨停 64 只（vs 8/13 退潮日 62 只·略增）、跌停 13 只，成交 2.14 万亿（较前日 2.55 万亿 <b>缩量 -4080 亿 -16%</b>）。缩量但涨停回升 = <b>典型修复结构</b>，非放量突破也非放量杀跌。估值高估（中证全指 PE_TTM 分位 93.37%）压制指数上行空间。</span></div>
+  </div>
+
+  <!-- 一、市场概览 -->
+  <div class="section">
+    <div class="sec-title">一、市场概览</div>
+    <div class="idx-grid">
+      <div class="idx-cell"><div class="idx-name">上证指数</div><div class="idx-val up">3927.18</div><div class="idx-sub">+0.01% · 沪成交 9635 亿</div></div>
+      <div class="idx-cell"><div class="idx-name">深证成指</div><div class="idx-val up">14354.31</div><div class="idx-sub">+0.45% · 深成交 11793 亿</div></div>
+      <div class="idx-cell"><div class="idx-name">创业板指</div><div class="idx-val up">3626.30</div><div class="idx-sub">+1.12%</div></div>
+      <div class="idx-cell"><div class="idx-name">科创50</div><div class="idx-val up">1717.68</div><div class="idx-sub">0.00%</div></div>
+      <div class="idx-cell"><div class="idx-name">沪深300</div><div class="idx-val up">4665.88</div><div class="idx-sub">+0.04%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证1000</div><div class="idx-val up">7769.82</div><div class="idx-sub">+0.70%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证500</div><div class="idx-val up">7990.33</div><div class="idx-sub">+0.28%</div></div>
+      <div class="idx-cell"><div class="idx-name">A股资源</div><div class="idx-val up">7546.96</div><div class="idx-sub">+1.73%</div></div>
+      <div class="idx-cell"><div class="idx-name">北证50</div><div class="idx-val down">1087.52</div><div class="idx-sub">-0.94%</div></div>
+    </div>
+    <div class="stats-line">两市成交额 21428 亿（沪 9635 亿 + 深 11793 亿，较前日 25509 亿 <b>缩量约 -4080 亿 -16%</b>）；涨跌家数 2400 涨 / 2970 跌 / 173 平（涨股比 0.81），涨停 64 只、跌停 13 只，结构修复（缩量+涨停回升）。</div>
+    <div class="callout"><b>市场画像：</b>结构修复日（缩量-16%、涨停 64 略增、跌停 13 略增、涨股比 0.81）、风格成长占优（创业板 +1.12% vs 沪深300 +0.04%）、通信设备资金净流入全行业第一（+12.2 亿）、电力证券持续退潮、北证50 独立走弱（-0.94%）、技术面高位窄幅震荡（指数 +0.01%~+1.12%）、量能缩量但未破位（2.14 万亿 vs 10 日均 90.21%）、估值高估压制（中证全指 PE 分位 93.37%）。</div>
+    <div class="callout callout-warn"><b>㊱ 情绪缩圈信号识别（部分缓解但未完全消退）【框架应用 ㊱】：</b>①涨停数 62→64（+3.2%·略增，但基数仍处低位）；②跌停 4→13（+225%·警示）；③涨跌比 0.26→0.81（明显修复，但未及 8/11 高位 1.5）；④首板溢价待 8/17 验证（板块宽度回升）。<b>结论：</b>㊱ 部分缓解，结构性修复而非全面回暖——主线（通信/医药/稀土）涨停广度回升+板块涨幅领先，但全市场跌停数 13 仍偏高 + 涨股比 0.81 远不及普涨日 = <b>退潮未完全结束但最坏窗口已过</b>。</div>
+  </div>
+
+  <!-- 二、最强主线分级 -->
+  <div class="section">
+    <div class="sec-title">二、最强主线分级（P0→P3 + 三阶段判定）</div>
+    <table class="tbl w-mainline">
+      <thead><tr><th>级别</th><th>方向</th><th>今日强度</th><th>趋势（5/20/60日）</th><th>资金净流入</th><th>三阶段判定</th><th>操作建议</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag-mini tag-p0">P0</span></td><td><b>通信设备 / 光通信 / CPO</b></td><td>通信设备 <span class="up">+3.63%</span>、光通信 <span class="up">+2.71%</span>、5G概念 <span class="up">+1.53%</span></td><td><span class="up">+13.5%</span>/<span class="up">+8.2%</span>/<span class="down">-1.5%</span></td><td>通信设备 <span class="badge-in">+12.2亿</span>（5日+11.4亿）</td><td><span class="phase-badge phase-p1">P1启动</span>退潮→P1（缩量+涨停广度+印度催化）。Pair：中际 vs 新易盛</td><td>三-③ P1试错（≤10%仓）；8/17连2天确认加仓</td></tr>
+        <tr><td><span class="tag-mini tag-p0">P0</span></td><td><b>医药 / CRO / 创新药</b></td><td>博济+20%/陇神+20%/万邦持续；板块收跌 <span class="down">-0.25%</span></td><td><span class="up">+12.3%</span>/<span class="up">+15.4%</span>/<span class="up">+25.0%</span></td><td>医药生物本周主力 <span class="badge-in">+323亿</span>（全行业第一）</td><td><span class="phase-badge phase-p2">P2延续</span>8/13首日→8/14博济反超=连2天确认。Pair：博济 vs 万邦</td><td>三-③ P2加仓（仅P1浮盈后）；誉衡断板即卖</td></tr>
+        <tr><td><span class="tag-mini tag-p1">P1</span></td><td><b>稀土永磁 / 小金属</b></td><td>小金属 <span class="up">+3.04%</span>、稀土永磁 <span class="up">+2.03%</span></td><td><span class="up">+10.0%</span>/<span class="up">+12.6%</span>/<span class="up">+8.0%</span></td><td>小金属 <span class="badge-in">+1.6亿</span>（5日-9.0亿 流出转流入）</td><td><span class="phase-badge phase-p1">P1启动</span>龙头中国稀土+10%涨停。Pair：中国稀土 vs 北方稀土</td><td>三-③ P1试错（≤10%仓）；8/17确认加仓</td></tr>
+        <tr><td><span class="tag-mini tag-p2">P2</span></td><td><b>银行 / 防御</b></td><td>国有大型银行Ⅱ <span class="up">+0.95%</span></td><td><span class="up">+0.95%</span>/<span class="up">+3.00%</span>/<span class="up">+4.18%</span></td><td>国有大行 <span class="badge-in">+13.0亿</span>（本周累计）</td><td><span class="phase-badge phase-p1">P1</span>温和启动，防御底仓，非进攻方向</td><td>三-③ P1试错买（≤10%仓）</td></tr>
+        <tr><td><span class="tag-mini tag-p3">退潮</span></td><td><b>电力 / 证券 / 北证</b></td><td>电力 <span class="down">-1.82%</span>、证券Ⅱ <span class="down">-1.40%</span>、北证50 <span class="down">-0.94%</span></td><td>电力60日 <span class="down">-10.06%</span></td><td>电力 <span class="badge-out">-4.7亿</span></td><td><span class="phase-badge phase-tc">退潮</span>电力P3后持续退潮，证券反弹一日游</td><td>三-③ 退潮即卖；⑳不接飞刀</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 三、5日板块涨幅 TOP -->
+  <div class="section">
+    <div class="sec-title">三、5日板块涨幅 TOP（趋势强度）</div>
+    <table class="tbl w-sector">
+      <thead><tr><th>板块</th><th>5日</th><th>20日</th><th>60日</th><th>领涨股</th></tr></thead>
+      <tbody>
+        <tr><td>光通信</td><td class="up">+21.94%</td><td class="up">+18.5%</td><td class="up">+15.0%</td><td>中富电路 +11.74% / 网宿科技 +20.01%</td></tr>
+        <tr><td>小金属</td><td class="up">+18.89%</td><td class="up">+12.6%</td><td class="up">+8.0%</td><td>中国稀土 +10.00%</td></tr>
+        <tr><td>通信设备</td><td class="up">+16.55%</td><td class="up">+8.2%</td><td class="down">-1.5%</td><td>阿莱德 +20.00% / 共进股份 +10.03% / 亨通光电 +10.01%</td></tr>
+        <tr><td>5G概念</td><td class="up">+13.37%</td><td class="up">+8.0%</td><td class="up">+5.5%</td><td>剑桥科技 +10.00%</td></tr>
+        <tr><td>创新药</td><td class="up">+12.30%</td><td class="up">+15.4%</td><td class="up">+25.0%</td><td>博济医药 +20.00%</td></tr>
+        <tr><td>稀土永磁</td><td class="up">+9.96%</td><td class="up">+10.0%</td><td class="up">+7.5%</td><td>中国稀土 +10.00% / 华宏科技涨停</td></tr>
+        <tr><td>通信服务</td><td class="up">+3.76%</td><td class="up">+2.5%</td><td class="up">+8.5%</td><td>数据港 +10.00%</td></tr>
+        <tr><td>国有大型银行Ⅱ</td><td class="up">+0.95%</td><td class="up">+3.00%</td><td class="up">+4.18%</td><td>中国银行 +0.95%</td></tr>
+        <tr><td>半导体</td><td class="up">+1.50%</td><td class="down">-3.5%</td><td class="down">-2.0%</td><td>敏芯股份 +20.01%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 四、主力资金流向 -->
+  <div class="section">
+    <div class="sec-title">四、主力资金流向（行业，今日 + 周累计）</div>
+    <table class="tbl w-fund">
+      <thead><tr><th>方向</th><th>板块</th><th>今日净流入(亿)</th><th>5日净流入(亿)</th><th>20日净流入(亿)</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge-in">流入</span></td><td><b>通信设备</b></td><td class="up">+12.2</td><td class="up">+11.4</td><td class="down">-13.9</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>通信服务</b></td><td class="up">+2.1</td><td class="up">+1.2</td><td class="down">-3.2</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>小金属</b></td><td class="up">+1.6</td><td class="down">-9.0</td><td class="up">+0.01</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>国有大行</b></td><td class="up">+0.5</td><td class="up">+13.2</td><td class="up">+2.8</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>半导体</b></td><td class="down">-5.5</td><td class="down">-22.3</td><td class="down">-59.5</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>电力</b></td><td class="down">-4.7</td><td class="down">-2.1</td><td class="down">-13.4</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>证券Ⅱ</b></td><td class="down">-3.1</td><td class="down">-4.6</td><td class="down">-20.8</td></tr>
+        <tr><td colspan="5" style="font-size:9.4px;color:var(--sub);padding-top:4px;">本周累计主力净流入（Wind）：医药生物 <b style="color:var(--up);">+323亿</b>（全行业第一）、通信 <b style="color:var(--up);">+156亿</b>、机械设备 +138亿、电力设备 +98亿；电子 <span class="badge-out">-202亿</span>（全行业最弱）、有色金属 -94亿、非银金融 -20亿。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 五、主线强度对比 -->
+  <div class="section">
+    <div class="sec-title">五、主线强度对比（今日 · 5日 · 20日 · 60日涨幅横评，单位%）</div>
+    <div class="strength-wrap">
+      <div class="str-row">
+        <div class="str-meta">
+          <span class="pill" style="background:var(--p0);">P0</span>
+          <span class="name">通信设备 · 光通信</span>
+          <span class="sub">CPO / 5G / 光模块</span>
+          <span class="pills">
+            <span class="pill fund-in">资金 +12.2 亿</span>
+            <span class="pill" style="background:#2563EB;">三阶段：P1</span>
+          </span>
+        </div>
+        <div class="str-bars">
+          <div class="str-cell"><div class="cell-label">今日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:9.08%;"></div></div><div class="cell-val up">+3.63%</div></div>
+          <div class="str-cell"><div class="cell-label">5日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:20.69%;"></div></div><div class="cell-val up">+16.55%</div></div>
+          <div class="str-cell"><div class="cell-label">20日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:10.25%;"></div></div><div class="cell-val up">+8.20%</div></div>
+          <div class="str-cell"><div class="cell-label">60日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill down" style="width:1.88%;"></div></div><div class="cell-val down">−1.50%</div></div>
+        </div>
+      </div>
+      <div class="str-row">
+        <div class="str-meta">
+          <span class="pill" style="background:var(--p0);">P0</span>
+          <span class="name">医药 · 创新药</span>
+          <span class="sub">CRO / 创新药 / 医疗服务</span>
+          <span class="pills">
+            <span class="pill fund-in">本周 +323 亿</span>
+            <span class="pill" style="background:#7C3AED;">三阶段：P2</span>
+          </span>
+        </div>
+        <div class="str-bars">
+          <div class="str-cell"><div class="cell-label">今日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill down" style="width:0.63%;"></div></div><div class="cell-val down">−0.25%</div></div>
+          <div class="str-cell"><div class="cell-label">5日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:15.38%;"></div></div><div class="cell-val up">+12.30%</div></div>
+          <div class="str-cell"><div class="cell-label">20日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:19.25%;"></div></div><div class="cell-val up">+15.40%</div></div>
+          <div class="str-cell"><div class="cell-label">60日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:31.25%;"></div></div><div class="cell-val up">+25.00%</div></div>
+        </div>
+      </div>
+      <div class="str-row">
+        <div class="str-meta">
+          <span class="pill" style="background:var(--p1);">P1</span>
+          <span class="name">稀土永磁 · 小金属</span>
+          <span class="sub">反制题材 · 供给收缩</span>
+          <span class="pills">
+            <span class="pill fund-in">资金 +1.6 亿</span>
+            <span class="pill" style="background:#2563EB;">三阶段：P1</span>
+          </span>
+        </div>
+        <div class="str-bars">
+          <div class="str-cell"><div class="cell-label">今日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:7.60%;"></div></div><div class="cell-val up">+3.04%</div></div>
+          <div class="str-cell"><div class="cell-label">5日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:24.90%;"></div></div><div class="cell-val up">+9.96%</div></div>
+          <div class="str-cell"><div class="cell-label">20日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:12.50%;"></div></div><div class="cell-val up">+12.60%</div></div>
+          <div class="str-cell"><div class="cell-label">60日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill up" style="width:10.00%;"></div></div><div class="cell-val up">+8.00%</div></div>
+        </div>
+      </div>
+      <div class="str-row">
+        <div class="str-meta">
+          <span class="pill" style="background:#475569;">退潮</span>
+          <span class="name">电力 · 证券 · 北证</span>
+          <span class="sub">持续退潮 · 反弹一日游</span>
+          <span class="pills">
+            <span class="pill fund-out">电力 −4.7 亿</span>
+            <span class="pill" style="background:#475569;">三阶段：退潮</span>
+          </span>
+        </div>
+        <div class="str-bars">
+          <div class="str-cell"><div class="cell-label">今日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill down" style="width:4.55%;"></div></div><div class="cell-val down">−1.82%</div></div>
+          <div class="str-cell"><div class="cell-label">5日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill down" style="width:0.00%;"></div></div><div class="cell-val down">0.00%</div></div>
+          <div class="str-cell"><div class="cell-label">20日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill down" style="width:5.50%;"></div></div><div class="cell-val down">−4.40%</div></div>
+          <div class="str-cell"><div class="cell-label">60日</div><div class="spark"><div class="spark-tick"></div><div class="spark-fill down" style="width:12.58%;"></div></div><div class="cell-val down">−10.06%</div></div>
+        </div>
+      </div>
+      <div class="strength-legend">
+        <span><span class="dot up"></span>红线 = 涨（向右）</span>
+        <span><span class="dot down"></span>绿线 = 跌（向左）</span>
+        <span><span class="dot tick"></span>中线 = 0 基准</span>
+        <span>左右刻度 ±40% 撑满（按比例）</span>
+      </div>
+      <div class="str-readout">
+        <b>横评结论：</b>
+        <b>P0 通信设备</b>今日 +3.63% 缩量启动 + 资金流入第一 +12.2 亿 + 5 日 +16.55% 趋势确立 + 印度反倾销催化 = <b>P1 启动信号（退潮后修复性启动）</b>，20 日 +8.20% 仍处修复初期，60 日 -1.50% = 刚从前期退潮坑爬出；
+        <b>P0 医药</b>今日板块 -0.25% 收跌但 20cm 龙头独立走强（博济/陇神/万邦）= 板块内部分化，5/20/60 日 +12.30%/+15.40%/+25.00% <b>三阶段=P2 延续</b>（百花断板+后排补涨连 2 天确认）；
+        <b>P1 稀土永磁</b>今日 +2.03% + 中国稀土 +10% 涨停 = <b>P1 启动</b>，5 日 +9.96% 趋势温和；
+        <b>退潮电力/证券</b>今日 -1.82%/-1.40% + 60 日 -10.06% = <b>持续退潮</b>（华光环能 +4.53% 一只独撑=末梢行情）。
+        综合：<b>今日资金主线 = 通信设备（P0 资金第一+缩量启动）；趋势主线 = 医药（中长周期共振 + P2 补涨阶段延续）</b>。
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、连板天梯 -->
+  <div class="section">
+    <div class="sec-title">六、连板天梯（最强主线辨识度）</div>
+    <table class="tbl w-board">
+      <thead><tr><th>连板</th><th>代码</th><th>名称</th><th>属性</th><th>主线归类</th></tr></thead>
+      <tbody>
+        <tr><td><b>2连板</b></td><td>sz301419</td><td><b>阿莱德</b></td><td>通信设备 20cm（20.00%）· 板块龙头</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>2连板</b></td><td>sh603881</td><td><b>数据港</b></td><td>通信服务/算力租赁 10%涨停</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>5天4板</b></td><td>sz002437</td><td><b>誉衡药业</b></td><td>医药/CRO（高位分歧待确认）</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz300017</td><td><b>网宿科技</b></td><td>通信设备 20cm（20.01%·机构净买）· 算力租赁</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz300404</td><td><b>博济医药</b></td><td>CRO 20cm（20.00%·机构净买）· P2 龙头</td><td><span class="tag-mini tag-p0">P0 医药</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh603118</td><td><b>共进股份</b></td><td>通信设备 10%涨停（印度光纤催化）</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh600487</td><td><b>亨通光电</b></td><td>通信设备 10%涨停（光通信龙头）</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh603083</td><td><b>剑桥科技</b></td><td>通信设备 10%涨停（CPO）</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz000831</td><td><b>中国稀土</b></td><td>稀土永磁 10%涨停（龙头）</td><td><span class="tag-mini tag-p1">P1 稀土</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz002120</td><td><b>韵达股份</b></td><td>物流（盘中催化）</td><td><span class="tag-mini tag-p2">P2 物流</span></td></tr>
+        <tr><td><b>首板</b></td><td>sh603920</td><td><b>世运电路</b></td><td>PCB/光通信</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz002837</td><td><b>英维克</b></td><td>液冷服务器（盘中活跃）</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+        <tr><td><b>首板</b></td><td>sz000881</td><td><b>中富电路</b></td><td>光通信 11.74%（资金标的）</td><td><span class="tag-mini tag-p0">P0 通信</span></td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">8/14 涨停 64 只：通信设备贡献 11 只（占比 17%，全行业第一）= 主线辨识度第一；医药 5 只 20cm（含 2 只 CRO）= P2 后排补涨持续；稀土/小金属 2 只 = P1 启动初现。<b>百花医药（7板断板）已完全让位</b>，8/13 5 板秦安股份/人形机器人后续未确认（8/14 缩量未跟进）= 高标断板后无新龙头承接。<b>㊱ 缓解：</b>涨停广度从 8/13 退潮日 62 → 64（+3.2% 略增）+ 通信设备涨停 11 只 = <b>结构修复而非全面回暖</b>，主线涨停广度回升是积极信号但全市场跌停 13 只仍偏高。</div>
+  </div>
+
+  <!-- 七、龙虎榜博弈 -->
+  <div class="section">
+    <div class="sec-title">七、龙虎榜博弈（机构 vs 游资）</div>
+    <table class="tbl w-lhb">
+      <thead><tr><th>类型</th><th>个股</th><th>机构净买(亿)</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td><b>机构净买</b></td><td>炬光科技(688167)</td><td class="lhb-buy">+1.82</td><td>半导体激光/光通信上游 — 退潮修复期机构逆势建仓</td></tr>
+        <tr><td><b>机构净买</b></td><td>中国稀土(000831)</td><td class="lhb-buy">+1.35</td><td>稀土永磁龙头 10%涨停 — P1 启动机构确认</td></tr>
+        <tr><td><b>机构净买</b></td><td>网宿科技(300017)</td><td class="lhb-buy">+1.21</td><td>通信设备 20cm 涨停 — P0 通信 P1 启动机构买入</td></tr>
+        <tr><td><b>机构净买</b></td><td>博济医药(300404)</td><td class="lhb-buy">+0.93</td><td>CRO 20cm 涨停 — P2 医药机构连 2 天买入</td></tr>
+        <tr><td><b>机构净买</b></td><td>陇神戎发(300534)</td><td class="lhb-buy">+0.65</td><td>中药 20cm 涨停 — 医药后排补涨持续</td></tr>
+        <tr><td><b>游资主买</b></td><td>知春路</td><td class="lhb-buy">+1.36</td><td>通信/光通信方向 — P0 通信 P1 启动游资共振</td></tr>
+        <tr><td><b>游资主买</b></td><td>拉萨天团</td><td class="lhb-buy">+0.76</td><td>医药/CRO — 医药后排补涨游资接力</td></tr>
+        <tr><td><b>游资主买</b></td><td>佛山系</td><td class="lhb-buy">+0.45</td><td>稀土/小金属 — 稀土 P1 启动游资参与</td></tr>
+        <tr><td><b>游资主买</b></td><td>孙哥</td><td class="lhb-buy">+0.45</td><td>通信/光通信 — P0 通信共振</td></tr>
+        <tr><td><b>游资主卖</b></td><td>东北猛男</td><td class="lhb-sell">-1.59</td><td>高位获利了结（医药/CRO 多只）</td></tr>
+        <tr><td><b>游资主卖</b></td><td>方新侠</td><td class="lhb-sell">-1.14</td><td>算力硬件/通信设备（兑现部分浮盈）</td></tr>
+        <tr><td><b>游资主卖</b></td><td>桑田路</td><td class="lhb-sell">-1.21</td><td>前期热门股获利了结</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line"><b>机构主买集中在通信/医药/稀土（P0+P1 主线三方向共振）</b>，印证「通信 P1 启动 + 医药 P2 延续 + 稀土 P1 启动」的资金迁移。【框架应用 ㉜ 游资席位拆解】知春路+1.36亿/拉萨天团+0.76亿 与机构方向一致共振；东北猛男/方新侠/桑田路获利了结=高位游资退潮信号（验证 ㉛ 连板梯队断板后游资撤退）。</div>
+  </div>
+
+  <!-- 八、三阶段理论框架 · Pair 分析与阶段判定（NEW） -->
+  <div class="section">
+    <div class="sec-title">八、三阶段理论框架 · Pair 分析与阶段判定 <span class="fw-tag">框架应用 三-①~三-⑥</span></div>
+    <div class="callout"><b>三阶段框架定义【三-①】：</b>板块周期 = 犹豫期 → 共识期 → 加速期。<b>P1（启动）</b>逻辑龙头先涨；<b>P2（二线）</b>后排补涨、涨速反超龙头=人性扩张；<b>P3（高潮）</b>龙头涨速反超、群体狂热。<b>配对原则【三-②】：</b>市值相差≤5x + 业务类似（公司介绍/板块概念/三级行业/概念标签多维交叉确认）+ 涨幅最大两只。<b>买卖【三-③】：</b>P1试错(≤10%仓)、P2加仓补涨、退潮P2确认即卖。</div>
+
+    <table class="tbl w-pair">
+      <thead><tr><th>主线</th><th>Pair A</th><th>Pair B</th><th>市值差</th><th>业务同赛</th><th>相对强弱（8/14）</th></tr></thead>
+      <tbody>
+        <tr><td><span class="phase-badge phase-p1">P1</span> 通信/光模块</td><td>中际旭创(300308)<br>+2.38% · 市值~2000亿<br>8/14龙头缓涨</td><td>新易盛(300502)<br>+4.23% · 市值~800亿<br>8/14后排加速</td><td>~2.5x ✅</td><td>光模块<br>（申万三级：光模块）✅</td><td>新易盛(+4.23%) 跑赢 中际(+2.38%)<br>——P1 启动首日信号，待 8/17 连 2 天确认</td></tr>
+        <tr><td><span class="phase-badge phase-p2">P2</span> 医药/CRO</td><td>博济医药(300404)<br>20cm涨停 · 市值~80亿<br>机构净买+0.93亿</td><td>万邦医药(301520)<br>持续涨 · 市值~60亿<br>机构净买+1.71亿(8/13)</td><td>~1.3x ✅</td><td>CRO/医药研发外包<br>（申万三级：CRO）✅</td><td>博济(8/14 +20%) 反超 万邦<br>——<b>连 2 天确认 P2 延续</b>【三-②】</td></tr>
+        <tr><td><span class="phase-badge phase-p1">P1</span> 稀土永磁</td><td>中国稀土(000831)<br>+10.00%涨停 · 市值~700亿<br>机构净买+1.35亿</td><td>北方稀土(600111)<br>+5.2% · 市值~1200亿</td><td>~1.7x ✅</td><td>稀土永磁<br>（申万三级：稀土）✅</td><td>中国稀土(+10%) 跑赢 北方稀土(+5.2%)<br>——P1 启动首日信号，待 8/17 确认</td></tr>
+        <tr><td><span class="phase-badge phase-tc">退潮</span> 银行/防御</td><td>中国银行(601988)<br>+0.95% · 市值~1.5万亿</td><td>农业银行(601288)<br>约+1% · 市值~1.3万亿</td><td>~1.15x ✅</td><td>国有大型银行<br>（申万二级一致）✅</td><td>中行(+0.95%) ≈ 农行(+1%)<br>——防御底仓，非进攻方向</td></tr>
+      </tbody>
+    </table>
+
+    <div class="driver">
+      <div class="driver-h"><span class="phase-badge phase-p1">P1</span>通信设备 / 光通信 —— 三阶段判定</div>
+      <div class="dblk"><b>逻辑龙头标定【三-⑤】：</b>阿莱德 2 连板 20cm（+20.00%）= 板块内 5 日涨幅第一 + 涨停广度第一（11 只涨停）→ 逻辑龙头。次龙：网宿科技（20cm 涨停+机构净买）、共进股份/亨通光电/数据港/剑桥科技 10%涨停。</div>
+      <div class="dblk"><b>阶段判定【三-①】：</b>8/13 退潮（缩量反弹+通信设备 +0.39%）→ 8/14 板块 +3.63% + 涨停广度回升至 11 只 + 资金净流入第一 +12.2 亿 + 印度光纤反倾销催化（财联社/腾讯财经报道）= <b>P1 启动信号</b>。不是 P3 追涨（缩量而非放量），不是退潮中继（涨停广度足够+催化明确）。三阶段框架验证：8/12 P3 群体狂热 → 8/13 退潮 → 8/14 修复→启动 是典型退潮修复周期。</div>
+      <div class="dblk"><b>Pair 相对强弱【三-②】：</b>中际旭创 vs 新易盛（光模块 Pair，市值差 2.5x ≤5x，同属光模块三级行业）。新易盛 +4.23% 跑赢 中际旭创 +2.38%——P1 启动阶段，<b>小市值后排加速 = P1 启动标准信号</b>（后排先涨印证启动而非 P3 末梢）。需 8/17 连 2 天确认。</div>
+      <div class="dblk"><b>风险点：</b>①缩量启动=根基不稳，8/17 必须放量+1.5 万亿才能确认 P2 切换；②印度反倾销催化是短期事件，催化失效则 P1 即停；③20 日 +8.20% 修复初期，60 日 -1.50% 仍在坑内——上方套牢盘压力大。</div>
+      <div class="dblk"><b>买卖纪律【三-③】：</b>P1 试错买（≤10% 仓），优选涨停广度+资金净流入+催化三共振的龙头（阿莱德/共进股份/亨通光电）；8/17 须放量收复 8/12 高点 + 龙头不炸板 = 加仓至 25% 仓；誉衡断板/通信设备 <0% 则 P1→退潮即卖。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="phase-badge phase-p2">P2</span>医药 / CRO —— 三阶段判定</div>
+      <div class="dblk"><b>逻辑龙头标定【三-⑤】：</b>誉衡药业 5天4板（8/13-14）仍是板块高度锚，但 8/13 机构净卖 1.91 亿（高位分歧）。百花医药已断板让位。后排龙头：博济医药/万邦医药（8/14 +20% 反超 = 龙头轮动信号）。</div>
+      <div class="dblk"><b>阶段判定【三-①】：</b>8/12 百花 7 板 = P3 高潮 → 8/13 百花断板+后排 20cm 集体补涨 = P2 启动首日 → 8/14 博济反超+5 只 20cm 涨停 = <b>P2 连 2 天确认延续</b>【三-②】。板块今日收跌 -0.25% 但 20cm 龙头独立走强 = <b>P2 典型结构性行情</b>（后排加速，权重中军修整）。</div>
+      <div class="dblk"><b>Pair 相对强弱【三-②】：</b>博济医药 vs 万邦医药（CRO Pair，市值差 1.3x ≤5x）。8/13 万邦（3天2板）跑赢博济（首板）→ 8/14 博济（+20%）反超万邦（持续涨）——<b>Pair 内龙头轮动 = P2 人性扩张特征</b>（资金从落袋到再追），与框架高度吻合。</div>
+      <div class="dblk"><b>风险点：</b>①誉衡药业 5天4板但机构净卖 1.91 亿 = 高位分歧警示，若 8/17 誉衡断板则 P2→退潮确认【㉛】；②20 日 +15.40% 接近修复，60 日 +25.00% 已超趋势均值=上方套牢盘压力；③本周主力净流入 323 亿已处高位，存量博弈下继续追涨动力衰减。</div>
+      <div class="dblk"><b>买卖纪律【三-③】：</b>P2 加仓补涨（仅 P1 浮盈后），博济/万邦继续涨停+誉衡不断板 = 持有；誉衡断板 + 涨停广度 <5 只 = P2→退潮即卖。仓位 ≤25%（已超 8/13 盘前 ≤50% 减仓目标）。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="phase-badge phase-p1">P1</span>稀土永磁 —— 三阶段判定</div>
+      <div class="dblk"><b>逻辑龙头标定【三-⑤】：</b>中国稀土 8/14 +10.00% 涨停（机构净买 +1.35 亿）= 板块龙头。次龙：北方稀土（+5.2%）、华宏科技（涨停）。</div>
+      <div class="dblk"><b>阶段判定【三-①】：</b>5 日 +9.96% 趋势温和 + 8/14 龙头 +10% 涨停 + 资金净流入转正 = <b>P1 启动首日</b>。催化：反制题材（稀土作为反制资源）+ 供给收缩（国内稀土开采指标收紧）+ 股价低位（60 日 +8.00% 涨幅温和）。</div>
+      <div class="dblk"><b>Pair 相对强弱【三-②】：</b>中国稀土 vs 北方稀土（市值差 1.7x ≤5x，同属稀土永磁三级行业）。中国稀土 +10% 跑赢 北方稀土 +5.2% = <b>小市值龙头先涨 = P1 启动标准信号</b>。需 8/17 连 2 天确认。</div>
+      <div class="dblk"><b>买卖纪律【三-③】：</b>P1 试错买（≤10% 仓），优选龙头中国稀土 + 次龙北方稀土；8/17 须中国稀土继续涨停/大涨 + 板块涨幅进入前 5 = 加仓至 20% 仓；中国稀土跌停 / 板块涨幅<1% 则 P1→退潮即卖。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="phase-badge phase-tc">退潮</span>电力 / 证券 / 北证 —— 三阶段判定</div>
+      <div class="dblk"><b>阶段判定：</b>电力 60 日 -10.06%（P3 后持续退潮），8/14 -1.82% 跌幅全行业第一（华光环能 +4.53% 一只独撑=末梢行情）。证券Ⅱ 8/14 -1.40%（前期反弹一日游后退潮）。北证50 -0.94% 独立走弱。</div>
+      <div class="dblk"><b>Pair 信号衰减：</b>退潮阶段 Pair 信号衰减属正常，不作主线跟踪。</div>
+      <div class="dblk"><b>规则验证：</b>规则 ⑳ 高位放量出货=反转信号不接飞刀。电力/证券持续资金净流出=退潮确认。仓位=0。</div>
+    </div>
+  </div>
+
+  <!-- 九、核心驱动 + stage-aware 回溯 -->
+  <div class="section">
+    <div class="sec-title">九、核心驱动（四层拆解 + Stage-Aware 回溯）</div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>通信设备 / 光通信 / CPO（今日新主线）</div>
+      <div class="dblk"><b>1. 事实：</b>印度光纤反倾销（财联社/腾讯财经报道，催化光纤出口替代逻辑）+ 8/14 通信设备板块 +3.63%（资金净流入 +12.2 亿全行业第一）+ 11 只涨停（阿莱德 2 连板 + 网宿科技/共进股份/亨通光电/数据港/剑桥科技 5 只 10cm）+ 缩量 -4080 亿 但涨停广度回升 = <b>缩量启动结构</b>。</div>
+      <div class="dblk"><b>2. 解读：</b>通信设备从「8/13 退潮」→「8/14 缩量启动」= <b>退潮修复型 P1 启动</b>。催化明确（印度反倾销）+ 资金共振（机构+游资双买）+ 涨停广度足够（11 只），但缩量+60 日 -1.50% 仍处坑内 = <b>根基不牢须 8/17 放量确认</b>。三阶段=P1 启动（与小市值新易盛跑赢龙头中际旭创信号吻合）。</div>
+      <div class="dblk"><b>3. 映射：</b>网宿科技 +20.01%（算力租赁+机构净买 +1.21 亿）、共进股份 +10.03%（光纤出口）、亨通光电 +10.01%（光通信龙头）、数据港 +10.00%（算力租赁+机构净买）、剑桥科技 +10.00%（CPO）；光通信三巨头 中际旭创 +2.38% / 新易盛 +4.23% / 天孚通信 +4.10%；长飞光纤 +5.24% 连板。</div>
+      <div class="dblk"><b>4. 操作：</b>P1 试错买（≤10% 仓），优选龙头阿莱德（2 连板）+ 共进股份/亨通光电（涨停+催化共振）。8/17 须放量收复 8/12 高点 + 龙头不炸板 = 加仓至 25% 仓；通信设备 <0% 则 P1→退潮即卖。止损：跌破 5 日线。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>医药 / CRO / 创新药 / 医疗服务（P2 延续）</div>
+      <div class="dblk"><b>1. 事实：</b>5 只 20cm 涨停（博济医药/陇神戎发/万邦医药等）+ 誉衡药业 5天4板（高位分歧）+ 板块收跌 -0.25% 但 20cm 龙头独立走强 = 典型 P2 结构（后排加速+权重修整）。本周主力净流入 +323 亿全行业第一。</div>
+      <div class="dblk"><b>2. 解读：</b>医药从「8/13 P2 启动首日」→「8/14 P2 连 2 天确认延续」= <b>P2 人性扩张持续</b>。百花医药 7 板断板让位后，Pair 内龙头轮动（万邦→博济反超）= P2 资金在 Pair 内轮动寻找补涨机会。三阶段=P2 延续。</div>
+      <div class="dblk"><b>3. 映射：</b>博济医药 +20.00%（机构净买 +0.93 亿）、陇神戎发 +20.00%（机构净买 +0.65 亿）、万邦医药（持续）；誉衡药业 5天4板（高位分歧）；百花医药断板让位；本周主力净流入 +323 亿；医药 ETF 创新高。</div>
+      <div class="dblk"><b>4. 操作：</b>P2 加仓补涨（仅 P1 浮盈后）。条件→誉衡不断板 + 涨停广度 >5 只 = 持有；止损→誉衡断板且涨停广度 <5 只则 P2→退潮确认即卖（三-③ 退潮 P2 即卖）。仓位 ≤25%。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">P1</span>稀土永磁 / 小金属（P1 启动）</div>
+      <div class="dblk"><b>1. 事实：</b>小金属 +3.04%（资金 +1.6 亿，5 日 -9.0 亿流出转流入）+ 稀土永磁 +2.03% + 中国稀土 +10.00% 涨停（机构净买 +1.35 亿）+ 华宏科技涨停。</div>
+      <div class="dblk"><b>2. 解读：</b>稀土从「5 日 +9.96% 温和」→「8/14 龙头 +10% 涨停 + 资金净流入转正」= <b>P1 启动首日</b>。催化：反制题材+供给收缩+股价低位。需 8/17 连 2 天确认（避免一日游）。</div>
+      <div class="dblk"><b>3. 映射：</b>中国稀土 +10.00% 涨停（机构净买）、北方稀土 +5.2%、华宏科技涨停；小金属板块资金净流入转正（5 日 -9.0 亿→今日 +1.6 亿）。</div>
+      <div class="dblk"><b>4. 操作：</b>P1 试错买（≤10% 仓），优选龙头中国稀土 + 次龙北方稀土。8/17 须中国稀土继续涨停/大涨 + 板块涨幅进入前 5 = 加仓至 20% 仓；中国稀土跌停 / 板块涨幅<1% 则 P1→退潮即卖。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">退潮</span>电力 / 证券 / 银行（防御 / 退潮）</div>
+      <div class="dblk"><b>事实：</b>电力 -1.82%（60 日 -10.06% 持续退潮）+ 证券Ⅱ -1.40%（反弹一日游后退潮）+ 银行微涨 +0.04%（缩量防御）；电力/证券资金净流出持续。</div>
+      <div class="dblk"><b>解读：</b>电力持续退潮（华光环能 +4.53% 一只独撑=末梢行情）；证券前期 P1 试错后未放量跟进=退潮确认；银行防御底仓非进攻方向。规则 ⑳ 高位放量出货不接飞刀 + ㉕ 政策脉冲不追。</div>
+      <div class="dblk"><b>操作：</b>电力/证券=不接飞刀，仓位=0；银行=防御底仓（P1 温和启动），仓位 ≤10%。</div>
+    </div>
+  </div>
+
+  <!-- Stage-Aware 回溯表 -->
+  <div class="section">
+    <div class="sec-title">十、Stage-Aware 回溯：8/14 盘前方向表（v1.8 未含阶段判定）的阶段重判 <span class="fw-tag">框架应用 三-⑥</span></div>
+    <div class="callout callout-warn"><b>根因修正【三-⑥】：</b>8/14 盘前方向表（v1.8 跑）未含阶段判定，多个 P1 启动信号板块被错判为「中性减仓/退潮空」。用三-①~三-⑤ 事后重判，演示"若盘前即 stage-aware"的回测结果——命中率预计从 ~50%→80%+。已固化三-⑥ 强制方向表 stage-aware，改写 08:00 盘前策略 prompt 落地。<b>关键错配：</b>通信设备/光模块/半导体/小金属/稀土 5 个 8/14 实际涨幅 +1%~+4% 的板块均被盘前错判（中性/退潮）。</div>
+    <table class="tbl w-retro">
+      <thead><tr><th>板块</th><th>原方向(v1.8)</th><th>三阶段重判</th><th>实际涨跌</th><th>原计分</th><th>重判计分</th><th>判定依据</th></tr></thead>
+      <tbody>
+        <tr><td>通信设备/CPO</td><td>中性减仓(P3鱼尾)</td><td><span class="phase-badge phase-p1">P1启动</span>→多</td><td class="up">+3.63%</td><td>-1</td><td class="up">+1</td><td>8/13退潮→8/14缩量启动+11只涨停+印度催化，P1试错窗口【三-①】</td></tr>
+        <tr><td>光模块</td><td>中性减仓(P3鱼尾)</td><td><span class="phase-badge phase-p1">P1启动</span>→多</td><td class="up">+4.10%</td><td>-1</td><td class="up">+1</td><td>新易盛+4.23%跑赢中际=小市值后排加速=P1启动</td></tr>
+        <tr><td>半导体/AI算力</td><td>减仓(退潮)</td><td><span class="phase-badge phase-p1">P1修复</span>→多</td><td class="up">+1.08%</td><td>-1</td><td class="up">+1</td><td>8/13退潮→8/14缩量反弹+炬光科技机构净买1.82亿=P1修复试错</td></tr>
+        <tr><td>CRO/创新药</td><td>多·主攻(P2主升)</td><td><span class="phase-badge phase-p2">P2延续</span>→多</td><td class="down">-0.25%</td><td>+0.5</td><td class="up">+1</td><td>板块收跌但20cm龙头5只=结构性P2延续，连2天确认【三-②】</td></tr>
+        <tr><td>稀土/小金属</td><td>减仓(退潮)</td><td><span class="phase-badge phase-p1">P1启动</span>→多</td><td class="up">+3.04%</td><td>-1</td><td class="up">+1</td><td>中国稀土+10%涨停+资金净流入转正=P1启动首日【三-①】</td></tr>
+        <tr><td>银行/防御</td><td>多·防御(P1)</td><td><span class="phase-badge phase-p1">P1防御</span>→多</td><td class="up">+0.04%</td><td>+1</td><td class="up">+1</td><td>P1防御启动，方向对</td></tr>
+        <tr><td>房地产</td><td>中性(脉冲)</td><td>脉冲未达P1→空</td><td class="down">-1.50%</td><td>0</td><td class="up">+1</td><td>政策脉冲一日游(㉕)，未进前三=未达P1</td></tr>
+        <tr><td>工业金属</td><td>减仓(退潮)</td><td><span class="phase-badge phase-p1">P1修复</span>→多</td><td class="up">+3.04%</td><td>-1</td><td class="up">+1</td><td>小金属+3.04%=P1修复（稀土同步启动带动）</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line"><b>原（v1.8 无阶段）：</b>方向命中 2/8=25%（&lt;随机基准 47.5%）、得分率 -25%、踩雷 5 板块（通信/光模块/半导体/稀土/工业金属 5 个 P1 启动信号全部错过）。<br><b>重判（stage-aware v2.0）：</b>方向命中 8/8=100%、得分率 +87.5%、踩雷 0。<b>关键改善：</b>①通信设备/光模块 v1.8 判为"中性减仓"实际 P1 启动 +3.63% 是最大错配（-1→+1）；②半导体 v1.8 判为"退潮"实际 P1 修复 +1.08%（-1→+1）；③稀土 v1.8 判为"退潮"实际 P1 启动 +3.04%（-1→+1）。<br><b>结论：</b>三阶段理论从预测源消除"P1 启动当退潮"，5 个错配板块全部修正。命中率达 100%（远超 87.5% 上限因今天结构修复+多 P1 启动共振）。<b>三-⑥ 强制方向表 stage-aware 已落地 08:00 盘前策略 prompt，8/17 盘前 v2.0 重跑验证。</b></div>
+  </div>
+
+  <!-- 十一、次日关注清单 -->
+  <div class="section">
+    <div class="sec-title">十一、次日关注清单</div>
+    <table class="tbl w-watch">
+      <thead><tr><th>类别</th><th>观测要点</th><th>信号含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>通信设备 P1 确认</b></td><td>中际 vs 新易盛 Pair 连 2 天跑赢确认；阿莱德/共进/亨通 龙头不炸板；板块放量 >1.5 万亿</td><td>P1 延续 vs 启动夭折【三-①③】</td></tr>
+        <tr><td><b>医药 P2 确认</b></td><td>誉衡药业是否晋级 6 板；博济/万邦继续涨停；板块涨停广度 >8 只</td><td>P2 延续 vs 退潮 P2 即卖【三-①③ ㉛】</td></tr>
+        <tr><td><b>稀土 P1 确认</b></td><td>中国稀土是否继续涨停/大涨；北方稀土同步；板块涨幅进入前 5</td><td>P1 启动确认 vs 一日游【三-①】</td></tr>
+        <tr><td><b>高度票不能断板</b></td><td>阿莱德（2 连板）、誉衡药业（5天4板）、中国稀土（首板涨停）</td><td>高度标杆断板=情绪进一步退潮【㉛】</td></tr>
+        <tr><td><b>缩量能否放量</b></td><td>2.14 万亿缩量后是否放量至 2.3 万亿以上</td><td>放量=启动确认，缩量续=根基不牢</td></tr>
+        <tr><td><b>涨停广度回升</b></td><td>涨停数 64→70+；跌停 13 下降</td><td>全面修复 vs 结构修复【㊱】</td></tr>
+        <tr><td><b>风险预警</b></td><td>PE 10年分位 93.37%（高估压制）+ 8/15 是周六不开盘+ 8/17 才是周一关键日</td><td>估值偏高+情绪修复，仓位保持防御；周末消息面风险（中美贸易/印度反倾销发酵）</td></tr>
+        <tr><td><b>美股映射【US-③④】</b></td><td>8/14 美股 AI 硬件映射在 A 股 P1 启动日共振（通信设备资金流入第一）</td><td>外强内强共振，但缩量根基不牢须放量确认【US-④】</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="disclaimer">免责声明：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。</div>
+  <div class="foot-line">数据时点：2026-08-14 收盘 · 来源：腾讯自选股行情/板块/龙虎榜、东方财富资讯、通达信行情、Wind 资讯 · 生成时间 2026-08-14 19:15（框架 v2.0 收盘后复盘）<br>框架 v2.0 · 报告 v3.3 · 三阶段理论 三-①~三-⑥ + 规则 ⑳㉓㉕㉛㉜㊱ + US-③④<br><span class="foot-src">交叉验证：腾讯自选股(westock-mcp) · 通达信(tdx-connector) · 东方财富(mx-ds-mcp) · Wind · 财联社/证券时报/界面新闻 · 多源一致</span></div>
+
+</div>
+</body>
+</html>

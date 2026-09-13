@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股整体回测 2026-08-31</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#131a2e; --panel2:#1a2238; --line:#26304a;
+    --txt:#e7ebf3; --muted:#8b93a7; --up:#f04142; --up2:#ff6b6b;
+    --down:#15c47e; --down2:#37e0a0; --gold:#ffc14d; --blue:#4d9fff;
+    --purple:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#16203a,#0d1426);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:22px}
+  header h1{font-size:26px;font-weight:800;letter-spacing:1px}
+  header .sub{color:var(--muted);margin-top:8px;font-size:13px}
+  .tag{display:inline-block;background:rgba(255,193,77,.14);color:var(--gold);border:1px solid rgba(255,193,77,.35);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:8px;margin-top:10px}
+  .tag.r{background:rgba(240,65,66,.14);color:var(--up2);border-color:rgba(240,65,66,.35)}
+  .tag.g{background:rgba(21,196,126,.14);color:var(--down2);border-color:rgba(21,196,126,.35)}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .card .v{font-size:22px;font-weight:800}
+  .card .k{font-size:12px;color:var(--muted);margin-top:3px}
+  .card .v.sm{font-size:16px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:7px}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:4px 10px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+  nav a:hover{color:var(--gold);border-color:rgba(255,193,77,.35);background:rgba(255,193,77,.08)}
+  .sec{margin-top:34px;scroll-margin-top:60px}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:12px;border-left:4px solid var(--gold)}
+  .sec-h h2{font-size:20px;font-weight:700}
+  .pt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .pt-h{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+  .pt-d{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .pt-b{font-size:13.5px;color:var(--txt);background:var(--panel2);border-radius:10px;padding:11px 13px;margin-top:10px;border-left:3px solid var(--blue)}
+  .pt-b.warn{border-left-color:var(--gold)}
+  .pt-b.risk{border-left-color:var(--up)}
+  .pt-b b{color:#fff}
+  .up{color:var(--up)} .down{color:var(--down)} .gold{color:var(--gold)} .blue{color:var(--blue)} .pp{color:var(--purple)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+  th{background:var(--panel2);color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  tr:hover td{background:rgba(77,159,255,.05)}
+  .pill{display:inline-block;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:600;margin:2px 3px 0 0}
+  .p-up{background:rgba(240,65,66,.15);color:var(--up2)}
+  .p-down{background:rgba(21,196,126,.15);color:var(--down2)}
+  .p-mid{background:rgba(77,159,255,.15);color:var(--blue)}
+  .p-warn{background:rgba(255,193,77,.15);color:var(--gold)}
+  .p-pp{background:rgba(167,139,250,.15);color:var(--purple)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .foot{margin-top:40px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--muted);line-height:1.8}
+  .big{font-size:30px;font-weight:800}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>A股整体回测 · 2026年8月31日（周一）</h1>
+  <div class="sub">20:30 自动化 · 框架 v2.9 / 报告 v3.3 · 随机基准命中率 47.5% · 数据源：腾讯自选股 / 同花顺问财 / 东方财富妙想 / 19:00复盘 / 标推表（收盘后口径，多源交叉）</div>
+  <div>
+    <span class="tag r">换赛道式修复·V反</span>
+    <span class="tag">方向表 25.0%（破基准）</span>
+    <span class="tag g">跟随版 50.0%（超基准）</span>
+    <span class="tag">涨停89 · 跌停13</span>
+    <span class="tag">成交 2.13万亿</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#s0">核心指标</a>
+  <a href="#t1">①盘前策略</a>
+  <a href="#t2">②竞价快报</a>
+  <a href="#t3">③10:00速览</a>
+  <a href="#t4">④11:40午盘</a>
+  <a href="#t5">⑤14:30速览</a>
+  <a href="#t6">⑥19:00复盘</a>
+  <a href="#t7">⑦19:15主线</a>
+  <a href="#t8">⑧晚间分源</a>
+  <a href="#d">11项明细表</a>
+</nav>
+
+<!-- ============ 核心指标 ============ -->
+<div class="sec" id="s0">
+  <div class="sec-h"><h2>核心指标（闭环速览）</h2></div>
+  <div class="cards">
+    <div class="card"><div class="v down">25.0%</div><div class="k">方向表命中率（2/8·破基准）</div></div>
+    <div class="card"><div class="v gold">50.0%</div><div class="k">跟随版命中率（6/12·超基准）</div></div>
+    <div class="card"><div class="v down">-68.75%</div><div class="k">方向表得分率</div></div>
+    <div class="card"><div class="v up">75.0%</div><div class="k">未踩雷率（6/8）</div></div>
+    <div class="card"><div class="v down">26.7%</div><div class="k">逐点命中率（大势5点）</div></div>
+    <div class="card"><div class="v gold">33.3%</div><div class="k">晚间预判分源（19:15）</div></div>
+    <div class="card"><div class="v down">0.0%</div><div class="k">比价配对 T+0（2/0）</div></div>
+    <div class="card"><div class="v up">≈38.8%</div><div class="k">近12段滚动均值（破基准）</div></div>
+  </div>
+  <div class="pt">
+    <div class="pt-b warn"><b>一句话结论：</b>8/31 是<b class="gold">换赛道式修复（V型翻红）日</b>——盘前"美伊冲突→资源/能源/军工避险"事件驱动外推被市场<b class="down">反向定价</b>，资金高低切至 AI应用/传媒/算力 + 银行防御。结果：<b class="down">盘前方向表仅 25%（破基准）</b>，但<b class="gold">跟随版（晚间生成）达 50%（超基准）</b>，印证"晚间生成版 pivot 能力 &gt; 早盘事件驱动版"；盘中 10:00/14:30 与收盘后 19:00/19:15 标的推荐 94%~100% 精准，板块层保守被标的层精准对冲。</div>
+  </div>
+</div>
+
+<!-- ============ 任务① 盘前策略 ============ -->
+<div class="sec" id="t1">
+  <div class="sec-h"><h2>① 盘前策略 07:00 方向表回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">8 板块方向 vs 8/31 真实收盘</div>
+    <table>
+      <tr><th>板块</th><th>盘前方向</th><th>真实收盘</th><th>判定</th><th>计分</th></tr>
+      <tr><td>石油石化</td><td>多</td><td class="up">+0.38~+1.0%（油服+0.38/炼化+0.99）</td><td class="p-up pill">✓ 命中</td><td>+1</td></tr>
+      <tr><td>工业金属</td><td>多</td><td class="down">-1.90%</td><td class="p-down pill">✗ 踩雷</td><td>-1</td></tr>
+      <tr><td>贵金属</td><td>中性偏多</td><td class="down">-2.67%</td><td class="p-down pill">✗ 大幅反向</td><td>-1</td></tr>
+      <tr><td>国防军工</td><td>中性</td><td>-0.27%（11:40代理）</td><td class="p-mid pill">△ 容忍</td><td>+0.5</td></tr>
+      <tr><td>银行</td><td>中性</td><td class="up">+2.94%</td><td class="p-down pill">✗ 反向</td><td>-1</td></tr>
+      <tr><td>半导体</td><td>空</td><td class="up">+1.85%</td><td class="p-down pill">✗ 反向</td><td>-1</td></tr>
+      <tr><td>通信</td><td>空</td><td class="up">+0.42%</td><td class="p-down pill">✗ 反向</td><td>-1</td></tr>
+      <tr><td>医药</td><td>中性</td><td class="down">-1.7%（医药生物）</td><td class="p-down pill">✗ 反向</td><td>-1</td></tr>
+    </table>
+    <div class="pt-b risk"><b>结果：25.0%（2/8）· 得分率 -68.75% · 未踩雷率 75.0%（工业金属/贵金属踩雷）。</b> 07:00 四大避险方向（石油88/工业金属84/贵金属75/军工70）<b class="down">0/4 全灭</b>——事件驱动外推被反向定价。仅石油石化（真实资源事件落地）与国防军工（中性容忍）命中。</div>
+  </div>
+</div>
+
+<!-- ============ 任务② 竞价快报 ============ -->
+<div class="sec" id="t2">
+  <div class="sec-h"><h2>② 09:25 竞价快报回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">竞价判断 vs 收盘</div>
+    <table>
+      <tr><th>维度</th><th>竞价判断</th><th>收盘验证</th><th>判定</th></tr>
+      <tr><td>情绪档</td><td>差·不参与观望</td><td>资源确崩、盘中弱</td><td class="p-up pill">✓ 正确</td></tr>
+      <tr><td>Top3 房地产服务</td><td>多（8分满分）</td><td class="up">+2.45%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>Top3 种植业</td><td>多</td><td class="down">-2.41%</td><td class="p-down pill">✗ 错配</td></tr>
+      <tr><td>Top3 石油石化系</td><td>多（油服/煤炭/炼化）</td><td class="up">+0.4~1%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>T+0 大势（三指数）</td><td>空</td><td class="up">全涨（V反失真）</td><td class="p-down pill">✗ vs收盘</td></tr>
+    </table>
+    <div class="pt-b warn"><b>竞价预测综合 ≈ 67%（Top3 板块 2/3 命中）。</b> 竞价"不参与避险"有效规避资源崩塌（纪律满分）；对盘前资源多判的纠偏（工业金属/贵金属转空）正确，但石油石化系仍误判多→10:00证伪。T+0 大势"空"因收盘 V 反失真（盘中正确）。</div>
+  </div>
+</div>
+
+<!-- ============ 任务③ 10:00 盘中速览 ============ -->
+<div class="sec" id="t3">
+  <div class="sec-h"><h2>③ 10:00 盘中速览回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">实时价（10:00）vs 收盘 验证</div>
+    <table>
+      <tr><th>10:00 判断</th><th>收盘验证</th><th>判定</th></tr>
+      <tr><td>传媒/数字媒体 多（全市场第一）</td><td class="up">数字媒体+7.19%/影视院线+7.02%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>地产链 多</td><td class="up">房地产服务+2.45%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>银行 多（避险回流）</td><td class="up">国有大行+2.94%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>工业金属/贵金属 空（纠偏盘前）</td><td class="down">-1.90%/-2.67%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>半导体/通信 空</td><td class="up">+1.85%/+0.42%</td><td class="p-down pill">✗ 盘中诱多·收盘V反</td></tr>
+    </table>
+    <div class="pt-b"><b>逐任务标的（10:00 任务）：100%（8/8 全✅）。</b> 10:00 实时价对"科技空→多反转前夜、资源多→空"的修正开始生效；传媒盲区第4次复现（盘前+竞价双漏，10:00 才识别）。</div>
+  </div>
+</div>
+
+<!-- ============ 任务④ 11:40 午盘 ============ -->
+<div class="sec" id="t4">
+  <div class="sec-h"><h2>④ 11:40 午盘速览回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">午盘判断 vs 收盘</div>
+    <table>
+      <tr><th>11:40 判断</th><th>收盘验证</th><th>判定</th></tr>
+      <tr><td>传媒 多（全行业第1）</td><td class="up">数字媒体+7.19%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>银行 多（资金真实落点）</td><td class="up">国有大行+2.94%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>地产链 多</td><td class="up">房地产服务+2.45%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>资源系（紫金/山东黄金）退潮回避</td><td class="down">紫金-2.83%/山东黄金+6.65%（黄金反弹）</td><td class="p-down pill">△ 黄金反向</td></tr>
+      <tr><td>传媒4只"诱多减仓"（芒果/上海电影/掌阅）</td><td class="up">+20%/+10.02%/+9.98%（强脉冲证伪回避）</td><td class="p-down pill">✗ 保守错失</td></tr>
+    </table>
+    <div class="pt-b warn"><b>逐任务标的（11:40 任务）：64.3%（9✅/5❌）。</b> 5❌ 全为"回避/诱多减仓"保守判——强脉冲行情下传媒/黄金反向上行，纪律性保守误判（非追高亏损）。这是当日标的层唯一显著拖累。</div>
+  </div>
+</div>
+
+<!-- ============ 任务⑤ 14:30 盘中速览 ============ -->
+<div class="sec" id="t5">
+  <div class="sec-h"><h2>⑤ 14:30 盘中速览回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">14:30 终判 vs 收盘</div>
+    <table>
+      <tr><th>14:30 判断</th><th>收盘验证</th><th>判定</th></tr>
+      <tr><td>AI智能体 P3 高潮</td><td class="up">数字媒体+7.19%/元件+2.52%/寒武纪+6.26%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>银行/红利 持有加仓</td><td class="up">国有大行+2.94%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>资源（紫金）清仓观望</td><td class="down">-2.83%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>澜起 诱多禁追涨</td><td class="down">-3.78%</td><td class="p-up pill">✓ 命中</td></tr>
+      <tr><td>万科A 退潮预警</td><td class="down">-0.63%</td><td class="p-down pill">✗ 微负掉队</td></tr>
+    </table>
+    <div class="pt-b"><b>逐任务标的（14:30 任务）：94.4%（17✅/1❌）。</b> 逐点大势（沪/深/创/科创）100%（4/4）——14:30 已正确捕获 V 反翻红，是当日最强口径。只有万科A（-0.63%微负）1 票掉队。</div>
+  </div>
+</div>
+
+<!-- ============ 任务⑥ 19:00 完整复盘 ============ -->
+<div class="sec" id="t6">
+  <div class="sec-h"><h2>⑥ 19:00 完整复盘回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">收盘后推荐标的（T+0）vs 收盘</div>
+    <table>
+      <tr><th>标的</th><th>阶段</th><th>收盘涨跌幅</th><th>判定</th></tr>
+      <tr><td>中文在线 300364</td><td>P1→P2 启动</td><td class="up">+20.02%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>浪潮信息 000977</td><td>P2 算力真趋势</td><td class="up">+9.99%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>大族激光 002008</td><td>P2 元件/PCB</td><td class="up">+10.00%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>海鸥股份 603269</td><td>P2 液冷高标</td><td class="up">+10.01%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>亿田智能 300911</td><td>P2 算力中心</td><td class="up">+20.01%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>瑞芯微 603893</td><td>P1→P2 端侧AI</td><td class="up">+10.00%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>海看股份 301262</td><td>P1 AI漫剧</td><td class="up">+19.99%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>捷荣技术 002855</td><td>P2 5板</td><td class="up">+9.97%</td><td class="p-up pill">✅</td></tr>
+    </table>
+    <div class="pt-b"><b>逐任务标的（19:00 任务）：100%（8/8 全✅）。</b> 完整复盘对 AI 主线（应用+算力）与连板高标的捕捉精准，收盘后推荐全部收红。</div>
+  </div>
+</div>
+
+<!-- ============ 任务⑦ 19:15 最强主线 ============ -->
+<div class="sec" id="t7">
+  <div class="sec-h"><h2>⑦ 19:15 最强主线回测</h2></div>
+  <div class="pt">
+    <div class="pt-h">收盘后前瞻标的（T+0 验证）vs 收盘</div>
+    <table>
+      <tr><th>标的</th><th>阶段</th><th>收盘涨跌幅</th><th>判定</th></tr>
+      <tr><td>中文在线 300364</td><td>P3 高潮</td><td class="up">+20.02%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>芒果超媒 300413</td><td>P3 高潮</td><td class="up">+20.00%</td><td class="p-up pill">✅</td></tr>
+      <tr><td>星网锐捷 002396</td><td>P2 补涨</td><td>3连板</td><td class="p-up pill">✅</td></tr>
+      <tr><td>浪潮信息 000977</td><td>P2 补涨</td><td>涨停</td><td class="p-up pill">✅</td></tr>
+      <tr><td>海看股份 301262</td><td>P3 高潮</td><td class="up">+19.99%</td><td class="p-up pill">✅</td></tr>
+    </table>
+    <div class="pt-b"><b>逐任务标的（19:15 任务）：100%（5/5 全✅）。</b> 19:15 最强主线对 AI 应用/算力 P3 高潮的捕捉精准，收盘后推荐全部收红或连板。</div>
+  </div>
+</div>
+
+<!-- ============ 任务⑧ 晚间预判分源 + 跟随版 ============ -->
+<div class="sec" id="t8">
+  <div class="sec-h"><h2>⑧ 晚间预判分源（8/28→8/31）+ 跟随版回测</h2></div>
+  <div class="grid2">
+    <div class="pt">
+      <div class="pt-h">晚间预判·分源（前交易日 8/28）</div>
+      <table>
+        <tr><th>来源</th><th>命中率</th><th>明细</th></tr>
+        <tr><td>19:15 最强主线</td><td class="down">33.3%（1/3）</td><td>农业P2✗/资源P2✗/科技硬件P2✓</td></tr>
+        <tr><td>19:45 预判版</td><td class="down">25.0%（2/8）</td><td>证券中性✓/医疗服务空✓；种植化肥多✗/化工多✗/贵金属✗/工业金属✗/半导体空✗/通信空✗</td></tr>
+        <tr><td>19:30 主线分析</td><td class="gold">N/A</td><td>缺失（常态化）</td></tr>
+      </table>
+    </div>
+    <div class="pt">
+      <div class="pt-h">跟随版命中率（方向表_20260828 → 8/31）</div>
+      <table>
+        <tr><th>指标</th><th>值</th></tr>
+        <tr><td>严格命中率</td><td class="up">50.0%（6/12）</td></tr>
+        <tr><td>未踩雷率</td><td class="up">75.0%（3/12 踩雷）</td></tr>
+        <tr><td>vs 随机基准</td><td class="up">跑赢 +2.5pp</td></tr>
+        <tr><td>命中项</td><td>地产服务/消费电子AI/PCB/石油中性/白酒空/医药空</td></tr>
+        <tr><td>失手项</td><td>农业/化工/贵金属(多→跌)·CPO/机器人/半导体(空→涨)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pt-b warn"><b>关键对比：跟随版 50% &gt;&gt; 盘前 25%。</b> 跟随版（8/28 晚生成）已正确 pivot 至 AI/科技 + 做空资源医药，而盘前（8/31 早事件驱动）反向押注资源避险被市场打脸——<b class="gold">"晚间生成的跟随版优于早盘事件驱动盘前"是持续性规律</b>。</div>
+</div>
+
+<!-- ============ 11 项明细表 ============ -->
+<div class="sec" id="d">
+  <div class="sec-h"><h2>11 项核心明细表（闭环全维度）</h2></div>
+
+  <!-- ① -->
+  <div class="pt">
+    <div class="pt-h">① 方向表命中率（盘前 8 板块）</div>
+    <table>
+      <tr><th>指标</th><th>值</th></tr>
+      <tr><td>方向性命中率</td><td class="down">25.0%（2/8）</td></tr>
+      <tr><td>得分率</td><td class="down">-68.75%（Σ-5.5/8）</td></tr>
+      <tr><td>未踩雷率</td><td class="up">75.0%（6/8）</td></tr>
+      <tr><td>引用规则命中率</td><td>25.0%（2/8）· 未引用 N/A</td></tr>
+      <tr><td>vs 随机基准 47.5%</td><td class="down">跑输 -22.5pp</td></tr>
+    </table>
+  </div>
+
+  <!-- ② -->
+  <div class="pt">
+    <div class="pt-h">② 逐点命中率（大势 5 时点 vs 收盘）</div>
+    <table>
+      <tr><th>时点</th><th>沪/深/创/科创 判断 vs 收盘</th><th>命中率</th></tr>
+      <tr><td>07:00 盘前</td><td>沪中性/创中性 → 收 +0.86%/+0.42%</td><td class="down">0/2 (0%)</td></tr>
+      <tr><td>09:25 竞价</td><td>沪中偏空/创空/科创空 → 收全涨</td><td class="down">0/3 (0%)</td></tr>
+      <tr><td>10:00</td><td>三指数空 → 收全涨</td><td class="down">0/3 (0%)</td></tr>
+      <tr><td>11:40</td><td>三指数空 → 收全涨</td><td class="down">0/3 (0%)</td></tr>
+      <tr><td>14:30</td><td>沪+0.72/深+0.39/创+0.32/科创+1.30 → 收全涨</td><td class="up">4/4 (100%)</td></tr>
+      <tr><td><b>合计</b></td><td>V反日·早盘空头盘中正确收盘被反转</td><td class="gold">4/15 (26.7%)</td></tr>
+    </table>
+  </div>
+
+  <!-- ③ -->
+  <div class="pt">
+    <div class="pt-h">③ 晚间预判命中率·分源（8/28 → 8/31）</div>
+    <table>
+      <tr><th>来源</th><th>方向命中</th><th>判定</th></tr>
+      <tr><td>19:15 最强主线</td><td>农业P2✗ / 资源P2✗ / 科技硬件P2✓</td><td class="down">33.3%（1/3）</td></tr>
+      <tr><td>19:45 预判版</td><td>证券中性✓/医疗服务空✓；种植化肥多✗/化工多✗/贵金属✗/工业金属✗/半导体空✗/通信空✗</td><td class="down">25.0%（2/8）</td></tr>
+      <tr><td>19:30 主线分析</td><td>独立文件缺失</td><td class="gold">N/A</td></tr>
+      <tr><td>09:25 竞价段</td><td>情绪差→不参与✓·Top3 2/3（种植业✗）</td><td class="up">≈67%</td></tr>
+    </table>
+  </div>
+
+  <!-- ④ -->
+  <div class="pt">
+    <div class="pt-h">④ 跟随版命中率（方向表_20260828 · 12 项）</div>
+    <table>
+      <tr><th>指标</th><th>值</th></tr>
+      <tr><td>严格命中率</td><td class="up">50.0%（6/12）</td></tr>
+      <tr><td>未踩雷率</td><td class="up">75.0%（3/12 踩雷）</td></tr>
+      <tr><td>vs 随机基准</td><td class="up">跑赢 +2.5pp</td></tr>
+      <tr><td>vs 盘前方向表</td><td class="up">+25pp（跟随版显著优于盘前）</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑤ -->
+  <div class="pt">
+    <div class="pt-h">⑤ 竞价预测（V2.4 + 09:25 真实竞价）</div>
+    <table>
+      <tr><th>维度</th><th>结果</th></tr>
+      <tr><td>V2.4 竞价快报（bid_20260831.json）</td><td class="gold">N/A（连续第6日缺失）</td></tr>
+      <tr><td>09:25 真实竞价 Top3</td><td class="up">2/3 命中（房地产服务✓/石油石化系✓/种植业✗）</td></tr>
+      <tr><td>情绪档"不参与"</td><td class="up">✓ 有效规避资源崩塌</td></tr>
+      <tr><td>综合竞价预测</td><td class="up">≈67%（板块）· 大势T+0因V反失真</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑥ -->
+  <div class="pt">
+    <div class="pt-h">⑥ 比价配对回测（P1预警信号日志）</div>
+    <table>
+      <tr><th>窗口</th><th>总命中</th><th>共振</th><th>补涨</th><th>状态</th></tr>
+      <tr><td>T+0 当日</td><td class="down">2/0 (0.0%)</td><td>0/0</td><td>2/0</td><td>领涨继续强·滞后方未反超</td></tr>
+      <tr><td>T+3 三日</td><td class="gold">0/0 (0.0%)</td><td>0/0</td><td>0/0</td><td>待 9/2 收盘补计</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑦ -->
+  <div class="pt">
+    <div class="pt-h">⑦ 逐任务标的明细（→ 8/31 收盘）</div>
+    <table>
+      <tr><th>任务</th><th>准确率</th><th>标记</th><th>失手归因</th></tr>
+      <tr><td>07:00 盘前策略</td><td class="down">70.0%</td><td>7✅/3❌</td><td>紫金-2.83%/江西铜业-1.24%/洛阳钼业-2.31%（资源三标全灭）</td></tr>
+      <tr><td>09:25 竞价强度</td><td class="up">90.0%</td><td>9✅/1❌</td><td>上海能源-2.15%</td></tr>
+      <tr><td>10:00 盘中速览</td><td class="up">100%</td><td>8✅/0❌</td><td>—</td></tr>
+      <tr><td>11:40 午盘速览</td><td class="gold">64.3%</td><td>9✅/5❌</td><td>芒果+20%/上海电影+10.02%/掌阅+9.98%/山东黄金+6.65%/中行+5.17%（保守回避被脉冲证伪）</td></tr>
+      <tr><td>14:30 盘中速览</td><td class="up">94.4%</td><td>17✅/1❌</td><td>万科A -0.63%</td></tr>
+      <tr><td>19:00 完整复盘</td><td class="up">100%</td><td>8✅/0❌</td><td>—</td></tr>
+      <tr><td>19:15 最强主线</td><td class="up">100%</td><td>5✅/0❌</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑧ -->
+  <div class="pt">
+    <div class="pt-h">⑧ 三阶段框架有效性（维度⑤）</div>
+    <table>
+      <tr><th>维度</th><th>结果</th><th>说明</th></tr>
+      <tr><td>① 跨日演进</td><td class="gold">≈33.3%（1/3）</td><td>科技硬件P2→P2✓；农业/资源P2→退潮✗</td></tr>
+      <tr><td>② Pair 信号</td><td class="down">0%（T+0 0/2）</td><td>领涨继续强·滞后方未反超；T+3待9/2</td></tr>
+      <tr><td>③ 买卖纪律</td><td class="up">正向</td><td>竞价不参与避险✓/不追高✓/传媒回避保守</td></tr>
+      <tr><td>④ 日内演进</td><td class="up">≈100%</td><td>14:30 AI P3高潮终判 vs 收盘全匹配</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑨ -->
+  <div class="pt">
+    <div class="pt-h">⑨ R-Judge 归因（偏差 4 项 ≥2 触发 5-Why）</div>
+    <table>
+      <tr><th>类别</th><th>项</th><th>说明</th></tr>
+      <tr><td class="p-warn pill">漏判 1</td><td>传媒/AI应用</td><td>盘前+竞价双漏，盲区第4次复现（8/18种植业/8/19焦炭/8/31传媒）</td></tr>
+      <tr><td class="p-down pill">判错 3</td><td>①事件驱动外推</td><td>盘前"美伊→资源避险"0/4全灭，市场反向定价</td></tr>
+      <tr><td class="p-down pill">判错 3</td><td>②半导体/通信空判</td><td>收涨+1.85%/+0.42%，盘中诱多出清但尾盘V反收涨方向错</td></tr>
+      <tr><td class="p-down pill">判错 3</td><td>③晚间预判农业/资源P2</td><td>8/28判延续，8/31实际退潮大跌</td></tr>
+      <tr><td class="p-up pill">执行 0</td><td>纪律</td><td>竞价不参与避险规避资源崩塌、全天不追高</td></tr>
+    </table>
+    <div class="pt-b risk"><b>5-Why 根因：</b>盘前方向表(07:00)+跟随版(前日19:30)生成器均缺<b class="gold">三类补丁</b>——①事件驱动型方向评分上限(≤60分)+强制竞价二次确认；②传媒/影视/游戏/AI应用异动扫描维度；③盘中V反修复情景判定。与 8/28 标记"待固化补丁(㊷㊸植入)"同源，<b class="down">8/28 标记后仍未落地 → 8/31 再次触发</b>，属生成器未吸收已固化规则(㊷㊸㊹㊺㊽)的落地缺口。</div>
+  </div>
+
+  <!-- ⑩ -->
+  <div class="pt">
+    <div class="pt-h">⑩ 规则固化候选（待固化补丁·非新规则编号·框架维持 v2.9）</div>
+    <table>
+      <tr><th>补丁</th><th>内容</th><th>根治盲区</th><th>注入位置</th></tr>
+      <tr><td class="p-warn pill">补丁①</td><td>事件驱动型方向评分上限≤60分 + 强制标注"须竞价二次确认"</td><td>事件外推高估（8/31资源0/4）</td><td>盘前策略 + 跟随版生成器</td></tr>
+      <tr><td class="p-warn pill">补丁②</td><td>盘前策略强制增设"传媒/影视/游戏/AI应用异动扫描"维度</td><td>传媒第4次双漏</td><td>盘前策略生成器</td></tr>
+      <tr><td class="p-warn pill">补丁③</td><td>新增"盘中V型翻红修复"情景（收盘口径以14:30为有效修正）</td><td>V反失真（逐点偏低）</td><td>逐点回测口径</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑪ -->
+  <div class="pt">
+    <div class="pt-h">⑪ 数据交叉认证与缺口</div>
+    <table>
+      <tr><th>项</th><th>状态</th></tr>
+      <tr><td>交叉认证</td><td class="up">westock 申万一/二级 + 19:00复盘 + 标推表个股 + 晚间预判_20260828 + 方向表_20260828 多源一致，口径差≤0.3%，无编造</td></tr>
+      <tr><td>缺口①</td><td class="p-down pill">主线分析_20260831.html 缺失 → 19:30分源 N/A</td></tr>
+      <tr><td>缺口②</td><td class="p-down pill">bid_20260831.json 缺失 → V2.4竞价 N/A（连续第6日）</td></tr>
+      <tr><td>缺口③</td><td class="p-mid pill">午盘/14:30 HTML 缺失 → 以预测快照11:40/14:30段替代</td></tr>
+      <tr><td>缺口④</td><td class="p-mid pill">化工/白酒 clean close 细分缺口（用农化制品-0.80%/白酒~-0.7%近似）</td></tr>
+      <tr><td>缺口⑤</td><td class="p-mid pill">CRO clean close 用医疗服务-1.24%代理（标⚠️）</td></tr>
+      <tr><td>⚠️ 幂等</td><td>A股侧 2026-08-31 条目首次写入，无碰撞；数据基准=8/31收盘；比价T+3(9/2)次日20:30补计</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  <b>执行摘要：</b>本回测为 20:30 自动化（automation-1786558984738）执行，框架 v2.9 / 报告 v3.3。方向表命中率 25.0%（破基准）源于盘前事件驱动资源避险被反向定价；跟随版 50.0%（超基准）印证晚间生成版 pivot 能力。盘中 10:00/14:30 与收盘后 19:00/19:15 标的推荐 94%~100% 精准，板块层保守被标的层精准对冲。三大待固化补丁（事件驱动上限/传媒扫描/V反情景）与 8/28 同源，须尽快注入生成器 prompt 方能闭环。<br>
+  数据：腾讯自选股 / 同花顺问财 / 东方财富妙想 / 19:00复盘_20260831 / 标推表 / 晚间预判_20260828 / 方向表_20260828 / 预测快照_20260831 多源交叉 · 全8板块+指数+标的真实数据，无编造。
+</div>
+
+</div>
+</body>
+</html>

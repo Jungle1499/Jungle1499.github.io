@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>新交易体系 v3.77 · 回测结论分享</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--card2:#1c2333;--border:#30363d;--text:#e6edf3;--sub:#8b949e;--red:#f85149;--green:#3fb950;--gold:#d29922;--blue:#58a6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75;font-size:13px;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:22px;text-align:center;margin-bottom:6px}
+.sub{text-align:center;color:var(--sub);font-size:12px;margin-bottom:28px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:18px}
+.card h2{font-size:16px;margin-bottom:14px;padding-left:10px;border-left:4px solid var(--gold);color:var(--gold)}
+.card h3{font-size:14px;margin:14px 0 8px;color:var(--blue)}
+p{font-size:13px;margin:8px 0}
+.up{color:var(--red);font-weight:600}
+.down{color:var(--green);font-weight:600}
+.flat{color:var(--sub)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px}
+th{background:var(--card2);color:var(--gold);font-weight:600;padding:9px 8px;text-align:left;border:1px solid var(--border);white-space:nowrap;font-size:12px}
+td{padding:9px 8px;border:1px solid var(--border);vertical-align:top;font-size:12px}
+tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.tag-red{background:rgba(248,81,73,.15);color:var(--red);border:1px solid var(--red)}
+.tag-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid var(--green)}
+.tag-blue{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid var(--blue)}
+.tag-gold{background:rgba(210,153,34,.15);color:var(--gold);border:1px solid var(--gold)}
+.warn{background:rgba(248,81,73,.08);border-left:3px solid var(--red);padding:12px 14px;margin:12px 0;border-radius:6px;font-size:13px}
+.ok{background:rgba(63,185,80,.08);border-left:3px solid var(--green);padding:12px 14px;margin:12px 0;border-radius:6px;font-size:13px}
+.note{background:rgba(88,166,255,.08);border-left:3px solid var(--blue);padding:12px 14px;margin:12px 0;border-radius:6px;font-size:13px}
+.big{background:var(--card2);border:1px solid var(--gold);border-radius:8px;padding:16px 18px;margin:14px 0;text-align:center}
+.big .n{font-size:20px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.big .lbl{font-size:12px;color:var(--sub)}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.btn{display:inline-block;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:10px 16px;margin:6px 8px 6px 0;color:var(--text);font-size:13px}
+.btn:hover{border-color:var(--gold);color:var(--gold);text-decoration:none}
+.btn .t{font-weight:600}
+.btn .d{display:block;color:var(--sub);font-size:11px;margin-top:2px}
+ul{margin:8px 0 8px 20px}
+li{font-size:13px;margin:5px 0}
+.footer{text-align:center;color:var(--sub);font-size:11px;margin-top:28px;padding-top:16px;border-top:1px solid var(--border)}
+code{background:var(--card2);padding:1px 5px;border-radius:3px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>新交易体系 v3.77 · 回测结论分享</h1>
+<div class="sub">框架 Bootstrap + Regime-Conditional 可行性验证 · 生成于 2026-09-02</div>
+
+<!-- ① 结论 -->
+<div class="card">
+<h2>① 一句话结论（先看这）</h2>
+<div class="warn">
+<strong>这套框架是 <span class="tag tag-gold">regime-conditional</span> 的 —— 牛市段可推、弱市段必须门控拦截。</strong><br>
+用它去"推测公司 / 推测派尔"，<strong>不能裸跑</strong>：必须先过 11.1 大盘阶段门控，退潮/弱势 regime 下 P1 试错与 P2 加仓信号整体降级为「观察」。
+</div>
+
+<div class="note">
+<strong>为什么这么判？</strong> 同一套 7 状态机，在 4.1→8.31 全窗口（含 6 月高点）与 7.1→8.31 弱市窗口跑出的命中率完全是两个体系 —— 差别不在框架本身，而在 <strong>市场 regime</strong>。
+</div>
+</div>
+
+<!-- ② Regime 矩阵 -->
+<div class="card">
+<h2>② Regime 对照矩阵（核心证据）</h2>
+<table>
+<thead>
+<tr>
+<th>Framework 动作</th>
+<th>牛市段（4–6 月）</th>
+<th>弱市段（7–8 月）</th>
+<th>判定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P1 确认</strong> 试错买入龙头</td>
+<td><span class="up">47.3%</span> / <span class="up">+0.08%</span></td>
+<td><span class="down">39.6%</span> / <span class="down">−1.55%</span></td>
+<td><span class="tag tag-gold">分 regime</span></td>
+</tr>
+<tr>
+<td><strong>P2 确认</strong> 加仓补涨</td>
+<td><span class="up">44.2%</span> / <span class="down">−0.50%</span></td>
+<td><span class="down">35.0%</span> / <span class="down">−4.28%</span></td>
+<td><span class="tag tag-gold">分 regime</span></td>
+</tr>
+<tr>
+<td><strong>P3 确认</strong> 清仓退出</td>
+<td><span class="up">60.2%</span> / <span class="down">−1.08%</span></td>
+<td><span class="up">56.2%</span> / <span class="down">−0.86%</span></td>
+<td><span class="tag tag-green">跨 regime 稳定</span></td>
+</tr>
+</tbody>
+</table>
+<p style="font-size:11px;color:var(--sub)">表格格式：<code>命中率 / 1 周前瞻平均收益</code>。数据源 baostock（16–17 只行业 ETF 复权 K）+ 上证指数 sh.000001 双源交叉。</p>
+
+<div class="ok">
+<strong>唯一跨 regime 都站得住的：P3 清仓。</strong>命中率两窗口都在 56–60%，说明「退潮退出」这条规则自带 alpha，不依赖市场环境 —— 这是框架最该保留的模块。
+</div>
+
+<div class="warn">
+<strong>被打脸最狠的：弱市段 P2 加仓补涨 −4.28%。</strong>这与 8/31 已记录的「S2 系统性追顶」教训完全吻合 —— 震荡弱势市追已涨的板块 = 买在反弹末端，不是偶发，是 regime 真相。
+</div>
+</div>
+
+<!-- ③ 三项改进行动 -->
+<div class="card">
+<h2>③ 落地改进行动（已写入铁律 §0）</h2>
+<table>
+<thead>
+<tr><th style="width:32%">行动</th><th>具体做法</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>① Regime 门控</strong></td>
+<td>11.1 大盘阶段 = 退潮/弱势 → P1/P2 信号强制降级「观察」，只保留 P3 退出</td>
+</tr>
+<tr>
+<td><strong>② 叙事 stage 过滤</strong></td>
+<td>加仓信号必须先过「叙事本身 stage 是否正确」过滤，不只看相对强度</td>
+</tr>
+<tr>
+<td><strong>③ 低吸反弹单列</strong></td>
+<td>「距高 ≤ −20% 且 c5 由负转正」独立成节点（8/31 已测：1 周胜率 89.5%）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ④ 报告入口 -->
+<div class="card">
+<h2>④ 完整报告入口</h2>
+<p>点击下方按钮查看完整回测报告（含 7 章节、逐 ETF 明细、数据源校验）：</p>
+
+<a class="btn" href="./backtest_full.html">
+  <span class="t">📊 全量版回测报告（4.1 → 8.31）</span>
+  <span class="d">104 个交易日 · 含 6 月高点 P2 主升段 · regime 对照矩阵 · 推荐看这份</span>
+</a>
+
+<a class="btn" href="./backtest_2m.html">
+  <span class="t">📉 轻量版回测报告（7.1 → 8.31）</span>
+  <span class="d">44 个交易日 · 纯弱市/震荡 regime · 聚焦 P2 追顶打脸实证</span>
+</a>
+
+<a class="btn" href="./铁律.md">
+  <span class="t">📜 框架铁律 v3.77（Markdown 原文）</span>
+  <span class="d">14 章结构 · ⑤⑥⑦⑧ 完整定义 · 自循环闭环 · 数据源/模型降级铁律</span>
+</a>
+</div>
+
+<!-- ⑤ 框架结构速览 -->
+<div class="card">
+<h2>⑤ 框架结构速览（14 章 + 自循环）</h2>
+<h3>自循环强化闭环（铁律 §0，任何自动化必须跑满六步）</h3>
+<p style="font-family:monospace;font-size:12px;background:var(--card2);padding:12px;border-radius:6px;line-height:1.9">
+① 采集（同花顺 + westock + iFinD + 腾讯 qt 4 轨）<br>
+→ ② 沉淀（七库：股票库 / 板块库 / 配对池 / 监控池 / DIR / COG / 复盘笔记）<br>
+→ ③ 报告（14 章，重点 ⑤⑥⑦⑧）<br>
+→ ④ 预测（第 ⑪ 章 → <code>predictions.json</code>）<br>
+→ ⑤ 回溯校验（次日 5.x 章验证昨日 11.x，命中率/能力评分）<br>
+→ ⑥ 学习沉淀（错题本 + 认知台账 COG）<br>
+→ <span class="tag tag-gold">自循环回到 ①</span>
+</p>
+
+<h3>⑤⑥⑦⑧ 四章定位（用户指定重点，照搬原 spec）</h3>
+<table>
+<thead><tr><th style="width:8%">章</th><th style="width:24%">标题</th><th>核心内容</th></tr></thead>
+<tbody>
+<tr><td><strong>⑤</strong></td><td>上个交易日交易计划验证</td><td>5.1 市场方向 / 5.2 新进板块（4 列）/ 5.3 进攻方向（8 列）/ 5.4 个股作战（10 列）/ 5.5 反思总结 ——「预判 → 验证 → 打分 → 反思 → 回填」闭环</td></tr>
+<tr><td><strong>⑥</strong></td><td>全球股市扫描（科技）</td><td>美股/日股/韩股/港股/台股 → 科技子板块涨跌 + 逻辑 → 核心大票 → 映射回 A 股叙事</td></tr>
+<tr><td><strong>⑦</strong></td><td>当日大盘扫描（自上而下）</td><td>7.1 主线分析（大盘→板块→资金）/ 7.2 驱动因素（归因链）/ 7.3 核心龙头</td></tr>
+<tr><td><strong>⑧</strong></td><td>异常启动股票扫描（自下而上）</td><td>8.1 连板 / 8.2 涨停 / 8.3 大涨 / 8.4 监控池 / 8.5 叙事总结 / 8.6 Pair 推荐 / 8.7 回写闭环</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ⑥ 7 状态机 -->
+<div class="card">
+<h2>⑥ 三阶段 7 状态机（全篇阶段判定统一口径）</h2>
+<table>
+<thead><tr><th style="width:14%">状态</th><th style="width:30%">触发条件</th><th style="width:22%">对应操作</th><th>颜色</th></tr></thead>
+<tbody>
+<tr><td><span class="tag tag-green">P1 预警</span></td><td>龙头第 1 天跑赢补涨</td><td>观察，第 2 天确认则试错</td><td style="color:#3fb950">绿 #3fb950</td></tr>
+<tr><td><span class="tag tag-green">P1 确认</span></td><td>龙头连续 2 天跑赢补涨</td><td>试错买入龙头</td><td style="color:#3fb950">绿 #3fb950</td></tr>
+<tr><td><span class="tag tag-blue">P2 预警</span></td><td>补涨第 1 天跑赢龙头</td><td>观察，第 2 天确认则加仓</td><td style="color:#58a6ff">蓝 #58a6ff</td></tr>
+<tr><td><span class="tag tag-blue">P2 确认</span></td><td>补涨连续 2 天跑赢龙头</td><td>加仓补涨</td><td style="color:#58a6ff">蓝 #58a6ff</td></tr>
+<tr><td><span class="tag tag-red">P3 预警</span></td><td>龙头再第 1 天跑赢</td><td>观察，第 2 天确认则清仓</td><td style="color:#f85149">红 #f85149</td></tr>
+<tr><td><span class="tag tag-red">P3 确认</span></td><td>龙头再连续 2 天跑赢</td><td>清仓（W1 结束）</td><td style="color:#f85149">红 #f85149</td></tr>
+<tr><td><span class="tag tag-gold">中断</span></td><td>进入 P1 后龙头连续跌 2 天</td><td>Wave 中断，退出观望</td><td style="color:#d29922">金 #d29922</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ⑦ 数据源 -->
+<div class="card">
+<h2>⑦ 数据源铁律校验（双源交叉）</h2>
+<table>
+<thead><tr><th style="width:22%">数据源</th><th style="width:14%">状态</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><strong>baostock</strong></td><td><span class="tag tag-green">✅ 主源</span></td><td>17 只行业 ETF + 上证指数复权 K 线，104 天干净。已用 <code>pctChg</code> 链式重建规避 sh.512480 半导体 7/3 约 2:1 份额拆分陷阱</td></tr>
+<tr><td><strong>westock</strong></td><td><span class="tag tag-green">✅ 交叉</span></td><td>上证指数 sh000001 独立取到 44 天干净 hfq，与 baostock 对账一致</td></tr>
+<tr><td><strong>腾讯 qt.gtimg.cn</strong></td><td><span class="tag tag-green">✅ 兜底</span></td><td>实时快照对账通道已验证可用</td></tr>
+<tr><td><strong>同花顺问财 MCP</strong></td><td><span class="tag tag-red">❌ 429</span></td><td>本次触发 <code>Exceeded the limit of 1000 times</code>，按铁律 §6 降级到 baostock + westock + 腾讯兜底三轨</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<strong>统计显著性声明：</strong>本回测为轻量版（单 ETF vs 指数的 leader/lag 简化代理），每个 regime 30–170 个样本，alpha 置信区间跨 0，
+<strong>结论方向性可信，但不足以支撑仓位决策</strong>。完整版需引入真实 Pair 识别 + 叙事 stage 过滤 + 监控池。
+</div>
+</div>
+
+<div class="footer">
+新交易体系 v3.77 · 框架 Bootstrap 于 2026-09-02<br>
+数据源：baostock / westock / 腾讯财经　模型：Hy4-preview<br>
+<span style="color:var(--sub)">本报告为量化研究记录，不构成投资建议</span>
+</div>
+
+</div>
+</body>
+</html>

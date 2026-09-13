@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>P1 预警推送提醒 · 模板（三阶段 Pair 三段论）</title>
+<style>
+  :root{
+    --gray:#6b7280; --green:#16a34a; --blue:#2563eb; --red:#dc2626;
+    --bg:#f7f8fa; --card:#ffffff; --line:#e5e7eb; --ink:#1f2329; --sub:#646a73;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;}
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px;}
+  .tpl-tag{display:inline-block;background:#fff7e6;color:#d48806;border:1px solid #ffe7ba;
+    padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;margin-bottom:10px;}
+  h1{font-size:24px;margin:6px 0 4px;}
+  .sub{color:var(--sub);font-size:14px;margin-bottom:22px;}
+  .sec{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;margin-bottom:18px;}
+  .sec h2{font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .sec h2::before{content:"";width:4px;height:18px;background:var(--blue);border-radius:2px;}
+  .gate{background:#fffbe6;border:1px solid #ffe58f;border-radius:10px;padding:14px 16px;margin:6px 0 4px;}
+  .gate b{color:var(--red);font-size:15px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:#fafafa;font-weight:600;}
+  .pill{display:inline-block;padding:1px 9px;border-radius:11px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;}
+  .c-gray{background:var(--gray);} .c-green{background:var(--green);}
+  .c-blue{background:var(--blue);} .c-red{background:var(--red);}
+  /* 飞书卡片预览 */
+  .chat{background:#eef0f3;border-radius:12px;padding:16px;margin-top:6px;}
+  .bubble{max-width:560px;background:#fff;border:1px solid var(--line);border-radius:8px;
+    padding:12px 14px;margin:0 0 14px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .bubble .h{font-weight:700;font-size:14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+  .bubble .meta{font-size:12px;color:var(--sub);}
+  .bubble .row{font-size:13.5px;margin:4px 0;}
+  .up{color:var(--red);font-weight:600;} .down{color:var(--green);font-weight:600;}
+  .live-up{background:#fdeaea;} .live-down{background:#e3f5ec;}
+  .kv{display:flex;gap:8px;font-size:13px;margin:3px 0;}
+  .kv .k{color:var(--sub);min-width:64px;}
+  .note{font-size:12.5px;color:var(--sub);background:#fafafa;border-left:3px solid var(--line);padding:8px 12px;border-radius:0 6px 6px 0;margin-top:10px;}
+  /* 看板 */
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+  .pcard{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;}
+  .pcard .pn{font-weight:700;font-size:13.5px;}
+  .pcard .st{font-size:12px;margin:4px 0;}
+  .pcard .lr{font-size:12px;color:var(--sub);}
+  .footer{font-size:12px;color:var(--sub);text-align:center;margin-top:24px;}
+  code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tpl-tag">⚠️ 模板预览 · 非实跑</span>
+  <h1>P1 预警推送提醒 · 模板</h1>
+  <div class="sub">基于对话《调整P1预警启动机制》的「三阶段 Pair 三段论」策略 · 改造为飞书推送提醒版</div>
+
+  <!-- 一、策略核心 -->
+  <div class="sec">
+    <h2>一、策略核心（一句话）</h2>
+    <p style="margin:6px 0;">对一组 <b>股票 A / 最佳拟合 B</b> 的配对，跟踪两者每日涨幅，按 <b>W1 波 → P1/P2/P3 阶段</b> 三段论判定主线强弱轮换；<b>阶段切换时</b>向飞书推送预警。</p>
+    <div class="gate">
+      ⭐ <b>P1 预警启动门：pair 中至少一只股票单日涨幅 ≥ 7%</b> 才进入 P1 预警；在此之前为「⓪ 等待信号（空仓）」。<br/>
+      触发后：触发日涨得多者=龙头（连赢第1天）；龙头连续 2 天跑赢补涨 → <b>P1 确认</b>。
+    </div>
+  </div>
+
+  <!-- 二、阶段与操作建议 -->
+  <div class="sec">
+    <h2>二、阶段色卡 + 操作建议（九态）</h2>
+    <table>
+      <thead><tr><th>状态</th><th>判定（连续两天口径）</th><th>操作建议</th><th>配色</th></tr></thead>
+      <tbody>
+        <tr><td>⓪ 等待信号</td><td>无 ≥7% 信号</td><td>空仓等待</td><td><span class="pill c-gray">灰</span></td></tr>
+        <tr><td>① P1 预警</td><td>两股同涨首日，龙头&gt;补涨（已≥7%触发）</td><td>试错仓位</td><td><span class="pill c-green">绿</span></td></tr>
+        <tr><td>② P1 确认</td><td>龙头连续 2 天强于补涨</td><td>继续加试错</td><td><span class="pill c-green">绿</span></td></tr>
+        <tr><td>③ P2 预警</td><td>补涨开始强于龙头</td><td>继续加仓</td><td><span class="pill c-blue">蓝</span></td></tr>
+        <tr><td>④ P2 确认</td><td>补涨连续 2 天强于龙头</td><td>调仓加仓</td><td><span class="pill c-blue">蓝</span></td></tr>
+        <tr><td>⑤ P3 预警</td><td>龙头再度强于补涨</td><td>准备降仓</td><td><span class="pill c-red">红</span></td></tr>
+        <tr><td>⑥ P3 确认</td><td>龙头连续 2 天强于补涨</td><td>准备清仓</td><td><span class="pill c-red">红</span></td></tr>
+        <tr><td>⑦ 中断</td><td>P1确认后连跌 2 天（假突破）</td><td>重新判断新 P1</td><td><span class="pill c-gray">灰</span></td></tr>
+        <tr><td>⑧ W1 结束</td><td>P3确认后龙头转跌</td><td>清仓离场</td><td><span class="pill c-gray">灰/红</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      关键规则：① P1确认后直接连跌2天 → 中断（非真 Wave），回等待信号；② 一个 Wave 内 P2确认后不回P1、P3确认后不回P2；③ P3 可在下跌中完成（龙头跌幅&lt;补涨）；④ P3确认阶段即便龙头≥7%，仍属 P3 延续，不是新 Wave 的 P1。<br/>
+      🎨 配色约定：<b>P1=绿 / P2=蓝 / P3=红 / 等待·中断=灰</b>（这是<b>阶段色</b>）；而个股行情本身 <b>涨=红、跌=绿</b>（A股惯例），二者独立，勿混。
+    </div>
+  </div>
+
+  <!-- 三、飞书推送卡片预览 -->
+  <div class="sec">
+    <h2>三、飞书推送卡片预览（模板样式）</h2>
+    <div class="chat">
+      <!-- 卡片1：P1预警启动 -->
+      <div class="bubble">
+        <div class="h"><span>🚀 P1 预警启动（Wave 启动）</span><span class="meta">09:42</span></div>
+        <div class="kv"><span class="k">Pair</span><span><b>耐科装备 / 光力科技</b>　★龙头：耐科装备</span></div>
+        <div class="kv"><span class="k">触发</span><span>耐科装备 单日 <span class="up">+7.3%</span> ≥7% → 进入 P1 预警</span></div>
+        <div class="kv"><span class="k">建议</span><span><span class="pill c-green">试错仓位</span></span></div>
+        <div class="row">实时：耐科装备 <span class="up">+7.3%</span> / 光力科技 <span class="down">-0.4%</span></div>
+      </div>
+      <!-- 卡片2：P2预警 -->
+      <div class="bubble">
+        <div class="h"><span>📈 P2 预警（补涨启动）</span><span class="meta">10:15</span></div>
+        <div class="kv"><span class="k">Pair</span><span><b>迈为股份 / 奥特维</b>　★龙头：迈为股份</span></div>
+        <div class="kv"><span class="k">信号</span><span>补涨(奥特维)开始强于龙头 → P2 预警</span></div>
+        <div class="kv"><span class="k">建议</span><span><span class="pill c-blue">继续加仓</span></span></div>
+      </div>
+      <!-- 卡片3：P3预警/清仓 -->
+      <div class="bubble">
+        <div class="h"><span>⚠️ P3 预警（准备降仓）</span><span class="meta">14:08</span></div>
+        <div class="kv"><span class="k">Pair</span><span><b>国瓷材料 / 新疆众和</b>　★龙头：国瓷材料</span></div>
+        <div class="kv"><span class="k">信号</span><span>龙头再度强于补涨 2 天 → P3 预警</span></div>
+        <div class="kv"><span class="k">建议</span><span><span class="pill c-red">准备降仓 → 下一步清仓</span></span></div>
+      </div>
+      <!-- 卡片4：中断 -->
+      <div class="bubble">
+        <div class="h"><span>⛔ 中断提醒（假突破）</span><span class="meta">13:30</span></div>
+        <div class="kv"><span class="k">Pair</span><span><b>某 Pair A / B</b></span></div>
+        <div class="kv"><span class="k">信号</span><span>P1 确认后连续 2 日下跌 → 中断，回等待信号</span></div>
+        <div class="kv"><span class="k">建议</span><span><span class="pill c-gray">重新等待新 P1</span></span></div>
+      </div>
+    </div>
+    <div class="note">推送触发点：阶段发生切换时推送（重点 ⓪→① Wave启动、各确认点、⑤ P3预警、⑥ 清仓、⑦ 中断）。每条含：Pair名+★龙头、当前阶段、建议动作、龙头/补涨当日涨跌（涨红跌绿）、背景按龙头涨跌浅红/浅绿。</div>
+  </div>
+
+  <!-- 四、监控看板 mockup -->
+  <div class="sec">
+    <h2>四、监控看板（模板样例 · 实跑时按真实 pair 池填充）</h2>
+    <div class="board">
+      <div class="pcard"><div class="pn">耐科装备 / 光力科技</div><div class="st"><span class="pill c-green">① P1 预警</span></div><div class="lr">★龙头 耐科装备 +7.3% / 光力科技 -0.4%</div></div>
+      <div class="pcard"><div class="pn">迈为股份 / 奥特维</div><div class="st"><span class="pill c-blue">③ P2 预警</span></div><div class="lr">★龙头 迈为股份 +2.1% / 奥特维 +4.6%</div></div>
+      <div class="pcard"><div class="pn">国瓷材料 / 新疆众和</div><div class="st"><span class="pill c-red">⑤ P3 预警</span></div><div class="lr">★龙头 国瓷材料 -5.5% / 新疆众和 -8.9%</div></div>
+      <div class="pcard"><div class="pn">某 Pair C / D</div><div class="st"><span class="pill c-gray">⓪ 等待信号</span></div><div class="lr">暂无 ≥7% 信号</div></div>
+      <div class="pcard"><div class="pn">某 Pair E / F</div><div class="st"><span class="pill c-gray">⑦ 中断</span></div><div class="lr">P1 后连跌2日，重新等待</div></div>
+      <div class="pcard"><div class="pn">某 Pair G / H</div><div class="st"><span class="pill c-green">② P1 确认</span></div><div class="lr">★龙头 连赢2日</div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    本页为「P1 预警推送提醒」模板预览 · 数据均为样例 · 确认后接入真实 pair 池 + K线源（westock/wind）+ 飞书定时推送<br/>
+    策略来源：对话《调整P1预警启动机制》· 三阶段 Pair 三段论 v4.7（17 条规则）
+  </div>
+</div>
+</body>
+</html>

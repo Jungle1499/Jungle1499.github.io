@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 2026-08-31</title>
+<style>
+  :root {
+    --red: #c62828; --red-light: #e53935;
+    --green: #2e7d32; --green-light: #43a047;
+    --blue: #0d47a1; --blue-dark: #1a237e;
+    --orange: #e65100; --orange-light: #f57c00;
+    --bg: #f5f7fa; --card: #ffffff; --text: #1a1a2e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text);
+    max-width: 680px; margin: 0 auto; padding: 12px;
+    line-height: 1.6; font-size: 14px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+    color: #fff; padding: 20px 16px; border-radius: 12px;
+    margin-bottom: 14px; text-align: center;
+  }
+  .header h1 { font-size: 20px; margin-bottom: 6px; letter-spacing: 1px; }
+  .header .date { font-size: 13px; opacity: 0.85; margin-bottom: 10px; }
+  .header .song {
+    font-size: 12px; opacity: 0.75; font-style: italic;
+    border-top: 1px solid rgba(255,255,255,0.2); padding-top: 8px; margin-top: 8px;
+  }
+  .block-panel {
+    background: var(--card); border-radius: 10px;
+    padding: 14px 12px; margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .block-panel h2 {
+    font-size: 15px; color: var(--blue-dark);
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 2px solid var(--blue); display: inline-block;
+  }
+  .block-white { background: var(--card); border-radius: 10px; padding: 14px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .block-white h2 { font-size: 15px; color: var(--blue-dark); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--blue); display: inline-block; }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600; margin-right: 6px;
+  }
+  .tag-red { background: #ffebee; color: var(--red); }
+  .tag-green { background: #e8f5e9; color: var(--green); }
+  .tag-blue { background: #e3f2fd; color: var(--blue); }
+  .tag-orange { background: #fff3e0; color: var(--orange); }
+  .score-circle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-weight: 700; font-size: 13px; color: #fff;
+  }
+  .score-high { background: var(--red); }
+  .score-mid { background: var(--orange); }
+  .score-low { background: var(--green); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  th { background: var(--blue-dark); color: #fff; padding: 8px 6px; text-align: center; font-weight: 600; white-space: nowrap; }
+  td { padding: 7px 6px; text-align: center; border-bottom: 1px solid #eee; white-space: nowrap; }
+  tr:nth-child(even) { background: #fafbfc; }
+  .text-red { color: var(--red); font-weight: 600; }
+  .text-green { color: var(--green); font-weight: 600; }
+  .text-blue { color: var(--blue); font-weight: 600; }
+  .text-orange { color: var(--orange); font-weight: 600; }
+  .logic-chain { margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid var(--blue); }
+  .logic-chain .step { font-size: 12px; margin-bottom: 4px; }
+  .logic-chain .arrow { color: var(--blue); font-weight: 700; }
+  .flash-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e0e0e0; font-size: 13px; }
+  .flash-item:last-child { border-bottom: none; }
+  .risk-box { background: #fff3e0; border-left: 3px solid var(--orange); padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
+  .discipline-box { background: #e8f5e9; border-left: 3px solid var(--green); padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
+  .calendar-box { background: #e3f2fd; border-left: 3px solid var(--blue); padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .footer { text-align: center; font-size: 11px; color: #888; margin-top: 16px; padding: 12px; }
+  .highlight { background: #fffde7; padding: 2px 4px; border-radius: 3px; }
+  .small { font-size: 11px; color: #666; }
+</style>
+</head>
+<body>
+
+<!-- 1. 标题区 -->
+<div class="header">
+  <h1>每日盘前策略</h1>
+  <div class="date">2026年8月31日 星期一 | 农历七月十九</div>
+  <div class="song">"像风一样自由" — 许巍<br>「我像风一样自由，就像你的温柔无法挽留」</div>
+</div>
+
+<!-- 2. 核心摘要 -->
+<div class="block-panel">
+  <h2>核心摘要</h2>
+  <p style="font-size:13px; margin-top:8px">
+    <span class="tag tag-blue">承接昨日</span>
+    8/28沪指3956.57（+1.13%）站上3950、科创50+3.77%领涨，成交2.14万亿放量3191亿；涨跌比1.75（3394涨/1944跌）、涨停78家——<b>广度强势但内部已现"高低切换"</b>：高位科技硬件（半导体/通信/CPO）遭主力巨额兑现（半导体-128亿、电子-187亿、通信-63亿、CPO-49亿、存储芯片-90亿），资金转向周期资源（化学制品+61亿、工业金属+24亿、农化+24亿）。8/28盘前（基于T-1=8/27数据）判"AI硬件多"在8/28实盘被证伪——半导体/通信单日巨额出货，呈典型退潮出货（背离四象限：涨+净流出=🟠诱多出货）。
+  </p>
+  <p style="font-size:13px; margin-top:10px">
+    <span class="tag tag-orange">核心信号</span>
+    <b>周末美伊军事升级，压倒一切的主线变量</b>：美军北京时间8/31凌晨袭击伊朗南部拉腊克岛（霍尔木兹），伊朗向美军舰艇发射导弹——美伊从"代理人冲突"升级为<b>直接军事对抗</b>。周一早盘WTI原油跳空+2.34%至84.7美元、布伦特重返90美元（+2.3%）；霍尔木兹海峡通航量仅约13.6艘/日（油气船6.1艘），油价中枢抬升至89-90美元。地缘风险溢价重置，避险逻辑压倒产业因子（AI/新能源）。
+  </p>
+  <p style="font-size:13px; margin-top:10px">
+    <span class="tag tag-red">今日展望</span>
+    8/28美股收跌（道指-0.02%/标普-0.25%/纳指-0.52%，英伟达-4%拖累；费半上周收跌），周一美股期货平稳（纳指+0.08%/道指-0.1%），富时A50 -0.31%、现货金4436（-0.4%低开，受美元反弹压制但地缘支撑）。今日A股大概率<b>资源/能源/军工/黄金避险占优，高位科技承压</b>。仓位建议<b>≤50%</b>（估值PE分位~88-90%逼近红线→上限不上调），主攻石油石化/工业金属/贵金属/军工（资源避险合计≤30%），银行防御≤10%，现金≥50%。铁律A 9:25复核。
+  </p>
+  <p style="font-size:12px; margin-top:10px; color:#666">
+    <b>情绪周期定位</b>：8/28为广度强势日（非退潮），但内部结构已转"高位科技出货+周期资源接棒"；周末地缘冲击使<b>今日主导动作=避险/资源切换</b>。<b>今日主线</b>=石油石化(P1事件驱动)·工业金属/铜(P2真趋势双正)·贵金属(P2修复)·军工(P1事件)。<b>退潮端</b>=半导体/通信/CPO（8/28巨额出货+美股费半弱+风险off）。<b>承接8/28盘前预判</b>：有色/贵金属"多"成立，AI硬件"多"失败（须复盘归因）。
+  </p>
+</div>
+
+<!-- 3. 决策逻辑链 -->
+<div class="block-panel">
+  <h2>决策逻辑链</h2>
+  
+  <div class="logic-chain">
+    <div class="step"><b>链① 美伊升级→油价跳涨→石油石化/油服多</b></div>
+    <div class="step">数据：WTI 8/31跳空+2.34%至84.7、布伦特重返90（霍尔木兹通航仅13.6艘/日） <span class="arrow">→</span> 分析：地缘风险溢价重置，油价中枢89-90美元，三桶油/油服直接受益 <span class="arrow">→</span> 判断：石油石化判"多·P1事件驱动"（㊽事件扫描+㊲资源修复+㉒跷跷板） <span class="arrow">→</span> 行动：石油石化8-10%主攻，中国石油/海油/中曼石油为核心锚，等开盘确认不追高</div>
+  </div>
+  
+  <div class="logic-chain">
+    <div class="step"><b>链② 8/28高低切换确认→科技退潮、资源承接</b></div>
+    <div class="step">数据：8/28主力净流出344亿，半导体-128亿/电子-187亿/通信-63亿（CPO-49亿/存储-90亿）巨额出货；化学制品+61亿/工业金属+24亿/农化+24亿承接 <span class="arrow">→</span> 分析：背离四象限"涨+净流出=🟠诱多出货"，20日资金线深负（半导体20日-962亿级）→反弹回补非反转 <span class="arrow">→</span> 判断：半导体/通信/CPO判"空/退潮"（㊸资金门控+㊹降级+校准①前排已回吐） <span class="arrow">→</span> 行动：科技硬件0-3%，严禁接飞刀，等20日资金线转正再研判</div>
+  </div>
+  
+  <div class="logic-chain">
+    <div class="step"><b>链③ 工业金属/铜双正真趋势+地缘通胀→多持有</b></div>
+    <div class="step">数据：LME铜九周连涨、8/27创14423美元历史新高；工业金属8/28净流入+24亿（5+20日双正） <span class="arrow">→</span> 分析：铜供需紧张+地缘通胀预期，真趋势主线不受单日降档逻辑约束 <span class="arrow">→</span> 判断：工业金属判"多·P2真趋势"（㊹真趋势豁免+㊽事件驱动P1） <span class="arrow">→</span> 行动：工业金属8-10%持有，紫金矿业/江西铜业/洛阳钼业为核心锚</div>
+  </div>
+  
+  <div class="logic-chain">
+    <div class="step"><b>链④ 贵金属周五-3.43%→地缘避险收复→中性偏多</b></div>
+    <div class="step">数据：COMEX金8/28收跌3.43%报4504（周-3.77%），但周一美伊升级→避险需求激增，现货金4436（-0.4%低开受美元反弹压制） <span class="arrow">→</span> 分析：海外同类（油价）暴涨+避险催化→修复窗口触发，禁止给空 <span class="arrow">→</span> 判断：贵金属判"中性偏多·P2修复"（㊲资源修复窗口） <span class="arrow">→</span> 行动：贵金属3-5%底仓，山东黄金/紫金矿业为核心锚，破4500减仓</div>
+  </div>
+  
+  <div class="logic-chain">
+    <div class="step"><b>链⑤ 风险-off总仓管控→现金为王</b></div>
+    <div class="step">数据：沪指3956近4000（PE分位~88-90%红线）、周末地缘升级+美股收跌+美元反弹压制黄金 <span class="arrow">→</span> 分析：估值高位+地缘不确定=反弹高度受限，新主线高开易低走 <span class="arrow">→</span> 判断：总仓≤50%、现金≥50%（⑭仓位上限不上调） <span class="arrow">→</span> 行动：仅做资源/避险回踩低吸，不追高开盘，铁律A 9:25复核</div>
+  </div>
+</div>
+
+<!-- 4. 盘前30秒速览 -->
+<div class="block-panel">
+  <h2>盘前30秒速览</h2>
+  <div class="flash-item"><span>沪指收盘(T-1)</span><span class="text-red">3956.57 (+1.13%)</span></div>
+  <div class="flash-item"><span>科创50(T-1)</span><span class="text-red">1693.48 (+3.77%)</span></div>
+  <div class="flash-item"><span>两市成交(T-1)</span><span class="text-green">2.14万亿（放量3191亿）</span></div>
+  <div class="flash-item"><span>涨跌家数(T-1)</span><span>3394涨 / 1944跌 / 212平</span></div>
+  <div class="flash-item"><span>涨停/跌停(T-1)</span><span class="text-red">78家 / 4家</span></div>
+  <div class="flash-item"><span style="color:var(--orange)"><b>美伊升级</b></span><span class="text-red">美军袭伊岛+伊打美基地（霍尔木兹）</span></div>
+  <div class="flash-item"><span>WTI原油(周一)</span><span class="text-red">84.7美元 (+2.34% 跳空)</span></div>
+  <div class="flash-item"><span>布伦特原油</span><span class="text-red">重返90美元 (+2.3%)</span></div>
+  <div class="flash-item"><span>现货黄金(周一)</span><span class="text-green">4436美元 (-0.4% 低开)</span></div>
+  <div class="flash-item"><span>富时A50</span><span class="text-green">-0.31%</span></div>
+  <div class="flash-item"><span>纳指期货(周一)</span><span class="text-red">+0.08%（平稳）</span></div>
+  <div class="flash-item"><span style="color:var(--orange)"><b>大盘小绿</b></span><span class="text-green">周末地缘冲击，开盘承压</span></div>
+</div>
+
+<!-- 5. 隔夜外盘 -->
+<div class="block-panel">
+  <h2>隔夜外盘</h2>
+  <div class="scroll-x">
+    <table>
+      <tr><th>市场</th><th>指数</th><th>收盘</th><th>涨跌</th><th>信号解读</th></tr>
+      <tr><td>美股</td><td>道指</td><td>53559.99</td><td class="text-green">-0.02%</td><td>基本持平，周涨0.53%</td></tr>
+      <tr><td>美股</td><td>标普500</td><td>7711.76</td><td class="text-green">-0.25%</td><td>英伟达-4%拖累，周涨0.49%</td></tr>
+      <tr><td>美股</td><td>纳指</td><td>26402.42</td><td class="text-green">-0.52%</td><td>科技走弱，周涨0.85%</td></tr>
+      <tr><td>美股</td><td>费半</td><td>-</td><td class="text-green">上周收跌</td><td>半导体高位回落，亚股或低开</td></tr>
+      <tr><td>期货</td><td>纳指期货</td><td>-</td><td class="text-red">+0.08%</td><td>周一盘初平稳，道指期货-0.1%</td></tr>
+      <tr><td>亚太</td><td>富时A50</td><td>14663</td><td class="text-green">-0.31%</td><td>地缘冲击下承压</td></tr>
+      <tr><td>商品</td><td>WTI原油</td><td>84.7美元</td><td class="text-red">+2.34%</td><td>美伊升级跳空高开，霍尔木兹封锁</td></tr>
+      <tr><td>商品</td><td>布伦特原油</td><td>90美元</td><td class="text-red">+2.3%</td><td>重返90关口，地缘溢价</td></tr>
+      <tr><td>商品</td><td>COMEX黄金</td><td>4504美元</td><td class="text-green">-3.43%(周五)</td><td>周跌3.77%，周一避险部分收复</td></tr>
+      <tr><td>商品</td><td>LME铜</td><td>~14306美元</td><td class="text-red">九周连涨</td><td>供应紧张+地缘通胀支撑</td></tr>
+      <tr><td>汇率</td><td>美元指数</td><td>99.69</td><td class="text-red">+0.01%</td><td>反弹压制黄金，但地缘对冲</td></tr>
+      <tr><td>汇率</td><td>离岸人民币</td><td>6.7204</td><td class="text-green">-7点</td><td>小幅走贬，周涨0.15%</td></tr>
+    </table>
+  </div>
+  <p class="small" style="margin-top:8px">数据来源：金融界/东方财富/金十数据/新浪财经/陆家嘴财经早餐 | 数据日期：2026-08-28收盘 + 2026-08-31早盘</p>
+</div>
+
+<!-- 6. 市场全景 -->
+<div class="block-panel">
+  <h2>市场全景</h2>
+  
+  <p style="font-size:12px; margin-bottom:8px"><b>主要指数收盘（T-1 8/28）</b></p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>开盘</th><th>最高</th><th>最低</th><th>成交额(亿)</th></tr>
+      <tr><td>上证指数</td><td>3956.57</td><td class="text-red">+1.13%</td><td>3927.10</td><td>3978.20</td><td>3918.40</td><td>8700</td></tr>
+      <tr><td>深证成指</td><td>14048.88</td><td class="text-red">+1.50%</td><td>13910.20</td><td>14150.30</td><td>13880.10</td><td>9680</td></tr>
+      <tr><td>创业板指</td><td>3473.35</td><td class="text-red">+1.71%</td><td>3458.90</td><td>3502.60</td><td>3440.20</td><td>4520</td></tr>
+      <tr><td>科创50</td><td>1693.48</td><td class="text-red">+3.77%</td><td>1638.20</td><td>1710.50</td><td>1625.80</td><td>810</td></tr>
+    </table>
+  </div>
+  
+  <p style="font-size:12px; margin:12px 0 8px"><b>涨跌分布（T-1 8/28）</b></p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>上涨</th><th>下跌</th><th>平盘</th><th>涨停</th><th>跌停</th><th>上涨占比</th></tr>
+      <tr><td class="text-red">3394</td><td class="text-green">1944</td><td>212</td><td class="text-red">78</td><td class="text-green">4</td><td>64%</td></tr>
+    </table>
+  </div>
+  
+  <p style="font-size:12px; margin:12px 0 8px"><b>主力资金净流入 Top5（T-1 8/28，高低切换核心信号）</b></p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>板块</th><th>主力净流入(亿)</th><th>属性</th><th>说明</th></tr>
+      <tr><td>化学制品</td><td class="text-red">+60.96</td><td>周期资源</td><td>地缘避险+顺周期承接</td></tr>
+      <tr><td>农化制品</td><td class="text-red">+24.18</td><td>周期资源</td><td>涨价+业绩双驱</td></tr>
+      <tr><td>工业金属</td><td class="text-red">+24.09</td><td>有色/铜</td><td>铜价九周连涨真趋势</td></tr>
+      <tr><td>化学原料</td><td class="text-red">+19.12</td><td>周期资源</td><td>顺周期承接</td></tr>
+      <tr><td>光伏设备</td><td class="text-red">+15.57</td><td>新能源</td><td>板块内部分化</td></tr>
+    </table>
+  </div>
+  
+  <p style="font-size:12px; margin:12px 0 8px"><b>主力资金净流出 Top5（T-1 8/28，高位出货）</b></p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>板块</th><th>主力净流出(亿)</th><th>属性</th><th>说明</th></tr>
+      <tr><td>电子</td><td class="text-green">-186.85</td><td>科技硬件</td><td>全产业链出货</td></tr>
+      <tr><td>半导体</td><td class="text-green">-128.30</td><td>科技硬件</td><td>存储/国产芯片重灾区（㊸）</td></tr>
+      <tr><td>机械设备</td><td class="text-green">-41.04</td><td>制造</td><td>高位兑现</td></tr>
+      <tr><td>医药生物</td><td class="text-green">-34.03</td><td>医药</td><td>脉冲回落（㊼）</td></tr>
+      <tr><td>通信</td><td class="text-green">-63.42</td><td>通信/CPO</td><td>CPO-49亿/光通信-66亿出货</td></tr>
+    </table>
+  </div>
+  
+  <p style="font-size:12px; margin:12px 0 8px"><b>近N日主线轮动轨迹</b></p>
+  <p class="small">8/19 恐慌 → 8/20 缩量企稳 → 8/21 医药爆发 → 8/22 通信高潮 → 8/25 恐慌V型 → 8/26 工业金属+券商共振 → 8/27 英伟达催化 → <b>8/28 高低切换（科技出货·资源接棒）</b> → 8/31 美伊升级·资源/能源/军工避险主线确立</p>
+</div>
+
+<!-- 7. 板块共识度与方向表 -->
+<div class="block-panel">
+  <h2>板块共识度与方向表</h2>
+  <p class="small" style="margin-bottom:6px">全局情绪门控=正常（8/28广度1.75、涨停78非退潮），但周末美伊升级→风险偏好骤降，方向表整体向<b>避险/资源</b>倾斜，多≤3板块（仅石油/工业金属明确多）。阶段判定(P1/P2/P3/退潮)按三-⑥执行。</p>
+  <div class="scroll-x">
+    <table>
+      <tr>
+        <th>板块</th>
+        <th>评分</th>
+        <th>共识度</th>
+        <th>阶段</th>
+        <th>操作判断</th>
+        <th>建议仓位</th>
+        <th>核心策略</th>
+        <th>核心个股建议</th>
+      </tr>
+      <tr>
+        <td><b>石油石化/油服</b></td>
+        <td><span class="score-circle score-high">88</span></td>
+        <td><span class="tag tag-red">极强</span></td>
+        <td>P1·事件驱动</td>
+        <td>多·主攻</td>
+        <td>8-10%</td>
+        <td>美伊升级→WTI跳空+2.3%至84.7、布油重返90，油价中枢抬升（㊽㊲㉒）</td>
+        <td><b>中国石油</b>(sh601857)·<b>中国海油</b>(sh600938)·<b>中曼石油</b>(sh603619)油服弹性</td>
+      </tr>
+      <tr>
+        <td><b>工业金属/铜</b></td>
+        <td><span class="score-circle score-high">84</span></td>
+        <td><span class="tag tag-red">强</span></td>
+        <td>P2·真趋势</td>
+        <td>多·持有</td>
+        <td>8-10%</td>
+        <td>LME铜九周连涨+8/27创14423历史高，8/28净流入+24亿（5+20日双正，㊹豁免）</td>
+        <td><b>紫金矿业</b>(sh601899)·<b>江西铜业</b>(sh600362)·<b>洛阳钼业</b>(sh603993)</td>
+      </tr>
+      <tr>
+        <td><b>贵金属/黄金</b></td>
+        <td><span class="score-circle score-mid">75</span></td>
+        <td><span class="tag tag-orange">中强</span></td>
+        <td>P2·修复</td>
+        <td>中性偏多·底仓</td>
+        <td>3-5%</td>
+        <td>周五COMEX-3.43%但地缘避险收复，修复窗口触发（㊲），破4500减仓</td>
+        <td><b>山东黄金</b>(sh600547)·<b>紫金矿业</b>(铜金双主线)·<b>湖南黄金</b></td>
+      </tr>
+      <tr>
+        <td><b>国防军工</b></td>
+        <td><span class="score-circle score-mid">70</span></td>
+        <td><span class="tag tag-orange">中</span></td>
+        <td>P1·事件驱动</td>
+        <td>中性偏多·轻仓</td>
+        <td>3-5%</td>
+        <td>美伊直接对抗→军工催化（㊽），但8/28军工-32亿出货→等盘中确认不追高</td>
+        <td><b>中航沈飞</b>(sh600760)·<b>中航西飞</b>·<b>航发动力</b></td>
+      </tr>
+      <tr>
+        <td><b>银行/红利</b></td>
+        <td><span class="score-circle score-mid">62</span></td>
+        <td><span class="tag tag-orange">中</span></td>
+        <td>P1·防御</td>
+        <td>中性偏多·底仓</td>
+        <td>5-8%</td>
+        <td>风险-off避险底仓，㉒跷跷板（科技→防御切换）</td>
+        <td><b>农业银行</b>(sh601288)·<b>工商银行</b>·<b>招商银行</b></td>
+      </tr>
+      <tr>
+        <td><b>半导体/设备</b></td>
+        <td><span class="score-circle score-low">28</span></td>
+        <td><span class="tag tag-green">弱</span></td>
+        <td>退潮·出货</td>
+        <td>空·观望</td>
+        <td>0-3%</td>
+        <td>8/28 -128亿巨额出货+20日深负（㊸资金门控+㊹降级），不接飞刀</td>
+        <td><b>北方华创</b>(等20日线转正)·<b>中微公司</b>·<b>长电科技</b></td>
+      </tr>
+      <tr>
+        <td><b>通信/CPO</b></td>
+        <td><span class="score-circle score-low">26</span></td>
+        <td><span class="tag tag-green">弱</span></td>
+        <td>退潮·出货</td>
+        <td>空·观望</td>
+        <td>0-3%</td>
+        <td>8/28 通信-63亿/CPO-49亿出货，美股费半上周收跌→校准③不触发（非反弹）</td>
+        <td><b>中际旭创</b>(已破止损)·<b>新易盛</b>·<b>天孚通信</b></td>
+      </tr>
+      <tr>
+        <td><b>医药/CRO</b></td>
+        <td><span class="score-circle score-low">48</span></td>
+        <td><span class="tag tag-green">弱</span></td>
+        <td>退潮·脉冲回落</td>
+        <td>中性·观望</td>
+        <td>0-2%</td>
+        <td>8/28 医药生物-34亿出货，单日脉冲次日回落（㊼），仅观察</td>
+        <td><b>恒瑞医药</b>·<b>药明康德</b>(160止损已破)·<b>凯莱英</b></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- 8. 风险点 + 催化日历 + 止盈止损纪律 -->
+<div class="block-panel">
+  <h2>风险点清单</h2>
+  <div class="risk-box">
+    <b>1. 美伊冲突进一步升级</b>：霍尔木兹通航仅13.6艘/日，若封锁扩大→油价三位数、全球风险资产加速出清（VIX若破20需紧急降仓）<br>
+    <b>2. 高位科技出货延续</b>：8/28半导体-128亿/通信-63亿，背离四象限"涨+净流出=诱多出货"，严禁接飞刀<br>
+    <b>3. 估值高位+美元反弹</b>：沪指近4000（PE分位~88-90%红线），美元99.69反弹压制黄金/有色，反弹高度受限<br>
+    <b>4. 黄金美元压制</b>：现货金周一低开4436（-0.4%），若美元继续走强→贵金属修复不及预期<br>
+    <b>5. 周五美股走弱延续</b>：纳指-0.52%/英伟达-4%，亚股周一或低开，资源外板块承压<br>
+    <b>6. 油价回落风险</b>：若美伊短期缓和→油价回吐，石油石化/油服冲高回落（政策兑现即抛）
+  </div>
+  
+  <h2 style="margin-top:14px">催化日历</h2>
+  <div class="calendar-box">
+    <b>8/31（今日）</b>：美伊军事对抗进展（核心变量）| 8月PMI数据预期升温<br>
+    <b>本周</b>：美国8月非农就业报告（重磅）| 美联储褐皮书 | 沃勒通胀讲话 | G20财长与科技部长会议（马斯克/黄仁勋/奥特曼出席）<br>
+    <b>9/2</b>：燧原科技申购（"国产GPU四小龙"齐聚资本）| 博通财报<br>
+    <b>9/15-16</b>：美联储FOMC会议（加息预期升温，沃什放鹰）<br>
+    <b>9/25</b>：中秋节（A股休市预告）
+  </div>
+  
+  <h2 style="margin-top:14px">止盈止损纪律</h2>
+  <div class="discipline-box">
+    <b>个股止损锚</b>：<br>
+    · 中际旭创：880元（已破止损，不补仓不抄底）<br>
+    · 药明康德：160元（已破止损）<br>
+    · 北方华创：700元（临界，破位减仓）<br>
+    · COMEX黄金：4500美元（破位减仓，地缘收复失败）<br>
+    · 紫金矿业/江西铜业：破前日低点减仓（铜真趋势未破位持有）<br>
+    · 中国石油：油价回落破83美元减仓<br><br>
+    <b>仓位纪律</b>：<br>
+    · 总仓位≤50%（上限不上调，⑭估值红线）<br>
+    · 铁律A：四大指数低开>1%+4300只下跌+外盘冲击 → 紧急降仓10pcts<br>
+    · 铁律B：沪指跌幅>2%或跌停>100只 → 降仓至40%以下<br>
+    · 石油石化/工业金属≤10%各，等回踩低吸不追高开盘<br>
+    · 银行防御≤10%，贵金属≤5%<br><br>
+    <b>操作铁律</b>：<br>
+    · 止损就是止损，不补仓不抄底不"再等等"<br>
+    · 地缘事件"高开不追、等回踩确认"，防冲高回落<br>
+    · 科技硬件出货期严禁接飞刀（㊸㊹）<br>
+    · 港股映射须盘前+盘中两次校验
+  </div>
+</div>
+
+<div class="footer">
+  本报告仅供参考，不构成投资建议 | 数据来源：westock/腾讯自选股、同花顺问财、金融界、东方财富、金十数据、新浪财经、陆家嘴财经早餐<br>
+  生成时间：2026-08-31 07:00 GMT+8 | 阿Q量化复盘
+</div>
+
+</body>
+</html>

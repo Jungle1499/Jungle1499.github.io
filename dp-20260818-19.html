@@ -1,0 +1,566 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>【样例预览】V2.4 三个月回测 · 竞价强度正确率</title>
+<style>
+:root { --bg:#0f1115; --card:#171a21; --line:#262b36; --tx:#e8eaef; --dim:#8a93a6; --up:#ff4d4f; --dn:#00b578; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--tx); font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; padding:24px; }
+h1 { font-size:22px; margin-bottom:4px; } .sub { color:var(--dim); font-size:13px; margin-bottom:20px; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:20px; }
+.kpi { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; }
+.kpi-title { font-size:13px; color:var(--dim); } .kpi-sub { font-size:12px; color:var(--dim); margin:2px 0 6px; }
+.kpi-big { font-size:24px; font-weight:800; } .kpi-extra { font-size:12px; color:var(--dim); margin-top:4px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px; }
+.card h2 { font-size:15px; margin-bottom:12px; }
+.bar-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.bar-label { width:180px; font-size:12px; color:var(--tx); flex-shrink:0; }
+.bar-track { flex:1; background:#0a0c10; border-radius:4px; height:18px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:4px; }
+.bar-val { width:160px; font-size:12px; flex-shrink:0; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td { padding:7px 8px; border-bottom:1px solid var(--line); text-align:center; }
+th { color:var(--dim); font-weight:600; position:sticky; top:0; background:var(--card); }
+td.tl { text-align:left; }
+.up { color:var(--up); } .dn { color:var(--dn); } .dim { color:var(--dim); }
+.tag { font-size:11px; padding:1px 6px; border-radius:4px; background:#232836; color:#aab4c8; }
+.scroll { max-height:520px; overflow:auto; border:1px solid var(--line); border-radius:8px; }
+.foot { color:var(--dim); font-size:11.5px; line-height:1.7; margin-top:8px; }
+</style></head><body>
+<h1>【样例预览】V2.4 集合竞价强度 · 过去三个月回测（2026/05/18 – 08/17）</h1>
+<div class="sub">⚠️ 预览版：65天数据采集中（当前约5%），本页仅用 5/18-5/20 三个完整交易日演示最终报告格式，数字不代表最终结果。信号=竞价时刻(9:25)已确定数据 → 验证=当日收盘 & 次日收盘 ｜ 数据源：同花顺问财(iwencai) ｜ 红涨绿跌</div>
+<div class="kpis">
+<div class="kpi"><div class="kpi-title">板块强信号(≥8分)</div>
+      <div class="kpi-sub">V2.3十制评分</div><div class="kpi-big">1个</div>
+      <div class="kpi-extra">当日胜率 0.0% · 次日胜率 100.0%</div></div>
+<div class="kpi"><div class="kpi-title">A类·弱转强</div>
+      <div class="kpi-sub">烂板/长上影+高开2~5%</div><div class="kpi-big">0只</div>
+      <div class="kpi-extra">当日胜率 70.0% · 次日胜率 N/A%</div></div>
+<div class="kpi"><div class="kpi-title">C类·强更强陷阱</div>
+      <div class="kpi-sub">一字/T字+高开≥6%</div><div class="kpi-big">0只</div>
+      <div class="kpi-extra">次日上涨率 N/A%（越低越验证陷阱）</div></div>
+<div class="kpi"><div class="kpi-title">最优高开区间命中</div>
+      <div class="kpi-sub">振幅×0.6 区间</div><div class="kpi-big">0只</div>
+      <div class="kpi-extra">次日胜率 N/A%</div></div>
+</div>
+<div class="card"><h2>① 强弱锚定验证：多空强度差三档 → 板块强信号次日胜率</h2>
+<div class="bar-row">
+      <div class="bar-label">极强</div>
+      <div class="bar-track"><div class="bar-fill" style="width:2%;background:#e03131"></div></div>
+      <div class="bar-val"><b>0.0%</b> <span class="dim">(n=0, 均N/A%)</span></div>
+    </div><div class="bar-row">
+      <div class="bar-label">正常</div>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;background:#f08c00"></div></div>
+      <div class="bar-val"><b>100.0%</b> <span class="dim">(n=1, 均2.54%)</span></div>
+    </div><div class="bar-row">
+      <div class="bar-label">转弱</div>
+      <div class="bar-track"><div class="bar-fill" style="width:2%;background:#2f9e44"></div></div>
+      <div class="bar-val"><b>0.0%</b> <span class="dim">(n=0, 均N/A%)</span></div>
+    </div>
+<div class="foot">多空强度差=(当日涨停封单总额/昨日)-(当日跌停封单总额/昨日)，&gt;0.3极强 / 0~0.3正常 / &lt;0转弱。封单额取当日收盘口径（竞价时点封单不可回溯），标注为代理口径。</div></div>
+<div class="card"><h2>② 信号类型正确率对比（次日收盘）</h2><div class="bar-row">
+      <div class="bar-label">板块强信号·次日</div>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;background:#e03131"></div></div>
+      <div class="bar-val"><b>100.0%</b> <span class="dim">(n=1, 均2.54%)</span></div>
+    </div><div class="bar-row">
+      <div class="bar-label">A类弱转强·次日</div>
+      <div class="bar-track"><div class="bar-fill" style="width:2%;background:#f08c00"></div></div>
+      <div class="bar-val"><b>0.0%</b> <span class="dim">(n=0, 均N/A%)</span></div>
+    </div><div class="bar-row">
+      <div class="bar-label">C类陷阱·次日上涨率</div>
+      <div class="bar-track"><div class="bar-fill" style="width:2%;background:#2f9e44"></div></div>
+      <div class="bar-val"><b>0.0%</b> <span class="dim">(n=0, 均N/A%)</span></div>
+    </div><div class="bar-row">
+      <div class="bar-label">最优区间命中·次日</div>
+      <div class="bar-track"><div class="bar-fill" style="width:2%;background:#1971c2"></div></div>
+      <div class="bar-val"><b>0.0%</b> <span class="dim">(n=0, 均N/A%)</span></div>
+    </div>
+<div class="foot">C类「次日上涨率」越低，说明「高开是陷阱」验证越成立。个股次日收盘按代码批量回溯（同花顺）。</div></div>
+<div class="card"><h2>③ 逐日信号明细（仿示例表：日期/类型/标的/情绪/分/量能/当日/次日）</h2>
+<div class="scroll"><table>
+<tr><th>日期</th><th>类型</th><th>标的</th><th>情绪档</th><th>分</th><th>量能</th><th>当日</th><th>次日</th></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">深振业A(000006)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+4.21%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">东方钽业(000962)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-1.53%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">合肥城建(002208)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+9.98%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">凡拓数创(301313)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.69%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">春光集团(301531)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-8.12%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">辽宁能源(600758)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">电科数字(600850)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.02%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">海星股份(603115)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">金海高科(603311)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">华达科技(603358)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-0.69%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">再升科技(603601)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-3.07%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">三孚股份(603938)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+9.99%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">艾华集团(603989)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">锐翔智能(920178)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+9.65%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">合百集团(000417)</td>
+          <td class="tl">极强</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+10.04%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">弘信电子(300657)</td>
+          <td class="tl">极强</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+20.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-19</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">威龙股份(603779)</td>
+          <td class="tl">极强</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.99%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">风华高科(000636)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+5.04%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">豫能控股(001896)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-8.09%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">江海股份(002484)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-0.15%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">*ST美芝(002856)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+3.50%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">*ST动力(300152)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+4.89%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">思特奇(300608)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-7.58%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">逸豪新材(301176)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-2.52%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">万通发展(600246)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+2.08%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">电科数字(600850)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-0.04%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">林洋能源(601222)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-3.07%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">润达医疗(603108)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+2.59%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">嘉环科技(603206)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-4.66%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">ST嘉澳(603822)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+4.89%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">三孚股份(603938)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.01%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">艾华集团(603989)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+6.24%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">博迁新材(605376)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+5.90%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">昀冢科技(688260)</td>
+          <td class="tl">极强</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-1.49%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">合百集团(000417)</td>
+          <td class="tl">极强</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+10.05%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">达实智能(002421)</td>
+          <td class="tl">极强</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+10.05%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-20</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">威龙股份(603779)</td>
+          <td class="tl">极强</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">澳洋健康(002172)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+9.91%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">鸿博股份(002229)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.03%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">利君股份(002651)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.01%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">武汉天源(301127)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+19.97%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">贵研铂业(600459)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.01%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">卓郎智能(600545)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+9.95%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">盛洋科技(603703)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.05%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">百合花(603823)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">博敏电子(603936)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">天准科技(688003)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+20.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">聚和材料(688503)</td>
+          <td class="tl">正常</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+20.01%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">桂发祥(002820)</td>
+          <td class="tl">正常</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.96%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">中石科技(300684)</td>
+          <td class="tl">正常</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+20.00%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">ST宁科(600165)</td>
+          <td class="tl">正常</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.88%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">圣达生物(603079)</td>
+          <td class="tl">正常</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.99%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">天洋新材(603330)</td>
+          <td class="tl">正常</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+10.02%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>05-21</td><td><span class="tag">板块强信号</span></td>
+          <td class="tl">电子纸(885953)</td>
+          <td class="tl">正常</td>
+          <td>8</td><td>+64%</td>
+          <td class="dn">-0.62%</td>
+          <td class="up">+2.54%</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">惠天热电(000692)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-6.15%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">瑞泰科技(002066)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-1.09%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">誉衡药业(002437)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+6.59%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">华电能源(600726)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="dn">-5.44%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">道生天合(601026)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+4.33%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">会稽山(601579)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+7.05%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">共进股份(603118)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+10.03%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">A类弱转强</span></td>
+          <td class="tl">天洋新材(603330)</td>
+          <td class="tl">N/A</td>
+          <td>A</td><td>弱转强</td>
+          <td class="up">+9.99%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">华西股份(000936)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.94%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">坤泰股份(001260)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.99%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">金螳螂(002081)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.98%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">澳洋健康(002172)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+9.93%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">兆日科技(300333)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+6.02%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">蓝盾光电(300862)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="up">+19.99%</td>
+          <td class="dim">N/A</td></tr>
+<tr>
+          <td>08-14</td><td><span class="tag">C类陷阱</span></td>
+          <td class="tl">京投发展(600683)</td>
+          <td class="tl">N/A</td>
+          <td>C</td><td>强更强⚠</td>
+          <td class="dn">-9.98%</td>
+          <td class="dim">N/A</td></tr>
+</table></div></div>
+<div class="foot">口径说明：①涨停/跌停封单额=当日收盘口径（竞价时点封单不可回溯）②连板指数880812以连板股竞价均值代理 ③选股1「9:24:50-9:25:00逐笔大单占比」为L2数据不可回溯，以竞价量比/换手率代理 ④长上影线686只池仅作A类标记交叉验证 ⑤振幅=昨日振幅，最优高开区间=[0.3×振幅, 0.6×振幅]。</div>
+</body></html>

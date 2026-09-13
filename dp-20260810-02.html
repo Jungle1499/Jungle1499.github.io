@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=930, initial-scale=1.0">
+<title>主线分析_20260810</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  background: #1a1a2e;
+  color: #c8cde0;
+  min-width: 930px;
+  padding-bottom: 60px;
+}
+.report {
+  width: 930px;
+  margin: 0 auto;
+  background: #1a1a2e;
+}
+
+/* Header */
+.header {
+  width: 930px;
+  height: 170px;
+  background: linear-gradient(135deg, #1a2a6c 0%, #2d4a8a 40%, #1a1a2e 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #33334f;
+}
+.header::before {
+  content: "";
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(233,69,96,0.25) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -60px; left: -60px;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(126,200,255,0.18) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.header-title {
+  position: relative;
+  z-index: 2;
+  font-size: 25.5px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+.header-title .accent { color: #ff4d5e; }
+.header-sub {
+  position: relative;
+  z-index: 2;
+  font-size: 11.2px;
+  color: #9aa3c0;
+  margin-top: 12px;
+}
+.header-tags {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.tag {
+  background: rgba(255,77,94,0.15);
+  border: 1px solid rgba(255,77,94,0.35);
+  color: #ff8fa0;
+  padding: 5px 14px;
+  border-radius: 15px;
+  font-size: 9.8px;
+}
+
+/* Section */
+.section {
+  padding: 24px 18px;
+  border-bottom: 1px solid #22223c;
+}
+.section-title {
+  font-size: 17.2px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 18px;
+  padding-left: 12px;
+  border-left: 3px solid #ff4d5e;
+}
+
+/* Index cards */
+.index-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.index-card {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.index-name {
+  font-size: 10.5px;
+  color: #9aa3c0;
+  margin-bottom: 8px;
+}
+.index-price {
+  font-size: 18.8px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.index-pct {
+  font-size: 11.2px;
+  font-weight: 700;
+}
+.up { color: #ff4d5e; }
+.down { color: #22c55e; }
+
+/* Charts row */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+.chart-card {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+}
+.chart-title {
+  font-size: 12px;
+  color: #e8e8f0;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.chart {
+  width: 100%;
+  height: 220px;
+}
+
+/* Interpretation box */
+.interpret-box {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 14px;
+}
+.interpret-title {
+  color: #7ec8ff;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.interpret-text {
+  font-size: 11.2px;
+  line-height: 1.85;
+  color: #c8cde0;
+}
+.interpret-text strong {
+  color: #ff4d5e;
+  font-weight: 700;
+}
+.interpret-text .green { color: #22c55e; }
+.interpret-text .gold { color: #ffd479; }
+
+/* Alert box */
+.alert-box {
+  background: linear-gradient(90deg, rgba(255,212,121,0.08), rgba(255,212,121,0.02));
+  border: 1px solid rgba(255,212,121,0.25);
+  border-left: 3px solid #ffd479;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 14px 0;
+}
+.alert-title {
+  color: #ffd479;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.alert-text {
+  font-size: 11.2px;
+  line-height: 1.8;
+  color: #c8cde0;
+}
+.alert-text strong { color: #ff4d5e; }
+
+/* Tables */
+.table-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #7ec8ff;
+  margin: 18px 0 10px 0;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.9px;
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.data-table th {
+  background: #2c2c4a;
+  color: #a9b4d6;
+  padding: 8px 6px;
+  text-align: center;
+  font-weight: 700;
+}
+.data-table td {
+  padding: 8px 6px;
+  text-align: center;
+  border-top: 1px solid #2c2c4a;
+  color: #e8e8f0;
+}
+.data-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.data-table .rank { color: #e8e8f0; }
+.data-table .up-pct { color: #ff4d5e; font-weight: 700; }
+.data-table .badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  color: #ff8fa0;
+  background: rgba(255,77,94,0.15);
+  margin-left: 5px;
+}
+
+/* Dual mainline */
+.dual-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+.mainline-card {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+}
+.mainline-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #33334f;
+}
+.mainline-title .inc { color: #ff4d5e; }
+.mainline-title .stock { color: #7ec8ff; }
+.mainline-text {
+  font-size: 11.2px;
+  line-height: 1.85;
+  color: #c8cde0;
+}
+.mainline-text strong { color: #ff4d5e; }
+
+/* Driver grid */
+.driver-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+.driver-card {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+}
+.driver-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffd479;
+  margin-bottom: 8px;
+}
+.driver-text {
+  font-size: 11.2px;
+  line-height: 1.8;
+  color: #c8cde0;
+}
+.driver-text strong { color: #ff4d5e; }
+
+/* Feishu table */
+.feishu-table td, .feishu-table th {
+  text-align: left;
+  padding: 10px 8px;
+}
+.feishu-table .center { text-align: center; }
+.feishu-table .check { color: #22c55e; font-weight: 700; }
+
+.conclusion-list {
+  margin-top: 14px;
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 11.2px;
+  line-height: 1.85;
+}
+.conclusion-list li {
+  margin-bottom: 8px;
+  list-style: disc inside;
+}
+.conclusion-list strong { color: #ffd479; }
+
+/* Stock hero cards */
+.hero-card {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-top: 2px solid #ff4d5e;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.hero-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.hero-meta {
+  font-size: 10px;
+  color: #9aa3c0;
+  margin-top: 4px;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,77,94,0.15);
+  color: #ff8fa0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  margin-left: 5px;
+}
+.hero-pct {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff4d5e;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+.hero-item {
+  background: rgba(0,0,0,0.15);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+.hero-label {
+  font-size: 9.5px;
+  color: #9aa3c0;
+  margin-bottom: 6px;
+}
+.hero-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e8e8f0;
+}
+.hero-reason {
+  font-size: 11.2px;
+  line-height: 1.85;
+  color: #c8cde0;
+  border-top: 1px solid #33334f;
+  padding-top: 12px;
+}
+.hero-reason strong { color: #ff4d5e; }
+
+/* Ranking chart */
+.ranking-chart {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+/* Segment */
+.segment {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.segment-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.segment-tag {
+  background: rgba(126,200,255,0.15);
+  color: #7ec8ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 9.5px;
+}
+.segment-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.segment-sub {
+  font-size: 10px;
+  color: #9aa3c0;
+  margin-left: auto;
+}
+.segment-text {
+  font-size: 11.2px;
+  line-height: 1.8;
+  color: #c8cde0;
+  margin-bottom: 10px;
+}
+.pair {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+.pair-a, .pair-b, .pair-na {
+  background: rgba(126,200,255,0.12);
+  color: #c8cde0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 10.5px;
+}
+.pair-a { border-left: 2px solid #ffd479; }
+.pair-b { border-left: 2px solid #7ec8ff; }
+.pair-na { border-left: 2px solid #666; }
+.verdict {
+  margin-top: 10px;
+  font-size: 11.2px;
+  line-height: 1.8;
+}
+.verdict.ok { color: #c8cde0; }
+.verdict.warn { color: #ffd479; }
+.verdict.bad { color: #ff6b6b; }
+.verdict strong { color: #ff4d5e; }
+
+/* Risk */
+.risk-box {
+  background: rgba(255,77,94,0.08);
+  border: 1px solid rgba(255,77,94,0.2);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.risk-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ff8fa0;
+  margin-bottom: 10px;
+}
+.risk-list {
+  font-size: 11.2px;
+  line-height: 1.85;
+  color: #c8cde0;
+  padding-left: 16px;
+}
+.risk-list li { margin-bottom: 8px; }
+
+.track-box {
+  background: #22223c;
+  border: 1px solid #2c2c4a;
+  border-radius: 8px;
+  padding: 14px;
+}
+.track-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffd479;
+  margin-bottom: 10px;
+}
+.track-list {
+  font-size: 11.2px;
+  line-height: 1.85;
+  color: #c8cde0;
+  padding-left: 16px;
+}
+.track-list li { margin-bottom: 8px; }
+
+/* Footer */
+.footer {
+  background: #1a1a2e;
+  padding: 24px 18px;
+  text-align: center;
+  font-size: 10.5px;
+  color: #9aa3c0;
+  border-top: 1px solid #33334f;
+}
+.disclaimer {
+  background: rgba(255,77,94,0.08);
+  border: 1px solid rgba(255,77,94,0.2);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 14px;
+  color: #ff8fa0;
+}
+
+/* Utility */
+.note { font-size: 10px; color: #9aa3c0; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="report">
+
+<!-- Header -->
+<div class="header">
+  <div class="header-title">2026年8月10日 A股最强主线：<span class="accent">军工·无人装备</span> × <span class="accent">医药CXO</span></div>
+  <div class="header-sub">增量情绪线（P1启动）× 存量资金线（P2二线接棒）双主线共振 · 数据截至 2026-08-10 收盘</div>
+  <div class="header-tags">
+    <div class="tag">上涨 4068 家</div>
+    <div class="tag">涨停 103 家</div>
+    <div class="tag">两市成交 2.52 万亿</div>
+    <div class="tag">上证逼近 4000 点</div>
+  </div>
+</div>
+
+<!-- Section 1 -->
+<div class="section">
+  <div class="section-title">一、市场概况：指数分化，科技退潮与低位接力并行</div>
+  <div class="index-grid">
+    <div class="index-card"><div class="index-name">上证指数</div><div class="index-price up">3966.59</div><div class="index-pct up">+0.67%</div></div>
+    <div class="index-card"><div class="index-name">深证成指</div><div class="index-price up">14316.96</div><div class="index-pct up">+0.04%</div></div>
+    <div class="index-card"><div class="index-name">创业板指</div><div class="index-price down">3537.21</div><div class="index-pct down">-0.73%</div></div>
+    <div class="index-card"><div class="index-name">科创50</div><div class="index-price down">1737.77</div><div class="index-pct down">-0.36%</div></div>
+    <div class="index-card"><div class="index-name">上证50</div><div class="index-price up">2967.73</div><div class="index-pct up">+0.25%</div></div>
+    <div class="index-card"><div class="index-name">沪深300</div><div class="index-price up">4702.02</div><div class="index-pct up">+0.16%</div></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-card"><div class="chart-title">核心指数涨跌幅(%)</div><div id="chart-index" class="chart"></div></div>
+    <div class="chart-card"><div class="chart-title">个股涨跌分布(家数)</div><div id="chart-dist" class="chart"></div></div>
+  </div>
+  <div class="interpret-box">
+    <div class="interpret-title">盘面结构解读</div>
+    <div class="interpret-text">
+      今日沪深两市成交 <strong>25231 亿元</strong>，较上一交易日<span class="green">缩量 1413 亿</span>。上涨 <strong>4068</strong> 家 / 下跌 <span class="green">1391</span> 家，上涨占比 <strong>73%</strong>，涨停 <strong>103</strong> 家、跌停仅 <span class="green">6</span> 家 —— 赚钱效应显著，情绪偏高。<br><br>
+      但指数呈现<span class="gold">典型的"高低切换"分化</span>：上证指数创阶段新高 3966.59 逼近 4000 点整数关口，上证50、沪深300 同步翻红；而<span class="green">创业板指 -0.73%、科创50 -0.36%</span> 双双走弱。<br><br>
+      行业层面，上周的强势科技方向集体回调 —— <span class="green">通信设备 -3.67%（跌幅第一）、元件 -1.25%、半导体 -0.36%</span>，AI 硬件（PCB / 光模块 / 半导体）资金明显撤离，转而流向<strong>军工、医药、农业、贵金属</strong>等低位与防御方向。<br><br>
+      这是一个<span class="gold">"指数稳、结构切、题材散"</span>的交易日：普涨掩盖之下，主线发生了实质性换手。
+    </div>
+  </div>
+</div>
+
+<!-- Section 2 -->
+<div class="section">
+  <div class="section-title">二、主线确认：无断层领先，双主线并行</div>
+  <div class="alert-box">
+    <div class="alert-title">⚠️ 断层检验结论：今日不成立</div>
+    <div class="alert-text">
+      按"涨幅第一超越第二名 3% 以上"的断层标准检验：行业榜首 <strong>地面兵装Ⅱ +5.12%</strong> vs 次席 <strong>酒店餐饮 +4.22%</strong>，价差仅 0.90%；概念榜首 <strong>家禽 +5.02%</strong> vs 次席 <strong>有色(铋) +4.68%</strong>，价差仅 0.34%。均未形成断层，今日属于"多点开花"格局，不存在唯一强主线。<br><br>
+      因此本报告改用五维综合口径（资金体量 / 趋势持续性 / 连板梯队 / 催化强度 / 龙头辨识度）判定，得出<strong>增量线 + 存量线</strong>双主线结论。
+    </div>
+  </div>
+  <div class="chart-card" style="margin:14px 0;">
+    <div class="chart-title">今日强势板块涨幅对比（行业 TOP6 / 概念 TOP6）</div>
+    <div id="chart-sector" style="width:100%;height:280px;"></div>
+  </div>
+  <div class="table-title">行业板块涨幅 TOP6</div>
+  <table class="data-table">
+    <tr><th>排名</th><th>板块</th><th>今日涨幅</th><th>5日涨幅</th><th>20日涨幅</th><th>换手率</th><th>量比</th><th>领涨股</th></tr>
+    <tr><td>1</td><td>地面兵装Ⅱ <span class="badge">增量主线</span></td><td class="up-pct">+5.12%</td><td class="up-pct">+6.71%</td><td class="up-pct">+11.07%</td><td>3.57%</td><td>1.50</td><td>北方长龙 <span class="up-pct">+20.00%</span></td></tr>
+    <tr><td>2</td><td>酒店餐饮</td><td class="up-pct">+4.22%</td><td class="up-pct">+1.07%</td><td class="up-pct">+15.35%</td><td>2.87%</td><td>0.94</td><td>华天酒店 <span class="up-pct">+9.92%</span></td></tr>
+    <tr><td>3</td><td>养殖业</td><td class="up-pct">+4.19%</td><td class="up-pct">+2.95%</td><td class="up-pct">+4.25%</td><td>2.29%</td><td>1.64</td><td>益生股份 <span class="up-pct">+10.02%</span></td></tr>
+    <tr><td>4</td><td>医疗服务 <span class="badge">存量主线</span></td><td class="up-pct">+3.92%</td><td class="up-pct">+21.21%</td><td class="up-pct">+24.50%</td><td>5.09%</td><td>1.69</td><td>毕得医药 <span class="up-pct">+20.00%</span></td></tr>
+    <tr><td>5</td><td>贵金属</td><td class="up-pct">+3.89%</td><td class="up-pct">+17.53%</td><td class="up-pct">+33.73%</td><td>5.35%</td><td>1.35</td><td>招金黄金 <span class="up-pct">+9.98%</span></td></tr>
+    <tr><td>6</td><td>渔业</td><td class="up-pct">+3.56%</td><td class="up-pct">+3.59%</td><td class="up-pct">+14.85%</td><td>3.44%</td><td>1.51</td><td>中水渔业 <span class="up-pct">+4.46%</span></td></tr>
+  </table>
+  <div class="table-title">概念板块涨幅 TOP6</div>
+  <table class="data-table">
+    <tr><th>排名</th><th>概念</th><th>今日涨幅</th><th>5日涨幅</th><th>20日涨幅</th><th>量比</th><th>领涨股</th></tr>
+    <tr><td>1</td><td>家禽</td><td class="up-pct">+5.02%</td><td class="up-pct">+3.82%</td><td class="up-pct">+7.12%</td><td>1.58</td><td>益生股份 <span class="up-pct">+10.02%</span></td></tr>
+    <tr><td>2</td><td>有色(铋)</td><td class="up-pct">+4.68%</td><td class="up-pct">+26.13%</td><td class="up-pct">+12.73%</td><td>1.09</td><td>先导基电 <span class="up-pct">+10.01%</span></td></tr>
+    <tr><td>3</td><td>印巴冲突概念 <span class="badge">军工共振</span></td><td class="up-pct">+4.43%</td><td class="up-pct">+6.28%</td><td class="up-pct">+13.27%</td><td>1.59</td><td>洪都航空 <span class="up-pct">+9.98%</span></td></tr>
+    <tr><td>4</td><td>无人战机 <span class="badge">军工共振</span></td><td class="up-pct">+4.32%</td><td class="up-pct">+7.26%</td><td class="up-pct">+1.85%</td><td>1.15</td><td>晶品特装 <span class="up-pct">+12.90%</span></td></tr>
+    <tr><td>5</td><td>养鸡</td><td class="up-pct">+4.24%</td><td class="up-pct">+3.89%</td><td class="up-pct">+5.98%</td><td>1.48</td><td>益生股份 <span class="up-pct">+10.02%</span></td></tr>
+    <tr><td>6</td><td>篮球</td><td class="up-pct">+4.11%</td><td class="up-pct">+4.65%</td><td class="up-pct">+7.89%</td><td>1.12</td><td>三柏硕 <span class="up-pct">+9.98%</span></td></tr>
+  </table>
+  <div class="table-title" style="color:#ffd479;">🎯 双主线判定依据</div>
+  <div class="dual-box">
+    <div class="mainline-card">
+      <div class="mainline-title"><span class="inc">增量主线｜军工·无人装备（P1 启动）</span></div>
+      <div class="mainline-text">
+        <strong>三重板块共振：</strong>地面兵装Ⅱ +5.12%（行业第1）、印巴冲突概念 +4.43%（概念第3）、无人战机 +4.32%（概念第4），同一叙事在行业榜与概念榜同时占据前列。<br><br>
+        <strong>涨停密度高：</strong>长城军工、北方长龙（20cm）、洪都航空三只涨停，晶品特装 +12.90%。<br><br>
+        <strong>资金集中：</strong>长城军工主力净流入 <strong>3.49 亿</strong>（板块绝对第一），北方长龙 <strong>1.77 亿</strong>。<br><br>
+        <strong>位置低：</strong>板块 20 日仅 +11.07%，多数标的年内为负（洪都 -18.24%、沈飞 -19.10%），属低位启动。
+      </div>
+    </div>
+    <div class="mainline-card">
+      <div class="mainline-title"><span class="stock">存量主线｜医药 CXO（P2 二线接棒）</span></div>
+      <div class="mainline-text">
+        <strong>趋势最强：</strong>医疗服务 5 日 +21.21%、20 日 +24.50%，为六大强势板块中持续性最好。<br><br>
+        <strong>资金体量碾压：</strong>药明康德单票成交 <strong>204.25 亿</strong>，康龙化成 <strong>63.46 亿</strong> —— 单细分成交即超过整个军工板块。<br><br>
+        <strong>连板梯队最密：</strong>百花医药 5 连板，毕得医药、百普赛斯双 20cm 涨停。<br><br>
+        <strong>阶段警示：</strong>二线（百普赛斯 +20%、毕得 +20%）大幅跑赢一线（药明 +4.21%、康龙 +3.86%），按三阶段模型属 <strong>P2 确认（二线接棒）</strong>，非最佳建仓位置。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 3 -->
+<div class="section">
+  <div class="section-title">三、驱动因素：四重催化交叠</div>
+  <div class="driver-grid">
+    <div class="driver-card">
+      <div class="driver-title">① 地缘政治升温 —— 印巴冲突 + 军贸出口预期</div>
+      <div class="driver-text">
+        印巴冲突概念 +4.43% 直接映射地缘风险定价，无人战机概念 +4.32% 同步共振。洪都航空（教练机 / 军贸出口正宗标的）放量涨停，量比 2.31；晶品特装（无人侦察装备）+12.90%。地缘事件对军工的催化路径已从"整机总装"扩散至"<strong>无人化装备 + 弹药耗材</strong>"，属事件驱动型 P1 启动。
+      </div>
+    </div>
+    <div class="driver-card">
+      <div class="driver-title">② 高低切换 —— AI 硬件退潮，资金再配置</div>
+      <div class="driver-text">
+        创业板指 -0.73%、科创50 -0.36%，通信设备 -3.67% 领跌全场，元件 -1.25%、半导体 -0.36%。上周涨停扩散的 PCB / 反制线 / AI-RAN 集体降温。而上证指数逆势创阶段新高 3966.59。资金并未离场（成交仍 2.52 万亿），而是从高位科技切向军工、医药、农业、贵金属，是典型的<strong>板块轮动而非系统性风险</strong>。
+      </div>
+    </div>
+    <div class="driver-card">
+      <div class="driver-title">③ 医药基本面共振 —— 药明中报超预期 + 诉讼胜诉</div>
+      <div class="driver-text">
+        药明康德 H1 营收 289 亿（同比 +38.9%）、净利首次突破百亿，全年指引上调至 585–605 亿；8 月 9 日公告美国法院批准 1260H 相关初步禁令动议，海外政策压制解除。当前 PE 仅 <strong>22.22 倍</strong>，PEG 显著低于成长性 —— 业绩兑现 + 估值修复 + 政策靴子落地三重叠加，驱动 CXO 全链条重估。
+      </div>
+    </div>
+    <div class="driver-card">
+      <div class="driver-title">④ 农业周期反转 —— 白羽鸡涨价链</div>
+      <div class="driver-text">
+        家禽概念 +5.02% 居概念榜首，养鸡 +4.24%，养殖业 +4.19%。益生股份（祖代鸡引种龙头）涨停并录得板块主力净流入第一 <strong>0.82 亿</strong>，正邦科技 0.41 亿、温氏股份 0.27 亿跟进。祖代引种受限传导至商品代供给收缩，鸡价上行逻辑启动，属基本面周期驱动，持续性优于纯题材。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4 -->
+<div class="section">
+  <div class="section-title">四、飞书策略台账交叉验证（聚焦核心群）</div>
+  <div class="interpret-text" style="margin-bottom:12px;">
+    飞书「聚焦核心」群 08-07 复盘对今日（周一 08-10）的三大预判，与实际盘面对照：
+  </div>
+  <table class="data-table feishu-table">
+    <tr><th>飞书台账方向</th><th>08-07 判定</th><th>08-09 勘误重判</th><th>08-10 实际表现</th><th class="center">验证</th></tr>
+    <tr><td>DIR-008 PCB/mSAP<br><span style="font-size:9px;color:#9aa3c0;">标注为"当前最强主线"打分8/10</span></td><td>P1确认 · 试买</td><td style="color:#ff8fa0;">P2初 · 不追连板，等分歧低吸</td><td style="color:#22c55e;">元件 -1.25%<br>板块回调</td><td class="center check">✅ 勘误正确</td></tr>
+    <tr><td>DIR-007 反制线<br><span style="font-size:9px;color:#9aa3c0;">云南锗业4连板总龙</span></td><td>P1确认 · 持有</td><td style="color:#ffd479;">P1尾/P2初 · 不追高</td><td style="color:#22c55e;">半导体 -0.36%<br>高位分化</td><td class="center check">✅ 勘误正确</td></tr>
+    <tr><td>DIR-009 AI-RAN/6G<br><span style="font-size:9px;color:#9aa3c0;">通宇通讯2连板</span></td><td>P1确认 · 试买</td><td style="color:#ffd479;">P1尾/P2初 · 观察不追高</td><td style="color:#22c55e;">通信设备 -3.67%<br>跌幅第一</td><td class="center check">✅ 勘误正确</td></tr>
+    <tr><td>观察级：AI4S / 创新药链<br><span style="font-size:9px;color:#9aa3c0;">"周末研报发酵候选"</span></td><td>观察级第10位</td><td>—</td><td style="color:#ff4d5e;">医疗服务 +3.92%<br>双20cm涨停</td><td class="center check">✅ 候选兑现</td></tr>
+    <tr><td>DIR-003 人形机器人</td><td>P3确认 · 卖出</td><td>—</td><td>已离场，未参与</td><td class="center check">✅ 规避正确</td></tr>
+  </table>
+  <ul class="conclusion-list">
+    <li><strong>关键结论 1｜08-09 勘误的价值被完全验证。</strong>周五日报把 PCB / 反制 / AI-RAN 三线判为"P1确认·试买"，若按此执行，周一将在通信设备 -3.67% 的跌幅榜首位上被套。08-09 勘误通过 K 线回溯发现三线实际启动日均为 08-04（而非入库日），将阶段全部下修为"P1尾/P2初，不追高"，成功规避回调。"<strong>入库前强制 10 日 K 线回溯</strong>"这条新规则是本轮最有价值的修正。</li>
+    <li><strong>关键结论 2｜观察级清单比主线清单更有预测力。</strong>飞书 08-07 把"AI4S / 创新药链"仅列为观察级第 10 位（备注"周末研报发酵候选"），而它恰是今日兑现最充分的方向。反观被标为"最强主线、打分 8/10"的 PCB 却回调。建议：观察级候选池应提升权重，尤其是"研报发酵中 + 板块尚未启动"的组合。</li>
+    <li><strong>关键结论 3｜今日军工是台账完全缺失的新方向。</strong>飞书 9 个 active 方向中无军工线，而今日地面兵装 +5.12% 为行业第一。这暴露了"发现机制"仍偏向 AI / 科技叙事，对地缘政治驱动型方向覆盖不足。建议新增 DIR-010 军工·无人装备（P1 启动）入库跟踪。</li>
+    <li><strong>关键结论 4｜医药需按 P2 而非 P1 处理。</strong>医疗服务 5 日已 +21.21%，且今日二线（百普赛斯 / 毕得，均 +20%）显著跑赢一线（药明 +4.21%），完全符合台账"二线持续跑赢一线 = P2确认"的判定矩阵。不应按新主线追高，应按 P2 规则"加仓 B / 减仓 A"处理。</li>
+  </ul>
+</div>
+
+<!-- Section 5 -->
+<div class="section">
+  <div class="section-title">五、核心龙头：军工主线三强</div>
+  <div class="ranking-chart">
+    <div class="chart-title">军工（地面兵装Ⅱ）板块主力净流入 TOP8（万元）</div>
+    <div id="chart-capital" style="width:100%;height:240px;"></div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-header">
+      <div>
+        <div class="hero-name">长城军工 <span style="font-size:10px;color:#9aa3c0;font-weight:400;">sh601606 · 兵器工业集团</span> <span class="hero-badge">资金龙</span></div>
+      </div>
+      <div class="hero-pct">+10.00%</div>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-item"><div class="hero-label">收盘价</div><div class="hero-value">36.18 元</div></div>
+      <div class="hero-item"><div class="hero-label">成交额</div><div class="hero-value">13.68 亿</div></div>
+      <div class="hero-item"><div class="hero-label">主力净流入</div><div class="hero-value up">+3.49 亿（板块第1）</div></div>
+      <div class="hero-item"><div class="hero-label">总市值</div><div class="hero-value">262.03 亿</div></div>
+      <div class="hero-item"><div class="hero-label">换手率</div><div class="hero-value">5.43%</div></div>
+      <div class="hero-item"><div class="hero-label">20日涨幅</div><div class="hero-value up">+38.64%</div></div>
+    </div>
+    <div class="hero-reason">
+      <strong>入选理由：</strong>今日军工线唯一实现"一字级封板 + 主力净流入绝对第一"的标的，3.49 亿净流入是板块第二名（北方长龙 1.77 亿）的近两倍，资金分歧度极低，是本轮军工启动的资金锚。作为兵器工业集团旗下弹药与火工品核心平台，业务纯度高，在"地缘冲突→弹药消耗→补库存"的传导链条上卡位最直接，属于事件驱动中受益确定性最强的环节。技术面看 20 日已涨 38.64%，但年内仍为 -24.81%，距 52 周高点 77.07 元有超一倍空间，属低位反转而非高位接力。需注意的是其 PE 高达 3783 倍、PB 12.02 倍，估值完全脱离基本面支撑，纯粹依靠主题与资金驱动，一旦地缘催化降温，回撤风险显著。定位为主线情绪与资金的双重指标股，跟踪其封单强度即可判断军工线延续性。
+    </div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-header">
+      <div>
+        <div class="hero-name">北方长龙 <span style="font-size:10px;color:#9aa3c0;font-weight:400;">sz301357 · 创业板 20cm</span> <span class="hero-badge">情绪龙</span></div>
+      </div>
+      <div class="hero-pct">+20.00%</div>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-item"><div class="hero-label">收盘价</div><div class="hero-value">113.23 元</div></div>
+      <div class="hero-item"><div class="hero-label">成交额</div><div class="hero-value">12.04 亿</div></div>
+      <div class="hero-item"><div class="hero-label">主力净流入</div><div class="hero-value up">+1.77 亿（板块第2）</div></div>
+      <div class="hero-item"><div class="hero-label">总市值</div><div class="hero-value">107.79 亿</div></div>
+      <div class="hero-item"><div class="hero-label">换手率</div><div class="hero-value">12.25%</div></div>
+      <div class="hero-item"><div class="hero-label">20日涨幅</div><div class="hero-value up">+55.00%</div></div>
+    </div>
+    <div class="hero-reason">
+      <strong>入选理由：</strong>今日军工线唯一 20cm 涨停且封死全天最高价的标的，振幅 20.57% 显示日内分歧后被强势拉起，委比 100 显示尾盘封单坚决，是本轮军工行情的绝对情绪龙。主营军用车辆非金属复合材料防护件与方舱，直接对应"地面兵装"叙事核心，题材辨识度在板块内最高。107.79 亿的中小市值配合 12.25% 高换手，具备连板梯队所需的资金效率，20 日 +55.00% 也印证其为板块内最早启动的先手品种。风险在于位置已经不低：PB 9.50 倍、PE 501 倍，且前瞻 PE 为负值说明盈利预期尚未兑现；52 周高点 197.94 元虽有空间，但年内 -19.64% 说明此前跌幅深、套牢盘密集。定位为情绪高度的风向标 —— 若明日继续封板则军工线可看至 P1 中段，若断板则整条线的接力预期需下修。
+    </div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-header">
+      <div>
+        <div class="hero-name">洪都航空 <span style="font-size:10px;color:#9aa3c0;font-weight:400;">sh600316 · 航空工业集团</span> <span class="hero-badge">军贸正宗</span></div>
+      </div>
+      <div class="hero-pct">+9.98%</div>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-item"><div class="hero-label">收盘价</div><div class="hero-value">28.53 元</div></div>
+      <div class="hero-item"><div class="hero-label">成交额</div><div class="hero-value">6.86 亿</div></div>
+      <div class="hero-item"><div class="hero-label">量比</div><div class="hero-value">2.31（显著放量）</div></div>
+      <div class="hero-item"><div class="hero-label">总市值</div><div class="hero-value">204.59 亿</div></div>
+      <div class="hero-item"><div class="hero-label">换手率</div><div class="hero-value">3.50%</div></div>
+      <div class="hero-item"><div class="hero-label">年内涨幅</div><div class="hero-value down">-18.24%</div></div>
+    </div>
+    <div class="hero-reason">
+      <strong>入选理由：</strong>印巴冲突概念板块的领涨股，以 2.31 的量比放量涨停并收于全天最高价，是"地缘冲突→军贸出口"这一逻辑链条上最正宗的映射标的。公司为教练机与导弹产品核心供应商，L-15 猎鹰教练机是国内少数具备实战出口记录的军贸产品，在南亚地缘事件中具备直接的订单想象空间，题材纯度高于泛军工标的。204.59 亿市值处于板块中位，既有足够流动性承接机构资金，又保留了弹性。相对优势在于位置：年内仍 -18.24%、60 日 -12.63%，是本轮启动的三强中调整最充分的一只，52 周高点 47.64 元对应超 65% 空间。主要风险是估值与业绩背离严重（PE 378 倍、前瞻 PE 884 倍），军贸订单确认周期长、落地节奏不可控，短期股价完全由事件情绪定价。定位为军工线中"低位 + 正宗"的均衡配置选择，适合作为情绪龙的对冲品种。
+    </div>
+  </div>
+</div>
+
+<!-- Section 6 -->
+<div class="section">
+  <div class="section-title">六、各大板块前三强细分环节 & 最优配对</div>
+  <div class="interpret-text" style="margin-bottom:14px;">
+    配对原则：同一细分环节内最强的两只标的，要求<strong>市值同量级</strong>（差距 &lt; 3 倍）+ <strong>产业逻辑同源</strong> + <strong>走势同步</strong>。标注 ⭐ 者为该板块最优配对。
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <div class="segment-tag">🎖️ 板块 A</div>
+      <div class="segment-title">军工（增量主线 · P1 启动）</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">① 地面兵装 / 装甲防护 <span class="segment-tag">最强细分 +5.12%</span></div>
+      <div class="segment-text">核心逻辑：地缘冲突→装备补库存；板块内涨停 3 只，主力净流入合计超 5.8 亿。</div>
+      <div class="pair"><span class="pair-a">⭐ A = 长城军工（262 亿 / +10.00%）</span><span class="pair-b">B = 内蒙一机（208 亿 / +6.55%）</span></div>
+      <div class="verdict ok">✅ 市值比 1.26 倍高度匹配，同属兵器工业集团地面装备平台，主力净流入分列板块第 1（3.49 亿）与第 3（0.61 亿），是本环节逻辑与体量最契合的一组。弹性替代组合：北方长龙（108 亿）/ 晶品特装（38 亿）。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">② 无人装备 / 无人战机 <span class="segment-tag">概念 +4.32%</span></div>
+      <div class="segment-text">核心逻辑：无人化作战形态转型，侦察 / 察打一体装备放量。</div>
+      <div class="pair"><span class="pair-a">⭐ A = 航天彩虹（191 亿 / +4.76%）</span><span class="pair-b">B = 洪都航空（205 亿 / +9.98%）</span></div>
+      <div class="verdict ok">✅ 市值 191 亿 vs 205 亿，几乎完全对等（比值 1.07），为今日军工线市值匹配度最高的一组；同属军贸出口链（彩虹无人机 + L-15 教练机），且年内跌幅接近（-19.11% vs -18.24%），走势同源性强。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">③ 航空整机 / 主机厂 <span class="segment-tag">大票中军</span></div>
+      <div class="segment-text">核心逻辑：十五五装备采购预期，主机厂订单能见度提升。</div>
+      <div class="pair"><span class="pair-a">A = 中航沈飞（1279 亿 / +5.97%）</span><span class="pair-b">B = 中航西飞（599 亿 / +3.86%）</span></div>
+      <div class="verdict warn">⚠️ 市值差 2.1 倍，勉强在同量级内。中航沈飞量比 2.56 放量明显，但委比 -72.21 显示尾盘抛压；作为承接大资金的中军配置可用，弹性弱于前两组。</div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <div class="segment-tag">💊 板块 B</div>
+      <div class="segment-title">医药（存量主线 · P2 二线接棒）</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">① 科研试剂 / 分子砌块 <span class="segment-tag">今日最强细分</span></div>
+      <div class="segment-text">核心逻辑：创新药研发投入回暖→上游科研服务景气度最先反弹；今日该环节双双 20cm 涨停。</div>
+      <div class="pair"><span class="pair-a">⭐⭐ A = 百普赛斯（130 亿 / +20.00%）</span><span class="pair-b">B = 毕得医药（67 亿 / +20.00%）</span></div>
+      <div class="verdict ok">✅ 全场最优配对：同为 20cm 涨停封板、市值同量级（比值 1.94）、同属创新药上游科研服务（重组蛋白试剂 / 分子砌块）、5 日涨幅高度同步（+72.67% vs +59.48%）、换手率均处高位（23.31% / 11.62%）。四个维度全部匹配，是今日全市场配对成立度最高的一组。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">② CXO / CRO 一体化 <span class="segment-tag">资金主战场</span></div>
+      <div class="segment-text">核心逻辑：药明中报超预期 + 1260H 诉讼胜诉，海外压制解除，全链条估值修复。</div>
+      <div class="pair"><span class="pair-a">A = 药明康德（4814 亿 / +4.21%）</span><span class="pair-b">B = 康龙化成（864 亿 / +3.86%）</span></div>
+      <div class="verdict warn">⚠️ 市值差 5.6 倍，不构成严格意义的同量级配对，属"总龙 + 跟随"关系。但两者今日成交合计 267.71 亿，是医药线绝对的资金主战场；药明 PE 仅 22.22 倍 vs 康龙 51.02 倍，估值差显著，若做相对价值可考虑多药明 / 空康龙。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">③ 传统药企重估 / 连板梯队 <span class="segment-tag">小市值弹性</span></div>
+      <div class="segment-text">核心逻辑：医药板块整体重估外溢至低位小市值药企，情绪接力为主。</div>
+      <div class="pair"><span class="pair-a">A = 百花医药（45 亿 / +9.96% · 5连板）</span><span class="pair-b">B = 阳光诺和（72 亿 / -0.89%）</span></div>
+      <div class="verdict bad">❌ 配对不成立：百花医药 5 连板一字封死（量比仅 0.10，全天几无换手），而阳光诺和今日收跌 -0.89%，走势完全背离。本环节目前只有独龙无梯队，属高风险纯情绪品种，不建议按配对逻辑参与。</div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <div class="segment-tag">🐔 板块 C</div>
+      <div class="segment-title">农业·养殖（新启动 · 周期驱动）</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">① 白羽鸡 / 家禽 <span class="segment-tag">概念榜第1 +5.02%</span></div>
+      <div class="segment-text">核心逻辑：祖代引种受限→商品代供给收缩→鸡价上行，基本面周期反转。</div>
+      <div class="pair"><span class="pair-a">⭐ A = 益生股份（144 亿 / +10.02%）</span><span class="pair-b">B = 圣农发展（主力净流入 0.24 亿）</span></div>
+      <div class="verdict ok">✅ 益生股份为祖代鸡引种绝对龙头，涨停 + 板块主力净流入第一（0.82 亿），创 52 周新高 9.99 元；圣农发展为白羽鸡全产业链龙头，两者构成"上游种源 + 中游养殖"完整链条配对。次选：仙坛股份（0.22 亿）。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">② 生猪养殖 <span class="segment-tag">跟随环节</span></div>
+      <div class="segment-text">核心逻辑：家禽涨价情绪外溢至生猪，猪周期底部预期。</div>
+      <div class="pair"><span class="pair-a">A = 温氏股份（主力 +0.27 亿）</span><span class="pair-b">B = 正邦科技（主力 +0.41 亿）</span></div>
+      <div class="verdict warn">⚠️ 正邦科技主力净流入 0.41 亿居板块第 2，但两者市值差距较大（温氏为千亿级、正邦为百亿级），属跟随性资金流入，暂未形成独立驱动。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">③ 渔业 <span class="segment-tag">板块 +3.56%</span></div>
+      <div class="segment-text">核心逻辑：农业整体情绪外溢，渔业为最末端补涨环节。</div>
+      <div class="pair"><span class="pair-a">A = 中水渔业（+4.46%）</span><span class="pair-na">B = 待观察（无同步标的）</span></div>
+      <div class="verdict bad">❌ 领涨股仅 +4.46%，无涨停，缺乏梯队，属情绪扩散末端，配对条件不成立。</div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <div class="segment-tag">🥇 板块 D</div>
+      <div class="segment-title">贵金属 / 小金属（趋势延续 · 20日+33.73%）</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">① 黄金 <span class="segment-tag">趋势最强 20日+33.73%</span></div>
+      <div class="segment-text">核心逻辑：避险需求 + 金价中枢上移，板块 5 日 +17.53%、20 日 +33.73%，为全场趋势最强。</div>
+      <div class="pair"><span class="pair-a">⭐ A = 招金黄金（185 亿 / +9.98%）</span><span class="pair-b">B = 山东黄金 / 中金黄金（同业中军）</span></div>
+      <div class="verdict ok">✅ 招金黄金涨停 + 换手 13.08% + 成交 22.95 亿，10 日 +56.76% 为板块绝对龙头。但 PB 已达 20.84 倍，估值极高，属趋势末段的加速品种，追高风险大。</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">② 小金属·铋 <span class="segment-tag">概念第2 +4.68%</span></div>
+      <div class="segment-text">核心逻辑：铋价上涨 + 战略金属管控，5 日 +26.13% 为概念榜趋势第一。</div>
+      <div class="pair"><span class="pair-a">A = 先导基电（326 亿 / +10.01%）</span><span class="pair-na">B = 待观察</span></div>
+      <div class="verdict warn">⚠️ 先导基电涨停但量比仅 0.33（缩量涨停，惜售特征），5 日 +46.99%、年内 +95.07%，位置偏高。板块内暂无第二只同步标的，配对暂缺。</div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <div class="segment-tag">🏨 板块 E</div>
+      <div class="segment-title">消费复苏（酒店餐饮 +4.22% · 行业第2）</div>
+    </div>
+    <div style="margin:10px 0; padding:10px; background:rgba(0,0,0,0.15); border-radius:6px;">
+      <div class="segment-title" style="font-size:11.5px;">① 酒店 <span class="segment-tag">20日 +15.35%</span></div>
+      <div class="segment-text">核心逻辑：暑期出行旺季 + 低位困境反转，20 日 +15.35%。</div>
+      <div class="pair"><span class="pair-a">A = 华天酒店（44 亿 / +9.92%）</span><span class="pair-na">B = 待观察</span></div>
+      <div class="verdict warn">⚠️ 华天酒店涨停并创 52 周新高附近（4.32 vs 4.44），10 日 +29.34%、20 日 +42.57%，但 PE 为负（-21.03）属亏损股，纯题材炒作。板块量比仅 0.94 未放量，行业第 2 的涨幅缺乏成交配合，持续性存疑。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 7 -->
+<div class="section">
+  <div class="section-title">七、风险提示与次日跟踪要点</div>
+  <div class="risk-box">
+    <div class="risk-title">⚠️ 核心风险</div>
+    <ul class="risk-list">
+      <li><strong>无断层主线 = 资金分散风险。</strong>今日行业第一与第二仅差 0.90%，概念第一与第二仅差 0.34%，多点开花意味着没有任何一条线获得压倒性资金集中。这类格局下，题材切换速度快、持续性弱，隔日反包与断板概率同时升高。</li>
+      <li><strong>军工线估值严重脱离基本面。</strong>三只核心标的 PE 分别为 3783 倍（长城军工）、501 倍（北方长龙）、378 倍（洪都航空），且长城军工与北方长龙前瞻 PE 为负。股价完全由地缘事件与主题资金定价，一旦印巴局势降温，缺乏基本面支撑将导致快速回撤。</li>
+      <li><strong>医药已处 P2 阶段，不宜按新主线追高。</strong>医疗服务 5 日已 +21.21%，今日二线（百普赛斯、毕得医药 +20%）显著跑赢一线（药明 +4.21%），符合"二线接棒 = P2 确认"特征。P2 阶段的正确操作是减一线、观察二线持续性，而非在此位置新建仓。</li>
+      <li><strong>创业板与科创50 走弱信号需警惕。</strong>成长指数连续走弱而上证靠权重维持，若科技线继续失血且新主线无法承接，指数层面的结构性风险将上升。上证 4000 点整数关口亦存在技术压力。</li>
+      <li><strong>缩量上涨的质量存疑。</strong>今日成交较上日减少 1413 亿，在涨停 103 家、上涨占比 73% 的强势盘面下仍缩量，说明增量资金有限，更多是存量博弈下的板块搬家。</li>
+    </ul>
+  </div>
+  <div class="track-box">
+    <div class="track-title">📌 明日（08-11）跟踪要点</div>
+    <ul class="track-list">
+      <li><strong>军工线证伪点：</strong>北方长龙若断板 → 情绪龙确认见顶，整条线接力预期下修；长城军工若无法封板且主力净流出 → 资金龙瓦解，军工按一日游处理。</li>
+      <li><strong>军工线加强点：</strong>若长城军工、北方长龙同步 2 连板，且内蒙一机、晶品特装跟进涨停形成梯队 → P1 确认，可按试错仓参与。</li>
+      <li><strong>医药线阶段点：</strong>观察百普赛斯 / 毕得医药是否连续第 2 日跑赢药明康德。若是 → P2 确认延续，加 B 减 A；若一线重新跑赢 → P3 预警，全线离场准备。</li>
+      <li><strong>科技线修复点：</strong>通信设备今日 -3.67% 领跌，若明日缩量止跌且 PCB（景旺 / 宝鼎）不破前低 → 属正常回调，可等分歧低吸；若继续放量下跌 → 确认为主线切换，科技线全面降级。</li>
+      <li><strong>农业线扩散点：</strong>益生股份为 52 周新高涨停，观察圣农发展、仙坛股份是否跟进涨停形成板块效应；若仅益生独强 → 按独龙处理，仓位从小。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="disclaimer">⚠️ 以上内容由 AI 基于公开信息整理生成，仅供参考，不构成任何投资建议或个股推荐。投资有风险，决策需谨慎。</div>
+  <div>数据来源：腾讯自选股（行情 / 板块排名 / 资金流向 / 涨跌分布）· 飞书「聚焦核心」策略群台账 · 公开财经资讯</div>
+  <div style="margin-top:6px;">报告生成时间：2026-08-10 · A股每日最强主线自动化分析</div>
+</div>
+
+</div>
+
+<script>
+// 核心指数涨跌幅
+var chartIndex = echarts.init(document.getElementById('chart-index'));
+chartIndex.setOption({
+  grid: { top: 30, bottom: 25, left: 40, right: 15 },
+  xAxis: { type: 'category', data: ['上证指数','深证成指','创业板指','科创50','上证50','沪深300'], axisLabel: { color: '#9aa3c0', fontSize: 9, rotate: 0 }, axisLine: { lineStyle: { color: '#33334f' } } },
+  yAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize: 9, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 0.67, itemStyle: { color: '#ff4d5e' } },
+      { value: 0.04, itemStyle: { color: '#ff4d5e' } },
+      { value: -0.73, itemStyle: { color: '#22c55e' } },
+      { value: -0.36, itemStyle: { color: '#22c55e' } },
+      { value: 0.25, itemStyle: { color: '#ff4d5e' } },
+      { value: 0.16, itemStyle: { color: '#ff4d5e' } }
+    ],
+    barWidth: '45%',
+    label: { show: true, position: 'top', color: '#e8e8f0', fontSize: 9, formatter: function(p){ return p.value>0?p.value+'%':''; } }
+  }]
+});
+
+// 个股涨跌分布
+var chartDist = echarts.init(document.getElementById('chart-dist'));
+chartDist.setOption({
+  grid: { top: 30, bottom: 25, left: 35, right: 15 },
+  xAxis: { type: 'category', data: ['跌停','-7%','-5~-7%','-2~-5%','0~-2%','0~2%','2~5%','5~7%','7%~涨停','涨停'], axisLabel: { color: '#9aa3c0', fontSize: 8, rotate: 25 }, axisLine: { lineStyle: { color: '#33334f' } } },
+  yAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize: 9 }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 6, itemStyle: { color: '#22c55e' } },
+      { value: 26, itemStyle: { color: '#22c55e' } },
+      { value: 37, itemStyle: { color: '#22c55e' } },
+      { value: 377, itemStyle: { color: '#22c55e' } },
+      { value: 945, itemStyle: { color: '#22c55e' } },
+      { value: 80, itemStyle: { color: '#9aa3c0' } },
+      { value: 1574, itemStyle: { color: '#ff4d5e' } },
+      { value: 2112, itemStyle: { color: '#ff4d5e' } },
+      { value: 179, itemStyle: { color: '#ff4d5e' } },
+      { value: 103, itemStyle: { color: '#ff4d5e' } }
+    ],
+    barWidth: '55%',
+    label: { show: true, position: 'top', color: '#e8e8f0', fontSize: 8 }
+  }]
+});
+
+// 行业/概念对比
+var chartSector = echarts.init(document.getElementById('chart-sector'));
+chartSector.setOption({
+  legend: { data: ['行业板块','概念板块'], textStyle: { color: '#c8cde0', fontSize: 10 }, top: 5 },
+  grid: { top: 35, bottom: 30, left: 40, right: 15 },
+  xAxis: { type: 'category', data: ['第1名','第2名','第3名','第4名','第5名','第6名'], axisLabel: { color: '#9aa3c0', fontSize: 10 }, axisLine: { lineStyle: { color: '#33334f' } } },
+  yAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize: 9, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [
+    { name: '行业板块', type: 'bar', data: [5.12, 4.22, 4.19, 3.92, 3.89, 3.56], itemStyle: { color: '#ff4d5e' }, barWidth: '28%', label: { show: true, position: 'top', color: '#e8e8f0', fontSize: 9, formatter: '{c}%' } },
+    { name: '概念板块', type: 'bar', data: [5.02, 4.68, 4.43, 4.32, 4.24, 4.11], itemStyle: { color: '#7ec8ff' }, barWidth: '28%', label: { show: true, position: 'top', color: '#e8e8f0', fontSize: 9, formatter: '{c}%' } }
+  ]
+});
+
+// 军工主力净流入 TOP8
+var chartCapital = echarts.init(document.getElementById('chart-capital'));
+chartCapital.setOption({
+  grid: { top: 10, bottom: 25, left: 80, right: 40 },
+  xAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize: 9 }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'category', data: ['天秦装备','ST应急','北方导航','国科军工','捷强装备','银河电子','内蒙一机','北方长龙','长城军工'].reverse(), axisLabel: { color: '#c8cde0', fontSize: 10 }, axisLine: { lineStyle: { color: '#33334f' } } },
+  series: [{
+    type: 'bar',
+    data: [604, 970, 1169, 1516, 1568, 2795, 6144, 17723, 34878].reverse(),
+    itemStyle: { color: '#ff4d5e' },
+    barWidth: '55%',
+    label: { show: true, position: 'right', color: '#e8e8f0', fontSize: 9 }
+  }]
+});
+
+window.addEventListener('resize', function(){
+  chartIndex.resize(); chartDist.resize(); chartSector.resize(); chartCapital.resize();
+});
+</script>
+</body>
+</html>

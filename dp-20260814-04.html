@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>每日盘前策略 - 2026年8月14日</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:#2d3748;line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:12px 16px 40px}
+
+/* 标题栏 */
+.header-card{background:linear-gradient(135deg,#1a3a7a 0%,#254b9e 50%,#2d5aa8 100%);border-radius:14px;padding:24px 22px 22px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.header-card::before{content:'';position:absolute;top:-40px;right:-30px;width:160px;height:160px;background:rgba(255,255,255,.06);border-radius:50%}
+.header-card::after{content:'';position:absolute;bottom:-50px;left:-20px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%}
+.date-line{font-size:12.5px;color:rgba(255,255,255,.75);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.date-line .cal-icon{font-size:15px}
+.main-title{font-size:25px;font-weight:800;letter-spacing:1px;margin-bottom:14px}
+.quote-box{font-size:13px;color:rgba(255,255,255,.88);line-height:1.65;border-left:3px solid rgba(255,255,255,.35);padding-left:12px;margin-bottom:16px}
+.quote-artist{font-style:italic;color:rgba(255,255,255,.65);font-size:12px;margin-top:4px}
+.tags-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag-pill{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.22);padding:5px 13px;border-radius:20px;font-size:12.5px;font-weight:500}
+
+/* 卡片通用 */
+.card{background:#fff;border-radius:12px;padding:18px 18px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
+.card-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:14px;color:#1a202c}
+.card-title .emoji{font-size:19px}
+
+/* 左边框 */
+.card-lb-red{border-left:4px solid #dc2626}
+.card-lb-blue{border-left:4px solid #2563eb}
+.card-lb-orange{border-left:4px solid #dd6b20}
+.card-lb-purple{border-left:4px solid #7c3aed}
+.card-lb-yellow{border-left:4px solid #d97706}
+
+/* 段落文字 */
+.para{font-size:14px;line-height:1.75;color:#374151;margin-bottom:12px;text-align:justify}
+.para strong{color:#1a202c;font-weight:600}
+.hl-red{color:#dc2626;font-weight:600}
+.hl-green{color:#16a34a;font-weight:600}
+.hl-blue{color:#2563eb;font-weight:600}
+.hl-orange{color:#dd6b20;font-weight:600}
+
+/* 列表项 */
+.sub-title{font-size:15px;font-weight:700;color:#1a202c;display:flex;align-items:center;gap:6px;margin:14px 0 10px}
+.sub-title .num{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;background:#2563eb;color:#fff;border-radius:50%;font-size:12px;font-weight:700}
+.bullet-item{font-size:14px;line-height:1.75;color:#374151;margin-bottom:8px;padding-left:4px}
+.arrow-line{font-size:14px;line-height:1.75;color:#374151;margin-bottom:6px;display:flex;gap:6px;white-space:normal;word-break:break-word}
+.arrow-line .arrow{color:#2563eb;font-weight:700;flex-shrink:0}
+.arrow-line strong{color:#1a202c;font-weight:600;display:inline}
+
+/* 表格 */
+.data-table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:13px}
+.data-table thead th{background:#1e3a6e;color:#fff;font-weight:600;padding:11px 10px;text-align:left;font-size:13px;white-space:nowrap}
+.data-table thead th:first-child{border-radius:8px 0 0 0}
+.data-table thead th:last-child{border-radius:0 8px 0 0}
+.data-table tbody td{padding:10px 10px;border-bottom:1px solid #f0f0f0;color:#374151;vertical-align:middle}
+.data-table tbody tr:last-child td{border-bottom:none}
+.data-table tbody tr:nth-child(even){background:#fafbfc}
+.num-cell{text-align:right;font-family:"SF Mono",Menlo,monospace;font-weight:600}
+.positive{color:#dc2626;font-weight:600}
+.negative{color:#16a34a;font-weight:600}
+
+/* 徽章/标签 */
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:14px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.badge-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.badge-orange{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.badge-yellow{background:#fefce8;color:#a16207;border:1px solid #fde68a}
+.badge-green{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.badge-gray{background:#f9fafb;color:#6b7280;border:1px solid #e5e7eb}
+.badge-solid-red{background:#dc2626;color:#fff}
+.badge-solid-orange{background:#dd6b20;color:#fff}
+.badge-solid-green{background:#16a34a;color:#fff}
+
+/* 评分圆 */
+.score-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0}
+.score-row:last-child{border-bottom:none}
+.score-name{font-size:14px;font-weight:600;color:#1a202c;min-width:100px;flex-shrink:0}
+.score-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0}
+.score-circle.s-red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.score-circle.s-orange{background:linear-gradient(135deg,#dd6b20,#f97316)}
+.score-circle.s-yellow{background:linear-gradient(135deg,#d97706,#eab308)}
+.score-circle.s-green{background:linear-gradient(135deg,#16a34a,#22c55e)}
+.score-label{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:10px}
+.consensus-text{font-size:13.5px;color:#4b5563;min-width:80px}
+.action-text{font-size:13.5px;color:#374151;min-width:90px}
+.position-text{font-size:13px;color:#6b7280;font-family:"SF Mono",Menlo,monospace}
+
+/* 风险卡片 */
+.risk-card{background:#fef2f2;border-left:4px solid #dc2626;border-radius:0 12px 12px 0;padding:14px 16px;margin:8px 0}
+.risk-card .risk-title{font-size:14px;font-weight:700;color:#991b1b;margin-bottom:6px}
+.risk-card p{font-size:13.5px;color:#7f1d1d;line-height:1.65}
+
+/* 催化日历 */
+.cal-date{font-size:14.5px;font-weight:700;color:#1a202c;margin:12px 0 6px}
+.cal-event{font-size:13.5px;color:#374151;margin-bottom:5px;padding-left:14px;position:relative;line-height:1.65}
+.cal-event::before{content:'•';position:absolute;left:0;color:#2563eb;font-weight:700}
+.cal-highlight{background:#eff6ff;padding:8px 12px;border-radius:8px;margin:6px 0;display:inline-block}
+.cal-highlight strong{color:#1d4ed8}
+
+/* 页脚 */
+.footer{text-align:center;padding:24px 0 12px;color:#9ca3af;font-size:12px;line-height:1.7}
+.footer .disclaimer-icon{font-size:16px}
+.footer a{color:#6b7280}
+
+/* 响应式 */
+@media(max-width:480px){
+  .container{padding:8px 10px 30px}
+  .header-card{padding:20px 16px 18px;border-radius:12px}
+  .main-title{font-size:22px}
+  .card{padding:14px 14px 16px;border-radius:10px}
+  .data-table{font-size:12px}
+  .data-table thead th{padding:9px 8px;font-size:12px}
+  .data-table tbody td{padding:8px 8px}
+  .para{font-size:13.5px}
+  .bullet-item{font-size:13.5px}
+  .score-row{gap:8px;padding:10px 0}
+  .score-name{font-size:13px;min-width:80px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ════════════ 标题栏 ════════════ -->
+<div class="header-card">
+  <div class="date-line"><span class="cal-icon">📅</span> 2026年8月14日 · 周五</div>
+  <div class="main-title">每日盘前策略</div>
+  <div class="quote-box">
+    🎵《夜空中最亮的星》— 逃跑计划<br>
+    "每当我找不到存在的意义，每当我迷失在黑夜里，夜空中最亮的星，请指引我靠近你。"
+    <div class="quote-artist">—— 逃跑计划《夜空中最亮的星》</div>
+  </div>
+  <div class="tags-row">
+    <span class="tag-pill">CRO/创新药</span>
+    <span class="tag-pill">银行防御</span>
+    <span class="tag-pill">半导体(退潮)</span>
+    <span class="tag-pill">贵金属(减仓)</span>
+  </div>
+</div>
+
+<!-- ════════════ 核心摘要 ════════════ -->
+<div class="card card-lb-red">
+  <div class="card-title"><span class="emoji">📌</span> 核心摘要</div>
+
+  <div class="sub-title"><span style="color:#2563eb">■</span> 前一交易日（8月13日周四）回顾</div>
+  <div class="para">A股<strong>高开低走兑现日</strong>。上证指数 <span class="hl-green">-0.50%</span> 报<span class="hl-green">3926.96</span>，深证成指 <span class="hl-green">-0.87%</span> 报<span class="hl-green">14289.44</span>，创业板指 <span class="hl-green">-0.45%</span> 报<span class="hl-green">3586.04</span>，科创50 <span class="hl-green">-1.11%</span> 报<span class="hl-green">1717.75</span>。两市成交<span class="hl-blue">2.55万亿元</span>（较8/12的2.15万亿放量约+3985亿），呈"<span class="hl-orange">放量收阴、抽干题材</span>"特征。上涨<span class="hl-green">约1085~1142只</span>、下跌<span class="hl-green">约4041~4317只</span>、<span class="hl-green">涨跌比0.26</span>、涨停<span class="hl-red">55~62只</span>（口径差）、跌停<span class="hl-green">0~4只</span>。全局情绪<span class="hl-green">退潮确认</span>（涨跌比0.26&lt;0.4 + 首板无溢价）。</div>
+
+  <div class="sub-title"><span style="color:#2563eb">■</span> 核心信号</div>
+  <div class="bullet-item">① <strong>退潮结构：</strong>昨日首板<span class="hl-green">-0.18%</span>、昨日触板<span class="hl-green">-2.44%</span>无溢价 = ㊱情绪缩圈第一信号；连板股（昨日连板+6.38%）逆势抱团、首板无溢价，属"高位抱团+低位无接力"典型退潮（<strong>应用 ㊱</strong>）。</div>
+  <div class="bullet-item">② <strong>资金撤离科技/资源：</strong>半导体主力净流出<span class="hl-green">-8.88亿</span>（5日-61.9亿）、工业金属<span class="hl-green">-8.38亿</span>、元件<span class="hl-green">-4.77亿</span>；仅医疗服务<span class="hl-red">+16.34亿</span>、国有大行<span class="hl-red">+12.96亿</span>、电力<span class="hl-red">+3.66亿</span>获净流入——资金切防御（<strong>应用 ㉒ 跷跷板</strong>）。</div>
+  <div class="bullet-item">③ <strong>风格极端分化：</strong>医药（CRO+4.31%/医疗服务+2.41%）逆势成唯一机构主线，贵金属<span class="hl-green">-5.29%</span>大跌（避险逻辑在美CPI/PPI温和后反转），科技硬件与资源同日退潮（<strong>应用 ㉓㉔</strong>）。</div>
+  <div class="bullet-item">④ <strong>估值高位：</strong>中证全指PE_TTM 21.78、10年分位<span class="hl-orange">94.56%（≥90%）</span> → <strong>应用 ⑭ 估值风险阀</strong>，总仓位上限不上调。</div>
+
+  <div class="sub-title"><span style="color:#2563eb">■</span> 今日（8月14日周五）展望</div>
+  <div class="para">隔夜美股温和收涨（标普+0.65%再创新高、纳指+0.81%、存储超级周期 SNDK+13.67%/WDC+7.31%/海力士+7.29%），但<strong>光通信获利回吐</strong>（COHR-7.99%）、<strong>中概金龙-1.84%</strong>压制科技情绪；亚太日经+1.16%/韩股+3.56%技术性牛市。外盘偏暖但A股自身处退潮（涨跌比0.26），叠加今日中国7月社零/工业增加值+央行1万亿买断式逆回购+印度光纤反倾销生效三重催化。<strong>盘前定调：退潮确认（三-⑥门控·多≤2），总仓位≤50%-55%，仅保留CRO/创新药（主攻）与银行防御（底仓）两个"多"，其余一律中性/减仓，不接飞刀（⑳）。</strong></div>
+</div>
+
+<!-- ════════════ 决策逻辑链 ════════════ -->
+<div class="card card-lb-blue">
+  <div class="card-title"><span class="emoji">🔗</span> 决策逻辑链</div>
+
+  <!-- ① -->
+  <div class="sub-title"><span class="num">①</span>数据</div>
+  <div class="para">8/13 上证-0.50%/创业板-0.45%/科创50-1.11%，两市成交2.55万亿放量+3985亿，上涨~1085 vs 下跌~4317，涨跌比0.26，涨停55-62/跌停0-4。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>指数高开低走、放量收阴、题材抽干，涨跌比0.26触发退潮门控（三-⑥：&lt;0.4即退潮）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>全局处于<strong>退潮期</strong>，方向表整体降权，多≤2板块（三-⑥强制）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>总仓位≤50%-55%（⑭估值上限不上调+退潮），现金为主，仅保留2个"多"。</div>
+
+  <!-- ② -->
+  <div class="sub-title"><span class="num">②</span>数据</div>
+  <div class="para">医疗服务+2.41%/CRO+4.31%（博济医药20cm），5日+23%、20日+14.77%；医药为8/13唯一逆势机构主线，主力净流入+16.34亿居首。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>医药业绩+BD出海双驱动，退潮日独苗；医疗服务进涨幅前三→P1预警，CRO连续多日跑赢补涨→P2确认（三-①）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>CRO/创新药给<strong>多（P2主升确认）</strong>，但为退潮日独苗，需防缩量断板。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>主攻仓10%-15%，药明康德/凯莱英为底仓，博济医药等不追高；一旦板块缩量断板即撤。</div>
+
+  <!-- ③ -->
+  <div class="sub-title"><span class="num">③</span>数据</div>
+  <div class="para">半导体-1.47%（资金-8.88亿）、元件-1.51%、电子化学品-2.53%；8/12缩量反弹后8/13再跌，呈"反弹=减仓窗口"形态（㉓）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>半导体此前P2→8/13转弱，Pair（北方华创/中微）同步下跌，高位放量出货（⑳）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>半导体/AI算力判<strong>退潮→中性/减仓</strong>（三-⑥：P3/退潮禁止给多）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>不接飞刀（⑳），仓位≤5%，等回踩5日线且量能企稳再议。</div>
+
+  <!-- ④ -->
+  <div class="sub-title"><span class="num">④</span>数据</div>
+  <div class="para">通信设备+0.39%（天孚+7.13/源杰+5.02抗跌），但CPO概念-0.86%；隔夜美股光通信获利回吐COHR-7.99%/LITE-5.58%。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>A股光模块已先于美股消化估值，8/13抗跌但处P3鱼尾（三-④），美股同板块回吐压制隔日弹性。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>光模块/CPO判<strong>P3鱼尾→中性/减仓</strong>，不追（三-⑥）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>持有不追，仓位≤5%；若破位按㉓纪律减仓。</div>
+
+  <!-- ⑤ -->
+  <div class="sub-title"><span class="num">⑤</span>数据</div>
+  <div class="para">国有大行+1.16%（中国银行+2.06%）、主力净流入+12.96亿；贵金属-5.29%大跌（避险逻辑反转）、工业金属-4.20%。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>分析：</strong>退潮日资金切防御，银行P1防御确认；贵金属避险仓位在美通胀温和后动态减仓（㉒）。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>判断：</strong>银行/红利防御给<strong>多（P1防御底仓）</strong>；贵金属判<strong>退潮→减仓</strong>。</div>
+  <div class="arrow-line"><span class="arrow">→</span><strong>行动：</strong>银行防御仓10%-15%（第2个"多"）；贵金属降至≤5%并动态止盈。</div>
+</div>
+
+<!-- ════════════ 盘前30秒速览 ════════════ -->
+<div class="card card-lb-orange">
+  <div class="card-title"><span class="emoji">⚡</span> 盘前30秒速览</div>
+  <div class="bullet-item">• <strong>指数：</strong>8/13 全线收跌，上证3926.96(-0.50%)、科创50 -1.11%领跌</div>
+  <div class="bullet-item">• <strong>成交：</strong>2.55万亿，放量+3985亿，高开低走抽干题材</div>
+  <div class="bullet-item">• <strong>涨跌家数：</strong>上涨~1085 vs 下跌~4317，<span class="hl-green">涨跌比0.26（退潮）</span>，涨停55-62</div>
+  <div class="bullet-item">• <strong>资金面：</strong>仅医疗服务+16.34亿/银行+12.96亿/电力+3.66亿净流入；半导体-8.88亿/工业金属-8.38亿流出</div>
+  <div class="bullet-item">• <strong>主线Top2：</strong>CRO<span class="hl-red">+4.31%</span>（退潮独苗）、银行<span class="hl-red">+1.16%</span>（防御）</div>
+  <div class="bullet-item">• <strong>重灾：</strong>贵金属<span class="hl-green">-5.29%</span>、工业金属<span class="hl-green">-4.20%</span>、电子化学品<span class="hl-green">-2.53%</span></div>
+  <div class="bullet-item">• <strong>海外：</strong>标普+0.65%新高/纳指+0.81%；存储超级周期 SNDK+13.67%；中概金龙-1.84%</div>
+  <div class="bullet-item">• <strong>定调：</strong>退潮确认·多≤2（三-⑥），总仓≤50%-55%，不接飞刀</div>
+</div>
+
+<!-- ════════════ 隔夜外盘 ════════════ -->
+<div class="card card-lb-blue">
+  <div class="card-title"><span class="emoji">🌍</span> 隔夜外盘（8月13日美东收盘 &amp; 8月14日亚太早盘）</div>
+
+  <div class="sub-title" style="margin-top:4px"><span style="color:#1e3a6e;font-weight:800">|</span> 美股（8月13日，多源一致：证券时报/财联社/东财）</div>
+  <table class="data-table">
+    <thead><tr><th>指数</th><th>收盘</th><th>涨跌</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>道琼斯</td><td class="num-cell">53839.99</td><td class="num-cell positive">+0.13%</td><td><span class="badge badge-red">偏强</span></td></tr>
+      <tr><td>标普500</td><td class="num-cell">7798.99</td><td class="num-cell positive">+0.65%</td><td><span class="badge badge-red">新高</span></td></tr>
+      <tr><td>纳斯达克</td><td class="num-cell">26803.03</td><td class="num-cell positive">+0.81%</td><td><span class="badge badge-red">领涨</span></td></tr>
+      <tr><td>纳指100</td><td class="num-cell">30084.50</td><td class="num-cell positive">+1.15%</td><td><span class="badge badge-red">重上3万</span></td></tr>
+      <tr><td>费城半导体(SOX)</td><td class="num-cell">—</td><td class="num-cell positive">+0.46%</td><td><span class="badge badge-orange">温和</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 关键驱动</div>
+  <div class="bullet-item">• <strong>通胀缓和：</strong>美国7月PPI同比+4.7%（预期4.9%、低6月5.5%），核心PPI+4.2%符合预期 → 打压加息预期，维持利率不变概率升至65.7%；VIX盘中最低14.39（年内新低）</div>
+  <div class="bullet-item">• <strong>存储超级周期：</strong>闪迪(SNDK)<span class="hl-red">+13.67%</span>、西部数据<span class="hl-red">+7.31%</span>、SK海力士<span class="hl-red">+7.29%</span>、希捷<span class="hl-red">+4.91%</span>、美光<span class="hl-red">+4.23%</span>——<span class="hl-orange">映射A股存储(兆易/江波龙)外强内弱修复预期(US-④)</span></div>
+  <div class="bullet-item">• <strong>光通信获利回吐：</strong>Coherent<span class="hl-green">-7.99%</span>、Lumentum<span class="hl-green">-5.58%</span>、康宁<span class="hl-green">-5.32%</span>——A股光模块隔日弹性受压（三-④鱼尾）</div>
+  <div class="bullet-item">• <strong>中概承压：</strong>纳斯达克中国金龙指数<span class="hl-green">-1.84%</span>（京东-7%/拼多多-5%），压制科技情绪</div>
+  <div class="bullet-item">• <strong>AI软件回补：</strong>特斯拉<span class="hl-red">+3.8%</span>、Meta<span class="hl-red">+2.78%</span>、微软<span class="hl-red">+0.9%</span></div>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 亚太（8月13日收盘，最新可得；8/14早盘待观察）</div>
+  <table class="data-table">
+    <thead><tr><th>指数</th><th>点位</th><th>涨跌</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>恒生指数</td><td class="num-cell">25396.51</td><td class="num-cell negative">-0.17%</td><td><span class="badge badge-green">微跌</span></td></tr>
+      <tr><td>恒生科技</td><td class="num-cell">4792.39</td><td class="num-cell positive">+0.33%</td><td><span class="badge badge-orange">温和</span></td></tr>
+      <tr><td>日经225</td><td class="num-cell">68308.59</td><td class="num-cell positive">+1.16%</td><td><span class="badge badge-red">AI半导体</span></td></tr>
+      <tr><td>韩国KOSPI</td><td class="num-cell">6813.34</td><td class="num-cell positive">+3.56%</td><td><span class="badge badge-red">技术牛市</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 大宗商品（8月13日收盘）</div>
+  <table class="data-table">
+    <thead><tr><th>品种</th><th>最新价</th><th>日内</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>COMEX黄金</td><td class="num-cell">≈4410美元/盎司</td><td class="num-cell negative">-0.2%~-1.4%</td><td><span class="badge badge-green">回落</span></td></tr>
+      <tr><td>COMEX白银</td><td class="num-cell">≈64.6美元/盎司</td><td class="num-cell negative">-1.7%</td><td><span class="badge badge-green">回落</span></td></tr>
+      <tr><td>WTI原油</td><td class="num-cell">≈81.2美元/桶</td><td class="num-cell negative">-2.47%</td><td><span class="badge badge-green">需求弱</span></td></tr>
+      <tr><td>布伦特原油</td><td class="num-cell">≈87.0美元/桶</td><td class="num-cell negative">-2.23%</td><td><span class="badge badge-green">需求弱</span></td></tr>
+      <tr><td>COMEX铜</td><td class="num-cell">≈6.59美元/磅</td><td class="num-cell negative">-0.33%</td><td><span class="badge badge-green">微调</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="para" style="margin-top:10px"><strong>信号解读：</strong>①美PPI温和+标普新高→全球risk-on，但<strong>A股自身退潮（涨跌比0.26）</strong>，外强内弱（US-③）下不线性外推；②存储超级周期最强映射A股存储修复（US-④），但8/13 A股存储已随科技回落，修复属反弹性质按㉓纪律；③金银油齐跌→贵金属避险逻辑反转，A股贵金属-5.29%已提前反映，仍处退潮减仓（㉒）；④中概-1.84%压制科技情绪。</div>
+</div>
+
+<!-- ════════════ 市场全景 ════════════ -->
+<div class="card card-lb-purple">
+  <div class="card-title"><span class="emoji">📊</span> 市场全景（8月13日收盘）</div>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 四大指数（westock / 通达信 / 东财三方交叉认证一致）</div>
+  <table class="data-table">
+    <thead><tr><th>指数</th><th>收盘</th><th>涨跌</th><th>成交</th><th>换手</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td>上证指数</td><td class="num-cell">3926.96</td><td class="num-cell negative">-0.50%</td><td class="num-cell">1.16万亿</td><td class="num-cell">1.18%</td><td><span class="badge badge-green">高开低走</span></td></tr>
+      <tr><td>深证成指</td><td class="num-cell">14289.44</td><td class="num-cell negative">-0.87%</td><td class="num-cell">1.39万亿</td><td class="num-cell">3.01%</td><td><span class="badge badge-green">高开低走</span></td></tr>
+      <tr><td>创业板指</td><td class="num-cell">3586.04</td><td class="num-cell negative">-0.45%</td><td class="num-cell">6652亿</td><td class="num-cell">4.04%</td><td><span class="badge badge-green">放量阴</span></td></tr>
+      <tr><td>科创50</td><td class="num-cell">1717.75</td><td class="num-cell negative">-1.11%</td><td class="num-cell">1257亿</td><td class="num-cell">0.48%</td><td><span class="badge badge-green">领跌</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 涨跌分布（已剔除停牌，westock口径）</div>
+  <table class="data-table">
+    <thead><tr><th>区间</th><th>家数</th><th>方向</th></tr></thead>
+    <tbody>
+      <tr><td>上涨</td><td class="num-cell">1085~1142</td><td class="positive">↑</td></tr>
+      <tr><td>下跌</td><td class="num-cell">4041~4317</td><td class="negative">↓</td></tr>
+      <tr><td>平盘</td><td class="num-cell">79~84</td><td>—</td></tr>
+      <tr><td><strong>涨跌比</strong></td><td class="num-cell"><strong>0.26</strong></td><td class="negative">↓ 退潮</td></tr>
+      <tr><td>涨停</td><td class="num-cell">55~62（口径差）</td><td class="positive">↑</td></tr>
+      <tr><td>跌停</td><td class="num-cell">0~4（口径差）</td><td class="negative">↓</td></tr>
+      <tr><td>昨日首板</td><td class="num-cell">-0.18%</td><td class="negative">↓ 无溢价</td></tr>
+      <tr><td>昨日触板</td><td class="num-cell">-2.44%</td><td class="negative">↓ 高炸板</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 板块排行（申万一级 / 概念，8月13日）</div>
+  <table class="data-table">
+    <thead><tr><th>类型</th><th>板块</th><th>涨跌幅</th><th>5日</th><th>20日</th><th>信号</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="6" style="font-weight:600;color:#6b7280;vertical-align:top;padding-top:14px">领涨<br>行业</td><td>医疗服务</td><td class="num-cell positive">+2.41%</td><td class="num-cell positive">+14.74%</td><td class="num-cell positive">+17.09%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>生物制品</td><td class="num-cell positive">+1.53%</td><td class="num-cell positive">+9.88%</td><td class="num-cell positive">+2.95%</td><td><span class="badge badge-solid-orange">暖进</span></td></tr>
+      <tr><td>国有大型银行Ⅱ</td><td class="num-cell positive">+1.16%</td><td class="num-cell positive">+0.95%</td><td class="num-cell positive">+3.00%</td><td><span class="badge badge-solid-orange">防御</span></td></tr>
+      <tr><td>综合Ⅱ</td><td class="num-cell positive">+0.93%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">脉冲</span></td></tr>
+      <tr><td>中药Ⅱ</td><td class="num-cell positive">+0.83%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">防御</span></td></tr>
+      <tr><td>医疗器械</td><td class="num-cell positive">+0.78%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">防御</span></td></tr>
+      <tr><td rowspan="6" style="font-weight:600;color:#6b7280;vertical-align:top;padding-top:14px">领跌<br>行业</td><td>贵金属</td><td class="num-cell negative">-5.29%</td><td class="num-cell negative">-1.87%</td><td class="num-cell positive">+20.36%</td><td><span class="badge badge-solid-green">退潮</span></td></tr>
+      <tr><td>工业金属</td><td class="num-cell negative">-4.20%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">退潮</span></td></tr>
+      <tr><td>教育</td><td class="num-cell negative">-2.64%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">弱</span></td></tr>
+      <tr><td>电子化学品Ⅱ</td><td class="num-cell negative">-2.53%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">弱</span></td></tr>
+      <tr><td>半导体</td><td class="num-cell negative">-1.47%</td><td class="num-cell positive">+2.40%</td><td class="num-cell negative">-9.52%</td><td><span class="badge badge-solid-green">资金出</span></td></tr>
+      <tr><td>元件</td><td class="num-cell negative">-1.51%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">弱</span></td></tr>
+      <tr><td rowspan="3" style="font-weight:600;color:#6b7280;vertical-align:top;padding-top:14px">概念<br>板块</td><td>CRO</td><td class="num-cell positive">+4.31%</td><td class="num-cell positive">+23.09%</td><td class="num-cell positive">+14.77%</td><td><span class="badge badge-solid-red">主升</span></td></tr>
+      <tr><td>昨日连板</td><td class="num-cell positive">+6.38%</td><td class="num-cell positive">+22.00%</td><td class="num-cell positive">+84.04%</td><td><span class="badge badge-solid-orange">抱团</span></td></tr>
+      <tr><td>昨日触板</td><td class="num-cell negative">-2.44%</td><td class="num-cell">—</td><td class="num-cell">—</td><td><span class="badge badge-solid-green">无溢价</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-title"><span style="color:#1e3a6e;font-weight:800">|</span> 主力资金净流入Top（westock行业流向）</div>
+  <table class="data-table">
+    <thead><tr><th>板块</th><th>主力净流入</th><th>5日累计</th></tr></thead>
+    <tbody>
+      <tr><td>医疗服务</td><td class="num-cell positive">+16.34亿</td><td class="num-cell positive">+16.93亿</td></tr>
+      <tr><td>国有大型银行Ⅱ</td><td class="num-cell positive">+12.96亿</td><td class="num-cell positive">+13.17亿</td></tr>
+      <tr><td>电力</td><td class="num-cell positive">+3.66亿</td><td class="num-cell negative">-8.18亿</td></tr>
+      <tr><td>半导体</td><td class="num-cell negative">-8.88亿</td><td class="num-cell negative">-61.92亿</td></tr>
+      <tr><td>工业金属</td><td class="num-cell negative">-8.38亿</td><td class="num-cell negative">-12.09亿</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════ 板块共识度与方向表 ════════════ -->
+<div class="card card-lb-yellow">
+  <div class="card-title"><span class="emoji">⭐</span> 板块共识度与方向表</div>
+  <div class="para" style="font-size:13px;color:#6b7280;margin-bottom:6px">评分=动量×0.3+产业锚×0.25+聪明钱×0.25+微观×0.1+催化×0.1，0-100。共识度=多维度一致性判断。<strong>全局情绪门控：退潮确认（涨跌比0.26&lt;0.4 + 首板无溢价）→ 方向表整体降权，多≤2板块（三-⑥强制）。</strong></div>
+
+  <div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:14px">
+    <div style="font-size:13.5px;font-weight:700;color:#991b1b;margin-bottom:4px">⚠ 全局情绪门控 = 退潮（多≤2）</div>
+    <div style="font-size:13px;color:#7f1d1d;line-height:1.6">依据 ㊱情绪缩圈（连板抱团+首板无溢价）+ 涨跌比0.26&lt;0.4：今日仅保留 <strong>CRO/创新药</strong> 与 <strong>银行/红利防御</strong> 两个"多"，其余板块一律中性/减仓，严禁给多（三-⑥）。此即修正 8/13"同日多板块踩雷（命中率43%）"的根因。</div>
+  </div>
+
+  <table class="data-table" style="margin:0">
+    <thead><tr><th>板块</th><th>评分</th><th>共识度</th><th>阶段判定</th><th>Pair相对强弱</th><th>方向</th><th>仓位</th><th>核心策略</th><th>核心个股</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">CRO/创新药</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-red" style="width:40px;height:40px;font-size:15px;display:inline-flex">85</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-red" style="font-size:11px;padding:3px 8px;border-radius:8px">极强</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">P2主升</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">药明康德(龙头) vs 博济医药(补涨20cm)：补涨连2天跑赢→P2确认</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-red" style="font-size:11px;padding:3px 8px;border-radius:8px">多·主攻</span></td>
+        <td class="num-cell" style="vertical-align:middle">10%-15%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">业绩+BD双驱动，退潮日唯一机构主线；缩量断板即撤</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">药明康德(底仓)<br>凯莱英(CDMO)<br>博济医药(不追高)</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">银行/红利防御</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-orange" style="width:40px;height:40px;font-size:15px;display:inline-flex">72</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">强</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-red" style="font-size:11px;padding:3px 8px;border-radius:8px">P1防御</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">工商银行 vs 中国银行(大行同涨)：防御属性共振</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-red" style="font-size:11px;padding:3px 8px;border-radius:8px">多·防御</span></td>
+        <td class="num-cell" style="vertical-align:middle">10%-15%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">退潮日稳定器，高股息+主力净流入+12.96亿；第2个"多"</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">工商银行(大行)<br>中国银行<br>招商银行(零售)</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">通信设备/算力网络</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-orange" style="width:40px;height:40px;font-size:15px;display:inline-flex">62</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-yellow" style="font-size:11px;padding:3px 8px;border-radius:8px">P2分化</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">锐捷网络(事件+13.52%) vs 紫光股份：个股强于板块</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中性</span></td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">超节点/算力租赁题材波动大，修复观察，不追高</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">锐捷网络(事件)<br>紫光股份(观望)</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">光模块/CPO</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-yellow" style="width:40px;height:40px;font-size:15px;display:inline-flex">58</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-yellow" style="font-size:11px;padding:3px 8px;border-radius:8px">P3鱼尾</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">中际旭创 vs 新易盛/天孚：天孚逆势但整体鱼尾</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中性减仓</span></td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">三-④鱼尾纪律，美股COHR-7.99%回吐，持有不追</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">中际旭创(持有)<br>新易盛(持有)</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">半导体/AI算力</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-yellow" style="width:40px;height:40px;font-size:15px;display:inline-flex">55</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-orange" style="font-size:11px;padding:3px 8px;border-radius:8px">中</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-green" style="font-size:11px;padding:3px 8px;border-radius:8px">退潮</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">北方华创 vs 中微：同步下跌，无相对强弱</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">减仓</span></td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">⑳不接飞刀，8/13 -1.47%资金-8.88亿，等回踩企稳</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">北方华创(观望)<br>中微公司(观望)</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">房地产/政策脉冲</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-green" style="width:40px;height:40px;font-size:15px;display:inline-flex">50</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">弱</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-gray" style="font-size:11px;padding:3px 8px;border-radius:8px">脉冲</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">保利 vs 招商蛇口：脉冲未达P1</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">中性</span></td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">㉕政策脉冲不追连板，8/13 房地产-2.20%已回落</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">保利发展(观望)<br>招商蛇口(观望)</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;vertical-align:middle">工业金属/小金属</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-green" style="width:40px;height:40px;font-size:15px;display:inline-flex">46</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">弱</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-green" style="font-size:11px;padding:3px 8px;border-radius:8px">退潮</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">紫金矿业 vs 洛阳钼业：资源线同步回落</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">减仓</span></td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">㉒风格切换，工业金属-4.20%/小金属-3.06%退潮</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">紫金矿业(减)<br>洛阳钼业(减)</td>
+      </tr>
+      <tr style="background:#fafbfc">
+        <td style="font-weight:600;vertical-align:middle">贵金属/黄金</td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-circle s-green" style="width:40px;height:40px;font-size:15px;display:inline-flex">48</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="score-label badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">弱</span></td>
+        <td style="text-align:center;vertical-align:middle"><span class="badge badge-green" style="font-size:11px;padding:3px 8px;border-radius:8px">退潮</span></td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.5;color:#4b5563">山东黄金 vs 中金黄金：避险逻辑反转同跌</td>
+        <td style="vertical-align:middle;font-weight:600"><span class="badge badge-solid-green" style="font-size:11px;padding:3px 8px;border-radius:8px">减仓</span></td>
+        <td class="num-cell" style="vertical-align:middle">≤5%</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.55;color:#374151">㉒避险仓位动态，8/13 -5.29%，COMEX金回落</td>
+        <td style="vertical-align:middle;font-size:12px;line-height:1.6;color:#4b5563">山东黄金(减)<br>中金黄金(减)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="para" style="margin-top:14px;font-size:13.5px"><strong>组合建议（退潮+估值高位，总仓≤50%-55%）：</strong><br>
+  总仓位 <strong>≤50%-55%上限</strong>（⑭估值上限不上调 + 三-⑥退潮降权）；现金≥45%-50%等待新周期。<br>
+  • 多仓 22%：CRO/创新药 12% + 银行防御 10%（退潮日仅有的2个"多"）<br>
+  • 中性/减仓 18%：光模块≤5% + 半导体≤5% + 通信设备≤3% + 贵金属≤3% + 资源≤2%（持有不追，破位减）<br>
+  • 现金 45%-50%：等退潮结束信号（涨跌比回升&gt;0.6 + 首板恢复溢价）再提升仓位<br>
+  <span style="color:#991b1b;font-weight:600">⚠️框架待更新（三阶段）：</span>退潮日"独苗主线"（CRO）是否豁免全局降权、其P2延续性判定阈值未明确，提请20:30回测节点归因固化。
+  </div>
+</div>
+
+<!-- ════════════ 风险点 + 催化日历 + 止盈止损纪律 ════════════ -->
+<div class="card card-lb-red">
+  <div class="card-title"><span class="emoji">⚠️</span> 风险点 + 📅 催化日历 + 🎯 纪律</div>
+
+  <div class="sub-title"><span style="color:#dc2626;font-weight:800">|</span> 风险点清单（六类）</div>
+  <div class="risk-card">
+    <p>• <strong>外盘风险：</strong>中概金龙-1.84%（京东-7%/拼多多-5%）压制科技情绪；美股光通信COHR-7.99%回吐，A股光模块隔日弹性受压（三-④）。</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>地缘风险：</strong>霍尔木兹海峡局势紧张、高油价抑制通胀前景（Wind晨报），若反复将压制全球risk-on；但当前油价-2.47%暂缓和。</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>政策风险：</strong>8月中下旬中报密集披露，"业绩证伪"是高估值（PE分位94.56%）个股的核心变量，部分高位股面临兑现。</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>情绪风险：</strong>㊱情绪缩圈确认——连板抱团（昨日连板+6.38%、换手15%+）+首板无溢价（昨日首板-0.18%/触板-2.44%），退潮中高位抱团一旦断板将带崩情绪。</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>汇率/通胀风险：</strong>美7月PPI温和后，下一步关注月底杰克逊霍尔央行会议表态；美联储称近期不买短债，准备金合意。美元指数100附近，人民币汇率6.74。</p>
+  </div>
+  <div class="risk-card">
+    <p>• <strong>技术风险：</strong>沪指3968（8/13高点）上方为8/12套牢区，高开低走放量阴线抽干题材；科创50 -1.11%领跌，成长端承压。</p>
+  </div>
+
+  <div class="sub-title" style="margin-top:18px"><span style="color:#2563eb;font-weight:800">|</span> 催化日历（8月14日周五重点）</div>
+
+  <div class="cal-date">📌 8月14日 今日（开盘前/盘中）</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>中国7月社零 / 工业增加值 / 固定资产投资</strong></span>数据公布——关键宏观验证，决定消费与工业生产景气</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>央行1万亿买断式逆回购</strong></span>操作中（月中流动性呵护，提振情绪）</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>印度光纤反倾销</strong></span>8/14起生效——光纤/CPO供应链催化（国内替代讨论）</div>
+  <div class="cal-event">中报业绩密集披露（医药/电子消费类，关注超预期与证伪）</div>
+
+  <div class="cal-date">📌 后续关注（本周~月底）</div>
+  <div class="cal-event"><span class="cal-highlight"><strong>月底杰克逊霍尔全球央行会议</strong></span>美联储表态将主导政策预期</div>
+  <div class="cal-event">美国CPI已出（8/13符合预期），PPI温和；后续初请失业金/月底议息预期</div>
+  <div class="cal-event">存储超级周期（SNDK/WDC/海力士）映射A股存储外强内弱修复观察（US-④）</div>
+
+  <div class="sub-title" style="margin-top:18px"><span style="color:#2563eb;font-weight:800">|</span> 止盈止损纪律</div>
+  <div class="para"><strong>① 仓位铁律：</strong>总仓位≤50%-55%上限（⑭+三-⑥）。单一板块≤15%（多仓），单一标的≤8%。退潮日严禁重仓。</div>
+  <div class="para"><strong>② 止损硬约束：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 主攻仓（CRO/创新药）：跌破5日均线减半，破20日均线清仓；板块缩量断板即撤</div>
+  <div class="bullet-item" style="padding-left:16px">• 防御仓（银行）：回撤&gt;8%减仓，不作为止损对象</div>
+  <div class="bullet-item" style="padding-left:16px">• 减仓仓（半导体/光模块/贵金属/资源）：破位即减，不摊平（⑳不接飞刀）</div>
+  <div class="para"><strong>③ 止盈规则：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• CRO/创新药主升段：浮盈达20%启动移动止盈（回撤8%出局）</div>
+  <div class="bullet-item" style="padding-left:16px">• 银行防御：股息+估值修复，长期持有</div>
+  <div class="para"><strong>④ 不动原则：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 不在9:25集合竞价重仓；不在午盘情绪低点恐慌割肉；退潮日不追高开板块</div>
+  <div class="para"><strong>⑤ 风格再平衡触发：</strong></div>
+  <div class="bullet-item" style="padding-left:16px">• 涨跌比回升&gt;0.6 + 首板恢复溢价 → 退潮结束，可提升仓位至60%</div>
+  <div class="bullet-item" style="padding-left:16px">• 创业板指单日跌幅&gt;3%：多仓先砍1/3避险</div>
+</div>
+
+<!-- ════════════ 页脚 ════════════ -->
+<div class="footer">
+  <div style="font-size:18px;margin-bottom:6px">⚖️</div>
+  本报告仅供参考，不构成投资建议。<br>
+  数据来源：腾讯自选股（westock，2026-08-13收盘）、通达信（tdx，日K交叉）、东方财富妙想（mx-ds，指数/广度交叉）、Wind/财联社/证券时报/中新经纬（外盘2026-08-13~14）。<br>
+  市场有风险，投资需谨慎。决策请独立思考，盈亏自担。
+</div>
+
+</div>
+</body>
+</html>

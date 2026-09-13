@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>持仓晨析 · 2026-09-02（基于 2026-09-01 收盘）</title>
+<style>
+:root{
+  --up:#d6342c; --down:#1a9e57; --bg:#f5f6f8; --card:#ffffff; --ink:#1f2329; --sub:#6b7280;
+  --line:#e5e7eb; --accent:#2f6fed; --warn:#e08a00; --bad:#c0392b; --ok:#178a4d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:14px}
+.wrap{max-width:1080px;margin:0 auto;padding:18px}
+header{background:linear-gradient(135deg,#1f2a44,#33507e);color:#fff;border-radius:14px;padding:22px 26px;margin-bottom:16px}
+header h1{font-size:22px;font-weight:700}
+header .meta{margin-top:6px;font-size:12.5px;opacity:.85}
+.tag{display:inline-block;background:rgba(255,255,255,.15);border-radius:6px;padding:2px 9px;margin:4px 6px 0 0;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.card h2{font-size:17px;margin-bottom:12px;padding-left:10px;border-left:4px solid var(--accent)}
+.card h3{font-size:14.5px;margin:14px 0 8px;color:#2b3340}
+.up{color:var(--up);font-weight:600}.down{color:var(--down);font-weight:600}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.kpi{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .v{font-size:21px;font-weight:700}
+.kpi .l{font-size:12px;color:var(--sub);margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{background:#f0f3f8;font-weight:600}
+td.l,th.l{text-align:left}
+.bar{height:14px;border-radius:7px;background:var(--accent);display:inline-block;vertical-align:middle}
+.pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
+.p-up{background:#fdecea;color:var(--up)} .p-down{background:#e7f7ee;color:var(--down)}
+.p-warn{background:#fff4e0;color:var(--warn)} .p-bad{background:#fbe9e7;color:var(--bad)} .p-ok{background:#e6f6ec;color:var(--ok)}
+.note{font-size:12.5px;color:var(--sub);margin-top:8px;padding:8px 10px;background:#f8f9fb;border-left:3px solid var(--accent);border-radius:6px}
+.warnbox{font-size:13px;margin-top:8px;padding:10px 12px;background:#fff8ed;border-left:4px solid var(--warn);border-radius:6px}
+.badbox{font-size:13px;margin-top:8px;padding:10px 12px;background:#fdf0ee;border-left:4px solid var(--bad);border-radius:6px}
+.okbox{font-size:13px;margin-top:8px;padding:10px 12px;background:#eefaf3;border-left:4px solid var(--ok);border-radius:6px}
+.verdict{font-size:18px;font-weight:700}
+ul{margin:6px 0 6px 20px} li{margin:3px 0}
+.chartbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+.legend{font-size:12px;color:var(--sub);margin-top:6px}
+svg text{font-family:-apple-system,"PingFang SC",sans-serif}
+.foot{font-size:11.5px;color:var(--sub);text-align:center;margin:18px 0;padding-top:12px;border-top:1px dashed var(--line)}
+.small{font-size:12px;color:var(--sub)}
+.pie{width:190px;height:190px;border-radius:50%;margin:0 auto}
+.plist{margin-top:10px}
+.plist div{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.stockblk{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fcfdfe}
+.stockblk h4{font-size:15.5px;margin-bottom:6px}
+.angle{display:inline-block;background:#eef3fd;color:#2f6fed;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:600;margin-right:6px}
+.concl{display:inline-block;border-radius:6px;padding:1px 9px;font-size:12.5px;font-weight:700}
+.c-bull{background:#fdecea;color:#d6342c}.c-bear{background:#e7f7ee;color:#1a9e57}.c-neu{background:#eef1f5;color:#5b6472}
+.ts{font-size:12.5px;color:#444}
+.hl{background:#fff5cc;padding:0 3px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>持仓晨析 · 2026-09-02（周三）</h1>
+  <div class="meta">
+    触发时间：2026-09-02 08:00（自动化 automation-1787502600837）｜
+    交易日校验：<code>data_trade_calendar(2026-09-02)</code> → <b>isTrading = true</b> ✅<br>
+    <b>数据基准：盘前 08:00，2026-09-02 未开盘，westock「当日」快照 = 2026-09-01（周二）收盘。</b><br>
+    持仓源：<code>持仓_收盘历史.md</code> 最新块 = <b>2026-08-30（周日）收盘持仓</b>（接收 2026-08-30 17:31，5 只）；对比基准 = 2026-08-27 收盘块（11 只）。
+  </div>
+  <div>
+    <span class="tag">口径：净资产比（合计 = 杠杆倍数）</span>
+    <span class="tag">阶段：pair-pricing-framework 模块11 修正分类器</span>
+    <span class="tag">颜色：涨=🔴红 / 跌=🟢绿（A股惯例）</span>
+    <span class="tag">模型：Hy4 preview（用户 2026-09-02 指定）</span>
+  </div>
+</header>
+
+<!-- ============ 首屏结论卡 ============ -->
+<div class="card">
+  <h2>🚨 首屏结论（先看这一屏）</h2>
+  <div class="grid g4">
+    <div class="kpi"><div class="v down">-7.59%</div><div class="l">9/1 净资加权组合收益<br>（1.56x 杠杆下）</div></div>
+    <div class="kpi"><div class="v" style="color:var(--bad)">156.29%</div><div class="l">总仓位（净资产比）<br>杠杆 1.56x · 超 120% 警戒 +36pt</div></div>
+    <div class="kpi"><div class="v" style="color:var(--bad)">5 / 5</div><div class="l">9/1 全数收绿<br>且全收在当日最低附近</div></div>
+    <div class="kpi"><div class="v" style="color:var(--bad)">10.0%</div><div class="l">半导体板块宽度<br>18/180 上涨 · 主力 -119.87亿</div></div>
+  </div>
+
+  <div class="badbox" style="margin-top:14px">
+    <b>一句话结论：9/1 是一次「精准踩空 + 精准被切」的组合级事故。</b>
+    当日全市场 <b>3386 涨 / 2040 跌（上涨占比 60.98%，涨停 80、跌停 0，涨跌比 1.66）</b>，
+    但我们的 5 只标的<b>无一收红</b>，且全部收在当日最低附近——在 60.98% 个股上涨的环境里拿到 <b class="down">-7.59%</b>，
+    这不是「大盘不好」，是<b>持仓结构被市场定向抛弃</b>。
+  </div>
+
+  <h3>三个最该记住的判断</h3>
+  <ol style="margin-left:20px">
+    <li><b>市场正在做「高低切」，我们 100% 站在被切的一侧。</b> 9/1 涨幅榜前列是种植业 +7.19%、数字媒体 +5.60%、一般零售 +3.87%、保险 +2.62%、银行全线 +1.7~2.0%（低位/红利/消费）；跌幅榜前列是元件 -4.74%、电子化学品 -4.66%、半导体 -2.75%、自动化设备 -2.21%、通用设备 -2.16%（高位/科创/半导体链）。我们的 5 只<b>全部落在跌幅榜一侧</b>。</li>
+    <li><b>半导体板块已不是回调，是板块级派发/退潮。</b> 申万半导体 9/1 <span class="down">-2.75%</span>，宽度 <b>18/180 = 10.0%</b>，当日主力净流出 <b>119.87 亿</b>、5日 -87.57 亿、20日 <b>-615.95 亿</b>。按模块11「派发家数 ≫ P3 家数 = 板块在派发不是新启动」，这是<b>降配而非抄底</b>的信号。</li>
+    <li><b>本组合最大的错误不是选股，是仓位。</b> 迈为 48.05%（上限 15%，超 3.2 倍）、正帆 38.82%、强一 33.68% —— 单票 × 1.56x 杠杆 × 集中半导体链，任一环节 -5% 就是组合 -7%。<b>先修仓位，再谈看不看好。</b></li>
+  </ol>
+
+  <h3>9/2 早盘一句话动作</h3>
+  <div class="warnbox">
+    <b>开盘即减，不等反弹。</b>频准 <b>清仓（14.90%→0）</b>、高凯 <b>减至 ≤7%</b>、迈为 <b>减至 ≤25%</b>、正帆 <b>减至 ≤20%（核心走弱减半）</b>、强一 <b>减至 ≤20%</b> ——
+    总仓 <b>156.29% → ≤72%（第一步）</b>，压回 120% 警戒线下；终极目标 <b>≤45%</b>。
+    <span class="small">（本自动化为盘前产物，<b>最终以 07:00 盘前策略 + 09:25 竞价强度为准</b>；本次工作区未检索到 2026-09-02 当日盘前策略/竞价文件。）</span>
+  </div>
+</div>
+
+<!-- ============ 组合画像 ============ -->
+<div class="card">
+  <h2>📊 组合画像：行业分布 / 集中度 / 杠杆</h2>
+  <div class="grid g2">
+    <div>
+      <h3 style="margin-top:0">申万一级行业分布（按净资产比）</h3>
+      <div class="pie" id="pieSw"></div>
+      <div class="plist" id="pieSwList"></div>
+      <div class="note">口径：申万一级（agentic_search + westock <code>data_profile</code> 交叉核验；二级/三级见下方表）。<b>合计 &gt;100% 因杠杆 1.56x。</b></div>
+    </div>
+    <div>
+      <h3 style="margin-top:0">产业主题暴露（真实风险口径）</h3>
+      <div class="pie" id="pieTheme"></div>
+      <div class="plist" id="pieThemeList"></div>
+      <div class="note">申万分类把组合「伪装」成 3 个一级行业，但<b>按产业主题，5 只里有 4 只（108.24% 净资 = 毛仓 69.3%）同属「半导体设备 / 零部件国产替代」一条链</b>，迈为的半导体装备第二曲线还可再加码这个暴露。<b>这是真正的集中度风险所在。</b></div>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:14px">
+    <div class="kpi"><div class="v">0.230</div><div class="l">归一化 HHI（等效 <b>4.35 只</b>）<br>含杠杆 HHI 0.561</div></div>
+    <div class="kpi"><div class="v" style="color:var(--bad)">86.87%</div><div class="l">前二（迈为+正帆）占净资产</div></div>
+    <div class="kpi"><div class="v" style="color:var(--bad)">5 / 5</div><div class="l">单票全部 ≥14.9%<br>其中 3 只 &gt; 30%（上限 15%）</div></div>
+    <div class="kpi"><div class="v" style="color:var(--bad)">108.24%</div><div class="l">半导体链暴露（净资产比）<br>占毛仓 69.3%</div></div>
+  </div>
+
+  <table style="margin-top:14px">
+    <tr><th class="l">标的</th><th>申万一级</th><th>申万二级</th><th>申万三级</th><th class="l">产业卡位</th><th>净资比</th></tr>
+    <tr><td class="l"><b>迈为股份</b> sz300751</td><td>电力设备</td><td>光伏设备</td><td>光伏加工设备</td><td class="l">HJT 整线设备龙头；半导体/显示设备第二曲线</td><td class="down">48.05%</td></tr>
+    <tr><td class="l"><b>正帆科技</b> sh688596</td><td>机械设备</td><td>专用设备</td><td>其他专用设备</td><td class="l">半导体工艺介质系统 / 电子特气（设备链配套）</td><td class="down">38.82%</td></tr>
+    <tr><td class="l"><b>强一股份</b> sh688809</td><td>电子</td><td>半导体</td><td>半导体设备</td><td class="l">晶圆测试探针卡，全球第 6（3.87%）、大陆唯一前十</td><td class="down">33.68%</td></tr>
+    <tr><td class="l"><b>高凯技术</b> sh688835</td><td>机械设备</td><td>自动化设备</td><td>其他自动化设备</td><td class="l">半导体级流量控制部件，国产份额 55%，7nm 以下批量</td><td class="down">20.84%</td></tr>
+    <tr><td class="l"><b>频准激光</b> sh688826</td><td>机械设备</td><td>自动化设备</td><td>激光设备</td><td class="l">精准激光器；量子科技 + 半导体量检测/隐切</td><td class="down">14.90%</td></tr>
+  </table>
+</div>
+
+<!-- ============ ① 变化与归因 ============ -->
+<div class="card">
+  <h2>① 变化与归因</h2>
+
+  <h3>1.1 持仓变化（最新块 2026-08-30 vs 前序块 2026-08-27）</h3>
+  <div class="warnbox">
+    <b>⚠️ 数据时效性提示（必读）：</b>用户自 2026-08-30 17:31 后<b>未再发送新的收盘持仓</b>（8/31、9/1 两日空缺）。
+    因此本报告的「组合收益归因」是<b>把 8/30 的持仓权重套用到 8/31、9/1 两个交易日的涨跌幅上</b>。
+    若用户在这两天实际已减仓/调仓，则本节归因存在偏差 —— <b>请以实盘为准</b>。
+  </div>
+  <table>
+    <tr><th class="l">标的</th><th>8/27 块净资比</th><th>8/30 块净资比</th><th>变化</th><th class="l">动作解读</th></tr>
+    <tr><td class="l">迈为股份</td><td>45.04%</td><td>48.05%</td><td class="up">+3.01pt</td><td class="l">加仓（已在 8/26 建 45.92%）</td></tr>
+    <tr><td class="l">正帆科技</td><td>37.79%</td><td>38.82%</td><td class="up">+1.03pt</td><td class="l">小幅加仓</td></tr>
+    <tr><td class="l">强一股份</td><td>—</td><td>33.68%</td><td class="up">新进</td><td class="l">新纳入，一上来就是第三重仓</td></tr>
+    <tr><td class="l">C高凯</td><td>21.06%</td><td>20.84%</td><td class="down">-0.22pt</td><td class="l">基本不变</td></tr>
+    <tr><td class="l">频准激光</td><td>15.23%</td><td>14.90%</td><td class="down">-0.33pt</td><td class="l">基本不变</td></tr>
+    <tr><td class="l"><b>已清仓（7 只）</b></td><td colspan="4" class="l">托伦斯 17.11% / 美利信 15.55% / 臻宝科技 10.91% / 欧菲光 9.12% / 科德教育 8.86% / 精智达 7.33% / 华是科技 7.06%</td></tr>
+  </table>
+  <div class="note">
+    <b>变化是否合理？</b>
+    ✅ <b>合理的一半</b>：清掉 7 只杂项（托伦斯/美利信/臻宝/欧菲光/科德/精智达/华是）是<b>正确的减法</b>——上一期判定它们为「次新博傻 / 资金派发 / 中报亏损」，9/1 后看确属杂音。杠杆也从 195.1% 主动压到 156.3%（-38.8pt），方向正确。<br>
+    ❌ <b>不合理的一半</b>：清仓释放出来的钱<b>没有降低集中度，反而更集中了</b>——前二（迈为+正帆）从 82.8% 升到 <b>86.87%</b>，并把新进标的（强一）一次性买到 33.68%（第三重仓）。<b>「减数量」≠「减风险」</b>：把 11 只分散的烂牌换成 5 只同一条产业链的高位牌，行业集中度不降反升（半导体链暴露 108.24%）。这是本期归因里最需要承认的结构性错误。
+  </div>
+
+  <h3>1.2 收益归因（净资比加权，Σ 权重 × 涨跌幅）</h3>
+  <table>
+    <tr><th class="l">日期</th><th class="l">组合（净资加权）</th><th class="l">上证</th><th class="l">创业板指</th><th class="l">科创50</th><th class="l">归因</th></tr>
+    <tr><td class="l">2026-08-31</td><td class="up"><b>+2.71%</b></td><td class="l">—</td><td class="l">—</td><td class="l">—</td><td class="l">强一 +1.30pt、高凯 +1.24pt 为主（次新反弹），β + 情绪</td></tr>
+    <tr><td class="l"><b>2026-09-01</b></td><td class="down"><b>-7.59%</b></td><td class="l down">-0.16%</td><td class="l down">-1.32%</td><td class="l down">-2.19%</td><td class="l"><b>高β亏损放大 + 次新崩塌</b>（详见下）</td></tr>
+    <tr><td class="l">两日累计</td><td class="down"><b>-5.09%</b></td><td class="l" colspan="4">（1.0271 × 0.9241 = 0.9491）</td></tr>
+  </table>
+  <table style="margin-top:10px">
+    <tr><th class="l">9/1 逐只贡献</th><th>净资比</th><th>当日涨跌</th><th>组合贡献(pt)</th><th class="l">性质</th></tr>
+    <tr><td class="l">迈为股份</td><td>48.05%</td><td class="down">-7.10%</td><td class="down">-3.41</td><td class="l">最大拖累（仓位×跌幅双杀）</td></tr>
+    <tr><td class="l">强一股份</td><td>33.68%</td><td class="down">-4.92%</td><td class="down">-1.66</td><td class="l">半导体板块塌方</td></tr>
+    <tr><td class="l">C高凯</td><td>20.84%</td><td class="down">-6.95%</td><td class="down">-1.45</td><td class="l">次新股退潮</td></tr>
+    <tr><td class="l">频准激光</td><td>14.90%</td><td class="down">-4.10%</td><td class="down">-0.61</td><td class="l">创新低，主跌</td></tr>
+    <tr><td class="l">正帆科技</td><td>38.82%</td><td class="down">-1.19%</td><td class="down">-0.46</td><td class="l">高开低走，跌幅最小</td></tr>
+    <tr><td class="l"><b>合计</b></td><td>156.29%</td><td class="down"><b>-7.59%</b></td><td class="down"><b>-7.59pt</b></td><td class="l">—</td></tr>
+  </table>
+  <div class="badbox">
+    <b>β 还是 α？——都不是，是「负 α + 杠杆放大」。</b>
+    9/1 科创50 <span class="down">-2.19%</span>，若纯 β、1.56x 杠杆，理论亏损约 <b>-3.4%</b>；实际 <b>-7.59%</b>，超跌 <b>-4.2pt</b>。
+    但当日全市场 <b>60.98% 个股上涨、涨跌比 1.66、涨停 80 家</b>——连「大盘 β」都不是借口。
+    真正的来源是：<b>① 组合 100% 押在当日被抛弃的高位科技/次新风格（风格错配）；② 1.56x 杠杆把 -4.9% 的等权跌幅放大到 -7.6%；③ 单票 48% 的极端集中让迈为一只就贡献 -3.41pt。</b>
+  </div>
+
+  <h3>1.3 失败 / 风险归因</h3>
+  <ul>
+    <li><b>追高（最核心）</b>：迈为买在 20日 +32.87% / 距高 44.4% 的位置；正帆买在 60日 +75.54% 的位置；强一在 8/31 反弹 +3.87% 之后仍持 33.68%。三只都在「涨幅已兑现后的中后段」上车。</li>
+    <li><b>资金背离未处理</b>：强一 10D/20D 主力已净流出 -2.15/-2.74 亿仍给到第三重仓；频准 5D 主力 -2.14 亿仍在持有。</li>
+    <li><b>板块单一</b>：半导体链暴露 108.24% 净资（毛仓 69.3%），且该板块 20日主力净流出 615.95 亿、宽度仅 10%。</li>
+    <li><b>杠杆超警戒</b>：156.29% &gt; 120% 警戒 36pt；叠加 HHI 0.230（等效 4.35 只）与单票 48%，三重放大。</li>
+    <li><b>次新博傻未清</b>：高凯（上市 +332%）、频准（距峰值 -37.4% 创新低）两只次新合计 35.74% 净资，属框架明确「回避」范畴。</li>
+  </ul>
+</div>
+
+<!-- ============ ② 买入对错 ============ -->
+<div class="card">
+  <h2>② 前一天买入对错（三阶段 × 事件驱动 × 分时 × 板块宽度）</h2>
+
+  <div class="note">
+    <b>阶段定阶口径</b>：pair-pricing-framework <b>模块11 修正分类器</b>（旧式 <code>c20≥35 且 c5&gt;0 → P3</code> 已废弃）。
+    ①退潮 = dh≥0.30 且 c5≤-2；②派发 = c20≥12 且 c60&lt;0；③P3 真加速 = c20&gt;50 且 c5&gt;0 且 c10&gt;0；④P2 = c20≥12 且 c60≥0；⑤P1→P2 = c60≥0 且 c20≥0；⑥P1 = c20≥-8；⑦弱势 = 其余。
+    辅助「⚠钝化」= c20≥35 且 c10≤3。
+  </div>
+
+  <h3>2.1 模块 11 定阶总表（2026-09-01 收盘）</h3>
+  <table>
+    <tr><th class="l">标的</th><th>c5</th><th>c10</th><th>c20</th><th>c60</th><th>距高 dh</th><th>命中规则</th><th>阶段</th><th class="l">背离四象限（配对动作）</th></tr>
+    <tr>
+      <td class="l"><b>迈为股份</b></td><td class="down">-2.08</td><td class="down">-2.54</td><td class="up">+32.87</td><td class="up">+0.54</td><td><b>44.4%</b></td>
+      <td>① dh≥0.30 且 c5≤-2 ✅</td><td><span class="pill p-bad">退潮</span></td>
+      <td class="l">20日高位 + 主力净流出 → <b>诱多出货（减仓）</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>正帆科技</b></td><td class="down">-5.67</td><td class="down">-6.13</td><td class="up">+39.18</td><td class="up">+75.54</td><td>24.9%</td>
+      <td>④ c20≥12 且 c60≥0</td><td><span class="pill p-warn">P2 ⚠钝化</span></td>
+      <td class="l">20日高位 + 主力<b>全周期净流入</b> → <b>健康上涨（持有）</b>，但图形破三线 → 降级<b>减半</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>强一股份</b></td><td class="up">+6.36</td><td class="down">-12.54</td><td class="up">+1.27</td><td class="down">-3.76</td><td><b>33.2%</b></td>
+      <td>⑥ c20≥-8（dh≥0.30 但 c5&gt;0，①未触发）</td><td><span class="pill p-warn">P1（退潮边缘）</span></td>
+      <td class="l">低位 + 资金持续流出 + 破全部均线 → <b>主跌出货（回避）</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>高凯技术</b></td><td class="up">+12.85</td><td colspan="3" class="small">+332.2 / +332.2 / +332.2 ← <b>上市窗口值，非动量</b></td><td>12.5%</td>
+      <td class="small">次新窗口失真，不适用模块11</td><td><span class="pill p-bad">次新退潮</span></td>
+      <td class="l">冲高回落 + 主力转出 → <b>诱多出货（减仓）</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>频准激光</b></td><td class="down">-15.17</td><td class="down">-29.31</td><td class="small" colspan="2">+335.76 / +335.76 ← 上市窗口值</td><td><b>37.4%</b></td>
+      <td>① dh≥0.30 且 c5≤-2 ✅</td><td><span class="pill p-bad">退潮（创新低）</span></td>
+      <td class="l">创新低 + 5D 主力 -2.14亿 → <b>主跌出货（回避）</b></td>
+    </tr>
+  </table>
+  <div class="note">
+    <b>关键认知（防止被 20日% 骗）：</b>高凯 c20 = +332.2%、频准 c20 = +335.76% 看着「超强」，但那是<b>上市首日至今的窗口累计值，不是动量</b>。
+    频准 c10 = <b>-29.31%</b> 且 9/1 创上市新低 812.82 —— 若只看 c20 会得出「最强」的荒谬结论，这正是模块11 要求用 c10/c60 做背离校验的原因。
+  </div>
+
+  <h3>2.2 模块 9.5 双名单</h3>
+  <div class="grid g3">
+    <div class="kpi" style="background:#eefaf3">
+      <div class="l" style="color:var(--ok);font-weight:700;font-size:13px">上涨2 · 可持有名单</div>
+      <div style="margin-top:6px;font-size:13px"><b>空</b></div>
+      <div class="l">正帆虽为 P2，但触发 ⚠钝化（c20=39.18≥35 且 c10=-6.13≤3）→ 按「上涨2 中核心明显走弱 → 仓位减半」纪律，<b>不进可持有名单</b>。</div>
+    </div>
+    <div class="kpi" style="background:#f7f9fd">
+      <div class="l" style="color:var(--accent);font-weight:700;font-size:13px">上涨1 · 早期观察名单</div>
+      <div style="margin-top:6px;font-size:13px"><b>强一股份</b>（唯一）</div>
+      <div class="l">P1、c20 仅 +1.27（刚抬头未扩散）、c60 仍微负 -3.76。<b>但当前已破全部均线，只观察不参与</b>。<br>
+      <b>升级触发条件</b>：① 半导体板块宽度回升至 ≥30%（现 10%）；② 收复 MA10（450.14）并站稳；③ 板块 20日主力净流转正（现 -615.95 亿）。</div>
+    </div>
+    <div class="kpi" style="background:#fdf0ee">
+      <div class="l" style="color:var(--bad);font-weight:700;font-size:13px">减仓组</div>
+      <div style="margin-top:6px;font-size:13px"><b>迈为 / 正帆 / 高凯 / 频准</b>（4 只，合 122.61% 净资）</div>
+      <div class="l">迈为=退潮；正帆=P2⚠钝化（减半）；高凯=次新退潮；频准=退潮+创新低。</div>
+    </div>
+  </div>
+
+  <h3>2.3 事件驱动 × 图形提前反应检测（关键）</h3>
+  <table>
+    <tr><th class="l">标的</th><th class="l">近期事件</th><th>事件/公告日</th><th class="l">你的持仓时点</th><th class="l">公告前是否放量大涨？</th><th class="l">判定</th></tr>
+    <tr>
+      <td class="l"><b>迈为</b></td>
+      <td class="l">控股子公司签国有土地使用权出让合同 + 半导体装备研发制造基地投资进展</td>
+      <td>2026-08-28 16:02<br><span class="small">（盘后）</span></td>
+      <td class="l">8/26 建仓 45.92%，8/30 加至 48.05%</td>
+      <td class="l">否。8/28 当日开 226.83 收 218.30，<span class="down">-3.32%</span> 下跌，无抢跑。</td>
+      <td class="l"><span class="pill p-ok">✅ 非抢跑</span><br>但利好在 9/1 <span class="down">-7.10%</span> 被完全反杀 → <b>price-in 并证伪</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>正帆</b></td>
+      <td class="l">2026 年股票期权激励计划（草案）+ 董事会决议 + 半年度业绩说明会</td>
+      <td>2026-08-31 20:05<br><span class="small">（盘后）</span></td>
+      <td class="l">8/26 起持有，8/27 加至 37.79%</td>
+      <td class="l">否。8/31 开 64.90 收 67.40，与 8/28 收盘持平（0.00%），无抢跑。</td>
+      <td class="l"><span class="pill p-ok">✅ 非抢跑</span><br>⚠️ 9/1 高开 +5.49%、冲 +7.57%、收 <span class="down">-1.19%</span> → <b>典型利好出尽，长上影</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>强一</b></td>
+      <td class="l">2026 中报 + 限制性股票激励计划（草案）+ 半年度利润分配及资本公积转增股本</td>
+      <td>2026-08-30 15:32<br><span class="small">（周日）</span></td>
+      <td class="l">8/30 17:31 纳入持仓<br><span class="small">（公告披露之后）</span></td>
+      <td class="l">否。8/28 当日 <span class="down">-1.06%</span>，无抢跑。</td>
+      <td class="l"><span class="pill p-ok">✅ 合规持仓（非接盘）</span><br>⚠️ 8/31 +3.87% 兑现一天 → 9/1 高开 +1.50% 后收 <span class="down">-4.92%</span> = <b>高送转/激励利好出尽</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>高凯</b></td>
+      <td class="l">仅 IPO 上市文件（8/23 上市公告书），无经营性事件</td>
+      <td>—</td>
+      <td class="l">8/28 前后建仓</td>
+      <td class="l">—</td>
+      <td class="l"><span class="pill p-bad">❌ 纯次新 IPO 博傻</span><br>换手率 80.98%→49.05%→26.99%→25.09%→22.97%→20.47% 逐级递减 = <b>退潮标准形态</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>频准</b></td>
+      <td class="l">8/28 投资者关系活动记录表（8/31 16:40 披露）</td>
+      <td>2026-08-31 16:40</td>
+      <td class="l">8/27 前后建仓</td>
+      <td class="l">否。8/28 当日 <span class="down">-11.35%</span> 大跌，无抢跑。</td>
+      <td class="l"><span class="pill p-bad">❌ 无事件支撑，纯次新退潮</span><br>9/1 收 814.35（低 812.82 = <b>上市以来新低</b>）</td>
+    </tr>
+  </table>
+  <div class="okbox">
+    <b>合规边界自查结果：3 只「蹲事件」标的（迈为 / 正帆 / 强一）经检测，公告前均未出现放量大涨，不存在「消息提前泄露 / 抢跑」特征，你在公告后或公告前非敏感窗口持仓，非「接盘者」。</b>
+    唯一需自查的一点：正帆的股权激励草案在 8/31 20:05 才公开，而激励计划通常有较长的筹划期 —— 若你在 <b>8/31 盘中（公告前）曾加仓正帆</b>，需自查该笔交易的信息来源是否合规。除此之外未见异常。
+  </div>
+
+  <h3>2.4 分时与 K 线位置（2026-09-01）</h3>
+  <table>
+    <tr><th class="l">标的</th><th>开盘</th><th>最高</th><th>最低</th><th>收盘</th><th>涨跌</th><th class="l">形态</th><th class="l">均线位置</th></tr>
+    <tr><td class="l"><b>迈为</b></td><td>221.00</td><td>221.80</td><td>207.00</td><td>207.11</td><td class="down">-7.10%</td><td class="l">高开低走、光脚长阴、<b>收在最低</b></td><td class="l">破 MA5(219.07)、MA10(208.78)；MA20 193.37 为最后支撑</td></tr>
+    <tr><td class="l"><b>正帆</b></td><td>71.10</td><td>72.50</td><td>63.91</td><td>66.60</td><td class="down">-1.19%</td><td class="l">高开冲高回落，上影 5.90 + 下影 2.69，<b>振幅 12.74%</b></td><td class="l"><b>破 MA5/MA10/MA20 三线</b>（69.32/68.60/68.68）；MA30 62.09 为最后支撑</td></tr>
+    <tr><td class="l"><b>强一</b></td><td>478.76</td><td>481.00</td><td>448.09</td><td>448.50</td><td class="down">-4.92%</td><td class="l">高开低走、<b>收在最低附近</b></td><td class="l"><b>破全部均线</b> MA5(454.94)/MA10(450.14)/MA20(464.15)/MA30(455.48)</td></tr>
+    <tr><td class="l"><b>高凯</b></td><td>275.85</td><td>288.88</td><td>262.00</td><td>265.20</td><td class="down">-6.95%</td><td class="l">高开冲高 +8.43% 后跳水，长阴</td><td class="l">破 MA5(283.74)（上市仅 6 日，无更长均线）</td></tr>
+    <tr><td class="l"><b>频准</b></td><td>833.00</td><td>849.59</td><td>812.82</td><td>814.35</td><td class="down">-4.10%</td><td class="l">低开低走，<b>创上市以来新低</b></td><td class="l">破 MA5(921.03)、MA10(938.05)；<b>下方无支撑可参考</b></td></tr>
+  </table>
+  <div class="badbox">
+    <b>组合级最强警报：5/5 全部收在当日最低价附近，无一收红。</b>
+    在 60.98% 个股上涨、涨跌比 1.66 的市场里出现这种一致性，说明抛压来自<b>持仓结构本身（高位 + 科创 + 次新 + 半导体链）</b>，而不是随机波动。<b>一致性杀跌 = 组合级风险，不是个股级。</b>
+  </div>
+
+  <h3>2.5 逐只买入对错 verdict</h3>
+
+  <div class="stockblk">
+    <h4>迈为股份 sz300751 ｜ 48.05% ｜ 207.11 <span class="down">-7.10%</span> ｜ <span class="verdict" style="color:var(--bad)">❌ 错（仓位错 &gt; 选股错）</span></h4>
+    <ul>
+      <li><b>错在哪</b>：8/25 放量突破（193.51→211.50，+9.3%）后一路加仓至 48.05%，买在 20日 <b>+32.87%</b>、距 52周高点 <b>-44.4%</b> 的位置 —— 这已是 P2 末段/退潮初段，不是「上涨1 介入」。</li>
+      <li><b>板块拖累</b>：光伏设备 <span class="down">-1.70%</span>、宽度仅 <b>20/66 = 30.3%</b>、当日主力 <span class="down">-17.01亿</span>（5日 -51.09亿 / 20日 -68.20亿）。<b>「没宽度的上涨只看不动」，宽度 30% 且资金持续流出，属明确拖累。</b></li>
+      <li><b>资金转向</b>：20日主力仍 +7.20亿，但 <b>5日已转 -1.04亿、今日 -2.34亿</b> —— 中期资金正在撤离，20日数据是「窗口幻觉」。</li>
+      <li><b>唯一的好消息</b>：9/1 18:48 盘后公告「5%以上股东减持计划期限届满」，减持压力解除（中性偏多，但需防后续新减持计划）。</li>
+    </ul>
+  </div>
+
+  <div class="stockblk">
+    <h4>正帆科技 sh688596 ｜ 38.82% ｜ 66.60 <span class="down">-1.19%</span> ｜ <span class="verdict" style="color:var(--warn)">⚠️ 半对（标的对，时点+仓位错）</span></h4>
+    <ul>
+      <li><b>对在哪</b>：全组<b>唯一资金全周期为正</b>的标的 —— 今日主力 <span class="up">+2.01亿</span>（全市场主力净流入排名第 42）、5日 +3.90亿、10日 +4.68亿、20日 +4.96亿；超大单 +1.42亿。筹码在被大资金接。</li>
+      <li><b>错在哪</b>：8/4 起爆点 43.50 → 8/26 高点 72.80（+67%），你在 8/26–8/27 加至 37.79%，买在 60日 <b>+75.54%</b> 的绝对高位；9/1 又逢激励草案「高开 +5.49% → 冲 +7.57% → 收 -1.19%」的利好出尽。<b>振幅 12.74% 的巨震本身就是筹码不稳的证据。</b></li>
+      <li><b>技术破位</b>：一次性跌破 MA5/MA10/MA20 三线，只剩 MA30 62.09。<b>「上涨2 中核心明显走弱 → 仓位减半」纪律已触发。</b></li>
+      <li><b>板块</b>：专用设备 <span class="down">-1.33%</span>，但宽度 <b>93/181 = 51.4%</b>（过半）、主力净流基本持平（-0.04亿）、20日仍 +58.44亿 → <b>中性，不是拖累</b>。这使其区别于其余 4 只。</li>
+    </ul>
+  </div>
+
+  <div class="stockblk">
+    <h4>强一股份 sh688809 ｜ 33.68% ｜ 448.50 <span class="down">-4.92%</span> ｜ <span class="verdict" style="color:var(--warn)">⚠️ 好公司 + 坏时点 + 坏板块</span></h4>
+    <ul>
+      <li><b>基本面最硬</b>：晶圆测试探针卡，2025 年全球第 6（份额 3.87%）、中国大陆唯一进入前十；东吴首次覆盖「买入」，预测 26–28 年归母净利 6.5/9.7/14.7 亿，26E PE 98x（可比 FormFactor/Technoprobe 平均 68x，溢价源于国产替代加速）。8/30 中报 + 激励 + 资本公积转增同步落地。</li>
+      <li><b>但环境最差</b>：所属申万半导体 <span class="down">-2.75%</span>、宽度 <b>18/180 = 10.0%</b>、当日主力 <span class="down">-119.87亿</span>、20日 <span class="down">-615.95亿</span>。<b>板块级系统性派发，个股 alpha 扛不住板块 beta。</b></li>
+      <li><b>个股资金已在撤</b>：今日 -0.22亿、10日 -2.15亿、20日 -2.74亿；<b>委比 -55.22</b>（盘口卖压显著）。PE(TTM) 121x、PB 13.96，估值不便宜。</li>
+      <li><b>图形</b>：破全部四条均线（454.94/450.14/464.15/455.48），距 52周高 671 已 <b>-33.2%</b>。</li>
+    </ul>
+  </div>
+
+  <div class="stockblk">
+    <h4>高凯技术 sh688835 ｜ 20.84% ｜ 265.20 <span class="down">-6.95%</span> ｜ <span class="verdict" style="color:var(--bad)">❌ 错（次新博傻）</span></h4>
+    <ul>
+      <li>产业卡位确实不错（半导体级流量控制部件国产份额 55%，中微/兆易创新入股、北方华创战配，7nm 以下批量）—— <b>但「好公司」不等于「好价格」</b>。</li>
+      <li><b>退潮形态标准</b>：8/27 见顶 303.00 → 9/1 收 265.20（<b>-12.5%</b>）；换手率 80.98% → 49.05% → 26.99% → 25.09% → 22.97% → <b>20.47%</b> 逐级递减，典型的「新鲜感消退」。</li>
+      <li>9/1 高开 +6.72%、冲高 +8.43%（288.88）后跳水收 -6.95%，主力今日转净流出 -0.25亿。<b>PE(TTM) 143.7、PB 11.88</b>，上市 6 日累计 +332%。</li>
+      <li><span class="small">⚠️ 数据异常标注：接口返回 5D/10D/20D 主力净流均为 +23.01/+22.76/+22.76 亿，与其 49.8 亿流通市值严重不匹配（占比 46%），判定为口径/缓存异常，<b>仅采信「今日 -0.25亿」的方向，中长期数值不采信</b>。</span></li>
+    </ul>
+  </div>
+
+  <div class="stockblk">
+    <h4>频准激光 sh688826 ｜ 14.90% ｜ 814.35 <span class="down">-4.10%</span> ｜ <span class="verdict" style="color:var(--bad)">❌ 错（本组最差，须清）</span></h4>
+    <ul>
+      <li><b>主跌出货，非回调</b>：8/18 上市首日高见 1300（换手 81.22%）→ 9/1 收 814.35，距峰值 <b>-37.4%</b>；9/1 最低 812.82 = <b>上市以来新低</b>。</li>
+      <li><b>动量全面塌陷</b>：c5 <span class="down">-15.17%</span>、c10 <span class="down">-29.31%</span>；5日主力净流出 <span class="down">-2.14亿</span>，今日再 -0.55亿。</li>
+      <li><b>板块拖累</b>：自动化设备 <span class="down">-2.21%</span>、宽度 <b>23/82 = 28.0%</b>、主力 -5.11亿（5日 -18.40亿 / 20日 -65.15亿）。</li>
+      <li>基本面不差（量子科技 + 半导体量检测双轮），<b>但那是「明年的故事」，挡不住当下的次新退潮与解禁预期</b>。PE 184x。<b>减仓优先级仅次于迈为。</b></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ ③ 次日操作节奏 ============ -->
+<div class="card">
+  <h2>③ 9/2（周三）操作节奏</h2>
+  <div class="warnbox">
+    <b>⚠️ 对齐声明：</b>工作区未检索到 2026-09-02 当日的 07:00 盘前策略 / 09:25 竞价强度产出文件，本节以<b>持仓风险预判</b>为框架。
+    <b>最终以 07:00 盘前策略 + 09:25 竞价强度为准</b>。若竞价显示半导体/光伏继续大幅低开，减仓动作应<b>前置且加重</b>。
+  </div>
+
+  <h3>3.1 目标仓位表（净资产比）</h3>
+  <table>
+    <tr><th class="l">标的</th><th>当前</th><th>9/2 第一步目标</th><th>终极目标</th><th class="l">动作</th><th class="l">买卖点（价位）</th></tr>
+    <tr>
+      <td class="l"><b>频准激光</b><br><span class="small">sh688826</span></td><td class="down">14.90%</td><td><b>0%</b></td><td>0%</td>
+      <td class="l"><span class="pill p-bad">清仓</span>退潮 + 创新低 + 板块宽度 28%</td>
+      <td class="l">开盘即清；若高开反弹至 <b>840–860</b> 区间更应果断出；跌破 <b>812.82</b>（上市新低）无条件清完</td>
+    </tr>
+    <tr>
+      <td class="l"><b>高凯技术</b><br><span class="small">sh688835</span></td><td class="down">20.84%</td><td><b>≤7%</b></td><td>0–5%</td>
+      <td class="l"><span class="pill p-bad">大幅减</span>次新退潮，换手递减</td>
+      <td class="l">反弹减仓区 <b>275–290</b>（9/1 高点 288.88 / 8/28 开 291）；跌破 <b>262.00</b>（9/1 低点）加速减；跌破 <b>252.50</b>（8/31 低点）清仓</td>
+    </tr>
+    <tr>
+      <td class="l"><b>迈为股份</b><br><span class="small">sz300751</span></td><td class="down">48.05%</td><td><b>≤25%</b></td><td>≤15%</td>
+      <td class="l"><span class="pill p-bad">优先级最高</span>退潮 + 板块倒数 + 单票 3.2× 上限</td>
+      <td class="l">反弹减仓区 <b>212–222</b>（MA10 208.78 / MA5 219.07 / 8/31 收 222.94）；跌破 <b>193.4</b>（MA20 193.37 + 8/21 前低 193.66 双位）加速减至 ≤8%；跌破 <b>178.35</b>（9/1 跌停价，-8% 硬止损）清仓</td>
+    </tr>
+    <tr>
+      <td class="l"><b>正帆科技</b><br><span class="small">sh688596</span></td><td class="down">38.82%</td><td><b>≤20%</b></td><td>≤15%</td>
+      <td class="l"><span class="pill p-warn">减半</span>P2⚠钝化 + 破三线 + 利好出尽<br><span class="small">（但资金最干净）</span></td>
+      <td class="l">反弹减仓区 <b>68.6–72.5</b>（MA20 68.68 / MA5 69.32 / 9/1 高 72.50）；跌破 <b>63.91</b>（9/1 低点）加速减至 ≤10%；跌破 <b>62.09</b>（MA30）清仓。<b>唯一豁免：若 9/2 放量收复 MA20（68.68）且主力续净流入，可暂缓减至 ≤30% 观察</b></td>
+    </tr>
+    <tr>
+      <td class="l"><b>强一股份</b><br><span class="small">sh688809</span></td><td class="down">33.68%</td><td><b>≤20%</b></td><td>≤10–15%</td>
+      <td class="l"><span class="pill p-warn">减仓留底</span>逻辑最硬但板块最差</td>
+      <td class="l">反弹减仓区 <b>455–478</b>（MA30 455.48 / MA5 454.94 / 9/1 开 478.76）；跌破 <b>448.09</b>（9/1 低点）加速减至 ≤8%；跌破 <b>413</b>（8/3 与 7/30 双底）清仓。<b>留底仓等半导体板块宽度回升至 ≥30% 再议回补</b></td>
+    </tr>
+    <tr style="background:#f7f9fd">
+      <td class="l"><b>合计</b></td><td class="down"><b>156.29%</b></td><td><b>≤72%</b></td><td><b>≤45%</b></td>
+      <td class="l" colspan="2">杠杆 <b>1.56x → 0.72x → 0.45x</b>；第一步即压回 120% 警戒线下 ✅</td>
+    </tr>
+  </table>
+
+  <h3>3.2 执行纪律</h3>
+  <ul>
+    <li><b>不追高、等回踩</b>：所有减仓用「反弹减仓区」挂单，不在开盘瞬间恐慌性市价割肉；但若<b>低开且不能快速收复开盘价</b>，则直接市价减，不等反弹。</li>
+    <li><b>分档而非一次性</b>：迈为/正帆/强一各分 2–3 笔（第一步 → 加速位 → 清仓位），避免单次减在最低点。</li>
+    <li><b>单票纪律</b>：≤15%（热门板块 ≤10%）。当前 5 只全超限，减仓后仍超的（正帆 20%、强一 20%）需在 9/2–9/3 继续降到位。</li>
+    <li><b>杠杆纪律</b>：120% 警戒线。第一步 72% 达标，终极 45% 留给「半导体板块宽度未修复」情形。</li>
+    <li><b>空出来的钱不补仓</b>：本次减仓释放的资金<b>不要立刻换股</b>。当前是风格切换期（低位消费/金融/红利接棒），等新主线的<b>宽度验证</b>（同方向 ≥3 只跨过 P2 门槛）出现再动，宁可空仓。</li>
+    <li><b>合规边界</b>：正帆激励草案 8/31 盘后才公告 —— 9/2 交易前若尚未披露行权价/考核目标细节，<b>不要在公告解读出来前据此加仓</b>；强一转增方案需关注除权日带来的价格跳空。</li>
+  </ul>
+
+  <h3>3.3 需要盯的三个信号（9/2 盘中）</h3>
+  <ol style="margin-left:20px">
+    <li><b>半导体板块宽度</b>：若申万半导体上涨家数从 18/180 回升到 ≥54/180（30%），说明板块止血，强一/正帆可暂缓；若继续 &lt;15%，无条件加速减。</li>
+    <li><b>科创50 与创业板指</b>：9/1 科创50 <span class="down">-2.19%</span>（c10 -8.00%）领跌。若 9/2 科创50 再破 1646.64（9/1 低点），高β组合需再降一档。</li>
+    <li><b>正帆能否收复 MA20（68.68）</b>：这是全组唯一「资金 vs 图形」打架的标的，它的走向决定了「持有派」还有没有道理。</li>
+  </ol>
+</div>
+
+<!-- ============ 大盘与板块背景 ============ -->
+<div class="card">
+  <h2>🌐 大盘与板块背景（2026-09-01）</h2>
+  <div class="grid g4">
+    <div class="kpi"><div class="v down">-0.16%</div><div class="l">上证指数 3979.89</div></div>
+    <div class="kpi"><div class="v down">-1.32%</div><div class="l">创业板指 3393.43</div></div>
+    <div class="kpi"><div class="v down">-2.19%</div><div class="l">科创50 1647.53（领跌）</div></div>
+    <div class="kpi"><div class="v up">60.98%</div><div class="l">全市场上涨占比<br>3386 涨 / 2040 跌 / 127 平</div></div>
+  </div>
+  <div class="grid g4" style="margin-top:12px">
+    <div class="kpi"><div class="v">1.66</div><div class="l">涨跌比</div></div>
+    <div class="kpi"><div class="v up">80 / 0</div><div class="l">涨停 / 跌停家数</div></div>
+    <div class="kpi"><div class="v">2632 / 494</div><div class="l">创5日新高 / 新低</div></div>
+    <div class="kpi"><div class="v">1243 / 130</div><div class="l">创20日新高 / 新低</div></div>
+  </div>
+  <div class="badbox" style="margin-top:12px">
+    <b>这是「指数跌、个股涨」的典型高低切日。</b>指数（尤其科创50 <span class="down">-2.19%</span>、创业板 <span class="down">-1.32%</span>）由高位科技股权重拖累，但宽度端 <b>60.98% 个股上涨、80 家涨停、0 家跌停</b> —— 资金没有离场，只是<b>从高位科技切到低位消费/金融/红利</b>。
+    我们的 5 只 100% 属于被切出的那一侧，所以「大盘跌」不是借口。
+  </div>
+
+  <h3>持仓所属板块强度（申万二级 · 2026-09-01）</h3>
+  <table>
+    <tr><th class="l">板块</th><th>涨跌</th><th>当日主力净流</th><th>5日</th><th>20日</th><th>宽度（上涨/总数）</th><th>判定</th><th class="l">对应持仓</th></tr>
+    <tr><td class="l"><b>半导体</b> pt01801081</td><td class="down">-2.75%</td><td class="down">-119.87亿</td><td class="down">-87.57亿</td><td class="down">-615.95亿</td><td><b>18/180 = 10.0%</b></td><td><span class="pill p-bad">🔴 严重拖累</span></td><td class="l">强一 33.68%</td></tr>
+    <tr><td class="l"><b>自动化设备</b> pt01801078</td><td class="down">-2.21%</td><td class="down">-5.11亿</td><td class="down">-18.40亿</td><td class="down">-65.15亿</td><td>23/82 = 28.0%</td><td><span class="pill p-bad">🔴 拖累</span></td><td class="l">高凯 20.84% + 频准 14.90%</td></tr>
+    <tr><td class="l"><b>光伏设备</b> pt01801735</td><td class="down">-1.70%</td><td class="down">-17.01亿</td><td class="down">-51.09亿</td><td class="down">-68.20亿</td><td>20/66 = 30.3%</td><td><span class="pill p-bad">🔴 拖累</span></td><td class="l">迈为 48.05%</td></tr>
+    <tr><td class="l"><b>专用设备</b> pt01801074</td><td class="down">-1.33%</td><td>-0.04亿</td><td class="up">+15.95亿</td><td class="up">+58.44亿</td><td><b>93/181 = 51.4%</b></td><td><span class="pill p-warn">🟡 中性</span></td><td class="l">正帆 38.82%</td></tr>
+  </table>
+  <div class="note">
+    <b>板块口径「三件套」</b>：① 板块当日涨跌幅 ② 板块主力资金净流 ③ 宽度（upCount/总数）。
+    <b>4 个板块里 3 个拖累、1 个中性，0 个助力</b> —— 这是组合级减仓的板块面铁证。
+    其中<b>半导体 20日主力净流出 615.95 亿</b>，配合「派发家数 ≫ P3 家数」，属模块11 定义的<b>板块级派发</b>（不是回调，不是新启动）。
+  </div>
+
+  <h3>9/1 全市场行业涨跌幅两端（申万二级，各取前/末 10）</h3>
+  <div class="grid g2">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--up);margin-bottom:6px">🔴 涨幅前 10（资金去了哪）</div>
+      <table>
+        <tr><th class="l">板块</th><th>涨跌</th><th>宽度</th></tr>
+        <tr><td class="l">种植业</td><td class="up">+7.19%</td><td>20/20</td></tr>
+        <tr><td class="l">数字媒体</td><td class="up">+5.60%</td><td>12/14</td></tr>
+        <tr><td class="l">一般零售</td><td class="up">+3.87%</td><td>57/60</td></tr>
+        <tr><td class="l">渔业</td><td class="up">+3.52%</td><td>6/6</td></tr>
+        <tr><td class="l">地面兵装Ⅱ</td><td class="up">+3.28%</td><td>11/12</td></tr>
+        <tr><td class="l">农产品加工</td><td class="up">+2.75%</td><td>17/23</td></tr>
+        <tr><td class="l">互联网电商</td><td class="up">+2.69%</td><td>15/18</td></tr>
+        <tr><td class="l">保险Ⅱ</td><td class="up">+2.62%</td><td>5/5</td></tr>
+        <tr><td class="l">出版</td><td class="up">+2.58%</td><td>27/29</td></tr>
+        <tr><td class="l">多元金融</td><td class="up">+2.40%</td><td>22/24</td></tr>
+      </table>
+      <div class="small" style="margin-top:6px">另：国有大行 +1.76%、股份行 +1.97%、城商行 +1.77%、农商行 +2.36% —— <b>银行全线收红，红利资金回归。</b></div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--down);margin-bottom:6px">🟢 跌幅前 10（资金从哪走）</div>
+      <table>
+        <tr><th class="l">板块</th><th>涨跌</th><th>宽度</th></tr>
+        <tr><td class="l">元件</td><td class="down">-4.74%</td><td>3/61</td></tr>
+        <tr><td class="l">电子化学品Ⅱ</td><td class="down">-4.66%</td><td>2/35</td></tr>
+        <tr><td class="l">非金属材料Ⅱ</td><td class="down">-4.47%</td><td>0/8</td></tr>
+        <tr><td class="l">玻璃玻纤</td><td class="down">-3.30%</td><td>8/16</td></tr>
+        <tr><td class="l">小金属</td><td class="down">-3.22%</td><td>2/27</td></tr>
+        <tr><td class="l">其他电子Ⅱ</td><td class="down">-3.09%</td><td>7/33</td></tr>
+        <tr><td class="l"><b>半导体</b></td><td class="down">-2.75%</td><td>18/180</td></tr>
+        <tr><td class="l">煤炭开采</td><td class="down">-2.38%</td><td>3/26</td></tr>
+        <tr><td class="l">能源金属</td><td class="down">-2.26%</td><td>0/11</td></tr>
+        <tr><td class="l"><b>自动化设备</b></td><td class="down">-2.21%</td><td>23/82</td></tr>
+      </table>
+      <div class="small" style="margin-top:6px">另：通用设备 -2.16%、消费电子 -2.07%、<b>光伏设备 -1.70%</b>、专用设备 -1.33%。<b>我们的持仓板块全部在右侧这一栏。</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 图形佐证 ============ -->
+<div class="card">
+  <h2>📈 图形佐证</h2>
+  <div class="grid g2">
+    <div class="chartbox">
+      <h3 style="margin-top:0">20日涨幅 vs 当日主力净流（背离四象限）</h3>
+      <svg id="scatter" viewBox="0 0 480 340" style="width:100%;height:auto"></svg>
+      <div class="legend">横轴 = 20日涨幅（%，次新用上市窗口值已标注）｜纵轴 = 当日主力净流（亿元）。
+      <b>右上=健康上涨（持有）</b>｜<b>右下=诱多出货（减仓）</b>｜<b>左上=底背离吸筹（低吸）</b>｜<b>左下=主跌出货（回避）</b>。
+      当前 5 只中 <b>0 只落在「健康上涨」有效区间</b>（正帆在右上但图形已破三线，降级）。</div>
+    </div>
+    <div class="chartbox">
+      <h3 style="margin-top:0">9/1 换手率与当日振幅（分歧度）</h3>
+      <svg id="bars" viewBox="0 0 480 340" style="width:100%;height:auto"></svg>
+      <div class="legend">蓝柱 = 换手率（%）｜红柱 = 当日振幅（%）。
+      <b>高凯 20.47% 换手 + 9.43% 振幅 = 分歧最大的出货盘</b>；<b>正帆 10.05% 换手 + 12.74% 振幅</b> = 巨震换手（大资金在接，但同时上方抛压极重）；频准量比 0.60 缩量下跌 = 无人接盘。</div>
+    </div>
+  </div>
+  <div class="chartbox" style="margin-top:14px">
+    <h3 style="margin-top:0">5 只标的 20 日 K 线走势（2026-08-04 ~ 2026-09-01，前复权）</h3>
+    <svg id="klines" viewBox="0 0 1040 460" style="width:100%;height:auto"></svg>
+    <div class="legend">横轴为交易日（仅标注关键日期），纵轴为归一化价格（以区间内最高价为 100）。
+    🔴 涨 / 🟢 跌（A股惯例）。<b>可直观看到：迈为/正帆在 8/25–8/28 见顶后回落；强一 8/18 后持续阴跌；频准 8/18 冲顶 1300 后单边下杀至上市新低；高凯 8/27 见顶 303 后退潮。</b></div>
+  </div>
+</div>
+
+<!-- ============ 公告事件表 ============ -->
+<div class="card">
+  <h2>📢 各股近期公告 / 事件表（近 30 日）</h2>
+  <table>
+    <tr><th class="l">标的</th><th>日期</th><th class="l">公告 / 事件</th><th class="l">性质判定</th></tr>
+    <tr><td class="l" rowspan="4"><b>迈为股份</b><br><span class="small">sz300751</span></td><td>2026-09-01 18:48</td><td class="l">关于 5% 以上股东减持计划期限届满的公告</td><td class="l"><span class="pill p-ok">实质偏多</span>减持压力解除；<b>但需防后续新减持计划</b></td></tr>
+    <tr><td>2026-08-28 16:02</td><td class="l">控股子公司签订国有土地使用权出让合同暨半导体装备研发制造基地项目投资进展</td><td class="l"><span class="pill p-warn">已炒高</span>盘后公告、公告前无抢跑；9/1 <span class="down">-7.10%</span> 已 price-in 并证伪</td></tr>
+    <tr><td>2026-08-25 21:32</td><td class="l">2026 年 8 月 25 日投资者活动记录表</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span></td></tr>
+    <tr><td>2026-08-24 17:32</td><td class="l">2026 年半年报 + 半年度计提资产减值准备 + 会计政策变更 + 增加日常关联交易预计 + 为控股子公司提供财务资助 + 召开第二次临时股东会</td><td class="l"><span class="pill p-warn">重大不确定性</span><b>计提资产减值</b>需关注金额；关联交易增加</td></tr>
+
+    <tr><td class="l" rowspan="4"><b>正帆科技</b><br><span class="small">sh688596</span></td><td>2026-08-31 20:05</td><td class="l"><b>2026 年股票期权激励计划（草案）</b> + 实施考核管理办法 + 激励对象名单 + 法律意见书 + 董事会决议</td><td class="l"><span class="pill p-bad">已炒高 / 利好出尽</span>9/1 高开 +5.49% 冲 +7.57% 收 <span class="down">-1.19%</span>。<b>行权价与考核目标未披露前不宜据此加仓</b></td></tr>
+    <tr><td>2026-08-31 20:05</td><td class="l">关于召开 2026 年半年度业绩说明会的公告</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span></td></tr>
+    <tr><td>2026-08-26 17:19</td><td class="l">2026 年半年度报告摘要 + 公司章程（2026 年 8 月）</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span></td></tr>
+    <tr><td class="small" colspan="3">另据历史记录：8 月初「正帆转债」强赎摘牌、7/30 提前终止减持（<span class="small">来源：前次晨析存档，建议以巨潮资讯原文核实</span>）</td></tr>
+
+    <tr><td class="l" rowspan="5"><b>强一股份</b><br><span class="small">sh688809</span></td><td>2026-08-31 16:29</td><td class="l">关于召开 2026 年半年度业绩说明会的公告</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span></td></tr>
+    <tr><td>2026-08-30 15:32</td><td class="l"><b>2026 年限制性股票激励计划（草案）</b> + 首次授予激励对象名单 + 实施考核管理办法 + 薪酬委员会核查意见</td><td class="l"><span class="pill p-bad">已炒高 / 利好出尽</span>8/31 +3.87% 兑现，9/1 高开即崩 <span class="down">-4.92%</span></td></tr>
+    <tr><td>2026-08-30 15:32</td><td class="l"><b>2026 年半年度利润分配及资本公积转增股本方案</b></td><td class="l"><span class="pill p-warn">重大不确定性</span>高送转题材，<b>需关注除权日价格跳空</b></td></tr>
+    <tr><td>2026-08-30 15:31</td><td class="l">2026 年半年度报告 + 半年度审计报告</td><td class="l"><span class="pill p-ok">实质利好</span>探针卡龙头地位巩固（全球第 6）</td></tr>
+    <tr><td>2026-08-30 15:32</td><td class="l">2026 年半年度募集资金存放、管理与实际使用情况的专项报告</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span></td></tr>
+
+    <tr><td class="l" rowspan="2"><b>高凯技术</b><br><span class="small">sh688835</span></td><td>2026-08-23 15:30</td><td class="l">首次公开发行股票科创板上市公告书（+ 提示性公告、公司章程）</td><td class="l"><span class="pill p-warn">已炒高异动</span>上市 6 日 +332%，纯次新博傻；<b>无经营性事件支撑</b></td></tr>
+    <tr><td>2026-08-19 / 08-17 / 08-16</td><td class="l">招股说明书 / 发行结果 / 网上中签率 / 网下配售结果</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规（发行流程）</span></td></tr>
+
+    <tr><td class="l" rowspan="3"><b>频准激光</b><br><span class="small">sh688826</span></td><td>2026-08-31 16:40</td><td class="l">2026-001 号：2026 年 8 月 28 日投资者关系活动记录表</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span>调研披露，未能止跌（9/1 创新低）</td></tr>
+    <tr><td>2026-08-26 19:23</td><td class="l">2026 年半年度报告 + 募集资金置换预先投入募投项目及已支付发行费用 + 中信建投核查意见 + 召开 2026 年第一次临时股东会</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规</span></td></tr>
+    <tr><td>2026-08-26 19:23</td><td class="l">董事、高管所持公司股份及其变动管理制度 / 会计师事务所选聘制度 / 董事高管薪酬管理制度</td><td class="l"><span class="pill" style="background:#eef1f5;color:#5b6472">常规（治理制度）</span></td></tr>
+  </table>
+  <div class="note">
+    <b>来源与口径</b>：westock <code>data_notice</code>（统计日 2026-09-01 收盘，取各股最近 10 条）+ <code>agentic_search</code> 研报交叉。
+    <b>公告以巨潮资讯网 / 交易所披露原文为第一手来源；涉及媒体转述的内容已标注「需核实原文」。</b>
+    性质判定分四类：实质利好 / 已炒高异动 / 常规 / 重大不确定性。
+  </div>
+</div>
+
+<!-- ============ 数据附表 ============ -->
+<div class="card">
+  <h2>📋 数据附表（全指标）</h2>
+  <table style="font-size:12px">
+    <tr>
+      <th class="l">标的</th><th>代码</th><th>净资比</th><th>收盘</th><th>涨跌</th><th>开/高/低</th><th>换手%</th><th>量比</th><th>委比</th>
+      <th>今日主力(亿)</th><th>5D</th><th>10D</th><th>20D</th><th>MA5</th><th>MA10</th><th>MA20</th><th>MA30</th><th>距高dh</th><th>PE(TTM)</th><th>PB</th><th>板块</th>
+    </tr>
+    <tr>
+      <td class="l"><b>迈为股份</b></td><td>sz300751</td><td class="down">48.05%</td><td>207.11</td><td class="down">-7.10%</td><td>221.00/221.80/207.00</td>
+      <td>4.25</td><td>0.89</td><td class="up">+17.78</td><td class="down">-2.34</td><td class="down">-1.04</td><td class="up">+2.60</td><td class="up">+7.20</td>
+      <td>219.07</td><td>208.78</td><td>193.37</td><td>171.85</td><td>44.4%</td><td>99.61</td><td>7.18</td><td>光伏设备</td>
+    </tr>
+    <tr>
+      <td class="l"><b>正帆科技</b></td><td>sh688596</td><td class="down">38.82%</td><td>66.60</td><td class="down">-1.19%</td><td>71.10/72.50/63.91</td>
+      <td>10.05</td><td>1.18</td><td class="up">+0.80</td><td class="up">+2.01</td><td class="up">+3.90</td><td class="up">+4.68</td><td class="up">+4.96</td>
+      <td>69.32</td><td>68.60</td><td>68.68</td><td>62.09</td><td>24.9%</td><td>155.22<span class="small">(LYR)</span></td><td>6.51</td><td>专用设备</td>
+    </tr>
+    <tr>
+      <td class="l"><b>强一股份</b></td><td>sh688809</td><td class="down">33.68%</td><td>448.50</td><td class="down">-4.92%</td><td>478.76/481.00/448.09</td>
+      <td>5.12</td><td>0.82</td><td class="down">-55.22</td><td class="down">-0.22</td><td class="up">+0.25</td><td class="down">-2.15</td><td class="down">-2.74</td>
+      <td>454.94</td><td>450.14</td><td>464.15</td><td>455.48</td><td>33.2%</td><td>121.20</td><td>13.96</td><td>半导体</td>
+    </tr>
+    <tr>
+      <td class="l"><b>高凯技术</b></td><td>sh688835</td><td class="down">20.84%</td><td>265.20</td><td class="down">-6.95%</td><td>275.85/288.88/262.00</td>
+      <td>20.47</td><td>0.50</td><td class="down">-7.14</td><td class="down">-0.25</td><td class="small">+23.01⚠</td><td class="small">+22.76⚠</td><td class="small">+22.76⚠</td>
+      <td>283.74</td><td class="small">n/a</td><td class="small">n/a</td><td class="small">n/a</td><td>12.5%</td><td>143.71</td><td>11.88</td><td>自动化设备</td>
+    </tr>
+    <tr>
+      <td class="l"><b>频准激光</b></td><td>sh688826</td><td class="down">14.90%</td><td>814.35</td><td class="down">-4.10%</td><td>833.00/849.59/812.82</td>
+      <td>13.38</td><td>0.60</td><td class="up">+19.15</td><td class="down">-0.55</td><td class="down">-2.14</td><td class="up">+1.77</td><td class="up">+1.23</td>
+      <td>921.03</td><td>938.05</td><td class="small">n/a</td><td class="small">n/a</td><td>37.4%</td><td>184.17</td><td>14.18</td><td>自动化设备</td>
+    </tr>
+  </table>
+  <div class="note">
+    <b>数据来源与时点</b>：westock-mcp <code>data_quote</code> / <code>data_fund_flow</code> / <code>data_kline</code>(period=day, fq=qfq) / <code>data_market_overview</code> / <code>data_sector</code>(mode=ranking, kind=industry) / <code>data_notice</code>，
+    <b>统计日 = 2026-09-01（收盘）</b>；K 线取至 2026-09-01。行业归类经 <code>agentic_search</code>（申万 2021 版口径）+ <code>data_profile</code> 交叉核验。
+    MA 由日 K 前复权收盘价手工计算（高凯上市仅 6 个交易日、频准上市 11 个交易日，长周期均线不可得，标 n/a）。
+    ⚠️ 高凯 5D/10D/20D 主力净流数值异常（与其 49.8 亿流通市值不匹配），<b>不采信其绝对量，仅采信「今日净流出」方向</b>。
+    委比 = 委买委卖失衡度（正值买盘强、负值卖压重）。
+  </div>
+</div>
+
+<div class="foot">
+  生成时间：2026-09-02 08:00（自动化 automation-1787502600837 · 持仓晨析）｜数据基准：2026-09-01 收盘｜模型：Hy4 preview<br>
+  以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var UP = "#d6342c";
+  var DOWN = "#1a9e57";
+  var AXIS = "#9aa3af";
+  var GRID = "#eceff3";
+
+  function el(tag, attrs) {
+    var n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) {
+      if (Object.prototype.hasOwnProperty.call(attrs, k)) {
+        n.setAttribute(k, attrs[k]);
+      }
+    }
+    return n;
+  }
+  function txt(x, y, s, opt) {
+    var o = opt || {};
+    var t = el("text", {
+      x: x, y: y, "font-size": o.size || 11,
+      fill: o.fill || "#4b5563", "text-anchor": o.anchor || "start",
+      "font-weight": o.weight || "400"
+    });
+    t.textContent = s;
+    return t;
+  }
+  function svg(id) { return document.getElementById(id); }
+
+  /* ---------- 饼图：申万一级 ---------- */
+  function drawPie(divId, listId, data) {
+    var host = document.getElementById(divId);
+    if (!host) { return; }
+    var total = 0, i;
+    for (i = 0; i < data.length; i++) { total += data[i].v; }
+    var acc = 0, parts = [];
+    for (i = 0; i < data.length; i++) {
+      var p = data[i].v / total * 100;
+      parts.push(data[i].color + " " + acc.toFixed(2) + "% " + (acc + p).toFixed(2) + "%");
+      acc += p;
+    }
+    host.style.background = "conic-gradient(" + parts.join(",") + ")";
+    var list = document.getElementById(listId);
+    if (!list) { return; }
+    var html = "";
+    for (i = 0; i < data.length; i++) {
+      html += "<div><span><span class='dot' style='background:" + data[i].color + "'></span>" +
+        data[i].k + "</span><b>" + data[i].label + "</b></div>";
+    }
+    list.innerHTML = html;
+  }
+
+  drawPie("pieSw", "pieSwList", [
+    { k: "机械设备（正帆/高凯/频准）", v: 74.56, color: "#2f6fed", label: "74.56%" },
+    { k: "电力设备（迈为·光伏设备）", v: 48.05, color: "#e08a00", label: "48.05%" },
+    { k: "电子（强一·半导体）", v: 33.68, color: "#8b5cf6", label: "33.68%" }
+  ]);
+
+  drawPie("pieTheme", "pieThemeList", [
+    { k: "半导体设备/零部件链（正帆+强一+高凯+频准）", v: 108.24, color: "#c0392b", label: "108.24%" },
+    { k: "光伏设备（迈为）", v: 48.05, color: "#e08a00", label: "48.05%" }
+  ]);
+
+  /* ---------- 散点：20日涨幅 vs 当日主力净流 ---------- */
+  (function () {
+    var s = svg("scatter");
+    if (!s) { return; }
+    var W = 480, H = 340, L = 58, R = 18, T = 18, B = 58;
+    var xMin = 0, xMax = 350, yMin = -3, yMax = 3;
+    function px(v) { return L + (v - xMin) / (xMax - xMin) * (W - L - R); }
+    function py(v) { return T + (yMax - v) / (yMax - yMin) * (H - T - B); }
+
+    s.appendChild(el("rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "#fbfcfd", stroke: GRID }));
+    // x grid（次新窗口区间着色）
+    s.appendChild(el("rect", { x: px(300), y: T, width: px(350) - px(300), height: H - T - B, fill: "#f5f0f0" }));
+    s.appendChild(txt(px(325), T + 12, "次新窗口区", { size: 9.5, fill: "#b0a0a0", anchor: "middle" }));
+
+    var ticks = [0, 50, 100, 150, 200, 250, 300, 350], k;
+    for (k = 0; k < ticks.length; k++) {
+      s.appendChild(el("line", { x1: px(ticks[k]), y1: T, x2: px(ticks[k]), y2: H - B, stroke: GRID, "stroke-width": 1 }));
+      s.appendChild(txt(px(ticks[k]), H - B + 15, ticks[k] + "%", { size: 10, anchor: "middle", fill: AXIS }));
+    }
+    var yt = [-3, -2, -1, 0, 1, 2, 3];
+    for (k = 0; k < yt.length; k++) {
+      s.appendChild(el("line", { x1: L, y1: py(yt[k]), x2: W - R, y2: py(yt[k]), stroke: yt[k] === 0 ? "#c9ced6" : GRID, "stroke-width": yt[k] === 0 ? 1.4 : 1 }));
+      s.appendChild(txt(L - 7, py(yt[k]) + 3.5, (yt[k] > 0 ? "+" : "") + yt[k], { size: 10, anchor: "end", fill: AXIS }));
+    }
+    s.appendChild(txt(W / 2, H - 12, "20 日涨幅（%）", { size: 11, anchor: "middle", fill: "#6b7280" }));
+    s.appendChild(txt(12, T + 12, "主力净流", { size: 10, fill: "#6b7280" }));
+    s.appendChild(txt(12, T + 25, "（亿元）", { size: 10, fill: "#6b7280" }));
+
+    // 象限标签
+    s.appendChild(txt(W - R - 6, T + 14, "健康上涨（持有）", { size: 10, anchor: "end", fill: UP, weight: "600" }));
+    s.appendChild(txt(W - R - 6, H - B - 6, "诱多出货（减仓）", { size: 10, anchor: "end", fill: "#e08a00", weight: "600" }));
+    s.appendChild(txt(L + 6, T + 14, "底背离吸筹（低吸）", { size: 10, fill: DOWN, weight: "600" }));
+    s.appendChild(txt(L + 6, H - B - 6, "主跌出货（回避）", { size: 10, fill: "#c0392b", weight: "600" }));
+
+    var pts = [
+      { n: "迈为", x: 32.87, y: -2.34, dx: 10, dy: -10 },
+      { n: "正帆", x: 39.18, y: 2.01, dx: 10, dy: -10 },
+      { n: "强一", x: 1.27, y: -0.22, dx: 12, dy: -10 },
+      { n: "高凯", x: 332.2, y: -0.25, dx: -12, dy: -10, anchor: "end", win: true },
+      { n: "频准", x: 335.76, y: -0.55, dx: -12, dy: 12, anchor: "end", win: true }
+    ];
+    for (k = 0; k < pts.length; k++) {
+      var p = pts[k];
+      var cx = px(p.x), cy = py(p.y);
+      var col = p.win ? "#9aa3af" : (p.y >= 0 ? UP : DOWN);
+      s.appendChild(el("circle", { cx: cx, cy: cy, r: 6, fill: col, "fill-opacity": 0.22, stroke: col, "stroke-width": 2 }));
+      s.appendChild(el("circle", { cx: cx, cy: cy, r: 2.2, fill: col }));
+      s.appendChild(txt(cx + p.dx, cy + p.dy + 4, p.n + (p.win ? "（窗口值）" : ""), {
+        size: 11, weight: "600", fill: p.win ? "#8a93a0" : "#1f2329", anchor: p.anchor || "start"
+      }));
+    }
+  })();
+
+  /* ---------- 柱状：换手率 vs 振幅 ---------- */
+  (function () {
+    var s = svg("bars");
+    if (!s) { return; }
+    var W = 480, H = 340, L = 44, R = 16, T = 20, B = 62;
+    var data = [
+      { n: "迈为", turn: 4.25, amp: 6.64 },
+      { n: "正帆", turn: 10.05, amp: 12.74 },
+      { n: "强一", turn: 5.12, amp: 6.98 },
+      { n: "高凯", turn: 20.47, amp: 9.43 },
+      { n: "频准", turn: 13.38, amp: 4.33 }
+    ];
+    var maxV = 22, i;
+    function py(v) { return T + (1 - v / maxV) * (H - T - B); }
+    s.appendChild(el("rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "#fbfcfd", stroke: GRID }));
+    var yt = [0, 5, 10, 15, 20];
+    for (i = 0; i < yt.length; i++) {
+      s.appendChild(el("line", { x1: L, y1: py(yt[i]), x2: W - R, y2: py(yt[i]), stroke: GRID, "stroke-width": 1 }));
+      s.appendChild(txt(L - 6, py(yt[i]) + 3.5, yt[i] + "%", { size: 10, anchor: "end", fill: AXIS }));
+    }
+    var slot = (W - L - R) / data.length;
+    var bw = 22;
+    for (i = 0; i < data.length; i++) {
+      var d = data[i];
+      var cx = L + slot * i + slot / 2;
+      s.appendChild(el("rect", { x: cx - bw - 3, y: py(d.turn), width: bw, height: py(0) - py(d.turn), fill: "#2f6fed", rx: 3 }));
+      s.appendChild(el("rect", { x: cx + 3, y: py(d.amp), width: bw, height: py(0) - py(d.amp), fill: UP, "fill-opacity": 0.78, rx: 3 }));
+      s.appendChild(txt(cx - bw / 2 - 3, py(d.turn) - 5, d.turn.toFixed(2), { size: 10, anchor: "middle", fill: "#2f6fed", weight: "600" }));
+      s.appendChild(txt(cx + bw / 2 + 3, py(d.amp) - 5, d.amp.toFixed(2), { size: 10, anchor: "middle", fill: UP, weight: "600" }));
+      s.appendChild(txt(cx, H - B + 16, d.n, { size: 11.5, anchor: "middle", fill: "#1f2329", weight: "600" }));
+    }
+    s.appendChild(el("rect", { x: L + 8, y: H - 34, width: 11, height: 11, fill: "#2f6fed", rx: 2 }));
+    s.appendChild(txt(L + 24, H - 25, "换手率(%)", { size: 10.5, fill: "#4b5563" }));
+    s.appendChild(el("rect", { x: L + 96, y: H - 34, width: 11, height: 11, fill: UP, "fill-opacity": 0.78, rx: 2 }));
+    s.appendChild(txt(L + 112, H - 25, "当日振幅(%)", { size: 10.5, fill: "#4b5563" }));
+    s.appendChild(txt(L + 190, H - 25, "频准量比0.60=缩量跌", { size: 10, fill: "#8a93a0" }));
+  })();
+
+  /* ---------- 20日 K 线（归一化） ---------- */
+  (function () {
+    var s = svg("klines");
+    if (!s) { return; }
+    var series = {
+      "迈为": [[211.8, 224.5, 210.01, 222.94], [226.83, 231.3, 217.6, 218.3], [220.18, 228, 216, 225.8], [212.24, 228.8, 212.16, 221.18], [193.51, 212.93, 193.51, 211.5], [197.14, 207.14, 190.5, 201.72], [194.2, 197.04, 188.56, 193.66], [189, 202.74, 188.18, 196.04], [206.8, 207.99, 187.01, 189.5], [186.36, 212.97, 186.01, 212.5], [180, 189.86, 179.73, 187.06], [173.89, 178.58, 170.69, 178.39], [178.44, 181.68, 173, 173.09], [169.88, 181.38, 169.88, 178.5], [169.01, 174.76, 166.8, 170.24], [176, 178.88, 168.5, 172.14], [170.01, 173.25, 165.12, 171.77], [164.31, 172.83, 161.72, 169.38], [155.88, 168.88, 154.28, 166.55], [147.36, 158, 145.29, 155.87], [221, 221.8, 207, 207.11]],
+      "正帆": [[64.9, 68.9, 63.43, 67.4], [71, 74.68, 67, 67.4], [71.49, 74.3, 68.3, 72.4], [70, 73.9, 68.21, 72.8], [69.19, 72.1, 64.3, 70.6], [67, 71.75, 64.5, 71.15], [67.33, 69.37, 65.67, 66.3], [65.71, 68.3, 64.14, 66.2], [68.26, 70.74, 64, 65.18], [72.44, 74.1, 68.2, 70.95], [70.84, 73.62, 70, 72.22], [72.47, 75.13, 70.73, 72.38], [76.55, 77.12, 71, 71.86], [71.16, 76.66, 71.16, 75.35], [69.25, 74.66, 69.25, 69.98], [66.97, 70.5, 66.6, 70.5], [60.05, 68, 60, 65.98], [57.3, 62.59, 57.12, 61], [47.46, 57.42, 47.45, 57.42], [43.22, 49.39, 41.8, 47.85], [71.1, 72.5, 63.91, 66.6]],
+      "强一": [[426.8, 476.38, 426, 471.71], [455.54, 473.69, 454.14, 454.14], [443.87, 459.99, 433, 459.02], [420.02, 454.84, 420.02, 441.32], [430, 435.5, 410, 421.7], [445, 449.99, 423.01, 438.5], [453.01, 459.94, 438.33, 447.15], [477.8, 482, 443, 454.23], [495.02, 510, 463.01, 465.15], [485.6, 516.89, 481.21, 512.8], [467, 491.99, 467, 487], [476.97, 484, 463, 468.9], [480.66, 500, 468.01, 469.77], [465, 479.88, 461, 475], [475, 481.99, 458.03, 460.07], [480.2, 490.01, 469, 483.98], [464.51, 489.04, 456.03, 483.03], [456, 482.32, 455.7, 468], [438, 477.9, 436.66, 473], [416.44, 443, 405.21, 442.86], [478.76, 481, 448.09, 448.5]],
+      "高凯": [[260.41, 291, 252.5, 285], [291, 297.37, 268, 269.01], [295, 303, 280, 300], [239.67, 299.48, 239.67, 299.48], [209, 262, 200.01, 235], [275.85, 288.88, 262, 265.2]],
+      "频准": [[865.03, 869, 820, 849.2], [1000.1, 1017.1, 900, 900.89], [1015, 1030, 987.77, 1016.21], [956.95, 1075, 942.59, 1024.49], [957, 1008.98, 950.95, 960], [925, 990, 888.01, 979], [920.01, 995.46, 885, 947.45], [935, 993, 870, 946.92], [1000.25, 1079, 940, 942.03], [1100, 1300, 1100, 1152], [833, 849.59, 812.82, 814.35]]
+    };
+    var names = ["迈为", "正帆", "强一", "高凯", "频准"];
+    var W = 1040, H = 460, padL = 52, padR = 130, padT = 26, padB = 42;
+    var maxN = 21;
+    var plotW = (W - padL - padR) / 2 - 24;
+    var plotH = (H - padT - padB) / 3 - 16;
+    var i, j;
+
+    s.appendChild(el("rect", { x: 0, y: 0, width: W, height: H, fill: "#ffffff" }));
+
+    for (i = 0; i < names.length; i++) {
+      var nm = names[i];
+      var rows = series[nm];
+      var col = i % 2, row = Math.floor(i / 2);
+      var x0 = padL + col * (plotW + 48);
+      var y0 = padT + row * (plotH + 26);
+      var hi = -Infinity, lo = Infinity;
+      for (j = 0; j < rows.length; j++) {
+        if (rows[j][1] > hi) { hi = rows[j][1]; }
+        if (rows[j][2] < lo) { lo = rows[j][2]; }
+      }
+      var span = hi - lo;
+      if (span <= 0) { span = 1; }
+      function mkY(base, height) {
+        return function (v) { return base + (1 - (v - lo) / span) * height; };
+      }
+      var gY = mkY(y0, plotH);
+
+      s.appendChild(el("rect", { x: x0 - 6, y: y0 - 6, width: plotW + 12, height: plotH + 12, fill: "#fbfcfd", stroke: GRID, rx: 6 }));
+      s.appendChild(txt(x0, y0 - 10, nm, { size: 12, weight: "700", fill: "#1f2329" }));
+      s.appendChild(txt(x0 + 42, y0 - 10, "区间高 " + hi.toFixed(2) + " / 低 " + lo.toFixed(2), { size: 9.5, fill: AXIS }));
+
+      var n = rows.length;
+      var step = plotW / maxN;
+      var bw = Math.max(3, step * 0.56);
+      for (j = 0; j < n; j++) {
+        var r = rows[j];
+        var isLast = (j === n - 1);
+        var idx = maxN - n + j;
+        var cx = x0 + idx * step + step / 2;
+        var rising = r[3] >= r[0];
+        var c = isLast ? "#111827" : (rising ? UP : DOWN);
+        var yh = gY(r[1]), yl = gY(r[2]);
+        s.appendChild(el("line", { x1: cx, y1: yh, x2: cx, y2: yl, stroke: c, "stroke-width": 1 }));
+        var yo = gY(r[0]), yc = gY(r[3]);
+        var top = Math.min(yo, yc);
+        var hgt = Math.max(1.5, Math.abs(yc - yo));
+        s.appendChild(el("rect", {
+          x: cx - bw / 2, y: top, width: bw, height: hgt,
+          fill: rising ? c : "#ffffff", stroke: c, "stroke-width": 1.1, rx: 1
+        }));
+      }
+      // 最后一根标注收盘价
+      var last = rows[n - 1];
+      var lastX = x0 + (maxN - 1) * step + step / 2;
+      var lastY = gY(last[3]);
+      s.appendChild(txt(lastX + 8, lastY + 3.5, last[3].toFixed(2), { size: 10, weight: "700", fill: DOWN }));
+      s.appendChild(txt(x0, y0 + plotH + 14, "← 8/04 起 20 个交易日 →  9/01", { size: 9, fill: AXIS }));
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>

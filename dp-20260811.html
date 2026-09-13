@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>盘前策略 2026-08-11（周二）</title>
+<style>
+  :root{
+    --bg:#0d0d1a; --card-bg:#14142b; --card-bg2:#1a1a35;
+    --red:#e94560; --green:#2ecc71; --gold:#f5c542; --blue:#4d9fff;
+    --purple:#bb6bff; --orange:#ff9f43; --cyan:#4fc3f7;
+    --txt:#e6e6f0; --sub:#7a82a0; --line:#252545;
+    --up:#ff6b6b; --down:#51cf66;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65;padding:16px;max-width:480px;margin:0 auto;min-height:100vh}
+
+  /* ===== 顶部标题栏 ===== */
+  .header-bar{background:linear-gradient(135deg,#1a237e 0%,#0d1642 100%);border-radius:10px;padding:18px 16px;margin-bottom:14px;border-left:4px solid #4d9fff}
+  .header-bar h1{font-size:20px;color:#fff;font-weight:700;margin-bottom:4px}
+  .header-bar .date-tag{display:inline-block;background:rgba(77,159,255,0.2);color:#8ec8ff;font-size:11px;padding:2px 8px;border-radius:10px;margin-bottom:6px}
+  .header-bar .subtitle{color:#8899bb;font-size:13px}
+  .header-bar .time-info{color:#556699;font-size:11px;margin-top:6px}
+
+  /* ===== 卡片通用 ===== */
+  .card{background:var(--card-bg);border-radius:10px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--line)}
+  .card-title{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+  /* ===== 左边框变体 ===== */
+  .card-red{border-left:4px solid var(--red)}
+  .card-green{border-left:4px solid var(--green)}
+  .card-gold{border-left:4px solid var(--gold)}
+  .card-blue{border-left:4px solid var(--blue)}
+  .card-purple{border-left:4px solid var(--purple)}
+  .card-orange{border-left:4px solid var(--orange)}
+  .card-cyan{border-left:4px solid var(--cyan)}
+
+  /* ===== 三句话结论 ===== */
+  .conclusion-list{list-style:none;padding:0}
+  .conclusion-list li{font-size:13px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:flex-start;gap:6px}
+  .conclusion-list li:last-child{border-bottom:none}
+  .conclusion-num{display:inline-block;width:20px;height:20px;border-radius:50%;text-align:center;line-height:20px;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+  .num-red{background:rgba(233,69,96,0.2);color:var(--red)}
+  .num-green{background:rgba(46,204,113,0.2);color:var(--green)}
+  .num-gold{background:rgba(245,197,66,0.2);color:var(--gold)}
+  .num-blue{background:rgba(77,159,255,0.2);color:var(--blue)}
+
+  /* ===== 指数卡片横排 ===== */
+  .idx-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .idx-item{background:var(--card-bg2);border-radius:8px;padding:10px 12px;text-align:center}
+  .idx-name{font-size:11px;color:var(--sub);margin-bottom:2px}
+  .idx-price{font-size:17px;font-weight:700;color:#fff}
+  .idx-chg{font-size:12px;margin-top:2px}
+  .up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--sub)}
+
+  /* ===== 标签 ===== */
+  .tag{display:inline-block;padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:4px}
+  .tag-red{background:rgba(233,69,96,0.15);color:var(--red)}
+  .tag-green{background:rgba(46,204,113,0.15);color:var(--green)}
+  .tag-gold{background:rgba(245,197,66,0.15);color:var(--gold)}
+  .tag-blue{background:rgba(77,159,255,0.15);color:var(--blue)}
+  .tag-purple{background:rgba(187,107,255,0.15);color:var(--purple)}
+
+  /* ===== 表格 ===== */
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{padding:6px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+  th{color:var(--gold);font-weight:500;font-size:11px;background:rgba(245,197,66,0.05)}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  tr:hover td{background:rgba(255,255,255,0.03)}
+
+  /* ===== 温度计 ===== */
+  .thermo-row{display:flex;align-items:center;gap:10px;margin:10px 0}
+  .thermo-score{font-size:28px;font-weight:700;color:var(--gold)}
+  .thermo-bar-wrap{flex:1;height:12px;background:#1a1a30;border-radius:6px;overflow:hidden}
+  .thermo-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--cyan),var(--gold) 60%,var(--red))}
+  .thermo-label{font-size:11px;color:var(--sub);margin-top:4px}
+  .mini-stat{display:inline-block;background:var(--card-bg2);padding:4px 8px;border-radius:6px;font-size:11px;margin:2px 3px 2px 0}
+
+  /* ===== 列表项 ===== */
+  .item-list{list-style:none;padding:0}
+  .item-list li{font-size:12.5px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+  .item-list li:last-child{border-bottom:none}
+  .item-name{display:flex;align-items:center;gap:4px}
+  .item-val{n}
+
+  /* ===== 操作动作 ===== */
+  .action-grid{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:12px}
+  .action-label{font-weight:600}
+  .action-detail{color:var(--sub)}
+
+  /* ===== 提示框 ===== */
+  .tip-box{border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.7;margin-top:8px}
+  .tip-warn{background:rgba(233,69,96,0.08);border-left:3px solid var(--red);color:#ffabab}
+  .tip-ok{background:rgba(46,204,113,0.08);border-left:3px solid var(--green);color:#a5ffb0}
+  .tip-info{background:rgba(77,159,255,0.08);border-left:3px solid var(--blue);color:#a8caff}
+
+  /* ===== 底部 ===== */
+  .footer{text-align:center;color:#444a66;font-size:10.5px;padding:16px 0 8px;line-height:1.8;border-top:1px solid var(--line);margin-top:16px}
+
+  /* ===== 分隔线 ===== */
+  .divider{height:1px;background:var(--line);margin:4px 0 10px}
+</style>
+</head>
+<body>
+
+<!-- ============ 顶部标题栏 ============ -->
+<div class="header-bar">
+  <span class="date-tag">📋 盘前策略 · 2026-08-11 周二</span>
+  <h1>盘前策略速览</h1>
+  <div class="subtitle">贵金属主升第N日 · 科技高位分歧延续 · 隔夜英伟达-2.86%拖累AI链 · 中概逆市走强</div>
+  <div class="time-info">生成 08:20 · 数据源: westock MCP ✅ + 通达信 ✅ + 腾讯自选股热搜 ✅ | 上证昨收 3940.04 (+1.02%)</div>
+</div>
+
+<!-- ============ 一、三句话结论 [红] ============ -->
+<div class="card card-red">
+  <div class="card-title" style="color:var(--red)">🔴 核心结论</div>
+  <ul class="conclusion-list">
+    <li><span class="conclusion-num num-red">1</span><b>贵金属主线续强</b>：板块昨日+3.89%领涨，招金黄金涨停，黄金站上历史新高 —— <b>持有龙头，低吸不追高</b>。</li>
+    <li><span class="conclusion-num num-red">2</span><b>科技/AI链承压</b>：隔夜英伟达-2.86%（循环融资担忧），通信设备昨日-3.67%/资金净流出163亿 —— <b>半导体/CPO回避，等分歧消化</b>。</li>
+    <li><span class="conclusion-num num-red">3</span><b>医疗服务/CRO异动</b>：毕得医药20cm涨停，医疗服务+3.92%，CRO概念5日+25.77% —— <b>医药方向可关注低位龙头</b>。</li>
+  </ul>
+</div>
+
+<!-- ============ 二、四大指数收盘 [蓝] ============ -->
+<div class="card card-blue">
+  <div class="card-title" style="color:var(--blue)">📊 昨日四大指数收盘（8/8 周五）</div>
+  <div class="idx-grid">
+    <div class="idx-item">
+      <div class="idx-name">上证指数</div>
+      <div class="idx-price up">3,940.04</div>
+      <div class="idx-chg up">+1.02% (+39.69)</div>
+    </div>
+    <div class="idx-item">
+      <div class="idx-name">深证成指</div>
+      <div class="idx-price up">14,311.01</div>
+      <div class="idx-chg up">+1.42% (+200.89)</div>
+    </div>
+    <div class="idx-item">
+      <div class="idx-name">创业板指</div>
+      <div class="idx-price up">3,563.12</div>
+      <div class="idx-chg up">+1.35% (+47.56)</div>
+    </div>
+    <div class="idx-item">
+      <div class="idx-name">科创50</div>
+      <div class="idx-price up">—</div>
+      <div class="idx-chg up">待开盘确认</div>
+    </div>
+  </div>
+  <div class="tip-box tip-info" style="margin-top:10px">
+    <b>形态：</b>三大指数全线收红，上证站上3940。但隔夜美股AI链回调（英伟达-2.86%）→ 今日科技板块承压，<b>关注开盘是否低开补跌</b>。
+  </div>
+</div>
+
+<!-- ============ 三、情绪温度计 [金] ============ -->
+<div class="card card-gold">
+  <div class="card-title" style="color:var(--gold)">🌡️ 情绪温度计 — 综合评分 35 ⚪偏冷</div>
+  <div class="thermo-row">
+    <div class="thermo-score">35<span style="font-size:13px;color:var(--sub)"> / 100</span></div>
+    <div style="flex:1">
+      <div class="thermo-bar-wrap"><div class="thermo-fill" style="width:35%"></div></div>
+      <div class="thermo-label">昨日70 → 今日35 · 趋势 ↘️降温 · 置信度中等</div>
+    </div>
+    <span class="tag tag-gold">⚪偏冷</span>
+  </div>
+  <div style="margin-top:8px">
+    <span class="mini-stat">广度 <b style="color:var(--green)">5 全面开花</b></span>
+    <span class="mini-stat">情绪 <b style="color:var(--red)">5 狂热</b></span>
+    <span class="mini-stat">技术 <b style="color:var(--green)">5 极强</b></span>
+    <span class="mini-stat">短期趋势 <b style="color:var(--green)">4 温和上涨</b></span>
+    <span class="mini-stat">量能 <b style="color:var(--gold)">3 缩量震荡</b></span>
+    <span class="mini-stat">估值 <b style="color:var(--red)">5 高估</b></span>
+  </div>
+  <div class="tip-box tip-warn">
+    <b>⚠️ 盘前预警：</b>情绪原始分偏高但调整后仅35 → 高位分化环境。<b>隔夜英伟达-2.86%</b>拖累AI映射链，今日科技板块大概率低开承压。操作上<b>不追高、不新开仓科技股</b>，等分歧消化后再看。
+  </div>
+</div>
+
+<!-- ============ 四、隔夜外盘 [紫] ============ -->
+<div class="card card-purple">
+  <div class="card-title" style="color:var(--purple)">🌍 隔夜外盘 &amp; 重要事件</div>
+  <table>
+    <tr><th>标的</th><th>收盘价</th><th>涨跌</th><th>影响</th></tr>
+    <tr><td>英伟达 NVDA</td><td class="n">$217.55</td><td class="n down">-2.86%</td><td><span class="tag tag-red">利空AI链</span></td></tr>
+    <tr><td>闪迪 SNDK</td><td class="n">$1,237.92</td><td class="n up">+2.12%</td><td><span class="tag tag-green">利好存储</span></td></tr>
+    <tr><td>美光 MU</td><td class="n">$861.00</td><td class="n down">-1.89%</td><td><span class="tag tag-red">存储分化</span></td></tr>
+    <tr><td>SK海力士</td><td class="n">$135.29</td><td class="n down">-1.90%</td><td><span class="tag tag-red">利空存储</span></td></tr>
+    <tr><td>SpaceX</td><td class="n">$138.74</td><td class="n up">+4.23%</td><td><span class="tag tag-blue">航天概念</span></td></tr>
+  </table>
+  <div class="divider"></div>
+  <ul class="item-list">
+    <li><span class="item-name"><b>央行部署</b></span><span class="item-val" style="color:var(--gold)">提及金融市场/消费</span></li>
+    <li><span class="item-name"><b>英伟达×6家金融</b></span><span class="item-val" style="color:var(--blue)">筹5000亿美元AI算力</span></li>
+    <li><span class="item-name"><b>霍尔木兹海峡</b></span><span class="item-val" style="color:var(--red)">美伊协议渺茫·油价大涨</span></li>
+    <li><span class="item-name"><b>阿里云扩产</b></span><span class="item-val" style="color:var(--cyan)">数据中心产能翻倍</span></li>
+    <li><span class="item-name"><b>12天11板股停牌</b></span><span class="item-val" style="color:var(--orange)">监管降温信号</span></li>
+    <li><span class="item-name"><b>江波龙业绩</b></span><span class="item-val" style="color:var(--green)">H1净利+715倍·今日+6.7%</span></li>
+  </ul>
+</div>
+
+<!-- ============ 五、板块信号 [绿] ============ -->
+<div class="card card-green">
+  <div class="card-title" style="color:var(--green)">🧭 昨日板块排行 &amp; 资金流向</div>
+  <table>
+    <tr><th>领涨行业</th><th>涨幅</th><th>资金净流入</th></tr>
+    <tr><td>地面兵装Ⅱ</td><td class="up">+5.12%</td><td class="n">—</td></tr>
+    <tr><td>酒店餐饮</td><td class="up">+4.22%</td><td class="n">—</td></tr>
+    <tr><td>养殖业</td><td class="up">+4.19%</td><td class="n">—</td></tr>
+    <tr><td>医疗服务</td><td class="up">+3.92%</td><td class="n up">+24.5亿</td></tr>
+    <tr><td><b>贵金属</b></td><td class="up"><b>+3.89%</b></td><td class="n up"><b>+11.4亿</b></td></tr>
+    <tr><td>渔业</td><td class="up">+3.56%</td><td class="n">—</td></tr>
+  </table>
+  <div class="divider"></div>
+  <table>
+    <tr><th>资金流出 TOP</th><th>跌幅</th><th>净流出</th></tr>
+    <tr><td>通信设备</td><td class="down">-3.67%</td><td class="n down"><b>-163.8亿</b></td></tr>
+    <tr><td>元件/PCB</td><td class="down">-1.25%</td><td class="n down">-85.3亿</td></tr>
+    <tr><td>半导体</td><td class="down">-0.36%</td><td class="n down">-64.6亿</td></tr>
+  </table>
+  <div class="tip-box tip-ok" style="margin-top:10px">
+    <b>🧭 结构解读：</b>①<b>资源品/防御领涨</b>（贵金属+3.89%/养殖业+4.19%）= 资金从进攻转向避险；②<b>科技全线失血</b>：通信设备-163.8亿/元件-85.3亿/半导体-64.6亿 = AI链获利盘集中兑现；③<b>医疗服务/CRO接力</b>：毕得医药20cm+板块+3.92% = 新主线萌芽。
+  </div>
+</div>
+
+<!-- ============ 六、方向评级 &amp; 操作 [橙] ============ -->
+<div class="card card-orange">
+  <div class="card-title" style="color:var(--orange)">🎯 方向评级 &amp; 盘前操作</div>
+  <table>
+    <tr><th>方向</th><th>评级</th><th>动作</th><th>要点</th></tr>
+    <tr><td>贵金属/黄金</td><td><span class="tag tag-green">A 持有</span></td><td><b>持有/低吸</b></td><td>主升续强+3.89%，招金涨停；但20日已+48%<b>禁追高</b></td></tr>
+    <tr><td>CRO/医疗服务</td><td><span class="tag tag-green">A- 关注</span></td><td><b>关注龙头</b></td><td>毕得20cm/板块+3.92%；5日CRO+25.77%趋势确立</td></tr>
+    <tr><td>半导体/存储</td><td><span class="tag tag-red">B- 回避</span></td><td><b>观望</b></td><td>隔夜英伟达-2.86%+昨日资金流出64.6亿；等回踩</td></tr>
+    <tr><td>通信设备/CPO</td><td><span class="tag tag-red">C 规避</span></td><td><b>不碰</b></td><td>昨日-3.67%/-163.8亿流出；光通信隔夜重挫</td></tr>
+    <tr><td>元件/PCB</td><td><span class="tag tag-gold">B 观望</span></td><td><b>只做龙头</b></td><td>宝鼎涨停但板块-1.25%/-85亿流出；高度分化</td></tr>
+    <tr><td>机器人</td><td><span class="tag tag-blue">观察</span></td><td><b>等待催化</b></td><td>宇树8/10申购+8/19大会；暂无表现</td></tr>
+    <tr><td>银行/白酒</td><td><span class="tag tag-purple">减仓</span></td><td><b>继续减</b></td><td>防御单向失血持续第N日</td></tr>
+  </table>
+  <div class="tip-box tip-warn" style="margin-top:10px">
+    <b>⚡ 仓位建议：4~5成</b>（情绪偏冷35 + 隔夜外盘利空AI + 高位分化）<br>
+    <b>今日铁律：</b>① 不追高任何已涨标的；② 科技股若低开超1.5%→观望不抄底；③ 贵金属只持有不新开仓；④ CRO可轻仓试错龙头≤2%涨幅。
+  </div>
+</div>
+
+<!-- ============ 七、风险监控 [红] ============ -->
+<div class="card card-red">
+  <div class="card-title" style="color:var(--red)">⚠️ 今日风险监控清单</div>
+  <ul class="item-list">
+    <li><span class="item-name"><span class="tag tag-red">高风险</span> <b>AI/科技链补跌</b></span><span class="item-val">英伟达-2.86%→A股半导体/CPO/通信设备映射承压</span></li>
+    <li><span class="item-name"><span class="tag tag-orange">中风险</span> <b>贵金属冲高回落</b></span><span class="item-val">连续大涨后获利盘增多；若高开>2%谨防回落</span></li>
+    <li><span class="item-name"><span class="tag tag-gold">关注</span> <b>停牌股复牌影响</b></span><span class="item-val">12天11板大牛股停牌核查→短线情绪降温</span></li>
+    <li><span class="item-name"><span class="tag tag-blue">外部</span> <b>霍尔木兹/油价</b></span><span class="item-val">美伊协议渺茫→国际油价大涨→通胀预期升温</span></li>
+    <li><span class="item-name"><span class="tag tag-purple">监管</span> <b>连板监管</b></span><span class="item-val">高位妖股停牌→打板/接力情绪受压制</span></li>
+  </ul>
+</div>
+
+<!-- ============ 八、关键标的池 [青] ============ -->
+<div class="card card-cyan">
+  <div class="card-title" style="color:var(--cyan)">🎯 关键标的监控（昨日收盘价）</div>
+  <table>
+    <tr><th>标的</th><th>现价</th><th>涨跌</th><th>状态</th></tr>
+    <tr><td>招金黄金</td><td class="n">19.94</td><td class="n up">+9.98% 🚀</td><td><span class="tag tag-green">涨停·贵金属龙头</span></td></tr>
+    <tr><td>毕得医药</td><td class="n">73.92</td><td class="n up">+20.00% 🚀</td><td><span class="tag tag-green">20cm·CRO新龙头</span></td></tr>
+    <tr><td>江波龙</td><td class="n">412.50</td><td class="n up">+6.70%</td><td><span class="tag tag-blue">存储业绩暴增715倍</span></td></tr>
+    <tr><td>宝鼎科技</td><td class="n">52.36</td><td class="n up">+10.00%</td><td><span class="tag tag-gold">PCB龙头·5天4板梯队</span></td></tr>
+    <tr><td>北方长龙</td><td class="n">113.23</td><td class="n up">+20.00%</td><td><span class="tag tag-purple">地面兵装·20cm</span></td></tr>
+    <tr><td>有研新材</td><td class="n">52.03</td><td class="n up">+8.01%</td><td><span class="tag tag-green">靶材龙头·5日+40%</span></td></tr>
+    <tr><td>赤峰黄金</td><td class="n">—</td><td class="n">—</td><td><span class="tag tag-orange">远超区间·持有防回吐</span></td></tr>
+    <tr><td>紫金矿业</td><td class="n">—</td><td class="n">—</td><td><span class="tag tag-orange">远超区间·持有防回吐</span></td></tr>
+  </table>
+</div>
+
+<!-- ============ 九、盘前备忘 [蓝] ============ -->
+<div class="card card-blue">
+  <div class="card-title" style="color:var(--blue)">📝 盘前备忘 &amp; 待办</div>
+  <ul class="conclusion-list">
+    <li><span class="conclusion-num num-blue">①</span><b>09:15-09:25 集合竞价</b>：重点观察半导体/CPO是否大幅低开（英伟达映射）；贵金属是否高开加速。</li>
+    <li><span class="conclusion-num num-blue">②</span><b>09:30 开盘30分钟</b>：若普涨率&lt;40% → 全天观望模式；若贵金属继续领涨 → 确认主线地位。</li>
+    <li><span class="conclusion-num num-blue">③</span><b>10:00-10:30</b>：CRO/医疗服务能否接力？毕得医药20cm后板块持续性验证窗口。</li>
+    <li><span class="conclusion-num num-blue">④</span><b>11:00 前午间决策</b>：更新盘中速览，复核铁律A条件。</li>
+    <li><span class="conclusion-num num-blue">⑤</span><b>晚间</b>：7月社融/M2数据可能发布（关注时间）。</li>
+  </ul>
+</div>
+
+<div class="footer">
+  本报告仅供参考，不构成个人投资建议。市场有风险，投资需谨慎。<br>
+  数据来源：westock MCP · 通达信 · 腾讯自选股热搜 · 情绪温度计V2.0<br>
+  生成时间 2026-08-11 08:20 · WorkBuddy 大盘复盘
+</div>
+
+</body>
+</html>

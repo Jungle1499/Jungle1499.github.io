@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美股强势股复盘 · 2026-08-27</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#131a2e; --panel2:#1a2238; --line:#26304a;
+    --txt:#e7ebf3; --muted:#8b93a7; --up:#f04142; --up2:#ff6b6b;
+    --down:#15c47e; --gold:#ffc14d; --blue:#4d9fff; --purple:#a78bfa; --orange:#ff8a65;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1220px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#16203a,#0d1426);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:20px}
+  header h1{font-size:25px;font-weight:800;letter-spacing:1px}
+  header .sub{color:var(--muted);margin-top:8px;font-size:13px}
+  .tag{display:inline-block;background:rgba(255,193,77,.14);color:var(--gold);border:1px solid rgba(255,193,77,.35);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:8px;margin-top:10px}
+  .tag.r{background:rgba(240,65,66,.14);color:var(--up2);border-color:rgba(240,65,66,.35)}
+  .tag.b{background:rgba(77,159,255,.14);color:var(--blue);border-color:rgba(77,159,255,.35)}
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:7px}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:4px 10px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+  nav a:hover{color:var(--gold);border-color:rgba(255,193,77,.35);background:rgba(255,193,77,.08)}
+  .sec{margin-top:34px;scroll-margin-top:60px}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:12px;border-left:4px solid var(--gold)}
+  .sec-h h2{font-size:20px;font-weight:700}
+  .sec-h .n{background:var(--gold);color:#1a1300;font-weight:800;border-radius:8px;padding:1px 9px;font-size:13px}
+  .sec-desc{color:var(--muted);font-size:12.5px;margin:-8px 0 14px 12px}
+  .pt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .pt-h{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+  .pt-d{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .tbl th{background:var(--panel2);color:var(--gold);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  .tbl tbody tr:hover{background:rgba(77,159,255,.05)}
+  .up{color:var(--up2);font-weight:700}
+  .down{color:var(--down)}
+  .gold-t{color:var(--gold)}
+  .rank{color:var(--muted);font-weight:700;width:36px}
+  .code{color:var(--blue);font-weight:600;white-space:nowrap}
+  .nm{font-weight:600;white-space:nowrap}
+  .cat{color:#b9c2d6;font-size:12px}
+  .risk{color:var(--orange)}
+  .cap{white-space:nowrap}
+  .alloc{color:var(--gold);font-weight:700;white-space:nowrap}
+  .trend{color:var(--purple);white-space:nowrap}
+  .ps{color:var(--muted);white-space:nowrap}
+  .bar-w{display:inline-block;width:64px;height:6px;background:#1a2238;border-radius:3px;margin-right:7px;vertical-align:middle;overflow:hidden}
+  .bar{height:100%;background:linear-gradient(90deg,#f04142,#ff6b6b);border-radius:3px}
+  .chart{width:100%;height:320px}
+  .chart-half{width:100%;height:280px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  /* 回测横幅 */
+  .bt-wrap{background:linear-gradient(135deg,#1c2436,#131a2e);border:1px solid rgba(255,193,77,.35);border-radius:14px;padding:14px 18px;margin-bottom:16px}
+  .bt-h{font-size:13.5px;font-weight:700;color:var(--gold);margin-bottom:10px}
+  .bt-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+  .bt-item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
+  .bt-item.hl{border-color:rgba(255,193,77,.4);background:rgba(255,193,77,.06)}
+  .bt-k{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+  .bt-v{font-size:16px;font-weight:800;color:var(--up2)}
+  .bt-v.gold-t{color:var(--gold)}
+  .bt-v.muted{color:var(--muted)}
+  .bt-v.down{color:var(--down);font-size:11px;font-weight:600;line-height:1.4;display:block}
+  .bt-note{font-size:11px;color:var(--muted);margin-top:8px}
+  @media(max-width:900px){.bt-grid{grid-template-columns:repeat(4,1fr)}}
+  /* 趋势卡片 */
+  .tcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:8px}
+  .tcard:hover{border-color:rgba(255,193,77,.4)}
+  .t-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .t-id{background:var(--gold);color:#1a1300;font-weight:800;border-radius:6px;padding:0 8px;font-size:12px;letter-spacing:1px}
+  .t-name{font-size:14.5px;font-weight:700;flex:1}
+  .t-logic{font-size:12px;color:#b9c2d6;line-height:1.55}
+  .t-stocks{font-size:11.5px;color:var(--blue)}
+  .t-stocks b{color:var(--muted);font-weight:500;margin-right:4px}
+  .t-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;border-top:1px dashed var(--line);padding-top:8px;font-size:11.5px}
+  .t-m{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--muted)}
+  .t-m b{font-weight:600}
+  .t-m .val{color:var(--orange)}
+  .t-m .strat{color:var(--gold)}
+  /* 对标分组 */
+  .map-grp,.opp-grp{margin-bottom:18px}
+  .map-grp-h,.opp-grp-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:7px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px 10px 0 0;border-bottom:none}
+  .map-grp-h .map-us{color:var(--muted);font-size:12px}
+  .map-grp-h .map-cnt,.opp-cnt{color:var(--muted);font-size:11.5px;margin-left:auto;background:var(--panel2);padding:1px 8px;border-radius:10px}
+  .map-grp .tbl,.opp-grp .tbl{border:1px solid var(--line);border-radius:0 0 10px 10px;overflow:hidden}
+  .opp-grp-h b{font-size:14px}
+  .prio-S .opp-grp-h{border-color:rgba(240,65,66,.5);background:rgba(240,65,66,.07)}
+  .prio-A .opp-grp-h{border-color:rgba(255,193,77,.5);background:rgba(255,193,77,.07)}
+  .prio-B .opp-grp-h{border-color:rgba(77,159,255,.5);background:rgba(77,159,255,.07)}
+  /* 策略 */
+  .core-box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+  .core-box h3{font-size:15px;color:var(--gold);margin-bottom:8px}
+  .core-box p{font-size:13px;color:#c9d2e4;line-height:1.7;white-space:pre-line}
+  .alloc-lv{white-space:nowrap;font-weight:700;color:var(--gold)}
+  .alloc-w{white-space:nowrap;font-weight:800;color:var(--up2)}
+  /* 情景 */
+  .scen{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;flex-direction:column;gap:7px}
+  .scen-h{font-weight:700;font-size:14px;color:var(--gold);padding-bottom:6px;border-bottom:1px dashed var(--line)}
+  .scen-l{font-size:12px;display:flex;gap:8px}
+  .scen-l b{color:var(--muted);font-weight:600;min-width:56px;white-space:nowrap}
+  .scen-l span{color:#c9d2e4}
+  .risk-cat{background:rgba(255,138,101,.14);color:var(--orange);border:1px solid rgba(255,138,101,.35);border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap}
+  .foot{color:#5b6478;font-size:11px;margin-top:30px;text-align:center;line-height:1.8}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}.tbl{font-size:11px}.tbl th,.tbl td{padding:6px 6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🇺🇸 美股强势股复盘 → A股配置全景</h1>
+  <div class="sub">美股交易日 <b class="gold-t">2026-08-26</b> · 报告日期 2026-08-27 · 全自动生成</div>
+  <div>
+    <span class="tag r">隔夜涨幅榜</span>
+    <span class="tag b">产业趋势</span>
+    <span class="tag">A股对标 15 只</span>
+    <span class="tag">机会推演 15 只</span>
+    <span class="tag">4 情景</span>
+  </div>
+</header>
+
+  <div class="bt-wrap">
+    <div class="bt-h">📊 自学习回测 · 昨日方向表 → 实际验证（方向表日 2026-08-26 → 验证日 2026-08-26）</div>
+    <div class="bt-grid">
+      <div class="bt-item"><span class="bt-k">S级命中</span><b class="bt-v">2/4 = 50%（智飞生物+8.67%✅/恒瑞医药+0.54%✅；凯莱英-0.19%❌小踩雷/药明康德-1.09%❌小踩雷）</b></div>
+      <div class="bt-item"><span class="bt-k">A级命中</span><b class="bt-v">3/3 = 100%（中国核电+0.90%✅/长江电力+0.11%✅/招商银行+0.76%✅全中）</b></div>
+      <div class="bt-item"><span class="bt-k">B级命中</span><b class="bt-v">1/3 = 33.3%（沃森生物+5.83%✅；浪潮信息-0.43%❌小踩雷/德赛西威-0.10%❌小踩雷）</b></div>
+      <div class="bt-item hl"><span class="bt-k">S+A 加权</span><b class="bt-v gold-t">5/7 = 71.4%</b></div>
+      <div class="bt-item hl"><span class="bt-k">全表命中</span><b class="bt-v gold-t">6/10 = 60%（大幅修复：昨日8/25 37.5%→今日60%，重回基准47.5%上方）</b></div>
+      <div class="bt-item hl"><span class="bt-k">未踩雷率</span><b class="bt-v gold-t">10/10 = 100%（无大幅反向——凯莱英-0.19%/药明-1.09%/浪潮-0.43%/德赛-0.10%均未超-1.5%）</b></div>
+      <div class="bt-item"><span class="bt-k">随机基准</span><b class="bt-v muted">47.5%（当日A股：沪指+0.59%/深成指+0.69%/创业板+0.51%，成交1.81万亿缩量200亿，普涨率64%；大金融+有色领涨，医药疫苗爆发（康希诺20cm涨停/万泰+10%/智飞+8.67%）、铜链涨停潮（江西铜业+10%/金诚信+10%）——全表60%&gt;基准47.5%✓，S+A 71.4%大幅修复，未踩雷率100%为连续两日miss后最优）</b></div>
+      <div class="bt-item"><span class="bt-k">踩雷项</span><b class="bt-v down">凯莱英-0.19%：8/25涨停+10%后8/26高开低走兑现（㊷&#x27;板块单日爆发次日降档&#x27;门控被验证——涨停后仍给S档高估了持续性，但当日未大跌仅小踩雷）；药明康德-1.09%：CXO权重高低切（资金弃权重追疫苗弹性——智飞+8.67%/沃森+5.83%，US-⑨&#x27;权重≠弹性代表&#x27;再验证）；B档浪潮-0.43%/德赛-0.10%：中概云计算8/25单日反弹一日游（US-⑤单日未确认的代价，B档轻仓执行正确）——无大幅反向，未踩雷率100%；命中亮点：医药内外共振主线（US-⑤双日确认+US-⑪②修复接入）智飞/恒瑞/沃森兑现+防御3/3全中（US-⑨位置健康）——方向正确性回归</b></div>
+    </div>
+    <div class="bt-note">已固化规则：US-① 分层有效性（S档聚焦医药最强主线） · US-⑤ 主线双日确认（医药8/19+8/25+8/26 A股爆发延续；中概8/25单日未确认→8/26金龙-0.61%回落验证） · US-⑧ 市场宽度（8/26普涨率64%中性） · US-⑨ 位置校验（恒瑞20日-13.27%低位升档/药明20日+25.89%延伸降权——权重高低切验证） · US-⑩ 财报前降C（英伟达8/26盘后财报，硬件8/26为最后观望日） · US-⑪ 涨停潮门控+修复接入（8/25医药修复→8/26医药爆发；8/26医药疫苗+铜涨停潮→8/27防兑现） · **US-⑫ 新固化：财报落地确认升档规则**（英伟达财报超预期+盘后+4%→硬件自C档升B档以上右侧试错，S档需&#x27;A股资金回流+美股收盘连续2日止跌&#x27;双确认） · 框架 v2.6</div>
+  </div>
+
+<nav>
+  <a href="#s1">① 美股强势股扫描</a>
+  <a href="#s2">② 产业趋势抽象</a>
+  <a href="#s3">③ A股对标与配套</a>
+  <a href="#s4">④ A股机会推演</a>
+  <a href="#s5">⑤ 策略总结与推演</a>
+  <a href="#s6">⑥ 风险提示</a>
+</nav>
+
+<!-- 1 美股强势股扫描 -->
+<div class="sec" id="s1">
+  <div class="sec-h"><span class="n">1</span><h2>美股强势股扫描</h2></div>
+  <div class="sec-desc">隔夜美股涨幅居前个股 · 驱动类型 + 催化事件 + 深层逻辑 + 资金/持续性评分</div>
+  <div class="pt">
+    <div class="pt-h">Top 15 涨幅分布</div>
+    <div class="pt-d">柱状长度 = 隔夜涨幅%</div>
+    <div id="chart-strong" class="chart"></div>
+  </div>
+  <div class="pt" style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>#</th><th>代码</th><th>名称</th><th>涨幅</th><th>驱动</th><th>即时催化事件</th><th>趋势方向</th><th>资金认可</th><th>持续性</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="rank">1</td>
+          <td class="code">ANF</td>
+          <td class="nm">Abercrombie &amp; Fitch</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:100%"></div></div><b class="up">+35.67%</b></td>
+          <td><span style="background:rgba(240,65,66,.16);color:#f04142;border:1px solid #f0414266;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩</span></td>
+          <td class="cat" title="Q2净销售额12.7亿美元+5%/EPS 4.17超预期+上调全年指引+回购提高至至少5亿美元（新华财经确认）">Q2净销售额12.7亿美元+5%/EPS 4.17超预期+上调全年指引+回购提高至至少5亿美元（新华财经确认）</td>
+          <td class="trend">消费零售（个股分化）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="code">BOSS</td>
+          <td class="nm">BOSS直聘</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:100%"></div></div><b class="up">+15.00%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="中概逆势大涨（每经口径：+15%+，金龙-0.61%背景下），具体催化未核实">中概逆势大涨（每经口径：+15%+，金龙-0.61%背景下），具体催化未核实</td>
+          <td class="trend">中概（分化）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="code">LITE</td>
+          <td class="nm">Lumentum</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:54.36%"></div></div><b class="up">+6.04%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="光通信双日反弹（东财mx确认：939.03美元，8/25+6.67%→8/26+6.04%），英伟达财报前抢跑">光通信双日反弹（东财mx确认：939.03美元，8/25+6.67%→8/26+6.04%），英伟达财报前抢跑</td>
+          <td class="trend">AI硬件（光通信）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">4</td>
+          <td class="code">WDC</td>
+          <td class="nm">西部数据</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:36.17999999999999%"></div></div><b class="up">+4.02%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="存储双日反弹（东财mx确认：468.88美元，8/25+3.53%→8/26+4.02%）">存储双日反弹（东财mx确认：468.88美元，8/25+3.53%→8/26+4.02%）</td>
+          <td class="trend">存储超级周期（双日反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="code">ARM</td>
+          <td class="nm">Arm控股</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:35.370000000000005%"></div></div><b class="up">+3.93%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="芯片IP反弹（华尔街见闻口径+3.93%），英伟达财报前AI概念活跃">芯片IP反弹（华尔街见闻口径+3.93%），英伟达财报前AI概念活跃</td>
+          <td class="trend">AI硬件（芯片IP）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">6</td>
+          <td class="code">GLW</td>
+          <td class="nm">康宁</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:34.379999999999995%"></div></div><b class="up">+3.82%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="光通信/光纤双日反弹（东财mx确认：152.78美元，8/25+3%+→8/26+3.82%）">光通信/光纤双日反弹（东财mx确认：152.78美元，8/25+3%+→8/26+3.82%）</td>
+          <td class="trend">AI硬件（光通信）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">7</td>
+          <td class="code">STX</td>
+          <td class="nm">希捷科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:27.089999999999996%"></div></div><b class="up">+3.01%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="存储反弹（东财mx确认：846.37美元，8/25+3.40%→8/26+3.01%）">存储反弹（东财mx确认：846.37美元，8/25+3.40%→8/26+3.01%）</td>
+          <td class="trend">存储超级周期（双日反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">8</td>
+          <td class="code">MRVL</td>
+          <td class="nm">迈威尔科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:17.73%"></div></div><b class="up">+1.97%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="AI网络芯片反弹（东财mx确认：245.11美元，8/25+4.84%→8/26+1.97%）">AI网络芯片反弹（东财mx确认：245.11美元，8/25+4.84%→8/26+1.97%）</td>
+          <td class="trend">AI硬件（网络芯片）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">9</td>
+          <td class="code">COHR</td>
+          <td class="nm">Coherent</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:18.0%"></div></div><b class="up">+2.00%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="光通信反弹（证券时报口径+2%，8/25+4.59%）">光通信反弹（证券时报口径+2%，8/25+4.59%）</td>
+          <td class="trend">AI硬件（光通信）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">10</td>
+          <td class="code">AAPL</td>
+          <td class="nm">苹果</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:10.35%"></div></div><b class="up">+1.15%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="大型科技逆势上涨（东财mx确认：313.45美元；苹果发布会定档9/10）">大型科技逆势上涨（东财mx确认：313.45美元；苹果发布会定档9/10）</td>
+          <td class="trend">大型科技（防御）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">11</td>
+          <td class="code">META</td>
+          <td class="nm">Meta</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:9.63%"></div></div><b class="up">+1.07%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="大型科技上涨（东财mx确认：576.14美元；与48州达成166.8亿美元青少年案和解落地）">大型科技上涨（东财mx确认：576.14美元；与48州达成166.8亿美元青少年案和解落地）</td>
+          <td class="trend">大型科技</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">12</td>
+          <td class="code">SNDK</td>
+          <td class="nm">闪迪</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:11.34%"></div></div><b class="up">+1.26%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="存储反弹（东财mx确认：1499.37美元，8/25-0.83%转强）">存储反弹（东财mx确认：1499.37美元，8/25-0.83%转强）</td>
+          <td class="trend">存储超级周期（修复）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">13</td>
+          <td class="code">MU</td>
+          <td class="nm">美光科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:5.22%"></div></div><b class="up">+0.58%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="存储反弹（东财mx确认：938.40美元，8/25+2.48%→8/26+0.58%）">存储反弹（东财mx确认：938.40美元，8/25+2.48%→8/26+0.58%）</td>
+          <td class="trend">存储超级周期（双日反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">14</td>
+          <td class="code">MSFT</td>
+          <td class="nm">微软</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:8.549999999999999%"></div></div><b class="up">+0.95%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="大型科技上涨（东财mx确认：496.37美元）">大型科技上涨（东财mx确认：496.37美元）</td>
+          <td class="trend">大型科技</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">15</td>
+          <td class="code">WMB</td>
+          <td class="nm">Williams Cos</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:42.300000000000004%"></div></div><b class="up">+4.70%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="标普500当日最佳（Barron&#x27;s口径+4.7%），天然气管道/公用">标普500当日最佳（Barron&#x27;s口径+4.7%），天然气管道/公用</td>
+          <td class="trend">公用/能源基建（防御）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">16</td>
+          <td class="code">NVDA</td>
+          <td class="nm">英伟达</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:14.31%"></div></div><b class="up">-1.59%</b></td>
+          <td><span style="background:rgba(240,65,66,.16);color:#f04142;border:1px solid #f0414266;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩</span></td>
+          <td class="cat" title="收盘-1.59%报209.66（财报前谨慎）；★盘后财报全面超预期（营收962亿+106%/数据中心890亿+117%/Q3指引1080亿破千亿）→盘后先跌4%后转涨、最终盘后大涨约4%（多源确认）">收盘-1.59%报209.66（财报前谨慎）；★盘后财报全面超预期（营收962亿+106%/数据中心890亿+117%/Q3指引1080亿破千亿）→盘后先跌4%后转涨、最终盘后大涨约4%（多源确认）</td>
+          <td class="trend">AI算力（财报落地·右侧）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">17</td>
+          <td class="code">MRNA</td>
+          <td class="nm">Moderna</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:51.92999999999999%"></div></div><b class="up">-5.77%</b></td>
+          <td><span style="background:rgba(255,193,77,.16);color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪</span></td>
+          <td class="cat" title="-5.77%收149.66（东财mx/腾讯确认；Yahoo盘中-7%）——8/19+177%/8/25+14%后获利回吐，无新增利空，标普最差（背景参照）">-5.77%收149.66（东财mx/腾讯确认；Yahoo盘中-7%）——8/19+177%/8/25+14%后获利回吐，无新增利空，标普最差（背景参照）</td>
+          <td class="trend">生物科技（获利回吐）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">18</td>
+          <td class="code">MSTR</td>
+          <td class="nm">Strategy</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:25.830000000000002%"></div></div><b class="up">-2.87%</b></td>
+          <td><span style="background:rgba(255,138,101,.16);color:#ff8a65;border:1px solid #ff8a6566;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">金融工程</span></td>
+          <td class="cat" title="-2.87%收123.19（东财mx确认；COIN-3.1%/HOOD-2.3%）——加密降温，BTC收涨0.73%但盘中破8.1万后回落（背景参照）">-2.87%收123.19（东财mx确认；COIN-3.1%/HOOD-2.3%）——加密降温，BTC收涨0.73%但盘中破8.1万后回落（背景参照）</td>
+          <td class="trend">加密货币（降温）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">19</td>
+          <td class="code">ZM</td>
+          <td class="nm">Zoom</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:64.8%"></div></div><b class="up">-7.20%</b></td>
+          <td><span style="background:rgba(240,65,66,.16);color:#f04142;border:1px solid #f0414266;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩</span></td>
+          <td class="cat" title="-7.2%（Barron&#x27;s口径）——财报超预期但未更新Anthropic股权估值，市场失望（背景参照）">-7.2%（Barron&#x27;s口径）——财报超预期但未更新Anthropic股权估值，市场失望（背景参照）</td>
+          <td class="trend">AI软件（估值摇摆）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">20</td>
+          <td class="code">QFIN</td>
+          <td class="nm">奇富科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:100%"></div></div><b class="up">-19.00%</b></td>
+          <td><span style="background:rgba(240,65,66,.16);color:#f04142;border:1px solid #f0414266;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩</span></td>
+          <td class="cat" title="-19%（每经口径）领跌中概——具体催化未核实（背景参照）">-19%（每经口径）领跌中概——具体催化未核实（背景参照）</td>
+          <td class="trend">中概（利空）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">低</td>
+        </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2 产业趋势抽象 -->
+<div class="sec" id="s2">
+  <div class="sec-h"><span class="n">2</span><h2>产业趋势抽象</h2></div>
+  <div class="sec-desc">从强势股提炼的 13 条产业主线 · 阶段/持续性/资金认可/估值空间/配置策略</div>
+  <div class="pt">
+    <div class="pt-h">主线持续性 vs 资金认可度（★ 数 0-5）</div>
+    <div id="chart-trends" class="chart"></div>
+  </div>
+  <div class="grid3">
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T1</span>
+            <span class="t-name">AI算力总龙头财报落地（主线重估）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">放量期（财报确认）</span>
+          </div>
+          <div class="t-logic">英伟达Q2营收962.21亿（+106%）/数据中心890亿（+117%）/Q3指引1058.4-1101.6亿（中值1080亿首破千亿）全面超预期+2028财年增长指引上调至70%+亚马逊200万GPU，盘后+4%——最大变量落地且超预期，US-⑩&#x27;财报前降C&#x27;约束解除，AI资本开支故事延续（超大规模客户487.1亿+107%）</div>
+          <div class="t-stocks"><b>代表个股</b> NVDA, TSM, AMD, MRVL</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">核心仓位（右侧确认）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T2</span>
+            <span class="t-name">光通信/光互连（双日确认）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期（双日确认）</span>
+          </div>
+          <div class="t-logic">LITE+6.04%（连续第二日+6%档）/GLW+3.82%/COHR+2%——8/25+8/26连续两日强势=US-⑤双日确认；英伟达数据中心890亿+117%验证光互连需求，A股光模块8/26企稳（中际旭创+0.58%）</div>
+          <div class="t-stocks"><b>代表个股</b> LITE, GLW, COHR, 中际旭创</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T3</span>
+            <span class="t-name">存储超级周期（双日反弹）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">反弹（双日确认中）</span>
+          </div>
+          <div class="t-logic">WDC+4.02%/STX+3.01%/MU+0.58%/SNDK+1.26%连续两日反弹=US-⑤双日部分确认；长江存储49亿IPO冲击+AI服务器涨价15%担忧消化中；A股存储8/26分化（澜起+3.38%放量/兆易-0.76%/江波龙-1.48%）</div>
+          <div class="t-stocks"><b>代表个股</b> WDC, STX, MU, 澜起科技</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">卫星仓位</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T4</span>
+            <span class="t-name">AI资本开支金融化/服务器代工</span>
+            <span style="background:#f0414222;color:#f04142;border:1px solid #f0414266;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">放量期</span>
+          </div>
+          <div class="t-logic">英伟达超大规模客户营收487.1亿（预期435.5亿）+亚马逊承诺额外200万块GPU+2028财年+70%——AI资本开支强度再确认；A股AI服务器/PCB（沪电+4.31%）8/26资金回流</div>
+          <div class="t-stocks"><b>代表个股</b> NVDA, AMZN, 沪电股份, 工业富联</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T5</span>
+            <span class="t-name">生物科技/mRNA（获利回吐）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">加速后回调（P3→分化）</span>
+          </div>
+          <div class="t-logic">MRNA-5.77%收149.66（标普最差）——8/19+177%/8/25+14%后获利回吐，IBB仅-0.44%=个股性回调；投行目标价仍上调（125-170）；A股医药8/26爆发（康希诺20cm/万泰10cm/智飞+8.67%）后8/27防高开兑现（US-⑪①涨停潮门控）</div>
+          <div class="t-stocks"><b>代表个股</b> MRNA, 康希诺, 智飞生物, 沃森生物</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（防兑现）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T6</span>
+            <span class="t-name">防御红利（利率上行利好）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期（防御）</span>
+          </div>
+          <div class="t-logic">PCE 3.7%超预期+9月加息概率38.1%+10Y 4.66%——美股公用+0.47%/工业+1.07%领涨（Williams+4.7%标普最佳）；A股防御8/26全中（核电+0.90%/长电+0.11%/招行+0.76%），高股息红利逻辑延续</div>
+          <div class="t-stocks"><b>代表个股</b> WMB, XLU, 长江电力, 中国核电</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">低</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T7</span>
+            <span class="t-name">工业金属铜（高位分化）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">加速期（P2→P3）</span>
+          </div>
+          <div class="t-logic">LME铜-0.82%收14232.5（前日14349.5新高后回落；COMEX铜+0.40%纽铜续创新高，口径差⚠️）——高位震荡；A股铜链8/26涨停潮（江西铜业+10%/金诚信+10%涨停，铜陵有色+4.98%）——US-⑪①涨停潮后8/27防兑现，低吸不追高</div>
+          <div class="t-stocks"><b>代表个股</b> LME铜, 江西铜业, 铜陵有色, 洛阳钼业</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">低吸不追高</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T8</span>
+            <span class="t-name">黄金（避险溢价消退）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">回调（P3转弱）</span>
+          </div>
+          <div class="t-logic">现货金-1.38%失守4600收4594.68（结束四日连涨）——伊朗与阿曼霍尔木兹临时航道协议+美伊停火条款传闻消退避险+加息预期抬升；高盛仍看4900但技术面转弱，A股黄金高位（P3）继续回避</div>
+          <div class="t-stocks"><b>代表个股</b> 黄金XAU, 中金黄金, 山东黄金</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">回避（等企稳）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T9</span>
+            <span class="t-name">中概互联网（回落分化）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">回落（反弹结束）</span>
+          </div>
+          <div class="t-logic">金龙-0.61%回落（昨日+1.08%反弹一日游=US-⑤单日未确认的代价）；奇富-19%/网易-4.17%/B站-2.53%；BOSS直聘+15%逆势；A股云计算/服务器映射降级</div>
+          <div class="t-stocks"><b>代表个股</b> FUTU, BOSS, 网易, 浪潮信息</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（降级）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T10</span>
+            <span class="t-name">能源/油气（地缘溢价回吐延续）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">回落（溢价回吐）</span>
+          </div>
+          <div class="t-logic">WTI-0.55%收81.91（连续下跌）+布油86.56-87.84——伊阿霍尔木兹临时双向通道（宽7海里，30-60天谈判永久航线）+美伊停火条款传闻；国内能化暴跌（原油-6%/LU燃油-8%）——能源/油运映射回避</div>
+          <div class="t-stocks"><b>代表个股</b> WTI, XOM, 中国海油, 招商轮船</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">回避</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T11</span>
+            <span class="t-name">券商并购（事件催化）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">P1脉冲（事件驱动）</span>
+          </div>
+          <div class="t-logic">中金合并东兴/信达8/27上会审核（并购催化）+A股券商8/26走强（中信+2.28%/中金+2.58%，20日-2.56%/-0.97%低位）；美股无对应强信号——A股自身事件主线，防诱多（单日脉冲）</div>
+          <div class="t-stocks"><b>代表个股</b> 中信证券, 中金公司, 东兴证券</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">低</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（防诱多）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T12</span>
+            <span class="t-name">AI软件落地（估值摇摆）</span>
+            <span style="background:#4d9fff22;color:#4d9fff;border:1px solid #4d9fff66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">验证期</span>
+          </div>
+          <div class="t-logic">Salesforce盘后+12%（投资Anthropic浮盈26亿）vs Zoom-7.2%（未更新Anthropic估值）——AI软件估值依赖AI叙事，财报季摇摆；A股无强映射，观察</div>
+          <div class="t-stocks"><b>代表个股</b> CRM, ZM, NOW</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T13</span>
+            <span class="t-name">加密货币（降温）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">波动期（降温）</span>
+          </div>
+          <div class="t-logic">BTC+0.73%收78784（盘中破8.1万创三个月新高后回落）；MSTR-2.87%/COIN-3.1%/HOOD-2.3%——8/24-8/26剧烈震荡，杠杆清算后降温；A股无强映射（仅金融IT弱主题）</div>
+          <div class="t-stocks"><b>代表个股</b> COIN, MSTR, IBIT</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">—</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（不参与）</b></div>
+          </div>
+        </div></div>
+</div>
+
+<!-- 3 A股对标与配套 -->
+<div class="sec" id="s3">
+  <div class="sec-h"><span class="n">3</span><h2>A股对标与配套</h2></div>
+  <div class="sec-desc">美股产业趋势 → A股映射标的 15 只 · 按主线分组</div>
+  
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI算力/光通信（财报落地）</span>
+            <span class="map-us">美股: NVDA, LITE, GLW</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中际旭创</td>
+            <td class="code">300308.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">光模块龙头，8/26+0.58%企稳（20日-10.53%/60日-28.6%深调低位=US-⑨位置健康）；英伟达数据中心890亿+117%验证光互连需求+财报盘后+4%+美股光通信双日反弹（LITE+6.04%×2日）——US-⑫财报落地升档，右侧确认核心</td>
+            <td class="cat">中高（PE 48.66）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI算力/资本开支</span>
+            <span class="map-us">美股: NVDA, AMZN</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">沪电股份</td>
+            <td class="code">002463.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">AI服务器/交换机PCB龙头，8/26+4.31%（5日+5.12%）资金已回流；英伟达超大规模客户487.1亿+亚马逊200万GPU=AI资本开支再确认，PCB直接受益</td>
+            <td class="cat">中高（PE 45.31）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">存储超级周期（双日反弹）</span>
+            <span class="map-us">美股: WDC, STX, MU</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">澜起科技</td>
+            <td class="code">688008.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">存储接口芯片龙头，8/26+3.38%放量（3024万股，20日-3.13%低位）；美股存储双日反弹（WDC+4.02%）映射+英伟达财报确认AI内存需求，US-⑫右侧候选</td>
+            <td class="cat">高（PE 95.92）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">存储超级周期</span>
+            <span class="map-us">美股: WDC, SNDK</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">兆易创新</td>
+            <td class="code">603986.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">存储设计龙头，8/26-0.76%（5日-2.78%回踩低位）；美股存储双日反弹（WDC+4.02%/SNDK+1.26%）但A股资金未回流（US-⑩③未满足）——B档轻仓试错，等放量</td>
+            <td class="cat">中（PE 34.74）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI资本开支/服务器</span>
+            <span class="map-us">美股: NVDA</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">工业富联</td>
+            <td class="code">601138.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">AI服务器代工龙头，8/26+0.70%（60日-23.68%深调低位）；英伟达2028财年+70%+亚马逊200万GPU=服务器代工订单确定性，US-⑫右侧候选</td>
+            <td class="cat">中（PE 25.62）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">防御红利（利率上行）</span>
+            <span class="map-us">美股: XLU, WMB</span>
+            <span class="map-cnt">3 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国核电</td>
+            <td class="code">601985.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">核电公用，8/26+0.90%昨日A档全中+5日+1.83%位置健康；PCE超预期+9月加息概率38.1%+美股公用+0.47%领涨——防御红利延续，昨日方向表防御3/3全中实证</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">长江电力</td>
+            <td class="code">600900.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">水电红利核心，8/26+0.11%昨日命中+股息率3.54%；防御风格延续，利率上行利好高股息（US-⑨位置健康：5日-0.63%）</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">招商银行</td>
+            <td class="code">600036.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">零售银行龙头，8/26+0.76%昨日A档全中（股息率5.07%/PB 0.91）；9月加息概率上升利好银行息差预期，高股息防御底仓</td>
+            <td class="cat">低（PB 0.91）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">生物科技（回调分化）</span>
+            <span class="map-us">美股: MRNA</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">恒瑞医药</td>
+            <td class="code">600276.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">创新药龙头，8/26+0.54%昨日S档命中（20日-13.27%/5日-11.24%深度回调=US-⑨低位修复弹性）；美股MRNA获利回吐但A股医药8/26爆发后高低切，低位龙头修复候选</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">工业金属铜（高位分化）</span>
+            <span class="map-us">美股: LME铜</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">铜陵有色</td>
+            <td class="code">000630.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">铜冶炼弹性，8/26+4.98%（未涨停，5日+5.97%）；LME铜14232高位+COMEX铜新高，A股铜链涨停潮后（江西铜业+10%）8/27防兑现——低吸不追高候选</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">券商并购（事件催化）</span>
+            <span class="map-us">美股: —</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中信证券</td>
+            <td class="code">600030.SH</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">券商龙头，8/26+2.28%（20日-2.56%低位）；中金合并东兴/信达8/27上会审核（事件催化）+8/26券商板块走强——防诱多（单日资金脉冲，20日仍负）</td>
+            <td class="cat">低（PE 10.94）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">生物科技（防兑现）</span>
+            <span class="map-us">美股: MRNA</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">康希诺</td>
+            <td class="code">688185.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">mRNA疫苗，8/26 20cm涨停但20日+72.93%极高位——US-⑪①涨停潮后映射兑现门控：T-1医药疫苗涨停潮（康希诺20cm/万泰10cm/智飞+8.67%）→8/27降档防高开兑现，只低吸不追高</td>
+            <td class="cat">极高（PE为负）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">黄金（避险消退）</span>
+            <span class="map-us">美股: 黄金XAU</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中金黄金</td>
+            <td class="code">600489.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">黄金权重，现货金-1.38%失守4600（结束四日连涨）——地缘缓和+加息预期压制；A股黄金股高位（P3）继续回避（US-⑪延续），等金价企稳+RSI修复</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">能源（溢价回吐）</span>
+            <span class="map-us">美股: WTI</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国海油</td>
+            <td class="code">600938.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">油气龙头，WTI续跌（-0.55%收81.91）+国内能化暴跌（原油-6%）——伊阿霍尔木兹临时通道+美伊停火传闻，地缘溢价持续回吐，能源映射回避</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">中概（回落）</span>
+            <span class="map-us">美股: FUTU, GDS</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">浪潮信息</td>
+            <td class="code">000977.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">AI服务器龙头，8/26-0.43%（昨日B档小踩雷）；金龙-0.61%回落（反弹一日游）+英伟达财报虽好但A股服务器资金未明显回流——观察，等放量确认</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+</div>
+
+<!-- 4 A股机会推演 -->
+<div class="sec" id="s4">
+  <div class="sec-h"><span class="n">4</span><h2>A股机会推演</h2></div>
+  <div class="sec-desc">按优先级 S/A/B/C 分层 · 含催化时点、风险因素与配置建议</div>
+  
+        <div class="opp-grp prio-S">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#f0414222;color:#f04142;border:1px solid #f0414288;font-weight:800;font-size:13px">S</span> <b>核心仓位</b><span class="opp-cnt">3 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中际旭创</td>
+            <td class="code">300308.SZ</td>
+            <td class="cat">光通信/CPO（P1修复→右侧）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中高</td>
+            <td class="cat">英伟达财报超预期（数据中心890亿+117%）+盘后+4%+美股光通信双日反弹（LITE+6.04%×2日=US-⑤部分确认）；A股8/26+0.58%企稳（20日-10.53%/60日-28.6%深调低位=US-⑨位置健康）——US-⑫财报落地升档，右侧确认核心【盘前07:00已承接CPO中性偏多试错】</td>
+            <td class="cat risk">高开低走兑现（英伟达盘后先跌4%反复/毛利率指引73.5-74.5%略逊）/高PE波动</td>
+            <td class="alloc">核心仓位15-20%（右侧确认·低吸不追高，高开&gt;3%不追）</td>
+          </tr>
+          <tr>
+            <td class="nm">沪电股份</td>
+            <td class="code">002463.SZ</td>
+            <td class="cat">PCB（P2资金回流）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中高</td>
+            <td class="cat">8/26+4.31%（5日+5.12%）资金已回流；英伟达超大规模客户487.1亿（+107%）+亚马逊200万GPU+2028财年+70%=AI资本开支再确认，AI服务器/交换机PCB直接受益——US-⑫财报落地升档</td>
+            <td class="cat risk">20日+13.27%短线兑现/高估值（PE 45.31）</td>
+            <td class="alloc">核心仓位15-20%（低吸不追高）</td>
+          </tr>
+          <tr>
+            <td class="nm">澜起科技</td>
+            <td class="code">688008.SH</td>
+            <td class="cat">存储接口（右侧候选）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">高</td>
+            <td class="cat">8/26+3.38%放量（3024万股，20日-3.13%低位）；美股存储双日反弹（WDC+4.02%）+英伟达财报确认AI内存需求——US-⑫右侧候选，存储链资金回流代表</td>
+            <td class="cat risk">PE 95.92偏高/存储A股整体资金未全面回流</td>
+            <td class="alloc">核心仓位15-20%（右侧确认）</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-A">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#ffc14d22;color:#ffc14d;border:1px solid #ffc14d88;font-weight:800;font-size:13px">A</span> <b>重点配置</b><span class="opp-cnt">4 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国核电</td>
+            <td class="code">601985.SH</td>
+            <td class="cat">核电公用（P1防御）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">8/26+0.90%昨日A档全中+5日+1.83%位置健康；PCE 3.7%超预期+9月加息概率38.1%+美股公用+0.47%领涨——利率上行利好红利，防御延续（昨日防御3/3全中实证）</td>
+            <td class="cat risk">防御拥挤/利率下行反转</td>
+            <td class="alloc">重点配置5-10%</td>
+          </tr>
+          <tr>
+            <td class="nm">长江电力</td>
+            <td class="code">600900.SH</td>
+            <td class="cat">水电防御（P1）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">8/26+0.11%昨日命中+股息率3.54%；美股公用防御风格延续（工业+1.07%领涨），高股息底仓逻辑（US-⑨位置健康：5日-0.63%）</td>
+            <td class="cat risk">防御切换不及预期</td>
+            <td class="alloc">重点配置5-10%</td>
+          </tr>
+          <tr>
+            <td class="nm">招商银行</td>
+            <td class="code">600036.SH</td>
+            <td class="cat">银行防御（P2）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">低</td>
+            <td class="cat">8/26+0.76%昨日A档全中（股息率5.07%/PB 0.91）；9月加息概率38.1%上升利好银行息差预期，高股息防御延续</td>
+            <td class="cat risk">5日+1.66%连涨/息差压力</td>
+            <td class="alloc">重点配置5-10%</td>
+          </tr>
+          <tr>
+            <td class="nm">恒瑞医药</td>
+            <td class="code">600276.SH</td>
+            <td class="cat">创新药（P1低位修复）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">8/26+0.54%昨日S档命中（20日-13.27%/5日-11.24%深度回调=US-⑨低位修复弹性）；A股医药8/26爆发（康希诺20cm）后板块高低切，低位创新药龙头修复；美股MRNA回调但A股医药主线惯性延续</td>
+            <td class="cat risk">医药疫苗涨停潮后板块兑现拖累/创新药出海政策</td>
+            <td class="alloc">重点配置5-10%（修复仓）</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-B">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#4d9fff22;color:#4d9fff;border:1px solid #4d9fff88;font-weight:800;font-size:13px">B</span> <b>卫星/精选</b><span class="opp-cnt">3 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">兆易创新</td>
+            <td class="code">603986.SH</td>
+            <td class="cat">存储（双日反弹·试错）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">美股存储双日反弹（WDC+4.02%/STX+3.01%=US-⑤部分确认）+英伟达财报确认AI内存需求；A股8/26-0.76%资金未回流（US-⑩③不满足）——B档轻仓试错，等放量</td>
+            <td class="cat risk">A股存储资金未回流/长江存储IPO冲击</td>
+            <td class="alloc">卫星仓位2-5%（试错）</td>
+          </tr>
+          <tr>
+            <td class="nm">铜陵有色</td>
+            <td class="code">000630.SZ</td>
+            <td class="cat">铜（P2低吸）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">8/26+4.98%（未涨停，5日+5.97%）；LME铜14232高位+COMEX铜续创新高+盘前07:00判工业金属P2主攻——铜链涨停潮（江西铜业+10%）后8/27防兑现，选未涨停弹性标的低吸不追高</td>
+            <td class="cat risk">铜价高位回落/LME铜-0.82%/涨停潮兑现</td>
+            <td class="alloc">卫星仓位2-5%（低吸）</td>
+          </tr>
+          <tr>
+            <td class="nm">中信证券</td>
+            <td class="code">600030.SH</td>
+            <td class="cat">券商（P1事件脉冲）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">低</td>
+            <td class="cat">8/26+2.28%（20日-2.56%低位）；中金合并东兴/信达8/27上会审核（并购事件催化）+8/26券商板块走强——仅事件驱动，防诱多（单日脉冲20日仍负，㊸）</td>
+            <td class="cat risk">并购上会不及预期/脉冲一日游</td>
+            <td class="alloc">卫星仓位2-5%（快进快出）</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-C">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#8b93a722;color:#8b93a7;border:1px solid #8b93a788;font-weight:800;font-size:13px">C</span> <b>观察</b><span class="opp-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">医药疫苗涨停潮（康希诺/沃森/万泰/智飞）</td>
+            <td class="code">688185.SH</td>
+            <td class="cat">疫苗（P3高位·防兑现）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">极高</td>
+            <td class="cat">A股8/26医药疫苗涨停潮（康希诺20cm涨停20日+72.93%/万泰+10%/智飞+8.67%）+美股MRNA-5.77%获利回吐（内外共振断裂）——US-⑪①涨停潮后映射兑现门控：8/27降档防高开兑现，只低吸不追高</td>
+            <td class="cat risk">高开兑现/20日极高位延伸</td>
+            <td class="alloc">回避（观察，回踩再评估）</td>
+          </tr>
+          <tr>
+            <td class="nm">黄金（中金/山东/山金）</td>
+            <td class="code">600489.SH</td>
+            <td class="cat">黄金（P3转弱·回避）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">现货金-1.38%失守4600（结束四日连涨）+地缘缓和+加息预期压制——US-⑪延续回避，A股黄金高位（P3）继续观察等企稳+RSI修复</td>
+            <td class="cat risk">金价续跌/高位补跌</td>
+            <td class="alloc">回避</td>
+          </tr>
+          <tr>
+            <td class="nm">能源油运（中国海油/招商轮船）</td>
+            <td class="code">600938.SH</td>
+            <td class="cat">能源（溢价回吐·回避）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">WTI-0.55%收81.91连续下跌+国内能化暴跌（原油-6%/LU燃油-8%）——伊阿霍尔木兹临时通道+美伊停火传闻，地缘溢价持续回吐，能源/油运回避</td>
+            <td class="cat risk">油价续跌/美伊停火落地</td>
+            <td class="alloc">回避</td>
+          </tr>
+          <tr>
+            <td class="nm">中概云计算（浪潮信息/恒生科技）</td>
+            <td class="code">000977.SZ</td>
+            <td class="cat">中概（回落·观察）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">金龙-0.61%回落（昨日+1.08%反弹一日游=US-⑤单日未确认代价）；网易-4.17%/奇富-19%——云计算/中概映射降级，观察</td>
+            <td class="cat risk">中概情绪继续走弱</td>
+            <td class="alloc">观察（降级）</td>
+          </tr>
+          <tr>
+            <td class="nm">高位光器件/液冷（天孚/英维克/康盛）</td>
+            <td class="code">300394.SZ</td>
+            <td class="cat">硬件高位（US-⑨观察）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">高</td>
+            <td class="cat">天孚通信20日+39.26%（8/26-1.37%）/英维克5日+18.03%（PE 161）/康盛股份2板20日+30.8%——US-⑨位置校验高位降档观察，等回踩再评估（硬件右侧首选低位代表而非高位延伸）</td>
+            <td class="cat risk">高位兑现/追高风险</td>
+            <td class="alloc">观察（不追高）</td>
+          </tr></tbody>
+          </table>
+        </div>
+</div>
+
+<!-- 5 策略总结 -->
+<div class="sec" id="s5">
+  <div class="sec-h"><span class="n">5</span><h2>策略总结与推演</h2></div>
+  <div class="core-box">
+    <h3>核心逻辑</h3><p>一、核心逻辑：美股 8/26（美东周三）三大指数微幅收跌等财报——道指-0.21%（53463.88，终结两连涨）/标普500-0.02%（7675.70）/纳指-0.08%（26130.20），市场焦点全部聚焦**英伟达盘后财报**，结果全面超预期：Q2营收962.21亿（+106%，预期923.8亿）/数据中心890亿（+117%，预期858.6亿，占总营收超90%）/调整后EPS 2.22（+120%）/Q3指引1058.4-1101.6亿（中值1080亿，同比+90%——**史上首次单季破千亿**，预期1051.5亿），电话会再上调2028财年增长至约70%（预期45%）+亚马逊额外部署200万块GPU，**盘后股价先跌4%后转涨、最终盘后大涨约4%**，纳指期货盘初涨约1%、AI概念股盘后集体走高——【最大变量落地且超预期，US-⑩&#x27;财报前降C&#x27;约束解除，硬件映射重新评估】。【存储/光通信双日反弹确认】西部数据+4.02%/希捷+3.01%/美光+0.58% + Lumentum+6.04%/康宁+3.82%（US-⑤部分确认）；但英伟达收盘-1.59%（财报前谨慎）=收盘口径未连续2日止跌。【宏观逆风升级】美国7月PCE同比+3.7%超预期（连续65个月高于2%目标）+9月加息概率升至38.1%+10Y美债4.66%上行——利率压制高估值成长，美股公用事业+0.47%/工业+1.07%领涨（防御延续）。【黄金大跌】现货金-1.38%失守4600收4594.68（结束四日连涨，地缘缓和+加息预期压制）；【油价续跌】WTI-0.55%收81.91（霍尔木兹临时通道+美伊停火传闻）。【消费分化】ANF+35.67%（财报超预期+上调指引+回购）vs 昨日DKS暴雷。映射A股：昨日回测（8/26方向表→8/26 A股收盘）S 2/4=50%（智飞+8.67%✅/恒瑞+0.54%✅；凯莱英-0.19%❌/药明-1.09%❌小踩雷）、A 3/3=100%（核电+0.90%/长电+0.11%/招行+0.76%全中）、B 1/3=33.3%（沃森+5.83%✅；浪潮-0.43%/德赛-0.10%小踩雷）、S+A 71.4%、全表60%、未踩雷100%——**大幅修复（昨日37.5%→今日60%）**，医药主线内外共振（US-⑤双日确认+US-⑪②修复接入）+防御位置健康（US-⑨）兑现，医药疫苗（康希诺20cm涨停/万泰+10%）+铜链（江西铜业+10%涨停）双涨停潮为8/27兑现风险点（US-⑪①）。今日方向表（英伟达财报落地+防御延续+防兑现）：S档=AI硬件右侧核心（中际旭创/沪电股份/澜起科技——财报超预期+盘后+4%映射+A股位置低位，US-⑫新固化财报落地升档）；A档=防御红利（核电/长电/招行——PCE超预期利率上行利好）+医药低位（恒瑞——20日-13.27%修复弹性）；B档=存储（兆易）、铜低吸（铜陵有色）、券商（中信证券）；C档=医药疫苗涨停潮（康希诺/沃森/万泰——US-⑪①防兑现）、黄金（金价失守4600）、能源油运、中概云计算（金龙-0.61%回落）、高位光器件/液冷（天孚20日+39.26%/英维克5日+18.03%）、加密。</p>
+  </div>
+  <div class="core-box">
+    <h3>美股信号</h3><p>【美股信号】（2026-08-26 美东收盘，多源交叉认证：westock / 东财mx / 证券时报 / 新华财经 / 东方财富 / 新浪 / 每经 / 华尔街见闻，两源以上一致）
+• 三大指数微幅收跌等财报：道指 -0.21%（53463.88，-113.52，终结两连涨）/ 标普500 -0.02%（7675.70，-1.58）/ 纳指 -0.08%（26130.20，-21.10）/ 纳指100 +0.05%（29224.52）/ 费城半导体 +0.2%；标普11板块七跌四涨：医疗-1.01%/通信服务-0.71%领跌，工业+1.07%/公用事业+0.47%领涨（防御风格延续）
+• ★英伟达财报全面超预期（最大变量落地）：Q2营收962.21亿（+106%，预期923.8亿，超逾50亿）/数据中心890亿（+117%，预期858.6亿，占总营收&gt;90%）/调整后EPS 2.22（+120%，预期2.09）/超大规模客户487.1亿（预期435.5亿）/计算与网络883.0亿（预期846.9亿）/自由现金流213.4亿；Q3指引1058.4-1101.6亿（中值1080亿，+90%，预期1051.5亿——单季首破千亿），Q3毛利率指引73.5%-74.5%（中值74.0%，略逊预期75%）；电话会：2028财年收入增长约70%（预期45%）+亚马逊承诺额外部署200万块GPU；财报公布后盘后先跌4%（毛利率略逊+指引未超最乐观区间+不含中国收入）后转涨、最终盘后大涨约4%，纳指期货盘初涨约1%（财报见闻/大河财立方/新华财经/财联社多源一致）；英伟达当日收盘-1.59%报209.66（财报前谨慎，收盘口径未连续2日止跌）
+• 存储/光通信双日反弹：西部数据WDC +4.02%（468.88）/ 希捷STX +3.01%（846.37）/ 美光MU +0.58%（938.40）/ 闪迪SNDK +1.26%（1499.37）/ ARM +3.93%（华尔街见闻口径）/ Lumentum +6.04%（939.03，连续第二日+6%档）/ 康宁GLW +3.82%（152.78）/ Coherent +2%（媒体口径）/ 迈威尔MRVL +1.97%（245.11）/ AMD +0.37%（480.93）/ 高通+1%/英特尔+0.87%；博通-0.3%/恩智浦-0.7%（财报前观望）；财报后AI概念股盘后集体走高
+• 生物科技获利回吐：Moderna MRNA -5.77%收149.66（标普最差——8/19+177%/8/25+14%后获利回吐，无新增利空，投行Wolfe升级后回吐；IBB生物科技ETF仅-0.44%/BioNTech-2%=个股性回调非板块崩；医疗板块-1.01%领跌）
+• 中概回落（昨日反弹一日游）：金龙指数-0.61%收6230.03；奇富科技-19%/晶科能源-11%/禾赛-6%/网易-4.17%/爱奇艺-4.58%/小马智行-3.45%/金山云-2.66%/B站-2.53%/京东-2.01%/拼多多-1.15%；逆势：BOSS直聘+15%/汽车之家+2%/名创优品+1%
+• 消费零售分化：ANF（Abercrombie &amp; Fitch）+35.67%（Q2净销售12.7亿+5%/EPS 4.17超预期+上调全年指引+回购提至5亿美元）/Kohl&#x27;s+1.7%（财报超预期+关税退税1.5亿）；Intuit-3.5%（指引9-10%增速下滑）/Boston Scientific-4.5%（网络安全事件）/Zoom-7.2%（财报好但未更新Anthropic股权估值）——个股分化而非板块性暴雷
+• 大型科技/软件：META +1.07%（576.14，与48州达166.8亿美元和解）/苹果AAPL +1.15%/微软MSFT +0.95%/特斯拉TSLA -1.26%/谷歌-1.23%/亚马逊-0.30%；Salesforce财报前-1%、盘后+12%（投资Anthropic获26亿收益）/Palantir+1%；Williams Cos+4.7%（标普最佳，天然气管道）
+• 黄金大跌：现货金-1.38%（-64.19）收4594.68美元/盎司（结束四日连涨，失守4600；COMEX金-0.99%收4647.8）——地缘缓和（伊朗与阿曼达成霍尔木兹临时航道协议+美伊停火条款传闻）消退避险溢价+美联储加息预期抬升压制；现货银-0.70%收68.12
+• 油价续跌：WTI主力-0.55%（-0.45）收81.91美元/桶（华尔街见闻口径-0.16%收82.23⚠️）/布油-0.81%~-0.84%收86.56-87.84（口径差标注）——伊阿拟设霍尔木兹安全双向通道（宽约7海里，30-60天谈判永久航线）+特朗普&#x27;伊朗重返谈判无时间表&#x27;；国内能化暴跌（原油-6%/LU燃油-8%/PX甲醇跌停）
+• 美债/宏观：7月PCE同比+3.7%（预期3.6%，连续65个月高于2%）/核心PCE+3.3%；CME FedWatch 9月加息概率38.1%；10Y美债+2.97bp收4.6584%（PCE后V形反转最低4.6130%）；美元指数+0.23%收99.07；Q2 GDP终值+1.5%持平
+• 工业金属：LME铜-0.82%收14232.5美元/吨（前日14349.5新高后高位回落；新浪口径-0.64%报14232.50⚠️）；COMEX铜+0.40%报6.62美元/磅（纽铜续创历史新高，口径差⚠️）；LME锌+0.03%/铝-0.26%/镍-0.72%——铜高位震荡
+• 加密货币降温：BTC +0.73%收78784美元（盘中破8.1万创三个月新高后回落）；MSTR -2.87%/COIN -3.1%/HOOD -2.3%</p>
+  </div>
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="pt">
+      <div class="pt-h">配置结构（按方向权重）</div>
+      <div id="chart-alloc" class="chart-half"></div>
+    </div>
+    <div class="pt">
+      <div class="pt-h">A股配置策略</div>
+      <table class="tbl">
+        <thead><tr><th>层级</th><th>方向</th><th>核心标的</th><th>仓位</th><th>逻辑简述</th><th>关键催化</th><th>风险</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="alloc-lv">核心仓位
+(15-20%)</td>
+        <td class="nm">AI硬件右侧（光模块/PCB/存储接口）</td>
+        <td class="cat">中际旭创、沪电股份、澜起科技</td>
+        <td class="alloc-w">15-20%（右侧确认·低吸不追高，高开&gt;3%不追）</td>
+        <td class="cat">英伟达财报落地超预期（Q2营收962亿+106%/数据中心890亿+117%/Q3指引1080亿首破千亿）盘后+4%+美股光通信/存储双日反弹（US-⑤）+A股标的位置低位（中际旭创20日-10.53%/澜起20日-3.13%=US-⑨）——US-⑫财报落地升档【承接盘前07:00 CPO中性偏多试错】</td>
+        <td class="cat">英伟达财报右侧确认/纳指期货+1%/亚马逊200万GPU/AI资本开支2028财年+70%</td>
+        <td class="cat risk">高开低走兑现（盘后先跌4%反复/毛利率指引73.5-74.5%略逊/指引不含中国收入）——低吸不追高</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">重点配置
+(5-10%)</td>
+        <td class="nm">防御红利（核电/水电/银行）+医药低位修复</td>
+        <td class="cat">中国核电、长江电力、招商银行、恒瑞医药</td>
+        <td class="alloc-w">8-10%</td>
+        <td class="cat">PCE 3.7%超预期+9月加息概率38.1%+10Y 4.66%——美股公用+0.47%/工业+1.07%领涨，利率上行利好高股息（昨日防御3/3全中实证）；恒瑞20日-13.27%深度回调低位修复弹性（US-⑨）</td>
+        <td class="cat">杰克逊霍尔（8/28）前利率预期/高股息资金流入/医药高低切</td>
+        <td class="cat risk">防御拥挤/医药涨停潮兑现拖累</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">卫星仓位
+(2-5%)</td>
+        <td class="nm">存储（兆易）+铜低吸（铜陵有色）+券商（中信证券）</td>
+        <td class="cat">兆易创新、铜陵有色、中信证券</td>
+        <td class="alloc-w">5-8%</td>
+        <td class="cat">美股存储双日反弹（WDC+4.02%）但A股资金未回流轻仓试错；铜价高位（LME 14232/COMEX新高）涨停潮后选未涨停弹性低吸；中金并购8/27上会事件催化防诱多</td>
+        <td class="cat">存储放量/铜价新高延续/券商并购上会</td>
+        <td class="cat risk">存储资金未回流/铜涨停潮兑现/券商脉冲一日游</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">回避/观察</td>
+        <td class="nm">医药疫苗涨停潮+黄金+能源油运+中概云计算+高位硬件+加密</td>
+        <td class="cat">康希诺/沃森/万泰/智飞、中金/山东/山金、中国海油/招商轮船、浪潮信息/恒生科技、天孚/英维克/康盛、金融IT</td>
+        <td class="alloc-w">0%</td>
+        <td class="cat">US-⑪①医药疫苗涨停潮后映射兑现门控（康希诺20cm+20日+72.93%）；现货金-1.38%失守4600黄金回避；WTI续跌能源回避；金龙-0.61%中概回落；天孚20日+39.26%/英维克5日+18.03%高位观察；加密无强映射</td>
+        <td class="cat">涨停潮兑现节奏/金价企稳/油价止跌/中概情绪</td>
+        <td class="cat risk">高开兑现/补跌未止</td>
+      </tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="sec-h" style="margin-top:26px;border-left-color:var(--blue)"><span class="n" style="background:var(--blue)">5.2</span><h2 style="font-size:17px">情景推演与应对</h2></div>
+  <div class="grid2">
+        <div class="scen">
+          <div class="scen-h">情景A
+(基准情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>A股8/27受英伟达财报催化高开（纳指期货+1%），但盘后先跌4%的反复+毛利率指引略逊压制：硬件冲高分化（低位代表强/高位兑现）、防御稳、医药疫苗/铜链涨停潮后高开兑现；沪指MA10(3921)附近震荡，量能1.8-2万亿</span></div>
+          <div class="scen-l"><b>市场反应</b><span>光模块/PCB低吸有支撑、医药疫苗高位兑现、黄金/能源弱、券商脉冲</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">按方向表：S档硬件低吸不追高（高开&gt;3%不追）+A档防御持有；B档轻仓；医药/铜涨停潮兑现不接</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景B
+(乐观情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>英伟达财报点燃AI资本开支预期（2028财年+70%/亚马逊200万GPU）+纳指期货+1%兑现→A股硬件全面反弹（光模块/存储/PCB），创业板修复，量能回升2.1万亿+；沪指放量收复MA10/MA250(3921-3978)</span></div>
+          <div class="scen-l"><b>市场反应</b><span>光模块/存储/PCB主升、AI服务器跟涨、市场情绪回升、成交放大</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">S档硬件加仓（右侧确认后）、A档防御持有、B档存储试错升级；涨停潮医药不追</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景C
+(悲观情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>盘后先跌4%的反复传导+毛利率指引73.5-74.5%略逊+指引不含中国收入→硬件高开低走；医药疫苗涨停潮兑现（美股MRNA-5.77%拖累）；PCE 3.7%超预期压制成长；沪指失守MA20(3902.47)</span></div>
+          <div class="scen-l"><b>市场反应</b><span>硬件补跌、医药分化、防御（核电/水电/银行）抗跌、黄金/能源弱</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">S档硬件止损（跌破-8%/20日线）、切高股息防御、总仓位≤50%</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景D
+(黑天鹅情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>美伊停火协议破裂/霍尔木兹再紧张（特朗普&#x27;无时间表&#x27;反复）→油价暴涨+全球risk-off；或杰克逊霍尔（8/28）沃什超鹰派+加息定价飙升→利率暴涨成长重挫</span></div>
+          <div class="scen-l"><b>市场反应</b><span>能源/油运暴涨、黄金避险反弹、成长股（AI硬件/医药）重挫</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">超配黄金/能源避险、AI硬件兑现；跟踪霍尔木兹动态与沃什讲话</span></div>
+        </div></div>
+</div>
+
+<!-- 6 风险提示 -->
+<div class="sec" id="s6">
+  <div class="sec-h"><span class="n">6</span><h2>风险提示与跟踪指标</h2></div>
+  <div class="pt" style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>类别</th><th>风险描述</th><th>影响标的</th><th>概率</th><th>影响程度</th><th>对冲方式</th></tr></thead>
+      <tbody>
+      <tr>
+        <td><span class="risk-cat">宏观风险</span></td>
+        <td class="cat">7月PCE同比+3.7%超预期（连续65个月高于2%目标）+9月加息概率升至38.1%+10Y美债4.66%上行+杰克逊霍尔（8/28）沃什首秀——利率压制高估值成长，成长/硬件估值承压</td>
+        <td class="cat">AI硬件（光模块/存储/PCB）高估值标的</td>
+        <td class="cap">高</td>
+        <td class="cap">高</td>
+        <td class="cat">S档硬件低吸不追高+防御红利底仓（核电/长电/招行），跟踪PCE后续与沃什讲话</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">产业风险</span></td>
+        <td class="cat">英伟达财报&#x27;达标但不惊喜&#x27;（盘后先跌4%后转涨）：Q3毛利率指引73.5-74.5%（中值74.0%）略逊预期75%+指引不含中国数据中心收入（中国潜在恢复非确定性驱动）——&#x27;买预期卖事实&#x27;高开低走风险；A股硬件8/27高开兑现概率大</td>
+        <td class="cat">AI硬件映射标的（中际旭创/沪电/澜起/兆易）</td>
+        <td class="cap">中高</td>
+        <td class="cap">高</td>
+        <td class="cat">右侧确认·低吸不追高（高开&gt;3%不追）、S档分步建仓，跟踪8/27 A股硬件资金回流</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">资金/情绪风险</span></td>
+        <td class="cat">A股8/26医药疫苗+铜双涨停潮（康希诺20cm/万泰+10%/江西铜业+10%/金诚信+10%，智飞+8.67%）→8/27高开兑现风险（US-⑪①涨停潮后映射兑现门控实证：8/24湖南白银/白银有色涨停潮→8/25黄金链全灭）；康希诺20日+72.93%极高位</td>
+        <td class="cat">医药疫苗涨停潮标的/铜链涨停标的</td>
+        <td class="cap">高</td>
+        <td class="cap">中</td>
+        <td class="cat">医药/铜涨停潮标的降档防兑现（只低吸不追高），聚焦低位代表（恒瑞/铜陵有色）</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">地缘风险</span></td>
+        <td class="cat">美伊停火协议未正式确认（俄媒消息人士口径）+伊朗与阿曼霍尔木兹临时通道30-60天谈判期+特朗普&#x27;伊朗何时重返谈判没有时间表&#x27;——油价双向波动；若停火破裂→油价暴涨+risk-off</td>
+        <td class="cat">油运（双向）/黄金（正负双刃）/成长（负向）</td>
+        <td class="cap">中</td>
+        <td class="cap">中高</td>
+        <td class="cat">能源回避、黄金回避等企稳、跟踪霍尔木兹动态与停火协议正式确认</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">映射风险（美股侧）</span></td>
+        <td class="cat">美股生物科技获利回吐（MRNA-5.77%标普最差）vs A股医药8/26爆发背离——内外共振断裂，医药映射降档；中概金龙-0.61%回落（8/25反弹一日游=US-⑤单日未确认代价）；存储美股双日反弹但A股资金未回流（US-⑩③）</td>
+        <td class="cat">医药疫苗/中概云计算/存储映射标的</td>
+        <td class="cap">中</td>
+        <td class="cap">中</td>
+        <td class="cat">医药防兑现、中概降级、存储轻仓试错等A股资金回流确认</td>
+      </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  数据来源：美股隔夜收盘行情 · 本报告由自动化程序生成，仅供参考，不构成投资建议<br>
+  生成时间：2026-08-27 07:30
+</div>
+</div>
+
+<script>
+// 涨幅分布
+var c1 = echarts.init(document.getElementById('chart-strong'));
+c1.setOption({
+  grid:{left:50,right:20,top:20,bottom:30},
+  tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+'%';}},
+  xAxis:{type:'value',axisLabel:{color:'#8b93a7',formatter:'{value}%'},splitLine:{lineStyle:{color:'#1a2238'}}},
+  yAxis:{type:'category',data:["ANF", "BOSS", "LITE", "WDC", "ARM", "GLW", "STX", "MRVL", "COHR", "AAPL", "META", "SNDK", "MU", "MSFT", "WMB"],axisLabel:{color:'#4d9fff',fontWeight:600},axisLine:{show:false},axisTick:{show:false}},
+  series:[{type:'bar',data:[35.67, 15.0, 6.04, 4.02, 3.93, 3.82, 3.01, 1.97, 2.0, 1.15, 1.07, 1.26, 0.58, 0.95, 4.7],barWidth:12,
+    itemStyle:{borderRadius:[0,6,6,0],color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#f04142'},{offset:1,color:'#ff6b6b'}])},
+    label:{show:true,position:'right',color:'#ff6b6b',formatter:'{c}%'}}]
+});
+window.addEventListener('resize',function(){c1.resize();});
+
+// 主线持续性 vs 资金认可
+var c2 = echarts.init(document.getElementById('chart-trends'));
+c2.setOption({
+  grid:{left:110,right:40,top:20,bottom:30},
+  tooltip:{trigger:'axis'},
+  legend:{data:['持续性','资金认可'],textStyle:{color:'#8b93a7'},top:0},
+  xAxis:{type:'value',max:5,min:0,axisLabel:{color:'#8b93a7'},splitLine:{lineStyle:{color:'#1a2238'}}},
+  yAxis:{type:'category',data:["T1 AI算力总龙头财报落地（主线重估）", "T2 光通信/光互连（双日确认）", "T3 存储超级周期（双日反弹）", "T4 AI资本开支金融化/服务器代工", "T5 生物科技/mRNA（获利回吐）", "T6 防御红利（利率上行利好）", "T7 工业金属铜（高位分化）", "T8 黄金（避险溢价消退）", "T9 中概互联网（回落分化）", "T10 能源/油气（地缘溢价回吐延续）", "T11 券商并购（事件催化）", "T12 AI软件落地（估值摇摆）", "T13 加密货币（降温）"],axisLabel:{color:'#c9d2e4',fontSize:11},axisLine:{show:false},axisTick:{show:false}},
+  series:[
+    {name:'持续性',type:'bar',data:[5, 4, 3, 5, 3, 4, 4, 3, 2, 2, 3, 3, 2],barWidth:6,itemStyle:{borderRadius:[0,4,4,0],color:'#ffc14d'}},
+    {name:'资金认可',type:'bar',data:[5, 4, 3, 4, 3, 4, 4, 3, 3, 2, 3, 3, 2],barWidth:6,itemStyle:{borderRadius:[0,4,4,0],color:'#4d9fff'}}
+  ]
+});
+window.addEventListener('resize',function(){c2.resize();});
+
+// 配置结构
+var c3 = echarts.init(document.getElementById('chart-alloc'));
+c3.setOption({
+  tooltip:{trigger:'item',formatter:'{b}: {c}%'},
+  legend:{orient:'vertical',right:10,top:'center',textStyle:{color:'#8b93a7',fontSize:11}},
+  series:[{type:'pie',radius:['42%','68%'],center:['38%','50%'],
+    itemStyle:{borderColor:'#131a2e',borderWidth:2},
+    label:{color:'#c9d2e4',fontSize:11},
+    data:[{"name": "AI硬件右侧（光模块/PCB/存储接口）", "value": 15.0}, {"name": "防御红利（核电/水电/银行）+医药低位修复", "value": 8.0}, {"name": "存储（兆易）+铜低吸（铜陵有色）+券商（中信证券）", "value": 5.0}, {"name": "医药疫苗涨停潮+黄金+能源油运+中概云计算+高位硬件+加密", "value": 0.0}],
+    color:['#f04142','#ff8a65','#ffc14d','#4d9fff','#a78bfa','#37e0a0','#f472b6','#38bdf8']
+  }]
+});
+window.addEventListener('resize',function(){c3.resize();});
+</script>
+</body>
+</html>

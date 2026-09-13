@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260903</title>
+<style>
+  :root{
+    --bg:#F5F7FA;
+    --card-white:#FFFFFF;
+    --card-border:#DBE3EC;
+    --card-border-strong:#ACB6C5;
+    --ink:#1F2937;
+    --sub:#64748B;
+    --heading:#1E3A5F;
+    --up:#DC2626;
+    --down:#16A34A;
+    --accent-blue:#2563EB;
+    --p0:#DC2626;
+    --p1:#B45309;
+    --p2:#7C3AED;
+    --p3:#475569;
+    --tui:#64748B;
+    --thead-bg:#F1F5F9;
+    --callout-bg:#F8FAFC;
+    --fs-title:16.8px;
+    --fs-section:13.0px;
+    --fs-subhead:11.4px;
+    --fs-body:10.8px;
+    --fs-table:10.5px;
+    --fs-idx-name:9.6px;
+    --fs-idx-val:17.4px;
+    --fs-idx-sub:9.8px;
+    --fs-foot:9.0px;
+    --fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:#FFFFFF;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .page{
+    width:840px;
+    margin:0 auto;
+    background:var(--bg);
+    padding-bottom:30px;
+  }
+  .header{
+    background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);
+    color:#FFFFFF;
+    text-align:center;
+    padding:26px 0 24px;
+  }
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+  .card{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    margin:0 12px 14px;
+  }
+  .card-inner{padding:14px 16px;}
+  .summary-card{
+    background:var(--card-white);
+    border:1px solid var(--card-border-strong);
+    border-radius:4px;
+    margin:0 12px 16px;
+    padding:16px 18px;
+  }
+  .summary-head{
+    font-size:var(--fs-subhead);
+    color:var(--heading);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{
+    display:inline-block;
+    color:#fff;
+    font-size:var(--fs-chip);
+    font-weight:700;
+    padding:1px 8px;
+    border-radius:3px;
+    margin-right:6px;
+    vertical-align:middle;
+  }
+  .chip-p0{background:var(--p0);}
+  .chip-p1{background:var(--p1);}
+  .chip-p2{background:var(--p2);}
+  .chip-tui{background:var(--tui);}
+  .sum-text{color:var(--ink);}
+  .section{margin-bottom:14px;}
+  .sec-title{
+    font-size:var(--fs-section);
+    color:var(--heading);
+    font-weight:700;
+    padding:0 12px 6px;
+    border-bottom:2px solid var(--heading);
+    margin:0 12px 10px;
+  }
+  .idx-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin:0 12px 12px;
+  }
+  .idx-cell{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    padding:8px 10px;
+    text-align:left;
+  }
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}
+  .idx-val.down{color:var(--down);}
+  .idx-val.flat{color:var(--ink);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+  .stats-line{
+    font-size:var(--fs-idx-sub);
+    color:var(--sub);
+    margin:0 12px 8px;
+    line-height:1.8;
+  }
+  .callout{
+    background:var(--callout-bg);
+    border-left:3px solid var(--accent-blue);
+    border-radius:0 4px 4px 0;
+    padding:10px 14px;
+    margin:0 12px 14px;
+    font-size:var(--fs-idx-sub);
+    color:var(--sub);
+    line-height:1.8;
+  }
+  .callout b{color:var(--ink);}
+  .callout.warn{border-left-color:var(--p1);background:#FFFBEB;}
+  .callout.danger{border-left-color:var(--p0);background:#FEF2F2;}
+  .tbl{
+    width:calc(100% - 24px);
+    margin:0 12px 14px;
+    border-collapse:collapse;
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    font-size:var(--fs-table);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .tbl thead th{
+    background:var(--thead-bg);
+    color:var(--sub);
+    font-weight:600;
+    text-align:left;
+    padding:7px 10px;
+    border-bottom:1px solid var(--card-border);
+    font-size:var(--fs-table);
+  }
+  .tbl tbody td{
+    padding:7px 10px;
+    border-bottom:1px solid #EEF1F4;
+    color:var(--ink);
+    vertical-align:top;
+    font-size:var(--fs-table);
+  }
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}
+  .down{color:var(--down);font-weight:600;}
+  .flat{color:var(--ink);font-weight:600;}
+  .badge-in{color:var(--up);}
+  .badge-out{color:var(--down);}
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}
+  .tag-p1{background:var(--p1);}
+  .tag-p2{background:var(--p2);}
+  .tag-p3{background:var(--p3);}
+  .tag-tui{background:var(--tui);}
+  .driver{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-radius:4px;
+    margin:0 12px 14px;
+    padding:12px 14px;
+  }
+  .driver-title{
+    font-size:var(--fs-subhead);
+    color:var(--heading);
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .driver-row{
+    font-size:var(--fs-body);
+    line-height:1.75;
+    padding:5px 0;
+    border-bottom:1px dashed #E6EAEF;
+  }
+  .driver-row:last-child{border-bottom:none;}
+  .driver-row b{color:var(--heading);}
+  .ml-card{
+    background:var(--card-white);
+    border:1px solid var(--card-border);
+    border-left:4px solid var(--p0);
+    border-radius:4px;
+    margin:0 12px 12px;
+    overflow:hidden;
+  }
+  .ml-card.p1{border-left-color:var(--p1);}
+  .ml-card.p2{border-left-color:var(--p2);}
+  .ml-card.p3{border-left-color:var(--p3);}
+  .ml-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:9px 14px;
+    background:#FAFBFC;
+    border-bottom:1px solid var(--card-border);
+  }
+  .ml-name{font-size:var(--fs-subhead);font-weight:700;color:var(--heading);}
+  .ml-body{padding:10px 14px;font-size:var(--fs-body);line-height:1.75;}
+  .kv{display:grid;grid-template-columns:78px 1fr;gap:4px 8px;}
+  .kv .k{color:var(--sub);}
+  .kv .v{color:var(--ink);}
+  .foot{
+    text-align:center;
+    font-size:var(--fs-foot);
+    color:var(--sub);
+    padding:14px 12px 4px;
+    line-height:1.8;
+  }
+  ul.tight{margin:4px 0 0 18px;}
+  ul.tight li{margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-09-03（周四）· 数据时点：15:00 收盘 · 数据源：申万行业（腾讯自选股 westock）/ 同花顺概念（02231435·02GN2333）/ 东方财富妙想 / Wind / 公开媒体交叉 · 收盘后全维复盘</div>
+  </div>
+
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）</div>
+    <div class="sum-row"><span class="chip chip-p0">P0</span><span class="sum-text"><b>培育钻石 / 超硬材料（金刚石散热·从0到1）</b> —— 全市场唯一「三周期资金全正」主线。培育钻石概念 <span class="up">+4.18%</span>（14/16 上涨、广度 87.5%），主力净流入 <span class="up">+17.51亿</span>（市场排名 15/802），5日 <span class="up">+19.91亿</span>、20日 <span class="up">+20.90亿</span>；超硬材料 <span class="up">+1.25%</span>、主力 <span class="up">+20.59亿</span>（排名 6/802）。<b>三阶段判定：P2 共识（首日确认）</b>【三-①】。催化 = 英伟达 Vera Rubin 架构 GPU 全面采用「金刚石复合材料+液冷」方案（单颗功耗 2300W）+ 力量钻石中报扣非净利 <span class="up">+1249.33%</span>、超10亿募资转投金刚石功能材料。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1</span><span class="sum-text"><b>BDI / 航运港口</b> —— 航运港口 <span class="up">+2.99%</span>（申万二级第 1，27/34 上涨），BDI 概念 <span class="up">+4.26%</span>（7/7 全涨）。BDI 报 3331 点创 2023年12月以来新高，中报业绩兑现（招商轮船净利 +228%、中远海能 +143.21%、海通发展 +502.60%）。<b>但 20日资金 -15.95亿 / -20.77亿，按 20日资金线降级铁律定性为「反弹回补·非反转」，判 P1 启动。</b></span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1</span><span class="sum-text"><b>保险Ⅱ（金融内部跷跷板承接端）</b> —— <span class="up">+2.58%</span>、5/5 全涨、主力 <span class="up">+8.91亿</span>。五大险企上半年合计归母净利 3173.87 亿 <span class="up">+78.12%</span>，均推中期分红、合计派现超 390 亿。<b>与国有大型银行Ⅱ <span class="down">-1.86%</span>（0/6 全跌、主力 -9.18亿）构成 ㉒ 风格切换跷跷板：银行红利出 → 保险进。判 P2 防御承接。</b></span></div>
+    <div class="sum-row"><span class="chip chip-p2">P2</span><span class="sum-text"><b>贵金属 / 工业金属 / 机器人电机</b> —— 美国 8月ADP 大幅低于预期、金价重回 4400 美元，贵金属 <span class="up">+2.18%</span>（9/11）、工业金属 <span class="up">+1.42%</span>（37/59）；机器人执行器 18/18 全涨、鸣志电器涨停。<b>三者 20日资金均为深度负值（-21.14亿 / -110.16亿 / -38.41亿），按 ㉓「反弹=减仓窗口非反转确认」只给反弹级别。</b></span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="sum-text"><b>军工链 P3 退潮确认 + 国有大行失血 + 液冷红盘出逃</b> —— 地面兵装Ⅱ <span class="down">-2.16%</span>（1/12）、航天装备Ⅱ <span class="down">-1.19%</span>（0/9），内蒙一机开盘 14.60 冲高后收 13.56（自高点回落 7.13%，⑳ 高位放量）；国有大行 0/6 全跌；液冷概念 <span class="up">+1.80%</span> 但主力 <span class="down">-16.03亿</span>、20日 <span class="down">-510.25亿</span> —— <b>AI散热叙事内部资金正从「液冷」切向「金刚石」。</b></span></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">一、市场概览（15:00 收盘快照）</div>
+    <div class="idx-grid">
+      <div class="idx-cell">
+        <div class="idx-name">上证指数</div>
+        <div class="idx-val flat">3942.09</div>
+        <div class="idx-sub"><span class="flat">+0.02%</span> · 高3968.11/低3930.45</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">深证成指</div>
+        <div class="idx-val up">13625.12</div>
+        <div class="idx-sub"><span class="up">+0.10%</span> · 高13742.89/低13531.53</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">创业板指</div>
+        <div class="idx-val flat">3312.54</div>
+        <div class="idx-sub"><span class="flat">+0.01%</span> · 高3356.25/低3285.06</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">科创50</div>
+        <div class="idx-val down">1611.17</div>
+        <div class="idx-sub"><span class="down">-0.40%</span> · 日内破1600至1596.62</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">沪深300</div>
+        <div class="idx-val up">4552.58</div>
+        <div class="idx-sub"><span class="up">+0.10%</span> · 上证50 +0.17%</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">中证500</div>
+        <div class="idx-val up">7755.36</div>
+        <div class="idx-sub"><span class="up">+0.34%</span> · 小盘略占优</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">北证50</div>
+        <div class="idx-val down">1088.75</div>
+        <div class="idx-sub"><span class="down">-1.61%</span> · 全市场最弱</div>
+      </div>
+      <div class="idx-cell">
+        <div class="idx-name">两市成交</div>
+        <div class="idx-val down">17589亿</div>
+        <div class="idx-sub"><span class="down">-322.62亿</span> · 近5个月地量</div>
+      </div>
+    </div>
+    <div class="stats-line">
+      涨跌分布：上涨 <b>1846</b> 只 / 下跌 <b>3570</b> 只 / 平盘 <b>139</b> 只，上涨家数占比 <b>33%</b>，涨跌比 <b>0.517</b>；涨停 <b>46</b> 只 / 跌停 <b>17</b> 只（跌停由昨日 3 只扩至 17 只）。涨幅分布：&gt;7% 共 59 只、7~5% 70 只、5~2% 396 只；跌幅 &gt;7% 共 37 只。<br>
+      <b>⚠️ 口径差异标注（&gt;0.5pp 强制标注）：</b>培育钻石板块涨幅 —— 东方财富 <span class="up">+4.51%</span>（领涨全市场概念）／腾讯自选股 westock <span class="up">+4.18%</span>／证券时报 <span class="up">+3.80%</span>，成分股口径不同所致，本报告以 westock 概念指数 02231435 为准。两市成交额 —— 沪深口径 17589.16亿（westock）／沪深北口径约 1.78万亿（每日经济新闻）。
+    </div>
+    <div class="callout warn"><b>市场画像：</b>典型 <b>「指数平收 + 个股普跌 + 单点题材爆发」</b> 结构。三大指数高开冲高回落几近平收（沪指最高 3968.11 后回落至 3942.09，回吐 26 点），成交创近 5 个月地量，上涨占比仅 33%，但培育钻石以 87.5% 板块广度 + 三周期资金全正独立走强。<b>❗ 关键背离：① 液冷概念 <span class="up">+1.80%</span>（143/213 上涨）但主力净流出 <span class="down">-16.03亿</span>、20日 <span class="down">-510.25亿</span> —— 红盘出逃，AI散热资金正从液冷切向金刚石；② 龙头股概念 <span class="down">-3.59%</span>（12/41）、主力 <span class="down">-17.10亿</span>，高位人气股批量跌停（传智教育、深中华A、一鸣食品、爱丽家居、新赛股份），属 ㊱ 情绪缩圈。</b></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">二、最强主线分级（P0→P3）+ 三阶段判定【框架应用 三-①】</div>
+
+    <div class="ml-card">
+      <div class="ml-head">
+        <div class="ml-name"><span class="tag-mini tag-p0">P0</span> 培育钻石 / 超硬材料（金刚石散热·从0到1）</div>
+        <div class="idx-sub">概念代码 02231435 / 02GN2333</div>
+      </div>
+      <div class="ml-body">
+        <div class="kv">
+          <div class="k">三阶段</div><div class="v"><b>P2 共识（首日确认）</b> —— 广度 87.5%（14/16）+ 资金三周期全正（⑪ 强档）+ 已有 2 连板龙头（博云新材）+ 明牌产业/业绩双催化。T-1/T-2 回溯：9/1 力量钻石 -2.38%、四方达 -4.14%；9/2 力量钻石 -0.71%、四方达 -1.01% —— <b>龙头前两日无集体上涨，今日为板块级首次爆发（启动日）</b>，但广度与资金强度同步达到 P2 门槛，故首日即判 P2 而非 P1【三-①】。</div>
+          <div class="k">板块数据</div><div class="v">培育钻石 <span class="up">+4.18%</span>（14/16 上涨，换手 6.13%，量比 1.64，振幅 4.66%）｜主力净流入 <span class="up">+17.51亿</span>（排名 15/802）、5日 <span class="up">+19.91亿</span>、20日 <span class="up">+20.90亿</span>；超硬材料 <span class="up">+1.25%</span>（15/25）｜主力 <span class="up">+20.59亿</span>（排名 6/802）、5日 <span class="up">+18.63亿</span>、20日 <span class="up">+2.01亿</span>。</div>
+          <div class="k">催化</div><div class="v">① 英伟达官宣下一代 Vera Rubin 架构 GPU 全面采用「金刚石复合材料 + 液冷」方案，5月底迈入全面量产，单颗功耗 2300W；② 力量钻石 2026H1 营收 4.38亿 <span class="up">+80.94%</span>、归母净利 9008.16万 <span class="up">+247.61%</span>、扣非净利 <span class="up">+1249.33%</span>，超 10亿未使用募资全部变更至「金刚石功能材料」；③ 东吴证券吴劲草：AI算力推动芯片向更高功耗迭代，金刚石凭超高热导率 + 低热膨胀有望成为下一代高端 AI 芯片先进散热方案（来源：环球网 / 中新社 / 证券时报，三源一致）。</div>
+          <div class="k">成分表现</div><div class="v">宏昌科技 <span class="up">+13.69%</span>、惠丰钻石 <span class="up">+10.71%</span>、恒盛能源 <span class="up">+10.02%</span>（涨停）、沃尔德 <span class="up">+8.93%</span>、黄河旋风 <span class="up">+7.93%</span>、四方达 <span class="up">+7.28%</span>、力量钻石 <span class="up">+5.56%</span>、楚江新材 <span class="up">+5.32%</span>、国机精工 <span class="up">+4.23%</span>；回调：中兵红箭 <span class="down">-2.05%</span>、晶盛机电 <span class="down">-0.88%</span>。</div>
+          <div class="k">风险</div><div class="v">黄河旋风换手 <b>30.15%</b>、博云新材换手 <b>31.38%</b> 均属天量，且黄河旋风 5/10/20日资金线全负 → ⑳ 高位放量警戒，不得追高。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-card p1">
+      <div class="ml-head">
+        <div class="ml-name"><span class="tag-mini tag-p1">P1</span> BDI / 航运港口（运价创新高 + 中报兑现）</div>
+        <div class="idx-sub">申万二级 01801992 / 概念 02090002</div>
+      </div>
+      <div class="ml-body">
+        <div class="kv">
+          <div class="k">三阶段</div><div class="v"><b>P1 启动（事件驱动·反弹回补）</b> —— 今日为运价新高消息驱动的爆发首日（9/1 中远海能 -0.78%、招商轮船 -1.92%；9/2 分别 -1.99%、-3.15%，前两日均下跌）。<b>⚠️ 20日资金线降级铁律触发：BDI 概念 20日 <span class="down">-15.95亿</span>、航运港口 20日 <span class="down">-20.77亿</span>、中远海能 20日 <span class="down">-3.19亿</span>、招商轮船 20日 <span class="down">-11.25亿</span> → 一律降级「反弹回补·非反转」，禁止标「新周期起点/吸筹」。</b></div>
+          <div class="k">板块数据</div><div class="v">航运港口 <span class="up">+2.99%</span>（27/34 上涨，申万二级全市场第 1），主力 <span class="up">+8.70亿</span>、5日 <span class="up">+1.27亿</span>、20日 <span class="down">-20.77亿</span>；BDI 概念 <span class="up">+4.26%</span>（7/7 全涨），主力 <span class="up">+4.60亿</span>、5日 <span class="down">-1.18亿</span>、20日 <span class="down">-15.95亿</span>。</div>
+          <div class="k">催化</div><div class="v">波罗的海干散货运价指数报 <b>3331 点</b>、单日 <span class="up">+5.51%</span>，创 2023年12月以来新高；海岬型 BCI 5642 点、巴拿马型 BPI 2429 点，BCI/BPI 周环比 <span class="up">+17.2%</span>/<span class="up">+10.1%</span>（长江证券）；浙商证券：BDI 周环比 +12%、同比 +57%。中报：招商轮船净利 69.60亿 <span class="up">+228%</span>、中远海能 45.45亿 <span class="up">+143.21%</span>、海通发展 5.23亿 <span class="up">+502.60%</span>（来源：凤凰网/第一财经/环球网，三源一致）。</div>
+          <div class="k">成分</div><div class="v">海通发展 <span class="up">+10.00%</span> 涨停（创 52周新高 13.31，换手 18.36%）、中远海能 <span class="up">+8.77%</span>（港股同步 +6.49%）、招商轮船 <span class="up">+8.37%</span>、凤凰航运 <span class="up">+5.73%</span>、宁波海运 <span class="up">+1.83%</span>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-card p1">
+      <div class="ml-head">
+        <div class="ml-name"><span class="tag-mini tag-p1">P1</span> 保险Ⅱ（金融内部跷跷板承接端）</div>
+        <div class="idx-sub">申万二级 01801194</div>
+      </div>
+      <div class="ml-body">
+        <div class="kv">
+          <div class="k">三阶段</div><div class="v"><b>P2 防御承接</b> —— 5/5 全涨（广度 100%），主力 <span class="up">+8.91亿</span>、5日 <span class="up">+8.86亿</span>（5日已转正），仅 20日 <span class="down">-3.99亿</span> 小幅负。<b>【框架应用 ㉒ 风格切换跷跷板】：</b>同日国有大型银行Ⅱ <span class="down">-1.86%</span>、0/6 全跌、主力 <span class="down">-9.18亿</span>（工行 -1.46%，5日仍 +3.58%）—— 红利资金从银行端撤出、转入保险端，为金融板块内部子行业切换。</div>
+          <div class="k">催化</div><div class="v">五大险企上半年合计归母净利润 <b>3173.87 亿元</b>、同比 <span class="up">+78.12%</span>，均推出中期分红方案、合计派现超 <b>390 亿元</b>（来源：凤凰网/智通财经）。</div>
+          <div class="k">成分</div><div class="v">中国太保 <span class="up">+3.69%</span>（5日 +6.37%、10日 +12.83%）、中国人寿 <span class="up">+2.94%</span>、中国平安 <span class="up">+2.42%</span>、新华保险 <span class="up">+2.26%</span>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-card p2">
+      <div class="ml-head">
+        <div class="ml-name"><span class="tag-mini tag-p2">P2</span> 贵金属 / 工业金属 · 机器人电机（反弹级别）</div>
+        <div class="idx-sub">申万二级 01801053 / 01801055 / 01801731</div>
+      </div>
+      <div class="ml-body">
+        <div class="kv">
+          <div class="k">三阶段</div><div class="v"><b>P1 超跌反弹</b> —— <b>【框架应用 ㉓ 反弹=减仓窗口非反转确认】+ 20日资金线降级铁律</b>：贵金属 20日 <span class="down">-21.14亿</span>、5日 <span class="down">-29.44亿</span>；工业金属 20日 <span class="down">-110.16亿</span>、5日 <span class="down">-64.74亿</span>；机器人执行器 20日 <span class="down">-38.41亿</span>、电机Ⅱ 20日 <span class="down">-21.38亿</span>。<b>四者均「当日红 + 中期深负」，只给反弹级别，禁止标「反转/新趋势」。</b></div>
+          <div class="k">板块数据</div><div class="v">贵金属 <span class="up">+2.18%</span>（9/11，主力 <span class="up">+7.79亿</span>）｜工业金属 <span class="up">+1.42%</span>（37/59，主力 <span class="up">+10.69亿</span>）｜电机Ⅱ <span class="up">+2.45%</span>（22/26，主力 <span class="up">+5.57亿</span>）｜机器人执行器 <span class="up">+1.53%</span>（18/18 全涨，主力 <span class="up">+5.87亿</span>）｜空心杯电机 <span class="up">+2.09%</span>｜华为机器人 <span class="up">+1.86%</span>（5/6）。</div>
+          <div class="k">催化</div><div class="v">美国 8月 ADP 私营部门就业数据大幅低于预期、创今年 1月以来最低 → 降息预期升温，现货黄金重回 4400 美元/盎司（日内 +1%，最高 4409）；高盛看多 2026年底至 4900 美元、RBC 看向 5000 美元。</div>
+          <div class="k">成分</div><div class="v">白银有色 <span class="up">+10.06%</span> 涨停（10日 +32.31%、20日 +34.74%，主力 <span class="up">+7.00亿</span>）、湖南白银 <span class="up">+7.81%</span>、鸣志电器 <span class="up">+10.00%</span> 涨停（空心杯电机+执行器双概念，主力 <span class="up">+1.77亿</span>，5/10/20日均为小幅正）、兆威机电 <span class="up">+5.15%</span>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-card p3">
+      <div class="ml-head">
+        <div class="ml-name"><span class="tag-mini tag-p3">退潮</span> 军工链（P3 退潮确认）/ 国有大行（跷跷板失血端）/ 液冷（红盘出逃）</div>
+        <div class="idx-sub">申万二级 01801743 / 01801741 / 01801782</div>
+      </div>
+      <div class="ml-body">
+        <div class="kv">
+          <div class="k">军工</div><div class="v">地面兵装Ⅱ <span class="down">-2.16%</span>（1/12 上涨，主力 <span class="down">-4.61亿</span>）、航天装备Ⅱ <span class="down">-1.19%</span>（0/9，主力 <span class="down">-2.49亿</span>）、军工电子Ⅱ <span class="down">-0.55%</span>。<b>9/2 尚判 P2 → 9/3 一日崩塌，P3 退潮确认。</b>内蒙一机 <span class="up">+1.12%</span> 但开盘 14.60、最高 14.60、收 13.56 —— <b>自高点回落 7.13%</b>，换手 11.50%、量比 5.38，属 ⑳ 高位放量出货，不接飞刀。</div>
+          <div class="k">大行</div><div class="v">国有大型银行Ⅱ <span class="down">-1.86%</span>、<b>0/6 全跌</b>、主力 <span class="down">-9.18亿</span>（20日仍 <span class="up">+13.76亿</span>）；工商银行 <span class="down">-1.46%</span>。<b>由 07:00 盘前「银行=多（76分）」反转，为当日盘前最大证伪项之一。</b></div>
+          <div class="k">液冷</div><div class="v">液冷概念 <span class="up">+1.80%</span>（143/213 上涨）但主力 <span class="down">-16.03亿</span>、5日 <span class="down">-127.92亿</span>、20日 <span class="down">-510.25亿</span> —— <b>红盘出逃，与培育钻石（+17.51亿）形成同叙事内部资金完全反向分流。</b></div>
+          <div class="k">科技</div><div class="v">半导体 <span class="down">-0.41%</span>、主力 <span class="down">-44.86亿</span>、20日 <span class="down">-863.79亿</span>（全市场最深）；通信设备 <span class="down">-0.71%</span>、主力 <span class="down">-39.61亿</span>、20日 <span class="down">-346.02亿</span>；元件 <span class="down">-0.15%</span>、主力 <span class="down">-14.41亿</span>、20日 <span class="down">-237.15亿</span>。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">三、Pair 配对与相对强弱（三-② 配对原则 / 三-⑧ 分层配对）</div>
+    <table class="tbl">
+      <thead>
+        <tr><th style="width:15%">主线</th><th style="width:27%">Pair A</th><th style="width:27%">Pair B</th><th>相对强弱方向（连 2 天跑赢判定）</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>培育钻石</b><br><span class="tag-mini tag-p0">P0</span></td>
+          <td><b>四方达</b> sz300179<br>183.85亿 · 今日 <span class="up">+7.28%</span><br>换手 20.93% · 成交 29.33亿</td>
+          <td><b>力量钻石</b> sz301071<br>160.48亿 · 今日 <span class="up">+5.56%</span><br>换手 16.01% · 成交 18.66亿</td>
+          <td><b>未形成连续 2 天单方向跑赢 → 龙头未决，Pair 平衡。</b>5日：力量 <span class="up">+2.10%</span> &gt; 四方达 <span class="up">+1.01%</span>（力量赢）；10日：四方达 <span class="up">+8.83%</span> &gt; 力量 <span class="up">+7.68%</span>（四方达赢）。属「双核并列、轮动领涨」结构，非单龙头形态【三-②】。</td>
+        </tr>
+        <tr>
+          <td><b>BDI/航运</b><br><span class="tag-mini tag-p1">P1</span></td>
+          <td><b>中远海能</b> sh600026<br>1112.30亿 · 今日 <span class="up">+8.77%</span><br>成交 23.29亿 · 港股同步 +6.49%</td>
+          <td><b>招商轮船</b> sh601872<br>1558.39亿 · 今日 <span class="up">+8.37%</span><br>成交 27.92亿 · YTD +121.08%</td>
+          <td><b>中远海能连续跑赢 → 权重龙头 = 中远海能。</b>5日 +9.24% vs +3.65%、10日 +11.03% vs +4.55%、20日 +16.44% vs +7.94%，三个周期全面占优；但资金 20日 中远海能 -3.19亿 vs 招商轮船 -11.25亿，中远海能流出更浅【三-⑧ 权重 vs 弹性分层】。</td>
+        </tr>
+        <tr>
+          <td><b>保险</b><br><span class="tag-mini tag-p1">P1</span></td>
+          <td><b>中国太保</b> sh601601<br>3274.76亿 · 今日 <span class="up">+3.69%</span></td>
+          <td><b>中国人寿</b> sh601628<br>11099.55亿 · 今日 <span class="up">+2.94%</span></td>
+          <td><b>中国太保跑赢（弹性端占优）。</b>5日 +6.37% vs +1.71%、10日 +12.83% vs +6.45%，太保两周期均胜；但人寿流通市值 8177亿为权重端。<b>5/5 全涨 = 板块级普涨，Pair 内部无背离，属健康形态。</b></td>
+        </tr>
+        <tr>
+          <td><b>培育钻石</b><br>（换手组）</td>
+          <td><b>博云新材</b> sz002297<br>126.08亿 · <b>2 连板</b> <span class="up">+10.00%</span><br>换手 31.38% · 成交 38.10亿</td>
+          <td><b>黄河旋风</b> sh600172<br>229.60亿 · 今日 <span class="up">+7.93%</span><br>换手 30.15% · 成交 60.92亿</td>
+          <td><b>博云新材胜出（资金质量维度）。</b>博云新材 主力 +4.98亿 / 5日 +4.14亿 / 10日 +2.67亿 / 20日 +2.33亿 —— <b>三周期全正</b>；黄河旋风 主力 +11.26亿（全市场第 2）但 5日 -1.74亿 / 10日 -2.57亿 / 20日 -1.89亿 —— <b>中期线全负，按 20日资金线降级铁律定性为「单日脉冲·诱多出货」</b>【三-⑤ + 资金对抗自检】。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">四、逻辑龙头与资金质量（三-⑤ 自动标定 + 20日资金线降级铁律）</div>
+    <table class="tbl">
+      <thead>
+        <tr><th style="width:14%">标的</th><th style="width:9%">今日</th><th style="width:11%">主力净流入</th><th style="width:10%">5日</th><th style="width:10%">10日</th><th style="width:10%">20日</th><th>资金质量判定</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>博云新材</b><br><span class="idx-sub">sz002297 · 2连板</span></td><td><span class="up">+10.00%</span></td><td><span class="badge-in">+4.98亿</span><br><span class="idx-sub">排名 12</span></td><td><span class="badge-in">+4.14亿</span></td><td><span class="badge-in">+2.67亿</span></td><td><span class="badge-in">+2.33亿</span></td><td><b>✅ 三周期全正 · 健康上涨（持有）</b>【三-⑤ 逻辑龙头自动标定：培育钻石链唯一「真健康」标的】。⚠️ 换手 31.38% 天量，㊺ P3 加速段锁盈纪律前置观察。</td></tr>
+        <tr><td><b>四方达</b><br><span class="idx-sub">sz300179</span></td><td><span class="up">+7.28%</span></td><td><span class="badge-in">+2.58亿</span><br><span class="idx-sub">排名 33</span></td><td><span class="badge-in">+1.27亿</span></td><td><span class="badge-in">+0.25亿</span></td><td><span class="badge-in">+0.88亿</span></td><td><b>✅ 三周期全正 · 健康上涨（持有）。</b>YTD +155.36%，20日 +8.14% 涨幅温和，未进入加速段。</td></tr>
+        <tr><td><b>力量钻石</b><br><span class="idx-sub">sz301071</span></td><td><span class="up">+5.56%</span></td><td><span class="badge-in">+1.63亿</span><br><span class="idx-sub">排名 66</span></td><td><span class="badge-in">+1.39亿</span></td><td><span class="badge-in">+0.23亿</span></td><td><span class="badge-in">+1.89亿</span></td><td><b>✅ 三周期全正 · 健康上涨（持有）。</b>基本面最强（扣非 +1249.33%），10亿募资转投金刚石功能材料，属「业绩+产业」双驱动核心。</td></tr>
+        <tr><td><b>鸣志电器</b><br><span class="idx-sub">sh603728 · 涨停</span></td><td><span class="up">+10.00%</span></td><td><span class="badge-in">+1.77亿</span><br><span class="idx-sub">排名 57</span></td><td><span class="badge-in">+0.51亿</span></td><td><span class="badge-in">+0.55亿</span></td><td><span class="badge-in">+0.03亿</span></td><td><b>🟡 三周期全正但幅度极弱 · 试探级。</b>20日仅 +0.03亿刚由负转正，20日涨幅 +2.26%、60日 -14.86%，属超跌反弹起点，仅可小仓试错。</td></tr>
+        <tr><td><b>恒盛能源</b><br><span class="idx-sub">sh605580 · 涨停</span></td><td><span class="up">+10.02%</span></td><td><span class="badge-in">+0.54亿</span><br><span class="idx-sub">排名 202</span></td><td><span class="badge-in">+0.19亿</span></td><td><span class="badge-in">+0.13亿</span></td><td><span class="badge-out">-0.12亿</span></td><td><b>🟡 20日微负 · 单日脉冲。</b>流通市值 57.20亿小盘股，主力流入率 34.69% 居板块首位但绝对额小，属游资主导，不追。</td></tr>
+        <tr><td><b>中远海能</b><br><span class="idx-sub">sh600026</span></td><td><span class="up">+8.77%</span></td><td><span class="badge-in">+2.57亿</span><br><span class="idx-sub">排名 35</span></td><td><span class="badge-in">+0.97亿</span></td><td><span class="badge-out">-0.93亿</span></td><td><span class="badge-out">-3.19亿</span></td><td><b>🟠 20日负 · 反弹回补（减仓/不追）。</b>基本面（中报 +143.21%）与资金面背离，按降级铁律不给「反转」定性。</td></tr>
+        <tr><td><b>招商轮船</b><br><span class="idx-sub">sh601872</span></td><td><span class="up">+8.37%</span></td><td><span class="badge-in">+2.01亿</span><br><span class="idx-sub">排名 48</span></td><td><span class="badge-out">-2.74亿</span></td><td><span class="badge-out">-5.87亿</span></td><td><span class="badge-out">-11.25亿</span></td><td><b>🟠 5/10/20日全负 · 反弹回补（减仓）。</b>Pair 内资金质量弱于中远海能。</td></tr>
+        <tr><td><b>白银有色</b><br><span class="idx-sub">sh601212 · 涨停</span></td><td><span class="up">+10.06%</span></td><td><span class="badge-in">+7.00亿</span><br><span class="idx-sub">排名 4</span></td><td><span class="badge-out">-6.36亿</span></td><td><span class="badge-in">+6.77亿</span></td><td><span class="badge-in">+6.00亿</span></td><td><b>🟡 10/20日正但 5日负 · 冲高回落型。</b>9/2 -1.19%、5日 -8.01%，今日涨停属快速回补，20日 +34.74% 已在高位，不追。</td></tr>
+        <tr><td><b>黄河旋风</b><br><span class="idx-sub">sh600172</span></td><td><span class="up">+7.93%</span></td><td><span class="badge-in">+11.26亿</span><br><span class="idx-sub">排名 2</span></td><td><span class="badge-out">-1.74亿</span></td><td><span class="badge-out">-2.57亿</span></td><td><span class="badge-out">-1.89亿</span></td><td><b>🔴 单日巨额流入 + 中期线全负 + 换手 30.15% 天量 = 诱多出货（减仓）。</b>典型「涨停/大涨 ≠ 资金进」反例，20日资金线降级铁律直接适用，<b>严禁追高</b>【⑳】。</td></tr>
+        <tr><td><b>三安光电</b><br><span class="idx-sub">sh600703 · 涨停</span></td><td><span class="up">+9.98%</span></td><td><span class="badge-in">+11.45亿</span><br><span class="idx-sub">排名 1</span></td><td><span class="badge-out">-3.51亿</span></td><td><span class="badge-out">-7.21亿</span></td><td><span class="badge-out">-14.54亿</span></td><td><b>🔴 全市场主力流入第 1 但中期线全负 = 单日脉冲·超跌反弹（不追）。</b>9/2 -2.40%、20日 -5.39%、60日 -26.99%，属深跌后反弹，非反转。</td></tr>
+        <tr><td><b>内蒙一机</b><br><span class="idx-sub">sh600967</span></td><td><span class="up">+1.12%</span></td><td colspan="4"><span class="idx-sub">开 14.60 / 高 14.60 / 收 13.56 · 换手 11.50% · 量比 5.38 · 自高点回落 7.13%</span></td><td><b>🔴 ⑳ 高位放量出货 = 反转不接飞刀。</b>昨日军工链龙头，今日冲高即回落，军工 P3 退潮的盘口确认信号。</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn"><b>对抗性自检（资金/主力语境强制 · 三条红线之 Fact-Driven）：</b>① <b>涨停 ≠ 资金进</b> —— 黄河旋风 +7.93%、主力 +11.26亿（全市场第 2），三安光电涨停、主力 +11.45亿（全市场第 1），但两者 5/10/20 日资金线<b>全为负值</b>，按 20日资金线降级铁律一律定性「单日脉冲·反弹非反转」，不得标「吸筹/反转」。② <b>红盘出逃</b> —— 液冷概念 +1.80%（143/213 上涨）主力却净流出 -16.03亿、20日 -510.25亿，与培育钻石 +17.51亿构成同叙事反向分流。③ <b>背离四象限</b> —— 培育钻石/超硬材料 = 涨+三周期净流入 = <b>健康上涨（持有）</b>；BDI/航运、贵金属、机器人 = 涨+净流入但 20日深负 = <b>诱多出货（减仓）</b>降级为反弹回补；液冷 = 涨+净流出 = <b>诱多出货（减仓）</b>；半导体/通信/元件/军工/国有大行 = 跌+净流出 = <b>主跌出货（回避）</b>；电网设备 +1.18% 主力 +0.23亿（20日 -51.45亿）= 弱底背离，已降级不单列。</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">五、板块涨跌榜（申万二级 · 全市场客观排名）</div>
+    <table class="tbl">
+      <thead>
+        <tr><th style="width:6%">#</th><th style="width:16%">涨幅 TOP12</th><th style="width:8%">涨跌幅</th><th style="width:9%">上涨比</th><th style="width:10%">主力净流入</th><th style="width:9%">5日</th><th style="width:9%">20日</th><th>龙头</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><b>航运港口</b></td><td><span class="up">+2.99%</span></td><td>27/34</td><td><span class="badge-in">+8.70亿</span></td><td><span class="badge-in">+1.27亿</span></td><td><span class="badge-out">-20.77亿</span></td><td>海通发展 <span class="up">+10.00%</span></td></tr>
+        <tr><td>2</td><td><b>其他电源设备Ⅱ</b></td><td><span class="up">+2.74%</span></td><td>20/32</td><td><span class="badge-in">+9.33亿</span></td><td><span class="badge-in">+4.13亿</span></td><td><span class="badge-in">+0.50亿</span></td><td>欧陆通 <span class="up">+9.49%</span></td></tr>
+        <tr><td>3</td><td><b>保险Ⅱ</b></td><td><span class="up">+2.58%</span></td><td>5/5</td><td><span class="badge-in">+8.91亿</span></td><td><span class="badge-in">+8.86亿</span></td><td><span class="badge-out">-3.99亿</span></td><td>中国太保 <span class="up">+3.69%</span></td></tr>
+        <tr><td>4</td><td><b>电机Ⅱ</b></td><td><span class="up">+2.45%</span></td><td>22/26</td><td><span class="badge-in">+5.57亿</span></td><td><span class="badge-in">+1.10亿</span></td><td><span class="badge-out">-21.38亿</span></td><td>鸣志电器 <span class="up">+10.00%</span></td></tr>
+        <tr><td>5</td><td><b>贵金属</b></td><td><span class="up">+2.18%</span></td><td>9/11</td><td><span class="badge-in">+7.79亿</span></td><td><span class="badge-out">-29.44亿</span></td><td><span class="badge-out">-21.14亿</span></td><td>湖南白银 <span class="up">+7.81%</span></td></tr>
+        <tr><td>6</td><td><b>其他电子Ⅱ</b></td><td><span class="up">+1.44%</span></td><td>18/33</td><td><span class="badge-in">+7.20亿</span></td><td><span class="badge-in">+10.35亿</span></td><td><span class="badge-in">+28.47亿</span></td><td>百邦科技 <span class="up">+4.81%</span></td></tr>
+        <tr><td>7</td><td><b>工业金属</b></td><td><span class="up">+1.42%</span></td><td>37/59</td><td><span class="badge-in">+10.69亿</span></td><td><span class="badge-out">-64.74亿</span></td><td><span class="badge-out">-110.16亿</span></td><td>白银有色 <span class="up">+10.06%</span></td></tr>
+        <tr><td>8</td><td><b>航海装备Ⅱ</b></td><td><span class="up">+1.36%</span></td><td>4/10</td><td><span class="badge-in">+2.23亿</span></td><td><span class="badge-out">-0.10亿</span></td><td><span class="badge-out">-22.42亿</span></td><td>松发股份 <span class="up">+4.04%</span></td></tr>
+        <tr><td>9</td><td><b>游戏Ⅱ</b></td><td><span class="up">+1.31%</span></td><td>12/26</td><td><span class="badge-in">+6.28亿</span></td><td><span class="badge-in">+8.90亿</span></td><td><span class="badge-out">-28.17亿</span></td><td>游族网络 <span class="up">+4.82%</span></td></tr>
+        <tr><td>10</td><td><b>包装印刷</b></td><td><span class="up">+1.30%</span></td><td>17/40</td><td><span class="badge-in">+5.16亿</span></td><td><span class="badge-in">+9.27亿</span></td><td><span class="badge-in">+1.57亿</span></td><td>华源控股 <span class="up">+10.01%</span></td></tr>
+        <tr><td>11</td><td><b>通用设备</b></td><td><span class="up">+1.28%</span></td><td>103/219</td><td><span class="badge-in">+18.20亿</span></td><td><span class="badge-in">+10.23亿</span></td><td><span class="badge-in">+6.98亿</span></td><td>*ST禾信 <span class="up">+20.00%</span></td></tr>
+        <tr><td>12</td><td><b>电网设备</b></td><td><span class="up">+1.18%</span></td><td>55/126</td><td><span class="badge-in">+0.23亿</span></td><td><span class="badge-out">-15.05亿</span></td><td><span class="badge-out">-51.45亿</span></td><td>华盛昌 <span class="up">+10.00%</span></td></tr>
+      </tbody>
+    </table>
+    <table class="tbl">
+      <thead>
+        <tr><th style="width:6%">#</th><th style="width:16%">跌幅 TOP12</th><th style="width:8%">涨跌幅</th><th style="width:9%">上涨比</th><th style="width:10%">主力净流入</th><th style="width:9%">5日</th><th style="width:9%">20日</th><th>阶段/判定</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><b>房地产服务</b></td><td><span class="down">-3.47%</span></td><td>1/12</td><td><span class="badge-out">-0.54亿</span></td><td><span class="badge-out">-0.26亿</span></td><td><span class="badge-in">+2.45亿</span></td><td>主跌出货（回避）</td></tr>
+        <tr><td>2</td><td><b>饲料</b></td><td><span class="down">-2.75%</span></td><td>2/18</td><td><span class="badge-out">-1.72亿</span></td><td><span class="badge-in">+0.71亿</span></td><td><span class="badge-out">-2.07亿</span></td><td>农业退潮第三日</td></tr>
+        <tr><td>3</td><td><b>玻璃玻纤</b></td><td><span class="down">-2.24%</span></td><td>2/16</td><td><span class="badge-out">-17.65亿</span></td><td><span class="badge-out">-16.91亿</span></td><td><span class="badge-out">-95.04亿</span></td><td>主跌出货（回避）</td></tr>
+        <tr><td>4</td><td><b>地面兵装Ⅱ</b></td><td><span class="down">-2.16%</span></td><td>1/12</td><td><span class="badge-out">-4.61亿</span></td><td><span class="badge-in">+13.62亿</span></td><td><span class="badge-in">+5.65亿</span></td><td><b>P3 退潮确认</b></td></tr>
+        <tr><td>5</td><td><b>广告营销</b></td><td><span class="down">-1.91%</span></td><td>2/28</td><td><span class="badge-out">-12.86亿</span></td><td><span class="badge-out">-10.01亿</span></td><td><span class="badge-out">-59.36亿</span></td><td>主跌出货（回避）</td></tr>
+        <tr><td>6</td><td><b>国有大型银行Ⅱ</b></td><td><span class="down">-1.86%</span></td><td>0/6</td><td><span class="badge-out">-9.18亿</span></td><td><span class="badge-in">+1.35亿</span></td><td><span class="badge-in">+13.76亿</span></td><td><b>㉒ 跷跷板失血端</b></td></tr>
+        <tr><td>7</td><td><b>焦炭Ⅱ</b></td><td><span class="down">-1.66%</span></td><td>1/7</td><td><span class="badge-out">-0.24亿</span></td><td><span class="badge-in">+0.43亿</span></td><td><span class="badge-in">+6.40亿</span></td><td>退潮</td></tr>
+        <tr><td>8</td><td><b>造纸</b></td><td><span class="down">-1.43%</span></td><td>1/23</td><td><span class="badge-out">-2.30亿</span></td><td><span class="badge-out">-4.70亿</span></td><td><span class="badge-out">-3.94亿</span></td><td>主跌出货（回避）</td></tr>
+        <tr><td>9</td><td><b>旅游及景区</b></td><td><span class="down">-1.41%</span></td><td>3/25</td><td><span class="badge-out">-0.75亿</span></td><td><span class="badge-in">+3.42亿</span></td><td><span class="badge-in">+4.41亿</span></td><td>10:00「新热点」二日证伪</td></tr>
+        <tr><td>10</td><td><b>航天装备Ⅱ</b></td><td><span class="down">-1.19%</span></td><td>0/9</td><td><span class="badge-out">-2.49亿</span></td><td><span class="badge-out">-8.91亿</span></td><td><span class="badge-out">-33.77亿</span></td><td><b>P3 退潮确认</b></td></tr>
+        <tr><td>11</td><td><b>通信设备</b></td><td><span class="down">-0.71%</span></td><td>22/85</td><td><span class="badge-out">-39.61亿</span></td><td><span class="badge-out">-209.77亿</span></td><td><span class="badge-out">-346.02亿</span></td><td>主跌出货（回避）</td></tr>
+        <tr><td>12</td><td><b>半导体</b></td><td><span class="down">-0.41%</span></td><td>73/180</td><td><span class="badge-out">-44.86亿</span></td><td><span class="badge-out">-392.41亿</span></td><td><span class="badge-out">-863.79亿</span></td><td>全市场流出最深</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">六、情绪指标与连板梯队【框架应用 ㉚㉛㊱】</div>
+    <div class="driver">
+      <div class="driver-title">连板梯队（㉛ 梯队完整性 + 高标开板次数）</div>
+      <div class="driver-row"><b>4 板</b>：集泰股份（液冷服务器/化学制品）</div>
+      <div class="driver-row"><b>4天3板</b>：金帝股份　｜　<b>4天2板</b>：金富科技、宏盛股份</div>
+      <div class="driver-row"><b>2 连板</b>：博云新材（培育钻石/超硬材料，9/2 +10.01% → 9/3 +10.00%）、云南旅游（一字板，9/2 +10.06% → 9/3 +10.10%）</div>
+      <div class="driver-row"><b>首板</b>：恒盛能源（培育钻石）、海通发展（BDI/航运）、鸣志电器（机器人执行器）、三安光电（化合物半导体）、白银有色（贵金属）、凤凰航运等</div>
+      <div class="driver-row"><b>梯队健康度</b>：昨日连板概念 <span class="up">+1.19%</span>（10/15 上涨）但主力 <span class="down">-7.72亿</span>、20日 <span class="down">-163.53亿</span>；昨日触板 <span class="down">-2.78%</span>（4/21）、昨日高换手 <span class="down">-2.47%</span>（31/106）→ <b>梯队「高度够、广度弱、资金出」，属 ㊱ 情绪缩圈形态，接力风险高。</b></div>
+    </div>
+    <div class="callout"><b>情绪定性：</b>属 <b>「地量平收 + 单点题材爆发 + 高位股集体退潮」</b> 三元结构。总量层面上涨占比 33%、涨跌比 0.517、跌停由 3 只扩至 17 只、成交创近 5 个月地量，确认存量博弈；结构层面培育钻石以 87.5% 广度 + 三周期资金全正独立走强，是全市场唯一「有资金、有广度、有催化」的方向。<br><b>三-⑦ 退潮日独苗主线豁免判定（必做）：</b>① <b>云南旅游</b> —— 一字板 2 连板（5.78 元，委比 100、内盘 25.03万手），但旅游及景区板块 <span class="down">-1.41%</span>、3/25 上涨（广度 12%）、主力 <span class="down">-0.75亿</span> → <b>板块资金证伪，三-⑦ 豁免不适用</b>，定性为个股级事件驱动，非主线。② <b>三安光电</b> —— 涨停且主力 +11.45亿（全市场第 1），但光学光电子板块仅 <span class="up">+0.37%</span>（30/93），且个股 5/10/20日资金线全负 → <b>同样不适用豁免</b>，定性为超跌反弹单日脉冲。<b>③ 培育钻石不适用三-⑦（非退潮日独苗，而是板块级共识爆发，直接按三-① 判 P2）。</b>【框架应用 三-⑦】</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">七、操作建议与止损纪律</div>
+    <div class="driver">
+      <div class="driver-title">分方向动作（承接 14:30 口径，不因单点爆发加仓）</div>
+      <div class="driver-row"><b>进攻（回踩低吸·严禁追高）</b>：培育钻石 / 金刚石散热 —— 四方达、力量钻石为「三周期资金全正 + 基本面兑现」双优标的，<b>只在分歧回踩时低吸</b>，不在涨停/大涨日市价追。板块今日已 +4.18%，T+1 若高开 &gt;3% 一律放弃，等回落至 5日线附近再评估。</div>
+      <div class="driver-row"><b>持有</b>：博云新材（2 连板 + 三周期全正，唯一健康标的）—— 但换手 31.38% 已进入 ㊺ P3 加速段锁盈观察区，<b>跌破 5日线或单日炸板即减半</b>。</div>
+      <div class="driver-row"><b>试探（小仓 ≤5%）</b>：保险（中国太保，5/5 全涨 + 中报 +78.12% + 中期分红，防御承接逻辑清晰）；鸣志电器（机器人执行器，资金三周期刚转正，仅试错仓）。</div>
+      <div class="driver-row"><b>回避（不参与）</b>：① 黄河旋风（单日 +11.26亿 但中期线全负 + 换手 30.15% 天量 = 诱多出货）；② 三安光电（主力第 1 但 20日 -14.54亿 = 超跌反弹）；③ 液冷概念（红盘出逃 -16.03亿）；④ 军工链（P3 退潮，内蒙一机冲高回落 7.13%）；⑤ 国有大行（0/6 全跌，跷跷板失血端）；⑥ 半导体/通信/元件（20日流出 -863.79亿/-346.02亿/-237.15亿）。</div>
+      <div class="driver-row"><b>仓位纪律</b>：总仓维持 <b>35–40%</b>（承接 14:30 口径，未因培育钻石爆发上调）、现金 ≥60%。单票上限 15%、热门板块（培育钻石属当日最热）收敛至 <b>≤10%</b>。止损 -8% 或跌破 20日线。买点必须是<b>分歧回踩低吸</b>，严禁市价追高。</div>
+    </div>
+    <div class="callout warn"><b>仓位与环境判定（承接 14:30）：</b>建议仓位 <b>35–40%</b>，与 14:30 一致、未调整。<b>铁律A（ENV-REVISION）：未触发</b> —— 四大指数中三平一跌（沪 +0.02%/深 +0.10%/创 +0.01%/科创50 -0.40%），非「集体下跌」，未达全局恶化门槛；但上涨占比 33%、涨跌比 0.517 已接近退潮区间，须保持警惕。<b>铁律B：未触发</b> —— 沪指 +0.02%（未跌，远未达 -2%）、跌停 17 只（&lt;100 只）。<b>下一档降仓触发条件（T+1 生效）：</b>沪指失守 3930（今日低点）→ 降至 30–35%；科创50 再度失守 1600 且不收复 → 降至 30%；下跌家数 &gt;3600 或 跌停 &gt;15 只（今日跌停 17 只已超，须 T+1 复核是否连续）→ 降至 30%。</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">八、次日（T+1）预判推导 · 四理论合一</div>
+    <div class="driver">
+      <div class="driver-row"><b>① 交易框架（⑪~㊳）</b>：<b>⑪ 资金三档判据</b> —— 培育钻石当日 +17.51亿、5日 +19.91亿、20日 +20.90亿「三周期全正」= 强档，是 T+1 唯一可给「多」的方向；<b>20日资金线降级铁律</b> —— BDI（20日 -15.95亿）、贵金属（-21.14亿）、工业金属（-110.16亿）、机器人执行器（-38.41亿）虽今日上涨，但中期线深负，按 ㉓「反弹=减仓窗口非反转确认」只给「中性」不给「多」；<b>㊱ 情绪缩圈</b> —— 龙头股概念 -3.59%、高位人气股批量跌停、成交创近 5 个月地量，总量层面不支持指数级上行，故大势给「中性」；<b>㉒ 风格切换跷跷板</b> —— 银行出、保险进的金融内部切换具备持续性（中报 + 中期分红为硬催化），非金融板块整体走弱，故非银金融可给「多」。</div>
+      <div class="driver-row"><b>② 自我学习（R-Judge 闭环）</b>：框架 v2.8 / 报告 v3.3，随机基准命中率 <b>47.5%</b>。近期最大教训为 <b>9/2 军工「启动日误判 P1、次日修正 P2」</b>（未回溯 T-1 龙头涨幅导致滞后一档）—— 本次已强制回溯 9/1、9/2 数据，确认培育钻石前两日龙头无集体上涨，避免了同源误判。<b>置信度约束：</b>因近 5 日主线「一日一换」（8/31 农业 → 9/2 军工 → 9/3 培育钻石），板块级「多」的历史兑现率显著低于框架均值，故本次板块方向仅取 <b>2 个「多」</b>（机械设备、非银金融），不再扩大；大势一律给「中性」，不给方向性押注。</div>
+      <div class="driver-row"><b>③ 完善理论（规则固化迭代）</b>：本次已应用的最新迭代为 <b>三-① 阶段判定须回溯 T-1/T-2</b>（9/2 教训固化，本次执行）、<b>20日资金线降级铁律</b>（pua 资金对抗注入，本次对 4 个板块 + 2 只个股执行降级）。<b>待 20:30 归因的盲区：</b>① 培育钻石「爆发首日即判 P2」与 9/2 军工「爆发首日判 P1」的处理不一致，需统一标准（见第十节）；② 同叙事内部资金反向分流（液冷 ↔ 金刚石）此前无识别规则；③ 金融板块内部子行业跷跷板（银行 ↔ 保险）现有 ㉒ 仅覆盖成长/价值风格，未覆盖子行业层面。</div>
+      <div class="driver-row"><b>④ 三阶段理论（三-①~三-⑧）</b>：<b>培育钻石 = P2 共识（首日确认）</b> → T+1 演进推演：若维持广度 &gt;70% 且主力续流入，进入 P2 中段（可持有/回踩加）；若龙头（博云新材）炸板或板块主力转流出，则一日退回 P1（减仓观望）。<b>BDI/航运 = P1 启动</b> → T+1 若运价续创新高且 20日资金线收敛，可升 P2；否则维持 P1 反弹回补。<b>保险 = P2 防御承接</b> → 银行端资金持续外流是保险 P2 的前提，若大行反弹则跷跷板反转、保险降级。<b>军工 = P3 退潮</b> → T+1 继续退潮，无修复窗口（未达 ㊲ 修复窗口条件：需先有量能萎缩至极致 + 龙头止跌）。</div>
+    </div>
+    <div class="callout"><b>T+1 预判结论（供 20:30 回测）：</b><br>
+      <b>大势(T+1)：沪指 = 中性，创业板 = 中性</b> —— 指数三平收、成交创近 5 个月地量、上涨占比仅 33%，多空双方均无量能突破；结构上培育钻石为单点爆发，广度不足以带动指数。<br>
+      <b>板块(T+1)：机械设备 = 多</b>（培育钻石/超硬材料主成分所在，通用设备主力 +18.20亿/5日 +10.23亿/20日 +6.98亿 三周期全正，为申万二级中最强支撑）｜<b>非银金融 = 多</b>（保险 5/5 全涨、中报 +78.12%、中期分红超 390亿，承接银行外溢）｜<b>国防军工 = 空</b>（P3 退潮确认，地面兵装 -2.16% 1/12、航天装备 -1.19% 0/9，内蒙一机冲高回落 7.13%）<br>
+      <b>主线(T+1)：培育钻石/金刚石散热 · 保险/非银金融</b></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">九、全天连续链衔接校验（预测-回测连续铁律）</div>
+    <table class="tbl">
+      <thead>
+        <tr><th style="width:11%">时点</th><th style="width:32%">当时主线/方向判定</th><th style="width:10%">今日验证</th><th>偏差说明与承接</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>07:00 盘前</b></td><td>军工（阅兵事件顶点·冲高减仓）、银行保险红利、贵金属黄金</td><td><span class="down">部分证伪</span></td><td>军工「冲高减仓」<b>方向正确</b>（地面兵装 -2.16%、全市场倒数第 4）；贵金属「黄金」<b>正确</b>（+2.18%）；<b>银行证伪</b> —— 国有大行 0/6 全跌 -1.86%，而保险 +2.58% 5/5 全涨 → 盘前把「银行保险红利」打包是一个方向，实际内部发生 ㉒ 跷跷板，<b>须拆分为两个独立方向跟踪</b>。</td></tr>
+        <tr><td><b>09:25 竞价</b></td><td>旅游及景区（9分强信号）、半导体（7分试探）、影视院线（6分待确认）</td><td><span class="down">证伪</span></td><td>旅游及景区收 <span class="down">-1.41%</span>（3/25 上涨），云南旅游一字板 2 连板为<b>唯一独苗</b>，板块资金 -0.75亿 → 9 分强信号在退潮日<b>二度失效</b>；半导体 -0.41%、主力 -44.86亿，7 分试探同样证伪。<b>待 20:30 归因：竞价 9 分评价体系在本轮退潮期已连续两日失效（9/2 农业、9/3 旅游）。</b></td></tr>
+        <tr><td><b>10:00</b></td><td>军工证伪、银行底仓稳健、贵金属 A 级↑、中际旭创临界</td><td><span class="up">2/3 正确</span></td><td>军工证伪 ✅、贵金属 A 级 ✅（+2.18%）、<b>银行底仓稳健 ❌</b>（大行 0/6 全跌）。中际旭创未在本次采集范围，标 N/A。</td></tr>
+        <tr><td><b>11:45 午盘</b></td><td>大金融 + 事件驱动，普涨率 39% 临界</td><td><span class="up">正确</span></td><td>「大金融」方向正确但内部方向反了 —— 是<b>保险（+2.58%）而非银行（-1.86%）</b>；普涨率由 39% 降至 33%，跌破临界。</td></tr>
+        <tr><td><b>14:30 盘中速览</b></td><td>培育钻石（A级·唯一健康象限）、保险（B级↑）、BDI（多）、国有大行（空）、军工（空）、旅游（空）</td><td><span class="up">6/6 正确</span></td><td><b>本日最大正贡献。</b>14:30 已正确识别培育钻石为「唯一三周期全正健康象限」并给 A 级，收盘培育钻石 +4.18% 领涨全市场、主力 +17.51亿，判定完全兑现；国有大行（空）、军工（空）、旅游（空）三项亦全部兑现。</td></tr>
+        <tr><td><b>19:15 最强主线</b></td><td>培育钻石 P2（P0）、BDI P1、保险 P2、贵金属/机器人 P1 反弹</td><td>—</td><td>本段。承接 14:30 的培育钻石 A 级判定并<b>升格为 P0 主线</b>，升级依据 = 收盘资金/广度/催化三项全部强化（主力由 +17.56亿 至 +17.51亿 持平，广度 14/16 = 87.5%，新增中报与英伟达 Vera Rubin 产业催化确认）。</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>链条结论：</b>全天链 07:00 → 09:25 → 10:00 → 11:45 → 14:30 → 19:15 中，<b>14:30 为本日最佳时点（6/6 全对）</b>，其对培育钻石「唯一健康象限」的早期识别是全链条最大正贡献；<b>09:25 竞价 9 分信号连续第二日证伪（农业 → 旅游）为最大负项</b>，说明退潮期竞价强度体系存在系统性高估。<b>待 20:30 归因：</b>① 竞价评分体系在「上涨占比 &lt;40% 的退潮日」应否整体降权一档；② 盘前「银行+保险」打包口径需拆分为独立子行业跟踪；③ 培育钻石「首日判 P2」与 9/2 军工「首日判 P1」的标准统一问题。</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">十、⚠️ 框架待更新（提交 20:30 整体回测统一归因固化）</div>
+    <div class="driver">
+      <div class="driver-row"><b>1. 【三-① 补充·高优先级】产业概念「爆发首日」阶段判定标准缺失。</b>本次培育钻石首日广度 87.5% + 资金三周期全正 → 判 P2；而 9/2 军工首日（地面兵装 +6.48%、11/12 上涨、主力 +30.98亿）当时判 P1、次日修正为 P2。<b>建议新增量化门控：爆发首日若同时满足「板块广度 &gt;80%」+「主力资金三周期全正」→ 首日即可判 P2；仅满足其一 → 判 P1。</b></div>
+      <div class="driver-row"><b>2. 【新增·高优先级】同叙事内部资金反向分流识别规则缺失。</b>液冷概念（+1.80%、主力 -16.03亿、20日 -510.25亿）与培育钻石/金刚石散热（+4.18%、主力 +17.51亿）同属「AI 散热」叙事（英伟达 Vera Rubin = 金刚石复合材料 + 液冷），但资金流向完全反向。<b>建议新增规则：同一产业叙事下的两个细分概念，若当日资金流向反向且差值 &gt;20亿，则资金流入方升档、流出方降档，并按「叙事内部切换」而非「叙事整体走强」处理。</b></div>
+      <div class="driver-row"><b>3. 【㉒ 扩展·中优先级】风格切换跷跷板未覆盖子行业层面。</b>现有 ㉒ 仅覆盖成长/价值、大小盘等风格维度，本次出现的「银行 → 保险」属<b>同一申万一级（非银金融/银行分属不同一级，但同属大金融板块）内部的子行业跷跷板</b>，现有规则无法归类。<b>建议扩展 ㉒ 为「跨风格 + 同板块子行业」双形态。</b></div>
+      <div class="driver-row"><b>4. 【竞价体系·高优先级】9 分强信号在退潮期连续两日失效。</b>9/2 农业转基因（竞价高标）→ 9/3 板块 -5.93% 崩塌；9/3 旅游及景区（9 分强信号）→ 当日收 -1.41%、3/25 上涨。<b>建议新增门控：当上涨家数占比 &lt;40%（退潮日）时，竞价 9 分信号自动降权为 7 分（试探级），不触发「可参与」结论。</b></div>
+      <div class="driver-row"><b>5. 【数据源·中优先级】概念板块涨幅多源口径差异达 0.71pp。</b>培育钻石当日涨幅：东方财富 +4.51% / 腾讯自选股 westock +4.18% / 证券时报 +3.80%。<b>建议固化概念板块涨幅口径优先级：以单一主源（westock 概念指数）为准，其余源仅作交叉趋势验证，差异 &gt;0.5pp 时强制标注但不改判。</b>（9/2 起因同花顺问财日配额耗尽，主链路已切 westock + Wind + 东财妙想 + 公开媒体四源交叉，本次实际达成 ≥4 源。）</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    数据源：腾讯自选股 westock（行情/申万二级全排名/概念板块/个股资金流，快照 15:00 收盘）· 同花顺概念（培育钻石 02231435 / 超硬材料 02GN2333）· 东方财富妙想（概念板块交叉）· 公开媒体（环球网 / 中新社 / 证券时报 / 凤凰网 / 第一财经，四源一致）<br>
+    龙头虎榜数据：2026-09-03 当日榜未发布（westock data_lhb 返回空），本报告不列龙虎榜，标 N/A，未编造。<br>
+    数据口径：红涨绿跌 · 金额单位人民币 · 主力资金为「大单+特大单」口径 · 框架基线 v2.8 / 报告 v3.3 / 随机基准 47.5%<br>
+    本报告为 READER 角色产出，不修改《复盘学习积累.md》；框架待更新项已提交 20:30 整体回测统一归因。<br>
+    【框架应用】⑪ ⑳ ㉒ ㉓ ㉕ ㉚ ㉛ ㊱ ㊺ · 三-① 三-② 三-⑤ 三-⑦ 三-⑧ · 20日资金线降级铁律 · 背离四象限
+  </div>
+
+</div>
+</body>
+</html>

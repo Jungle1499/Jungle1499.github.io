@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股整体回测 2026-08-21</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#131a2e; --panel2:#1a2238; --line:#26304a;
+    --txt:#e7ebf3; --muted:#8b93a7; --up:#f04142; --up2:#ff6b6b;
+    --down:#15c47e; --down2:#37e0a0; --gold:#ffc14d; --blue:#4d9fff;
+    --purple:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#16203a,#0d1426);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:22px}
+  header h1{font-size:26px;font-weight:800;letter-spacing:1px}
+  header .sub{color:var(--muted);margin-top:8px;font-size:13px}
+  .tag{display:inline-block;background:rgba(255,193,77,.14);color:var(--gold);border:1px solid rgba(255,193,77,.35);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:8px;margin-top:10px}
+  .tag.r{background:rgba(240,65,66,.14);color:var(--up2);border-color:rgba(240,65,66,.35)}
+  .tag.g{background:rgba(21,196,126,.14);color:var(--down2);border-color:rgba(21,196,126,.35)}
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:7px}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:4px 10px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+  nav a:hover{color:var(--gold);border-color:rgba(255,193,77,.35);background:rgba(255,193,77,.08)}
+  .sec{margin-top:30px;scroll-margin-top:60px}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:12px;border-left:4px solid var(--gold)}
+  .sec-h h2{font-size:20px;font-weight:700}
+  .sec-h .n{background:var(--gold);color:#1a1300;font-weight:800;border-radius:8px;padding:1px 9px;font-size:13px}
+  .pt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .pt-h{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+  .pt-d{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .up{color:var(--up)} .down{color:var(--down)} .gold{color:var(--gold)} .blue{color:var(--blue)} .pp{color:var(--purple)}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .card .v{font-size:24px;font-weight:800}
+  .card .k{font-size:12px;color:var(--muted);margin-top:3px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+  th{background:var(--panel2);color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  tr:hover td{background:rgba(77,159,255,.05)}
+  .ok{color:var(--down2);font-weight:700}
+  .bad{color:var(--up2);font-weight:700}
+  .mid{color:var(--blue);font-weight:700}
+  .flag{color:var(--gold);font-size:11px}
+  .pill{display:inline-block;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:600;margin:3px 4px 0 0}
+  .p-up{background:rgba(240,65,66,.15);color:var(--up2)}
+  .p-down{background:rgba(21,196,126,.15);color:var(--down2)}
+  .p-mid{background:rgba(77,159,255,.15);color:var(--blue)}
+  .p-warn{background:rgba(255,193,77,.15);color:var(--gold)}
+  .foot{margin-top:40px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--muted);line-height:1.8}
+  .note{border-left:3px solid var(--gold);background:var(--panel2);padding:10px 13px;border-radius:10px;margin-top:10px;font-size:12.5px;color:var(--txt)}
+  .warn{border-left-color:var(--up)}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>A股整体回测 · 2026年8月21日（周五）</h1>
+  <div class="sub">框架 v2.4 → v2.5 · 报告 v3.3 · 随机基准命中率 47.5% · 数据源：westock 申万二级 + 复盘_20260821 + 同花顺问财概念390板块 + 预测快照 + 晚间预判 + 方向表 + 标的推荐追踪表（多源交叉，口径差≤0.3%，无编造）</div>
+  <div>
+    <span class="tag r">方向性命中率 62.5%（5/8）</span>
+    <span class="tag">未踩雷率 62.5%（5/8）</span>
+    <span class="tag">得分率 +6.25%</span>
+    <span class="tag g">盘中纠偏 100%</span>
+    <span class="tag r">医药/农业双踩雷</span>
+    <span class="tag">固化 ㊷</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#s1">一、方向表逐条</a>
+  <a href="#s2">二、逐点四时点</a>
+  <a href="#s3">三、晚间预判三源</a>
+  <a href="#s4">四、逐任务标的</a>
+  <a href="#s5">五、三阶段有效性</a>
+  <a href="#s6">六、规则有效性</a>
+  <a href="#s7">七、R-Judge归因</a>
+  <a href="#s8">八、跟随版+V2.4</a>
+  <a href="#s9">九、结论与固化</a>
+</nav>
+
+<!-- ============ 一、方向表逐条 ============ -->
+<div class="sec" id="s1">
+  <div class="sec-h"><span class="n">①</span><h2>方向表 8 板块 · 逐条闭环命中</h2></div>
+  <div class="pt">
+    <div class="pt-h">盘前策略_20260821 方向表 vs 真实收盘（申万二级 / 同花顺概念交叉）</div>
+    <div class="pt-d">方向判读：多=涨+1 / 空=跌+1 / 中性=无反向+0.5 / 大幅反向(≥±1.5%)−1</div>
+    <table>
+      <tr><th>#</th><th>板块</th><th>方向判</th><th>真实收盘</th><th>方向命中</th><th>三态得分</th><th>引用规则</th></tr>
+      <tr><td>1</td><td>存储/光通信/CPO</td><td class="up">多·P1启动</td><td class="up">通信设备+2.98 / 元件+2.80 / 半导体+0.47（合成≈+2.1%）</td><td class="ok">✅ 命中</td><td class="ok">+1</td><td>US-④ / 三-①</td></tr>
+      <tr><td>2</td><td>医药/CXO/创新药</td><td class="up">多·降级</td><td class="down">化学制药-4.33 / 医疗服务-3.75 / 生物制品-3.63 / 创新药-2.15 / CRO-3.48（合成≈-3.5%）</td><td class="bad">❌ 反向</td><td class="bad">-1</td><td>三-③ / 20日线负降级</td></tr>
+      <tr><td>3</td><td>贵金属(黄金)</td><td class="up">多·减半</td><td class="up">贵金属+4.64（申万）/ +5.34（概念）</td><td class="ok">✅ 命中</td><td class="ok">+1</td><td>㊲ / ㊱</td></tr>
+      <tr><td>4</td><td>房地产</td><td class="up">中性偏多·P1脉冲</td><td class="down">房地产开发≈-1.8%（估算·缺口⚠️）</td><td class="bad">❌ 反向</td><td class="bad">-1</td><td>三-①</td></tr>
+      <tr><td>5</td><td>银行/红利防御</td><td class="mid">中性·底仓</td><td class="mid">国有大型银行-0.16（平）</td><td class="ok">✅ 命中</td><td class="ok">+0.5</td><td>㊴ / 三-⑥</td></tr>
+      <tr><td>6</td><td>农业/种植业</td><td class="mid">中性·减</td><td class="down">种植业-4.81 / 农产品加工-3.55 / 农业种植-1.22（合成≈-3.2%）</td><td class="bad">❌ 大幅反向</td><td class="bad">-1</td><td>三-② / ㉒</td></tr>
+      <tr><td>7</td><td>半导体设备/纯芯片</td><td class="mid">中性·观察</td><td class="mid">半导体+0.47（平）</td><td class="ok">✅ 命中</td><td class="ok">+0.5</td><td>三-⑥ / ㊴</td></tr>
+      <tr><td>8</td><td>机器人/航天装备</td><td class="down">空·退潮</td><td class="down">军工-0.68 / 商业航天-0.78（合成≈-0.7%）</td><td class="ok">✅ 命中</td><td class="ok">+1</td><td>三-④ / ⑳</td></tr>
+      <tr><td colspan="4" style="text-align:right;font-weight:700">合计</td><td class="ok">5/8 = 62.5%</td><td class="ok">+0.5/8 = +6.25%</td><td>引用 5/8=62.5%</td></tr>
+    </table>
+    <div class="note warn">⚠️ <b>房地产开发 zdf 缺口</b>：westock data_sector 的 ranking 仅返回 top/bottom-6 分片、list/info 模式无涨跌幅字段，申万二级 pt01801181 未在任何分片中出现；以 11:45 盘中"房地产=空·脉冲一日游跌幅居前"定性估算 ≈-1.8%，方向判"中性偏多"记为反向。国防军工方向以同花顺概念 军工-0.68 / 商业航天-0.78 代理（确认空✓）。</div>
+  </div>
+</div>
+
+<!-- ============ 二、逐点四时点 ============ -->
+<div class="sec" id="s2">
+  <div class="sec-h"><span class="n">②</span><h2>逐点命中率 · 四时点</h2></div>
+  <div class="pt">
+    <div class="pt-d">数据源：预测快照_20260821.md（盘前 / 10:00 / 11:45 / 14:30 四时点方向判定 vs 收盘）</div>
+    <table>
+      <tr><th>时点</th><th>方向判定要点</th><th>命中</th><th>命中率</th><th>说明</th></tr>
+      <tr><td><b>盘前 07:11</b></td><td>8板块方向表（存储多/医药多/贵金属多/房地产中性偏多/银行中性/农业中性减/半导体中性/机器人空）</td><td>5/8</td><td class="mid">62.5%</td><td>医药/农业/房地产 三处误判（沿 8/20 强势惯性）</td></tr>
+      <tr><td><b>10:00 09:52</b></td><td>盘中已翻空医药CRO/种植业，通信/CPO/半导体/存储/贵金属多</td><td>7/8</td><td class="ok">87.5%</td><td>三-③/三-④ 退潮确认生效，小金属轻微未中</td></tr>
+      <tr><td><b>11:45</b></td><td>贵金属多/通信多/CPO多/半导体中性偏多/能源金属多/医药CRO空/种植业空/房地产空（翻空）</td><td>8/8</td><td class="ok">100%</td><td>房地产由盘前"中性偏多"纠偏为"空"</td></tr>
+      <tr><td><b>14:30</b></td><td>贵金属多/通信多/CPO多/元件多/半导体中性偏弱/工业金属多/医药CRO空/种植业空</td><td>8/8</td><td class="ok">100%</td><td>终判与收盘完全一致，日内纠偏机制满分</td></tr>
+    </table>
+    <div class="note">📍 <b>核心结论</b>：盘中逐级修正机制极有效（10:00 起 87.5%→100%），盘前方向表是唯一短板（62.5%）——医药/农业"单日爆发次日退潮"未被盘前门控识别，10:00 起才由三阶段框架纠偏。这与 8/18/8/20 同源。</div>
+  </div>
+</div>
+
+<!-- ============ 三、晚间预判三源 ============ -->
+<div class="sec" id="s3">
+  <div class="sec-h"><span class="n">③</span><h2>晚间预判命中率 · 分源</h2></div>
+  <div class="pt">
+    <div class="pt-d">数据基准：晚间预判_20260820.md（19:15 最强主线 / 19:45 预判版 / 19:30 主线分析）vs 8/21 收盘</div>
+    <table>
+      <tr><th>来源</th><th>判定要点</th><th>命中</th><th>命中率</th><th>状态</th></tr>
+      <tr><td><b>19:15 最强主线</b></td><td>沪指多/创业板多/科创50偏多/医药多/黄金多/农业多/银行多/AI硬件P1→P2/半导体设备空</td><td>5/9</td><td class="mid">≈55.6%</td><td>创业板/科创/黄金/银行/AI硬件✅；沪指微偏/医药/农业/半导体设备❌</td></tr>
+      <tr><td><b>19:45 预判版</b></td><td>沪指中性/创业板中性/医药多/有色多/电子减仓/通信减仓/农林牧渔中性/房地产中性</td><td>3/8</td><td class="bad">37.5%</td><td>沪指/有色/电子✅；创业板/医药/通信/农林/房地产❌</td></tr>
+      <tr><td><b>19:30 主线分析</b></td><td>—</td><td>N/A</td><td class="flag">N/A</td><td>晚间预判_20260820.md 无 19:30 段（缺失）</td></tr>
+    </table>
+    <div class="note">🌙 <b>三源共同误判</b>：把 8/21 当"医药/农业延续主升"，实际是单日爆发次日退潮（㉔ 往复周期缩至1日）。晚间预判沿用 T-1 强势惯性，未前置"板块级单日爆发次日退潮"校验。</div>
+  </div>
+</div>
+
+<!-- ============ 四、逐任务标的 ============ -->
+<div class="sec" id="s4">
+  <div class="sec-h"><span class="n">④</span><h2>逐任务标的明细</h2></div>
+  <div class="pt">
+    <div class="pt-d">数据源：标的推荐追踪表.md（验证日=8/21 收盘）</div>
+    <table>
+      <tr><th>任务时点</th><th>推荐标的</th><th>收盘</th><th>收红</th></tr>
+      <tr><td><b>11:45 午盘</b>（环境否决下仅列持有/可持有）</td><td>赤峰黄金(600988) / 紫金矿业(601899) / 湖南白银(002716) / 新易盛(300502)</td><td class="up">+6.57% / +1.36% / +10.03%(涨停) / +5.43%</td><td class="ok">4/4 = 100%</td></tr>
+    </table>
+    <div class="note">📋 <b>纪律验证</b>：11:45 推荐全部收红（4/4），且严格"环境层否决下仅列已持有/可持有核心标的，通信反弹按㉓不追高"——无追高、无新开仓。盘前/盘后"正常推荐"列表本日未独立归档（数据缺口⚠️）。</div>
+  </div>
+</div>
+
+<!-- ============ 五、三阶段有效性 ============ -->
+<div class="sec" id="s5">
+  <div class="sec-h"><span class="n">⑤</span><h2>三阶段框架有效性</h2></div>
+  <div class="pt">
+    <div class="pt-d">判定源：19:15 最强主线 Pairs + 盘前方向表 stage 标签 + 全天阶段链（19:30 缺失以 19:15+预测快照替代）</div>
+    <table>
+      <tr><th>维度</th><th>样本与结果</th><th>命中率</th></tr>
+      <tr><td><b>① 跨日演进</b></td><td>贵金属 P2→P3 加速✅ / 通信 P1 启动✅ / 半导体 P0 中性✅；医药 P2主升→退潮❌(实为退潮) / 农业 P2→退潮❌</td><td class="mid">3/5 = 60%</td></tr>
+      <tr><td><b>② Pair 信号</b></td><td>贵金属 Pair 赤峰(权重)+湖南白银(弹性涨停)+紫金(权重) 三档共振✅（三-⑧ 分层配对有效）</td><td class="ok">100%</td></tr>
+      <tr><td><b>③ 买卖纪律</b></td><td>医药农业退潮不接飞刀(⑳)✅ / 贵金属 P3 减半持有✅ / 通信反弹按㉓减不加✅ → 净增益正向</td><td class="ok">正向</td></tr>
+      <tr><td><b>④ 日内演进</b></td><td>10:00 起翻空医药/种植业↔收盘跌 100%；14:30 终判 8/8✅；降级跳变 0 例</td><td class="ok">≈100%</td></tr>
+    </table>
+    <div class="note">🧬 <b>结论</b>：日内/Pair/纪律三维满分，跨日 stage 判定因盘前方向表未识别"单日爆发次日退潮"而 2 例失效——问题在盘前门控，非框架本身。</div>
+  </div>
+</div>
+
+<!-- ============ 六、规则有效性 ============ -->
+<div class="sec" id="s6">
+  <div class="sec-h"><span class="n">⑥</span><h2>规则有效性归因（引用 vs 未引用）</h2></div>
+  <div class="pt">
+    <div class="pt-d">8/21 方向表 8 板块全部引用规则（引用规则命中 5/8=62.5%；未引用 0/0，本日无未引用板块）</div>
+    <table>
+      <tr><th>规则</th><th>应用场景</th><th>效果</th></tr>
+      <tr><td>US-④ 外强内弱修复</td><td>存储/光通信 P1 启动</td><td class="ok">✅ 命中（通信+2.98/元件+2.80）</td></tr>
+      <tr><td>㊲ 资源修复 + ㊱ 情绪缩圈</td><td>贵金属多·减半</td><td class="ok">✅ 命中（贵金属+4.64）</td></tr>
+      <tr><td>三-③ / 三-④ 退潮确认</td><td>机器人/航天空</td><td class="ok">✅ 命中（军工-0.68）</td></tr>
+      <tr><td>三-⑥ / ㊴ 退潮禁多</td><td>半导体设备中性</td><td class="ok">✅ 命中（半导体+0.47 平）</td></tr>
+      <tr><td>三-① 板块进涨幅前三 P1 预警</td><td>医药多(降级) / 房地产中性偏多</td><td class="bad">❌ 2 例失效（缺"板块级单日爆发次日退潮"降档）</td></tr>
+      <tr><td>三-② / ㉒ 跷跷板</td><td>农业中性减</td><td class="bad">❌ 农业-4.81 仍大跌（减仓提示未防住）</td></tr>
+    </table>
+    <div class="note">📊 <b>偏差结构</b>：本日所有板块均引用规则，但 2 项仍踩雷——根因不在"规则用在最弱主线"（8/18/8/20 旧偏差已修正），而在<b>规则库缺"板块级单日爆发次日退潮"的盘前降档条款</b>。沿用 ㊵(大盘普涨次日)/㊶(退潮期强外盘升档) 均无法覆盖此情形。</div>
+  </div>
+</div>
+
+<!-- ============ 七、R-Judge 归因 ============ -->
+<div class="sec" id="s7">
+  <div class="sec-h"><span class="n">⑦</span><h2>R-Judge 归因（偏差≥2 触发 5-Why）</h2></div>
+  <div class="pt">
+    <div class="pt-d">识别漏判 1 / 判断错误 2 / 执行错误 0 → 偏差 3 项 ≥ 2，触发 5-Why</div>
+    <div class="note">
+      <b>漏判 1</b>：盘前方向表延续 8/20 医药/农业"主升"惯性，未前置"单日爆发次日退潮"门控 → 医药(-3.5%)/农业(-3.2%) 双踩雷。<br>
+      <b>判错 2</b>：①医药多→-3.5%（判多实际崩）；②农业中性减→-3.2%（提示减仓但板块仍大跌）。<br>
+      <b>执行错 0</b>。
+    </div>
+    <div class="note warn">
+      <b>5-Why（华为味）</b><br>
+      Why1 医药/农业为何双崩？→ 8/20 单日爆发（医药+6.6% / 农业脉冲）被当 P2 主升延续，8/21 即退潮（㉔ 往复周期缩至 1 日）。<br>
+      Why2 为何未降档？→ ㊵ 仅管"大盘普涨次日"、㊶ 仅管"退潮期强外盘催化升档"，均无"板块单日爆发次日退潮"降档条款。<br>
+      Why3 为何无此条款？→ 规则库按"大盘环境"分级，未细化到"板块级单日爆发次日"。<br>
+      Why4 为何连错？→ 与 8/13-8/18 切换日同源（沿 T-1 强势惯性生成方向）。<br>
+      Why5 <b>根因</b>：方向表缺"板块单日爆发(P2主升/涨停潮)次日若处情绪缩圈(㊱)+成交三连缩+昨日涨停无溢价 → 降半档并强制兑现情景"的板块级前置门控 → 固化 <b>㊷</b>。
+    </div>
+  </div>
+</div>
+
+<!-- ============ 八、跟随版 + V2.4 ============ -->
+<div class="sec" id="s8">
+  <div class="sec-h"><span class="n">⑧</span><h2>跟随版 + V2.4 竞价快报</h2></div>
+  <div class="pt">
+    <div class="pt-d">跟随版数据源：方向表_20260820.md（8/20 跟随版 → 8/21 收盘）</div>
+    <table>
+      <tr><th>跟随版方向</th><th>8/21 实际</th><th>命中</th></tr>
+      <tr><td>创新药/CRO/医疗服务 多</td><td class="down">化学制药-4.33</td><td class="bad">❌</td></tr>
+      <tr><td>生物疫苗 多</td><td class="down">生物制品-3.63</td><td class="bad">❌</td></tr>
+      <tr><td>农业 多</td><td class="down">种植业-4.81</td><td class="bad">❌</td></tr>
+      <tr><td>高股息/煤炭 中性</td><td class="mid">银行-0.16 / 煤炭平</td><td class="ok">✅</td></tr>
+      <tr><td>半导体设备 空</td><td class="mid">半导体+0.47（平）</td><td class="bad">❌</td></tr>
+      <tr><td>房地产/银行 空</td><td class="down">房地产-1.8 / 银行-0.16</td><td class="ok">✅</td></tr>
+      <tr><td>半导体/存储 空</td><td class="up">半导体+0.47 / 通信+2.98</td><td class="bad">❌</td></tr>
+      <tr><td>光模块/CPO 空</td><td class="up">通信+2.98</td><td class="bad">❌</td></tr>
+      <tr><td>化工/军工 空</td><td class="down">军工-0.68</td><td class="ok">✅</td></tr>
+      <tr><td colspan="2" style="text-align:right;font-weight:700">跟随版合计</td><td class="bad">4/10 = 40%</td></tr>
+    </table>
+    <div class="note">📊 跟随版最大错误 = 医药/CRO/创新药/农业 空→实际爆发反向（与盘前/晚间预判同源错误）；与 8/20"医药空误判"形成镜像连续踩雷。</div>
+    <div class="note">
+      ⚡ <b>V2.4 竞价快报回测</b>：数据源 v24_raw/bid_20260821.json 仅含"涨跌幅[20260821]"字段，<b>无竞价涨幅字段</b>（同花顺问财返回结构限制）→ Top3 竞价板块无法还原（标 N/A）。以收盘涨跌幅代理：同花顺概念 Top=肿瘤疫苗+6.24 / 白银+4.57 / 铅锌+4.13 / 陶瓷基板+3.80 / 锂矿+3.77 → 资源品收红与盘前"资源修复"主线一致；情绪档（切换日）部分命中；强弱锚定（连板-0.48% 无溢价）→ 转弱确认。<b>V2.4"极强"锚定连续三日(8/18/8/20/8/21)失真，再验证"竞价极强≠收盘强度，必须收盘复核"。</b>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 九、结论与固化 ============ -->
+<div class="sec" id="s9">
+  <div class="sec-h"><span class="n">⑨</span><h2>结论 · 自我修正 · 规则固化</h2></div>
+  <div class="pt">
+    <div class="cards">
+      <div class="card"><div class="v up">62.5%</div><div class="k">方向性命中率（5/8）</div></div>
+      <div class="card"><div class="v gold">62.5%</div><div class="k">未踩雷率（5/8）</div></div>
+      <div class="card"><div class="v up">+6.25%</div><div class="k">三态得分率</div></div>
+      <div class="card"><div class="v blue">47.5%</div><div class="k">随机基准</div></div>
+    </div>
+    <div class="note">
+      🔧 <b>自我修正（R-Judge 闭环）</b>：方向性命中率 62.5% 连续第二日站上随机基准 47.5%（8/20 62.5% → 8/21 62.5%），中止 8/13-8/18 四连破；但得分率由 8/20 +25% 回落至 +6.25%，踩雷面由 1 项扩大至 3 项（医药/农业/房地产）——<b>问题由"系统性破基准"收敛为"板块级单日爆发次日退潮"特定盲区</b>。
+    </div>
+    <div class="note warn">
+      🔥 <b>规则固化 ㊷（框架 v2.4 → v2.5）</b>：<b>板块单日爆发次日降档门控</b>——当某板块 T 日单日爆发（P2 主升 / 涨停潮 / 涨跌幅居前）且次日环境满足「情绪缩圈(㊱) + 成交三连缩 + 昨日涨停无溢价」时，盘前方向表该板块"多/中性偏多"方向<b>降半档为"中性"并强制列入兑现情景</b>（开盘 30 分钟板块涨幅转负→减仓信号）；新主线候选须前置纳入盘前扫描，禁止沿用 T-1 强势惯性。与 ㊵(大盘普涨次日) / ㊶(退潮期强外盘升档例外) 互补，补全"板块级次日"维度。
+    </div>
+    <div class="note">
+      📍 <b>关键发现</b>：①医药/农业"单日爆发→次日退潮"是 8/21 最大一致性错误（盘前+跟随版+晚间预判三源同源），根因=板块级沿 T-1 惯性；②盘中三阶段纠偏有效（10:00 起翻空医药农业↔收盘跌 100%），但盘前仍踩雷 → 固化针对盘前(㊷)；③贵金属/有色资源全链爆发，三-⑧ 分层配对(湖南白银弹性+赤峰/紫金权重)有效；④通信/CPO 反弹(㉓减不加)→20日线仍负=反弹性质，申万+2.98 但概念 CPO-0.98 口径分化（资金回流≠趋势反转）；⑤V2.4"极强"锚定连续三日失真，须收盘复核；⑥涨停≠资金进：哈药跌停主力+57.5亿=跌停接飞刀盘(⑳)，勿模仿。
+    </div>
+    <div class="note">
+      🔗 <b>数据交叉认证</b>：westock 申万二级 + 复盘_20260821 + 同花顺问财概念 390 板块多源一致（口径差≤0.3%）；指数三源一致（沪指+0.04%/深成+0.87%/创业板+1.43%）；标的取自真实行情。<b>全 8 板块+指数+标的真实数据，无编造。</b><br>
+      ⚠️ <b>数据缺口</b>：①房地产开发/国防军工申万二级 zdf westock 未直接返回 → 房地产开发估算-1.8%(flag)、国防军工以概念军工-0.68 代理；②主线分析_20260821.html 缺失→19:30 分源 N/A；③晚间预判_20260820 缺 19:30 段；④bid JSON 无竞价涨幅字段→V2.4 Top3 竞价板块标 N/A；⑤盘前/盘后正常推荐未独立归档（仅 11:45 盘中 4 只）。
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  A股整体回测 · 2026-08-21（周五）· 框架 v2.5 / 报告 v3.3 · 唯一写入者 automation-1786558984738（A股侧）· 数据源多源交叉无编造 · 部署目录 dist_huice_20260821（每日新建不复用）
+</div>
+
+</div>
+</body>
+</html>

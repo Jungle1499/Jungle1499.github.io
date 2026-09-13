@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美股强势股复盘 · 2026-08-15</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#131a2e; --panel2:#1a2238; --line:#26304a;
+    --txt:#e7ebf3; --muted:#8b93a7; --up:#f04142; --up2:#ff6b6b;
+    --down:#15c47e; --gold:#ffc14d; --blue:#4d9fff; --purple:#a78bfa; --orange:#ff8a65;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1220px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#16203a,#0d1426);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:20px}
+  header h1{font-size:25px;font-weight:800;letter-spacing:1px}
+  header .sub{color:var(--muted);margin-top:8px;font-size:13px}
+  .tag{display:inline-block;background:rgba(255,193,77,.14);color:var(--gold);border:1px solid rgba(255,193,77,.35);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:8px;margin-top:10px}
+  .tag.r{background:rgba(240,65,66,.14);color:var(--up2);border-color:rgba(240,65,66,.35)}
+  .tag.b{background:rgba(77,159,255,.14);color:var(--blue);border-color:rgba(77,159,255,.35)}
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:7px}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:4px 10px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+  nav a:hover{color:var(--gold);border-color:rgba(255,193,77,.35);background:rgba(255,193,77,.08)}
+  .sec{margin-top:34px;scroll-margin-top:60px}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:12px;border-left:4px solid var(--gold)}
+  .sec-h h2{font-size:20px;font-weight:700}
+  .sec-h .n{background:var(--gold);color:#1a1300;font-weight:800;border-radius:8px;padding:1px 9px;font-size:13px}
+  .sec-desc{color:var(--muted);font-size:12.5px;margin:-8px 0 14px 12px}
+  .pt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .pt-h{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+  .pt-d{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .tbl th{background:var(--panel2);color:var(--gold);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  .tbl tbody tr:hover{background:rgba(77,159,255,.05)}
+  .up{color:var(--up2);font-weight:700}
+  .down{color:var(--down)}
+  .gold-t{color:var(--gold)}
+  .rank{color:var(--muted);font-weight:700;width:36px}
+  .code{color:var(--blue);font-weight:600;white-space:nowrap}
+  .nm{font-weight:600;white-space:nowrap}
+  .cat{color:#b9c2d6;font-size:12px}
+  .risk{color:var(--orange)}
+  .cap{white-space:nowrap}
+  .alloc{color:var(--gold);font-weight:700;white-space:nowrap}
+  .trend{color:var(--purple);white-space:nowrap}
+  .ps{color:var(--muted);white-space:nowrap}
+  .bar-w{display:inline-block;width:64px;height:6px;background:#1a2238;border-radius:3px;margin-right:7px;vertical-align:middle;overflow:hidden}
+  .bar{height:100%;background:linear-gradient(90deg,#f04142,#ff6b6b);border-radius:3px}
+  .chart{width:100%;height:320px}
+  .chart-half{width:100%;height:280px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  /* 回测横幅 */
+  .bt-wrap{background:linear-gradient(135deg,#1c2436,#131a2e);border:1px solid rgba(255,193,77,.35);border-radius:14px;padding:14px 18px;margin-bottom:16px}
+  .bt-h{font-size:13.5px;font-weight:700;color:var(--gold);margin-bottom:10px}
+  .bt-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+  .bt-item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
+  .bt-item.hl{border-color:rgba(255,193,77,.4);background:rgba(255,193,77,.06)}
+  .bt-k{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+  .bt-v{font-size:16px;font-weight:800;color:var(--up2)}
+  .bt-v.gold-t{color:var(--gold)}
+  .bt-v.muted{color:var(--muted)}
+  .bt-v.down{color:var(--down);font-size:11px;font-weight:600;line-height:1.4;display:block}
+  .bt-note{font-size:11px;color:var(--muted);margin-top:8px}
+  @media(max-width:900px){.bt-grid{grid-template-columns:repeat(4,1fr)}}
+  /* 趋势卡片 */
+  .tcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:8px}
+  .tcard:hover{border-color:rgba(255,193,77,.4)}
+  .t-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .t-id{background:var(--gold);color:#1a1300;font-weight:800;border-radius:6px;padding:0 8px;font-size:12px;letter-spacing:1px}
+  .t-name{font-size:14.5px;font-weight:700;flex:1}
+  .t-logic{font-size:12px;color:#b9c2d6;line-height:1.55}
+  .t-stocks{font-size:11.5px;color:var(--blue)}
+  .t-stocks b{color:var(--muted);font-weight:500;margin-right:4px}
+  .t-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;border-top:1px dashed var(--line);padding-top:8px;font-size:11.5px}
+  .t-m{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--muted)}
+  .t-m b{font-weight:600}
+  .t-m .val{color:var(--orange)}
+  .t-m .strat{color:var(--gold)}
+  /* 对标分组 */
+  .map-grp,.opp-grp{margin-bottom:18px}
+  .map-grp-h,.opp-grp-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:7px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px 10px 0 0;border-bottom:none}
+  .map-grp-h .map-us{color:var(--muted);font-size:12px}
+  .map-grp-h .map-cnt,.opp-cnt{color:var(--muted);font-size:11.5px;margin-left:auto;background:var(--panel2);padding:1px 8px;border-radius:10px}
+  .map-grp .tbl,.opp-grp .tbl{border:1px solid var(--line);border-radius:0 0 10px 10px;overflow:hidden}
+  .opp-grp-h b{font-size:14px}
+  .prio-S .opp-grp-h{border-color:rgba(240,65,66,.5);background:rgba(240,65,66,.07)}
+  .prio-A .opp-grp-h{border-color:rgba(255,193,77,.5);background:rgba(255,193,77,.07)}
+  .prio-B .opp-grp-h{border-color:rgba(77,159,255,.5);background:rgba(77,159,255,.07)}
+  /* 策略 */
+  .core-box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+  .core-box h3{font-size:15px;color:var(--gold);margin-bottom:8px}
+  .core-box p{font-size:13px;color:#c9d2e4;line-height:1.7;white-space:pre-line}
+  .alloc-lv{white-space:nowrap;font-weight:700;color:var(--gold)}
+  .alloc-w{white-space:nowrap;font-weight:800;color:var(--up2)}
+  /* 情景 */
+  .scen{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;flex-direction:column;gap:7px}
+  .scen-h{font-weight:700;font-size:14px;color:var(--gold);padding-bottom:6px;border-bottom:1px dashed var(--line)}
+  .scen-l{font-size:12px;display:flex;gap:8px}
+  .scen-l b{color:var(--muted);font-weight:600;min-width:56px;white-space:nowrap}
+  .scen-l span{color:#c9d2e4}
+  .risk-cat{background:rgba(255,138,101,.14);color:var(--orange);border:1px solid rgba(255,138,101,.35);border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap}
+  .foot{color:#5b6478;font-size:11px;margin-top:30px;text-align:center;line-height:1.8}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}.tbl{font-size:11px}.tbl th,.tbl td{padding:6px 6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🇺🇸 美股强势股复盘 → A股配置全景</h1>
+  <div class="sub">美股交易日 <b class="gold-t">2026-08-14</b> · 报告日期 2026-08-15 · 全自动生成</div>
+  <div>
+    <span class="tag r">隔夜涨幅榜</span>
+    <span class="tag b">产业趋势</span>
+    <span class="tag">A股对标 24 只</span>
+    <span class="tag">机会推演 20 只</span>
+    <span class="tag">4 情景</span>
+  </div>
+</header>
+
+  <div class="bt-wrap">
+    <div class="bt-h">📊 自学习回测 · 昨日方向表 → 实际验证（方向表日 2026-08-13 → 验证日 2026-08-14）</div>
+    <div class="bt-grid">
+      <div class="bt-item"><span class="bt-k">S级命中</span><b class="bt-v">5/5 = 100.0%</b></div>
+      <div class="bt-item"><span class="bt-k">A级命中</span><b class="bt-v">5/5 = 100.0%</b></div>
+      <div class="bt-item"><span class="bt-k">B级命中</span><b class="bt-v">5/8 = 62.5%</b></div>
+      <div class="bt-item hl"><span class="bt-k">S+A 加权</span><b class="bt-v gold-t">10/10 = 100.0%</b></div>
+      <div class="bt-item hl"><span class="bt-k">全表命中</span><b class="bt-v gold-t">15/18 = 83.3%</b></div>
+      <div class="bt-item hl"><span class="bt-k">未踩雷率</span><b class="bt-v gold-t">18/18 = 100.0%</b></div>
+      <div class="bt-item"><span class="bt-k">随机基准</span><b class="bt-v muted">47.5%</b></div>
+      <div class="bt-item"><span class="bt-k">踩雷项</span><b class="bt-v down">东方电气-0.48%/中国核电-0.45%/万丰奥威-1.03%（B档卫星，无大幅反向）</b></div>
+    </div>
+    <div class="bt-note">已固化规则：US-① 硬件聚焦 · US-② 硬件优先 · US-③ 映射前提校验 · US-④ 外强内弱修复 · US-⑤ 主线双日确认(新) · 框架 v1.9</div>
+  </div>
+
+<nav>
+  <a href="#s1">① 美股强势股扫描</a>
+  <a href="#s2">② 产业趋势抽象</a>
+  <a href="#s3">③ A股对标与配套</a>
+  <a href="#s4">④ A股机会推演</a>
+  <a href="#s5">⑤ 策略总结与推演</a>
+  <a href="#s6">⑥ 风险提示</a>
+</nav>
+
+<!-- 1 美股强势股扫描 -->
+<div class="sec" id="s1">
+  <div class="sec-h"><span class="n">1</span><h2>美股强势股扫描</h2></div>
+  <div class="sec-desc">隔夜美股涨幅居前个股 · 驱动类型 + 催化事件 + 深层逻辑 + 资金/持续性评分</div>
+  <div class="pt">
+    <div class="pt-h">Top 15 涨幅分布</div>
+    <div class="pt-d">柱状长度 = 隔夜涨幅%</div>
+    <div id="chart-strong" class="chart"></div>
+  </div>
+  <div class="pt" style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>#</th><th>代码</th><th>名称</th><th>涨幅</th><th>驱动</th><th>即时催化事件</th><th>趋势方向</th><th>资金认可</th><th>持续性</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="rank">1</td>
+          <td class="code">AAOI</td>
+          <td class="nm">Applied Optoelectronics</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:100%"></div></div><b class="up">+15.53%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">技术/情绪</span></td>
+          <td class="cat" title="光通信板块反弹领涨，数据中心光模块需求（具体当日新闻未逐一核实，标注推断）">光通信板块反弹领涨，数据中心光模块需求（具体当日新闻未逐一核实，标注推断）</td>
+          <td class="trend">光通信反弹</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="code">SNDK</td>
+          <td class="nm">闪迪</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:66.60000000000001%"></div></div><b class="up">+7.40%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/涨价</span></td>
+          <td class="cat" title="存储超级周期延续：AI服务器存储需求+涨价预期，本周累涨35.38%，美光2.5亿美元AI基金加码，NAND纯正标的连续两日领涨">存储超级周期延续：AI服务器存储需求+涨价预期，本周累涨35.38%，美光2.5亿美元AI基金加码，NAND纯正标的连续两日领涨</td>
+          <td class="trend">存储超级周期</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="code">AMD</td>
+          <td class="nm">超威半导体</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:58.5%"></div></div><b class="up">+6.50%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">订单/金融工程</span></td>
+          <td class="cat" title="完成47.5亿美元创纪录投资级发债（4档）+美银上调2030服务器CPU市场至2100亿美元并列为首选；管理层预期2026H2服务器收入+80%、AI数据中心业务明年+100%以上；Helios AI机架9月出货，Anthropic承诺最高2GW MI450算力">完成47.5亿美元创纪录投资级发债（4档）+美银上调2030服务器CPU市场至2100亿美元并列为首选；管理层预期2026H2服务器收入+80%、AI数据中心业务明年+100%以上；Helios AI机架9月出货，Anthropic承诺最高2GW MI450算力</td>
+          <td class="trend">AI CPU/服务器CPU</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">4</td>
+          <td class="code">STX</td>
+          <td class="nm">希捷科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:50.85%"></div></div><b class="up">+5.65%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/涨价</span></td>
+          <td class="cat" title="存储板块共振：AI近线HDD/大容量存储需求+涨价预期，行业合约能见度延伸">存储板块共振：AI近线HDD/大容量存储需求+涨价预期，行业合约能见度延伸</td>
+          <td class="trend">存储超级周期</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="code">LITE</td>
+          <td class="nm">Lumentum</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:46.71%"></div></div><b class="up">+5.19%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/技术</span></td>
+          <td class="cat" title="光通信反弹：财报后修复延续，数据中心光模块/激光器需求（8/13财报催化后连涨）">光通信反弹：财报后修复延续，数据中心光模块/激光器需求（8/13财报催化后连涨）</td>
+          <td class="trend">光通信反弹</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">6</td>
+          <td class="code">GLW</td>
+          <td class="nm">康宁</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:42.300000000000004%"></div></div><b class="up">+4.70%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/技术</span></td>
+          <td class="cat" title="光纤光缆需求：AI数据中心光纤用量提升+通信网络升级，光纤光缆涨价逻辑">光纤光缆需求：AI数据中心光纤用量提升+通信网络升级，光纤光缆涨价逻辑</td>
+          <td class="trend">光通信反弹</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">7</td>
+          <td class="code">WDC</td>
+          <td class="nm">西部数据</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:39.69%"></div></div><b class="up">+4.41%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/机构买盘</span></td>
+          <td class="cat" title="FY2026Q4财报双超+AI近线存储定价能力强，机构逢低承接延续">FY2026Q4财报双超+AI近线存储定价能力强，机构逢低承接延续</td>
+          <td class="trend">存储超级周期</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">8</td>
+          <td class="code">CLSK</td>
+          <td class="nm">CleanSpark</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:44.550000000000004%"></div></div><b class="up">+4.95%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪/资金</span></td>
+          <td class="cat" title="比特币矿股分化走强（COIN/MSTR回调但矿股逆势，具体催化未核实，标注推断）">比特币矿股分化走强（COIN/MSTR回调但矿股逆势，具体催化未核实，标注推断）</td>
+          <td class="trend">加密货币震荡</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">9</td>
+          <td class="code">GFS</td>
+          <td class="nm">格芯</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:32.31%"></div></div><b class="up">+3.59%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">技术/资金</span></td>
+          <td class="cat" title="晶圆代工链走强：AI芯片代工需求+本土化产能政策（跟随AMD等芯片股反弹）">晶圆代工链走强：AI芯片代工需求+本土化产能政策（跟随AMD等芯片股反弹）</td>
+          <td class="trend">AI芯片产业链</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">10</td>
+          <td class="code">SLB</td>
+          <td class="nm">斯伦贝谢</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:27.0%"></div></div><b class="up">+3.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">政策/地缘</span></td>
+          <td class="cat" title="能源服务集体上涨：特朗普宣称&#x27;很快宣布霍尔木兹海峡为美国领土&#x27;→油价大涨，油服景气预期">能源服务集体上涨：特朗普宣称&#x27;很快宣布霍尔木兹海峡为美国领土&#x27;→油价大涨，油服景气预期</td>
+          <td class="trend">能源安全/地缘溢价</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">11</td>
+          <td class="code">VRT</td>
+          <td class="nm">Vertiv</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:21.24%"></div></div><b class="up">+2.36%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/技术</span></td>
+          <td class="cat" title="数据中心基础设施稳健：液冷/电源管理需求持续，云厂商资本开支高企验证">数据中心基础设施稳健：液冷/电源管理需求持续，云厂商资本开支高企验证</td>
+          <td class="trend">数据中心基础设施</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">12</td>
+          <td class="code">MU</td>
+          <td class="nm">美光科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:20.7%"></div></div><b class="up">+2.30%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/涨价</span></td>
+          <td class="cat" title="存储共振：HBM/DDR5需求+涨价预期，创投2.5亿美元AI基金加码下一代AI存储">存储共振：HBM/DDR5需求+涨价预期，创投2.5亿美元AI基金加码下一代AI存储</td>
+          <td class="trend">存储超级周期</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">13</td>
+          <td class="code">TXN</td>
+          <td class="nm">德州仪器</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:20.25%"></div></div><b class="up">+2.25%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/周期</span></td>
+          <td class="cat" title="模拟芯片修复：工业/汽车模拟芯片库存周期见底（具体催化未核实，标注推断）">模拟芯片修复：工业/汽车模拟芯片库存周期见底（具体催化未核实，标注推断）</td>
+          <td class="trend">模拟芯片周期</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">14</td>
+          <td class="code">SMCI</td>
+          <td class="nm">超微电脑</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:15.66%"></div></div><b class="up">+1.74%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/订单</span></td>
+          <td class="cat" title="AI服务器持续反弹：财报验证AI服务器需求，液冷整机柜方案订单">AI服务器持续反弹：财报验证AI服务器需求，液冷整机柜方案订单</td>
+          <td class="trend">AI服务器/数据中心</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">15</td>
+          <td class="code">NXPI</td>
+          <td class="nm">恩智浦</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:10.89%"></div></div><b class="up">+1.21%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/周期</span></td>
+          <td class="cat" title="汽车/工业芯片修复（具体催化未核实，标注推断，跟随半导体板块）">汽车/工业芯片修复（具体催化未核实，标注推断，跟随半导体板块）</td>
+          <td class="trend">汽车半导体周期</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">16</td>
+          <td class="code">COP</td>
+          <td class="nm">康菲石油</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:18.0%"></div></div><b class="up">+2.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">政策/地缘</span></td>
+          <td class="cat" title="油价大涨带动：特朗普宣称霍尔木兹海峡为美国领土→布油逼近89美元">油价大涨带动：特朗普宣称霍尔木兹海峡为美国领土→布油逼近89美元</td>
+          <td class="trend">能源安全/地缘溢价</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">17</td>
+          <td class="code">CVX</td>
+          <td class="nm">雪佛龙</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:9.0%"></div></div><b class="up">+1.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">政策/地缘</span></td>
+          <td class="cat" title="油价上涨带动油气巨头（WTI+1.42%报82.40）">油价上涨带动油气巨头（WTI+1.42%报82.40）</td>
+          <td class="trend">能源安全/地缘溢价</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">18</td>
+          <td class="code">XOM</td>
+          <td class="nm">埃克森美孚</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:9.0%"></div></div><b class="up">+1.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">政策/地缘</span></td>
+          <td class="cat" title="油价上涨带动油气巨头">油价上涨带动油气巨头</td>
+          <td class="trend">能源安全/地缘溢价</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">19</td>
+          <td class="code">TSLA</td>
+          <td class="nm">特斯拉</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:6.12%"></div></div><b class="up">+0.68%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪/资金</span></td>
+          <td class="cat" title="大科技中逆势走强（具体催化未核实，标注推断）">大科技中逆势走强（具体催化未核实，标注推断）</td>
+          <td class="trend">大科技稳健</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">20</td>
+          <td class="code">AAPL</td>
+          <td class="nm">苹果</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:1.98%"></div></div><b class="up">+0.22%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪/资金</span></td>
+          <td class="cat" title="大科技微涨（具体催化未核实）">大科技微涨（具体催化未核实）</td>
+          <td class="trend">大科技稳健</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2 产业趋势抽象 -->
+<div class="sec" id="s2">
+  <div class="sec-h"><span class="n">2</span><h2>产业趋势抽象</h2></div>
+  <div class="sec-desc">从强势股提炼的 12 条产业主线 · 阶段/持续性/资金认可/估值空间/配置策略</div>
+  <div class="pt">
+    <div class="pt-h">主线持续性 vs 资金认可度（★ 数 0-5）</div>
+    <div id="chart-trends" class="chart"></div>
+  </div>
+  <div class="grid3">
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T1</span>
+            <span class="t-name">存储超级周期</span>
+            <span style="background:#ffc14d22;color:#ffc14d;border:1px solid #ffc14d66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">加速期</span>
+          </div>
+          <div class="t-logic">SNDK闪迪+7.40%（周涨35.38%）/STX+5.65%/WDC+4.41%/MU+2.30%，连续第2日领涨=主线双日确认【US-⑤】；AI服务器HBM/SSD/DDR5需求+涨价预期，SK海力士韩股亦涨</div>
+          <div class="t-stocks"><b>代表个股</b> SNDK, STX, WDC, MU</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">大</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">核心仓位</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T2</span>
+            <span class="t-name">AI CPU/服务器CPU</span>
+            <span style="background:#37e0a022;color:#37e0a0;border:1px solid #37e0a066;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期</span>
+          </div>
+          <div class="t-logic">AMD+6.50%：47.5亿美元创纪录发债+美银2030服务器CPU市场2100亿美元首选+Helios 9月出货+Anthropic 2GW；agentic AI使CPU成数据中心主控层，CPU/GPU配比转向1:1</div>
+          <div class="t-stocks"><b>代表个股</b> AMD</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T3</span>
+            <span class="t-name">光通信反弹</span>
+            <span style="background:#37e0a022;color:#37e0a0;border:1px solid #37e0a066;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期</span>
+          </div>
+          <div class="t-logic">AAOI+15.53%领涨/LITE+5.19%/GLW+4.70%，COHR财报利空消化后资金回流；数据中心光模块/光纤需求，800G/1.6T升级</div>
+          <div class="t-stocks"><b>代表个股</b> AAOI, LITE, GLW</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T4</span>
+            <span class="t-name">数据中心基础设施/液冷</span>
+            <span style="background:#37e0a022;color:#37e0a0;border:1px solid #37e0a066;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期</span>
+          </div>
+          <div class="t-logic">VRT+2.36%/SMCI+1.74%稳健：云厂商资本开支高企验证，液冷/电力/精密空调需求持续</div>
+          <div class="t-stocks"><b>代表个股</b> VRT, SMCI</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T5</span>
+            <span class="t-name">能源安全/地缘溢价</span>
+            <span style="background:#4d9fff22;color:#4d9fff;border:1px solid #4d9fff66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">验证期</span>
+          </div>
+          <div class="t-logic">特朗普宣称&#x27;很快宣布霍尔木兹海峡为美国领土&#x27;→WTI+1.42%报82.40、布油+2%逼近89；SLB+3%/COP+2%/CVV+1%/XOM+1%集体上涨</div>
+          <div class="t-stocks"><b>代表个股</b> SLB, COP, CVX, XOM</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">小</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">卫星仓位</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T6</span>
+            <span class="t-name">小盘扩散</span>
+            <span style="background:#f0414222;color:#f04142;border:1px solid #f0414266;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">放量期</span>
+          </div>
+          <div class="t-logic">罗素2000+0.51%刷新收盘纪录、连续第4日收涨（6月以来最长）；利率预期下行（9月按兵不动68%）利好小盘成长</div>
+          <div class="t-stocks"><b>代表个股</b> 罗素2000</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">主题配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T7</span>
+            <span class="t-name">半导体设备（回调预警）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">退潮预警</span>
+          </div>
+          <div class="t-logic">AMAT应用材料-5.12%（财报不达过高预期）/KLAC-2.70% vs GFS+3.59%；设备端让位存储，板块分化</div>
+          <div class="t-stocks"><b>代表个股</b> AMAT, KLAC, LRCX, GFS</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T8</span>
+            <span class="t-name">AI软件退潮</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">退潮期</span>
+          </div>
+          <div class="t-logic">NET-4.55%/CRWD-3.80%/PLTR-2.78%/MDB-2.53%/SNOW-2.51%集体回调：AI应用炒作降温，资金回流硬件</div>
+          <div class="t-stocks"><b>代表个股</b> NET, CRWD, PLTR, MDB, SNOW</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">回避</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T9</span>
+            <span class="t-name">核电退潮</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">退潮期</span>
+          </div>
+          <div class="t-logic">OKLO-4.46%/SMR-4.67%高位兑现：8/13反弹后回落，AI电力叙事降温</div>
+          <div class="t-stocks"><b>代表个股</b> OKLO, SMR</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">回避</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T10</span>
+            <span class="t-name">加密货币震荡</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">震荡期</span>
+          </div>
+          <div class="t-logic">COIN-3.53%/MSTR-4.18% vs CLSK+4.95%分化：加密板块缺乏统一方向</div>
+          <div class="t-stocks"><b>代表个股</b> COIN, MSTR, CLSK</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">回避</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T11</span>
+            <span class="t-name">AI制药</span>
+            <span style="background:#37e0a022;color:#37e0a0;border:1px solid #37e0a066;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期</span>
+          </div>
+          <div class="t-logic">Twist年内+295%&#x27;AI制药卖水人&#x27;，Capricor+57.96%（SPA会议数据）；AI+医药产业化逻辑（一财报道）</div>
+          <div class="t-stocks"><b>代表个股</b> TWST, CAPR</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">主题配置</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T12</span>
+            <span class="t-name">美国消费走弱（衰退预警）</span>
+            <span style="background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">早期</span>
+          </div>
+          <div class="t-logic">7月零售销售环比-0.6%（去年5月以来最大降幅）+达美航空-26%（财报暴雷）+Tapestry-16%：可选消费承压，经济放缓信号</div>
+          <div class="t-stocks"><b>代表个股</b> DAL, TPR</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564">☆☆☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">小</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">对冲配置</b></div>
+          </div>
+        </div></div>
+</div>
+
+<!-- 3 A股对标与配套 -->
+<div class="sec" id="s3">
+  <div class="sec-h"><span class="n">3</span><h2>A股对标与配套</h2></div>
+  <div class="sec-desc">美股产业趋势 → A股映射标的 24 只 · 按主线分组</div>
+  
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">存储超级周期</span>
+            <span class="map-us">美股: SNDK, WDC, MU, STX</span>
+            <span class="map-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">兆易创新</td>
+            <td class="code">603986.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">A股存储设计总龙头（NOR+利基DRAM+MCU），美股主线双日确认【US-⑤】+8/14已修复+3.21%确认【US-④验证】</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">澜起科技</td>
+            <td class="code">688008.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">DDR5内存接口芯片+HBM配套，AI服务器内存升级核心受益</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">江波龙</td>
+            <td class="code">301308.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">存储模组龙头（企业级SSD+eMMC），涨价周期弹性最大</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">佰维存储</td>
+            <td class="code">688525.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">存储模组/先进封测，8/14已+2.97%确认修复</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">香农芯创</td>
+            <td class="code">300475.SZ</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">存储分销+算力芯片代理，弹性品种</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">光通信反弹</span>
+            <span class="map-us">美股: AAOI, LITE, GLW</span>
+            <span class="map-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中际旭创</td>
+            <td class="code">300308.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">全球光模块龙头（800G/1.6T），AAOI+15.5%映射+8/14已+2.38%</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">新易盛</td>
+            <td class="code">300502.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">光模块高弹性标的，8/14已+4.23%领涨</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">天孚通信</td>
+            <td class="code">300394.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">光器件/无源龙头，8/14+4.10%强势修复，10日+56.6%</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">长飞光纤</td>
+            <td class="code">601869.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">光纤光缆龙头（康宁映射）+印度单模光纤反倾销续征5年，8/14已+5.24%</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">亨通光电</td>
+            <td class="code">600487.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">光纤光缆+海缆，康宁映射+A股光纤涨价</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI CPU/服务器CPU</span>
+            <span class="map-us">美股: AMD</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">海光信息</td>
+            <td class="code">688041.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">国产CPU/DCU龙头，AMD发债+美银首选映射国产AI CPU逻辑【US-②】</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI服务器/数据中心</span>
+            <span class="map-us">美股: SMCI</span>
+            <span class="map-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">工业富联</td>
+            <td class="code">601138.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">AI服务器代工龙头（英伟达链），8/14已+1.47%，SMCI连续反弹映射</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">浪潮信息</td>
+            <td class="code">000977.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">国产AI服务器龙头，液冷整机柜方案</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">中科曙光</td>
+            <td class="code">603019.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">国产算力/服务器，AI集群建设受益</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">沪电股份</td>
+            <td class="code">002463.SZ</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">AI服务器PCB（800G交换机板），8/14+0.51%</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">深南电路</td>
+            <td class="code">002916.SZ</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">高多层PCB/封装基板，10日+22.7%</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">数据中心基础设施/液冷</span>
+            <span class="map-us">美股: VRT</span>
+            <span class="map-cnt">2 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">英维克</td>
+            <td class="code">002837.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">液冷龙头（VRT映射），8/14已+2.96%确认，10日+20.3%</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">同飞股份</td>
+            <td class="code">300990.SZ</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">液冷温控配套，跟随主线</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">能源安全/地缘溢价</span>
+            <span class="map-us">美股: XOM, CVX, COP</span>
+            <span class="map-cnt">2 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国海油</td>
+            <td class="code">600938.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">油价涨（WTI 82.40）映射，高股息+储量龙头，8/14+0.12%</td>
+            <td class="cat">低</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">中海油服</td>
+            <td class="code">601808.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">油服龙头（斯伦贝谢映射），油价上行资本开支回暖</td>
+            <td class="cat">低</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">半导体设备（回调预警）</span>
+            <span class="map-us">美股: AMAT, KLAC</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">北方华创</td>
+            <td class="code">002371.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">国产设备龙头，美股AMAT财报不达预期→映射谨慎【US-②】</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI软件退潮</span>
+            <span class="map-us">美股: PLTR, MDB, CRWD</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">星环科技</td>
+            <td class="code">688031.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">AI软件映射，美股软件集体退潮→观望【US-②】</td>
+            <td class="cat">高</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">核电退潮</span>
+            <span class="map-us">美股: OKLO, SMR</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">东方电气</td>
+            <td class="code">600875.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">核电设备，美股核电退潮→观望</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">AI制药</span>
+            <span class="map-us">美股: TWST</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">药明康德</td>
+            <td class="code">603259.SH</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">CXO龙头，AI制药产业化卖水人逻辑（未单独核实催化）</td>
+            <td class="cat">中</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+</div>
+
+<!-- 4 A股机会推演 -->
+<div class="sec" id="s4">
+  <div class="sec-h"><span class="n">4</span><h2>A股机会推演</h2></div>
+  <div class="sec-desc">按优先级 S/A/B/C 分层 · 含催化时点、风险因素与配置建议</div>
+  
+        <div class="opp-grp prio-S">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#f0414222;color:#f04142;border:1px solid #f0414288;font-weight:800;font-size:13px">S</span> <b>核心仓位</b><span class="opp-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">兆易创新</td>
+            <td class="code">603986.SH</td>
+            <td class="cat">存储超级周期</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">美股存储主线双日确认（SNDK周涨35%）【US-⑤】+8/14已+3.21%验证【US-④】</td>
+            <td class="cat risk">PE101高位/存储涨价兑现度/获利盘兑现</td>
+            <td class="alloc">核心仓位15-20%</td>
+          </tr>
+          <tr>
+            <td class="nm">澜起科技</td>
+            <td class="code">688008.SH</td>
+            <td class="cat">存储超级周期</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">DDR5接口芯片+HBM配套，AI服务器内存升级核心受益</td>
+            <td class="cat risk">存储周期波动/估值高位</td>
+            <td class="alloc">核心仓位10-15%</td>
+          </tr>
+          <tr>
+            <td class="nm">江波龙</td>
+            <td class="code">301308.SZ</td>
+            <td class="cat">存储超级周期</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">存储模组龙头，涨价周期弹性最大，8/14已+2.38%</td>
+            <td class="cat risk">模组价格波动大/追高风险</td>
+            <td class="alloc">核心仓位10-15%</td>
+          </tr>
+          <tr>
+            <td class="nm">中际旭创</td>
+            <td class="code">300308.SZ</td>
+            <td class="cat">光通信反弹</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">光模块全球龙头，AAOI+15.5%映射【US-②】+8/14已+2.38%</td>
+            <td class="cat risk">美股COHR等财报扰动/估值高位</td>
+            <td class="alloc">核心仓位15-20%</td>
+          </tr>
+          <tr>
+            <td class="nm">新易盛</td>
+            <td class="code">300502.SZ</td>
+            <td class="cat">光通信反弹</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">光模块高弹性，8/14+4.23%领涨确认</td>
+            <td class="cat risk">涨幅大兑现风险</td>
+            <td class="alloc">核心仓位10-15%</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-A">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#ffc14d22;color:#ffc14d;border:1px solid #ffc14d88;font-weight:800;font-size:13px">A</span> <b>重点配置</b><span class="opp-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">天孚通信</td>
+            <td class="code">300394.SZ</td>
+            <td class="cat">光通信反弹</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">光器件龙头，8/14+4.10%，10日+56.6%强势</td>
+            <td class="cat risk">短期涨幅过大</td>
+            <td class="alloc">重点配置5-10%</td>
+          </tr>
+          <tr>
+            <td class="nm">工业富联</td>
+            <td class="code">601138.SH</td>
+            <td class="cat">AI服务器/数据中心</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">AI服务器代工龙头，SMCI连续反弹映射，8/14已+1.47%</td>
+            <td class="cat risk">毛利率低/资本开支波动</td>
+            <td class="alloc">重点配置10-15%</td>
+          </tr>
+          <tr>
+            <td class="nm">海光信息</td>
+            <td class="code">688041.SH</td>
+            <td class="cat">AI CPU/服务器CPU</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">国产CPU/DCU龙头，AMD发债+美银首选映射国产AI CPU【US-②】</td>
+            <td class="cat risk">估值高/信创节奏</td>
+            <td class="alloc">重点配置5-10%</td>
+          </tr>
+          <tr>
+            <td class="nm">佰维存储</td>
+            <td class="code">688525.SH</td>
+            <td class="cat">存储超级周期</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">存储模组/先进封测，8/14已+2.97%确认修复</td>
+            <td class="cat risk">波动大/周期波动</td>
+            <td class="alloc">重点配置5-8%</td>
+          </tr>
+          <tr>
+            <td class="nm">英维克</td>
+            <td class="code">002837.SZ</td>
+            <td class="cat">数据中心基础设施/液冷</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">液冷龙头（VRT映射），8/14+2.96%，10日+20.3%</td>
+            <td class="cat risk">PE151高位/兑现节奏</td>
+            <td class="alloc">重点配置5-8%</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-B">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#4d9fff22;color:#4d9fff;border:1px solid #4d9fff88;font-weight:800;font-size:13px">B</span> <b>卫星/精选</b><span class="opp-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">长飞光纤</td>
+            <td class="code">601869.SH</td>
+            <td class="cat">光通信反弹</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">光纤光缆龙头（GLW康宁映射）+印度反倾销续征，8/14已+5.24%</td>
+            <td class="cat risk">PE254高/光纤涨价持续性</td>
+            <td class="alloc">卫星仓位3-5%</td>
+          </tr>
+          <tr>
+            <td class="nm">沪电股份</td>
+            <td class="code">002463.SZ</td>
+            <td class="cat">AI服务器/数据中心</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">AI服务器PCB，8/14+0.51%企稳，10日+16.9%</td>
+            <td class="cat risk">PCB板块分化</td>
+            <td class="alloc">卫星仓位3-5%</td>
+          </tr>
+          <tr>
+            <td class="nm">深南电路</td>
+            <td class="code">002916.SZ</td>
+            <td class="cat">AI服务器/数据中心</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">高多层PCB/封装基板，10日+22.7%</td>
+            <td class="cat risk">高位波动</td>
+            <td class="alloc">卫星仓位3-5%</td>
+          </tr>
+          <tr>
+            <td class="nm">中国海油</td>
+            <td class="code">600938.SH</td>
+            <td class="cat">能源安全/地缘溢价</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">小</td>
+            <td class="cat">油价涨（WTI 82.40）+霍尔木兹地缘，高股息防御【US-① B档缩编】</td>
+            <td class="cat risk">油价回落/地缘降温</td>
+            <td class="alloc">卫星仓位3%</td>
+          </tr>
+          <tr>
+            <td class="nm">浪潮信息</td>
+            <td class="code">000977.SZ</td>
+            <td class="cat">AI服务器/数据中心</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">国产AI服务器+液冷整机柜，AI资本开支链</td>
+            <td class="cat risk">订单兑现节奏</td>
+            <td class="alloc">卫星仓位3-5%</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-C">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#8b93a722;color:#8b93a7;border:1px solid #8b93a788;font-weight:800;font-size:13px">C</span> <b>观察</b><span class="opp-cnt">5 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">北方华创</td>
+            <td class="code">002371.SZ</td>
+            <td class="cat">半导体设备（回调预警）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">AMAT财报不达预期→设备映射谨慎【US-②】</td>
+            <td class="cat risk">海外管制/设备分化</td>
+            <td class="alloc">观察</td>
+          </tr>
+          <tr>
+            <td class="nm">中微公司</td>
+            <td class="code">688012.SH</td>
+            <td class="cat">半导体设备（回调预警）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">大</td>
+            <td class="cat">刻蚀设备龙头，跟随设备板块观望</td>
+            <td class="cat risk">板块退潮</td>
+            <td class="alloc">观察</td>
+          </tr>
+          <tr>
+            <td class="nm">东方电气</td>
+            <td class="code">600875.SH</td>
+            <td class="cat">核电退潮</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">美股核电退潮（OKLO-4.46%）→观望</td>
+            <td class="cat risk">核电压制/兑现慢</td>
+            <td class="alloc">观察</td>
+          </tr>
+          <tr>
+            <td class="nm">星环科技</td>
+            <td class="code">688031.SH</td>
+            <td class="cat">AI软件退潮</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cat">高</td>
+            <td class="cat">美股AI软件集体回调→观望【US-②】</td>
+            <td class="cat risk">软件映射弱/亏损</td>
+            <td class="alloc">观察</td>
+          </tr>
+          <tr>
+            <td class="nm">香农芯创</td>
+            <td class="code">300475.SZ</td>
+            <td class="cat">存储超级周期</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">中</td>
+            <td class="cat">存储分销+算力芯片代理，8/14+2.29%，弹性品种</td>
+            <td class="cat risk">代理业务毛利率低</td>
+            <td class="alloc">观察</td>
+          </tr></tbody>
+          </table>
+        </div>
+</div>
+
+<!-- 5 策略总结 -->
+<div class="sec" id="s5">
+  <div class="sec-h"><span class="n">5</span><h2>策略总结与推演</h2></div>
+  <div class="core-box">
+    <h3>核心逻辑</h3><p>一、核心逻辑：美股三大指数小幅收跌（标普-0.17%），但存储超级周期连续第2日领涨——闪迪+7.40%（本周累涨35.38%）、希捷+5.65%、西数+4.41%、美光+2.30%，主线地位双日确认【US-⑤ 新固化】；光通信隔夜反弹（AAOI+15.53%领涨/LITE+5.19%/GLW+4.70%，COHR财报利空消化后资金回流）；AMD+6.50%逆势（47.5亿美元创纪录发债+美银上调2030服务器CPU预测至2100亿美元并列为首选，agentic AI使CPU成为数据中心主控层）。同时能源股集体上涨（特朗普宣称&#x27;很快宣布霍尔木兹海峡为美国领土&#x27;→WTI+1.42%报82.40/布油逼近89）。映射A股：昨日（8/13方向表→8/14验证）全表命中83.3%（S级100%/A级100%/未踩雷率100%，远超基准47.5%与当日A股涨家数占比43.3%），【US-③映射前提校验】+【US-④外强内弱修复】被实证有效；今日方向表延续S+A聚焦AI硬件主线（存储/光通信/AI服务器CPU），能源按【US-①】B档缩编、设备/AI软件/核电降档观察。</p>
+  </div>
+  <div class="core-box">
+    <h3>美股信号</h3><p>【美股信号】（2026-08-14 美东收盘，三源交叉认证：东财 mx / 财联社 / 中新经纬）
+• 隔夜三大指数小幅收跌：标普500 -0.17%（7785.76）/ 纳指 -0.28%（26729.16）/ 道指 -0.20%（53732.41）；纳指100 -0.13%（30046.14）；罗素2000 +0.51%刷新收盘纪录（连续第4日收涨，6月以来最长连涨）；费城半导体 -0.31%
+• 周线：标普+0.36%/纳指+0.14%/纳指100+1.09%/罗素2000+1.12%/道指-0.56%；9月&#x27;按兵不动&#x27;概率接近68%（CPI+PPI双低预期）；7月零售销售环比-0.6%（去年5月以来最大降幅）
+• 【存储超级周期·连续第2日领涨·主线双日确认US-⑤】SNDK闪迪 +7.40%（周涨35.38%）/ STX希捷 +5.65% / WDC西数 +4.41% / MU美光 +2.30% / SK海力士 +0.4%
+• 【光通信反弹】AAOI +15.53%领涨 / LITE Lumentum +5.19% / GLW康宁 +4.70%（数据中心光纤需求）；MRVL -0.07%/CRDO -2.29%
+• 【AMD +6.50% 逆势·AI CPU新逻辑】完成47.5亿美元创纪录投资级发债（4档）；美银Vivek Arya上调2030服务器CPU市场至2100亿美元+并列为首选（agentic AI使CPU成数据中心主控层）；管理层预期2026H2服务器收入+80%以上；Helios AI机架9月出货，Anthropic承诺最高2GW MI450算力
+• 【半导体分化】GFS格芯 +3.59% / TXN德州仪器 +2.25% / NXPI恩智浦 +1.21% vs AVGO博通 -5.94%（美银称融资问题）/ AMAT应用材料 -5.12%（财报不达过高预期）/ KLAC -2.70% / INTC -1.97%
+• 【AI软件退潮】NET -4.55% / CRWD -3.80% / PLTR -2.78% / CRM -2.56% / SNOW -2.51% / MDB -2.53%——AI应用炒作降温
+• 【能源·地缘溢价】特朗普称&#x27;很快将宣布霍尔木兹海峡为美国领土&#x27;→WTI +1.42%报82.40、布油+2%逼近89；斯伦贝谢+3%/康菲+2%/雪佛龙+1%+/埃克森+1%——能源股集体上涨
+• 【核电/加密回调】OKLO -4.46% / SMR -4.67%；COIN -3.53% / MSTR -4.18%（CLSK +4.95%分化）
+• 【消费走弱警示】达美航空 -26%（财报暴雷）/ Tapestry -16%（营收指引疲软）——可选消费承压
+• 大科技：TSLA +0.68% / AAPL +0.22% / MSFT -0.30% / NVDA -0.06% / AMZN -0.94% / META -0.86% / GOOGL -0.13%；中概金龙指数 +0.6%（搜狐+4%/亚朵+3%/晶科+3%）
+
+【A股映射】（应用【US-①】S+A聚焦硬件、【US-②】硬件优先、【US-⑤】主线双日确认·新）
+• 存储超级周期（兆易创新/澜起科技/江波龙/佰维存储）：美股主线双日确认（8/13+8/14连续领涨、闪迪周涨35%）→S档核心仓位【US-⑤】
+• 光通信（中际旭创/新易盛/天孚通信）：AAOI+15.5%反弹+A股8/14已修复（天孚+4.1%）→S/A档延续【US-②】
+• AI服务器/国产CPU（工业富联/海光信息/浪潮信息）：AMD发债+美银首选→国产CPU映射新催化
+• 液冷（英维克）：VRT +2.36%稳→A档
+• 光纤光缆（长飞光纤）：GLW康宁+4.70%映射→B档
+• 能源（中国海油）：霍尔木兹地缘+油价涨→B档卫星（US-①缩编原则）
+• 半导体设备（北方华创/中微）：AMAT财报不达预期→C档观察【US-②】
+• AI软件（星环科技）：美股软件退潮→C档观望【US-②】
+• 核电（东方电气）：OKLO/SMR退潮→C档观望</p>
+  </div>
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="pt">
+      <div class="pt-h">配置结构（按方向权重）</div>
+      <div id="chart-alloc" class="chart-half"></div>
+    </div>
+    <div class="pt">
+      <div class="pt-h">A股配置策略</div>
+      <table class="tbl">
+        <thead><tr><th>层级</th><th>方向</th><th>核心标的</th><th>仓位</th><th>逻辑简述</th><th>关键催化</th><th>风险</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="alloc-lv">核心仓位
+(55%)</td>
+        <td class="nm">存储超级周期</td>
+        <td class="cat">兆易创新、澜起科技、江波龙</td>
+        <td class="alloc-w">25-30%</td>
+        <td class="cat">美股最硬主线连续两日领涨（SNDK周涨35%）双日确认【US-⑤】+8/14 A股修复验证【US-④】</td>
+        <td class="cat">存储涨价/AI服务器存储需求</td>
+        <td class="cat risk">连涨后获利兑现/涨价未兑现财报</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">核心仓位
+(55%)</td>
+        <td class="nm">光通信</td>
+        <td class="cat">中际旭创、新易盛、天孚通信</td>
+        <td class="alloc-w">20-25%</td>
+        <td class="cat">AAOI+15.5%反弹映射+A股8/14已修复确认（天孚+4.1%）【US-②】</td>
+        <td class="cat">CPO/1.6T订单/光纤涨价</td>
+        <td class="cat risk">美股COHR等财报扰动传导</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">重点配置
+(30%)</td>
+        <td class="nm">AI服务器/国产CPU</td>
+        <td class="cat">工业富联、海光信息、浪潮信息</td>
+        <td class="alloc-w">10-15%</td>
+        <td class="cat">AMD发债+美银首选→AI CPU新逻辑，SMCI连续反弹验证AI服务器</td>
+        <td class="cat">AI服务器订单/国产CPU信创</td>
+        <td class="cat risk">资本开支节奏/估值高</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">重点配置
+(30%)</td>
+        <td class="nm">液冷+存储模组</td>
+        <td class="cat">英维克、佰维存储</td>
+        <td class="alloc-w">5-8%</td>
+        <td class="cat">VRT+2.36%稳健+存储模组涨价弹性</td>
+        <td class="cat">液冷订单/存储涨价</td>
+        <td class="cat risk">高位波动</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">卫星仓位
+(10%)</td>
+        <td class="nm">光纤光缆+PCB</td>
+        <td class="cat">长飞光纤、沪电股份、深南电路</td>
+        <td class="alloc-w">3-5%</td>
+        <td class="cat">GLW康宁+4.7%映射光纤涨价+AI服务器PCB景气</td>
+        <td class="cat">光纤涨价/PCB订单</td>
+        <td class="cat risk">板块分化</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">卫星仓位
+(10%)</td>
+        <td class="nm">能源（缩编）</td>
+        <td class="cat">中国海油</td>
+        <td class="alloc-w">3%</td>
+        <td class="cat">霍尔木兹地缘+油价涨，高股息防御【US-① B档缩编原则】</td>
+        <td class="cat">油价上行/地缘升级</td>
+        <td class="cat risk">地缘降温油价回落</td>
+      </tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="sec-h" style="margin-top:26px;border-left-color:var(--blue)"><span class="n" style="background:var(--blue)">5.2</span><h2 style="font-size:17px">情景推演与应对</h2></div>
+  <div class="grid2">
+        <div class="scen">
+          <div class="scen-h">情景A
+(基准情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>A股8/15高开震荡，存储/光通信延续美股主线，量能1.8-2万亿</span></div>
+          <div class="scen-l"><b>市场反应</b><span>存储双日确认延续（兆易/澜起/江波龙），光通信跟随，AI服务器/CPU补涨</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">S档存储/光通信按计划配置，A档AI服务器/CPU逢低介入</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景B
+(乐观情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>油价地缘+央行流动性（隔夜逆回购6000亿）共振，涨跌比修复&gt;1，创业板放量</span></div>
+          <div class="scen-l"><b>市场反应</b><span>全线兑现：存储/光通信/AI服务器齐涨，能源股补涨</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">核心仓位满配，B档能源/光纤可加配，避免追高日内涨幅&gt;5%标的</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景C
+(悲观情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>8/14存储光通信已大涨（兆易+3.2%/天孚+4.1%），获利兑现惯性+美股指数收跌传导，高开低走</span></div>
+          <div class="scen-l"><b>市场反应</b><span>映射高开低走二次兑现，涨跌比&lt;0.5</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">减仓兑现涨幅&gt;8%标的，回撤&gt;3%止损，保留现金等待企稳</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景D
+(黑天鹅)</div>
+          <div class="scen-l"><b>触发条件</b><span>霍尔木兹海峡冲突实质升级→油价急涨破$95，全球risk-off</span></div>
+          <div class="scen-l"><b>市场反应</b><span>全球股市承压，成长股杀估值，A股低开</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">增配能源/黄金/高股息对冲，科技仓位降半，等待地缘缓和</span></div>
+        </div></div>
+</div>
+
+<!-- 6 风险提示 -->
+<div class="sec" id="s6">
+  <div class="sec-h"><span class="n">6</span><h2>风险提示与跟踪指标</h2></div>
+  <div class="pt" style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>类别</th><th>风险描述</th><th>影响标的</th><th>概率</th><th>影响程度</th><th>对冲方式</th></tr></thead>
+      <tbody>
+      <tr>
+        <td><span class="risk-cat">宏观风险</span></td>
+        <td class="cat">7月零售销售环比-0.6%（去年5月以来最大降幅）+8月消费者信心下降，美国消费走弱，达美航空-26%财报暴雷</td>
+        <td class="cat">出口链/消费电子</td>
+        <td class="cap">中</td>
+        <td class="cap">中高</td>
+        <td class="cat">降低出口链暴露，增配内需政策线</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">宏观风险</span></td>
+        <td class="cat">美联储9月&#x27;按兵不动&#x27;概率68%但未排除加息，通胀黏性仍存（核心PPI+4.2%）</td>
+        <td class="cat">高估值科技股</td>
+        <td class="cap">中</td>
+        <td class="cap">中高</td>
+        <td class="cat">关注9月FOMC，保持现金缓冲</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">地缘风险</span></td>
+        <td class="cat">特朗普宣称&#x27;很快宣布霍尔木兹海峡为美国领土&#x27;，中东局势升级→油价/金价急涨</td>
+        <td class="cat">全市场，尤其成长</td>
+        <td class="cap">中</td>
+        <td class="cap">高</td>
+        <td class="cat">增配能源/黄金/高股息</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">产业风险</span></td>
+        <td class="cat">存储板块连涨后追高风险：闪迪周涨35%、A股兆易10日+10%，涨价预期尚未当期财报充分兑现</td>
+        <td class="cat">存储板块（兆易/江波龙）</td>
+        <td class="cap">中高</td>
+        <td class="cap">中高</td>
+        <td class="cat">低吸已回调龙头而非追高</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">产业风险</span></td>
+        <td class="cat">半导体设备链走弱：AMAT财报不达过高预期-5.12%，AVGO融资问题-5.94%</td>
+        <td class="cat">设备/PCB高估值</td>
+        <td class="cap">中</td>
+        <td class="cap">中</td>
+        <td class="cat">设备降档观察，聚焦存储/光通信</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">产业风险</span></td>
+        <td class="cat">AI软件集体退潮（NET-4.55%/PLTR-2.78%/MDB-2.53%），映射A股AI应用可能承压</td>
+        <td class="cat">AI软件/AI应用</td>
+        <td class="cap">中</td>
+        <td class="cap">中</td>
+        <td class="cat">回避AI软件映射，聚焦硬件【US-②】</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">流动性风险</span></td>
+        <td class="cat">罗素2000创新高+小盘过热迹象，若利率预期反复（通胀数据超预期）小盘回撤剧烈</td>
+        <td class="cat">小盘成长</td>
+        <td class="cap">中低</td>
+        <td class="cap">中</td>
+        <td class="cat">关注CPI/PPI后续数据</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">资金面风险</span></td>
+        <td class="cat">A股8/14涨跌比2400:2970（跌多涨少），存量博弈结构分化，量能未有效放大</td>
+        <td class="cat">全A</td>
+        <td class="cap">中</td>
+        <td class="cap">中</td>
+        <td class="cat">控制总仓位，聚焦确定性主线</td>
+      </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  数据来源：美股隔夜收盘行情 · 本报告由自动化程序生成，仅供参考，不构成投资建议<br>
+  生成时间：2026-08-15 07:35
+</div>
+</div>
+
+<script>
+// 涨幅分布
+var c1 = echarts.init(document.getElementById('chart-strong'));
+c1.setOption({
+  grid:{left:50,right:20,top:20,bottom:30},
+  tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+'%';}},
+  xAxis:{type:'value',axisLabel:{color:'#8b93a7',formatter:'{value}%'},splitLine:{lineStyle:{color:'#1a2238'}}},
+  yAxis:{type:'category',data:["AAOI", "SNDK", "AMD", "STX", "LITE", "GLW", "WDC", "CLSK", "GFS", "SLB", "VRT", "MU", "TXN", "SMCI", "NXPI"],axisLabel:{color:'#4d9fff',fontWeight:600},axisLine:{show:false},axisTick:{show:false}},
+  series:[{type:'bar',data:[15.53, 7.4, 6.5, 5.65, 5.19, 4.7, 4.41, 4.95, 3.59, 3.0, 2.36, 2.3, 2.25, 1.74, 1.21],barWidth:12,
+    itemStyle:{borderRadius:[0,6,6,0],color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#f04142'},{offset:1,color:'#ff6b6b'}])},
+    label:{show:true,position:'right',color:'#ff6b6b',formatter:'{c}%'}}]
+});
+window.addEventListener('resize',function(){c1.resize();});
+
+// 主线持续性 vs 资金认可
+var c2 = echarts.init(document.getElementById('chart-trends'));
+c2.setOption({
+  grid:{left:110,right:40,top:20,bottom:30},
+  tooltip:{trigger:'axis'},
+  legend:{data:['持续性','资金认可'],textStyle:{color:'#8b93a7'},top:0},
+  xAxis:{type:'value',max:5,min:0,axisLabel:{color:'#8b93a7'},splitLine:{lineStyle:{color:'#1a2238'}}},
+  yAxis:{type:'category',data:["T1 存储超级周期", "T2 AI CPU/服务器CPU", "T3 光通信反弹", "T4 数据中心基础设施/液冷", "T5 能源安全/地缘溢价", "T6 小盘扩散", "T7 半导体设备（回调预警）", "T8 AI软件退潮", "T9 核电退潮", "T10 加密货币震荡", "T11 AI制药", "T12 美国消费走弱（衰退预警）"],axisLabel:{color:'#c9d2e4',fontSize:11},axisLine:{show:false},axisTick:{show:false}},
+  series:[
+    {name:'持续性',type:'bar',data:[5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 4, 1],barWidth:6,itemStyle:{borderRadius:[0,4,4,0],color:'#ffc14d'}},
+    {name:'资金认可',type:'bar',data:[5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 3, 1],barWidth:6,itemStyle:{borderRadius:[0,4,4,0],color:'#4d9fff'}}
+  ]
+});
+window.addEventListener('resize',function(){c2.resize();});
+
+// 配置结构
+var c3 = echarts.init(document.getElementById('chart-alloc'));
+c3.setOption({
+  tooltip:{trigger:'item',formatter:'{b}: {c}%'},
+  legend:{orient:'vertical',right:10,top:'center',textStyle:{color:'#8b93a7',fontSize:11}},
+  series:[{type:'pie',radius:['42%','68%'],center:['38%','50%'],
+    itemStyle:{borderColor:'#131a2e',borderWidth:2},
+    label:{color:'#c9d2e4',fontSize:11},
+    data:[{"name": "存储超级周期", "value": 25.0}, {"name": "光通信", "value": 20.0}, {"name": "AI服务器/国产CPU", "value": 10.0}, {"name": "液冷+存储模组", "value": 5.0}, {"name": "光纤光缆+PCB", "value": 3.0}, {"name": "能源（缩编）", "value": 3.0}],
+    color:['#f04142','#ff8a65','#ffc14d','#4d9fff','#a78bfa','#37e0a0','#f472b6','#38bdf8']
+  }]
+});
+window.addEventListener('resize',function(){c3.resize();});
+</script>
+</body>
+</html>

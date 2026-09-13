@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260824</title>
+<style>
+  :root{
+    --bg:#F5F7FA; --card-white:#FFFFFF; --card-border:#DBE3EC; --card-border-strong:#ACB6C5;
+    --ink:#1F2937; --sub:#64748B; --heading:#1E3A5F;
+    --up:#DC2626; --down:#16A34A; --accent-blue:#2563EB;
+    --p0:#DC2626; --p1:#B45309; --tui:#64748B;
+    --thead-bg:#F1F5F9; --callout-bg:#F8FAFC;
+    --fs-title:16.8px; --fs-section:13.0px; --fs-subhead:11.4px; --fs-body:10.8px;
+    --fs-table:10.5px; --fs-idx-name:9.6px; --fs-idx-val:17.4px;
+    --fs-idx-sub:9.8px; --fs-foot:9.0px; --fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;background:#FFFFFF;color:var(--ink);line-height:1.5;}
+  .page{width:840px;margin:0 auto;background:var(--bg);padding-bottom:30px;}
+  .header{background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);color:#FFFFFF;text-align:center;padding:26px 0 24px;}
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+  .card{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 14px;}
+  .card-inner{padding:14px 16px;}
+  .summary-card{background:var(--card-white);border:1px solid var(--card-border-strong);border-radius:4px;margin:0 12px 16px;padding:16px 18px;}
+  .summary-head{font-size:var(--fs-subhead);color:var(--heading);font-weight:700;margin-bottom:10px;}
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{display:inline-block;color:#fff;font-size:var(--fs-chip);font-weight:700;padding:1px 8px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+  .chip-p0{background:var(--p0);}
+  .chip-p1{background:var(--p1);}
+  .chip-tui{background:var(--tui);}
+  .sum-text{color:var(--ink);}
+  .section{margin-bottom:14px;}
+  .sec-title{font-size:var(--fs-section);color:var(--heading);font-weight:700;padding:0 12px 6px;border-bottom:2px solid var(--heading);margin:0 12px 10px;}
+  .idx-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 12px 12px;}
+  .idx-cell{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;padding:8px 10px;text-align:left;}
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}
+  .idx-val.down{color:var(--down);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+  .stats-line{font-size:var(--fs-idx-sub);color:var(--sub);margin:0 12px 8px;line-height:1.8;}
+  .callout{background:var(--callout-bg);border-left:3px solid var(--accent-blue);border-radius:0 4px 4px 0;padding:10px 14px;margin:0 12px 14px;font-size:var(--fs-idx-sub);color:var(--sub);line-height:1.8;}
+  .callout b{color:var(--ink);}
+  .callout.red{border-left-color:var(--p0);background:#FEF2F2;}
+  .callout.green{border-left-color:var(--down);background:#F0FDF4;}
+  .tbl{width:calc(100% - 24px);margin:0 12px 14px;border-collapse:collapse;background:var(--card-white);border:1px solid var(--card-border);font-size:var(--fs-table);border-radius:4px;overflow:hidden;}
+  .tbl thead th{background:var(--thead-bg);color:var(--sub);font-weight:600;text-align:left;padding:7px 10px;border-bottom:1px solid var(--card-border);font-size:var(--fs-table);}
+  .tbl tbody td{padding:7px 10px;border-bottom:1px solid #EEF1F4;color:var(--ink);vertical-align:top;font-size:var(--fs-table);}
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}
+  .down{color:var(--down);font-weight:600;}
+  .badge-in{color:var(--up);}
+  .badge-out{color:var(--down);}
+  table.tbl{table-layout:fixed;}
+  .w-mainline th:nth-child(1){width:5%;}
+  .w-mainline th:nth-child(2){width:18%;}
+  .w-mainline th:nth-child(3){width:14%;}
+  .w-mainline th:nth-child(4){width:16%;}
+  .w-mainline th:nth-child(5){width:22%;}
+  .w-mainline th:nth-child(6){width:25%;}
+  .w-sector th:nth-child(1){width:22%;}
+  .w-sector th:nth-child(2){width:13%;}
+  .w-sector th:nth-child(3){width:13%;}
+  .w-sector th:nth-child(4){width:13%;}
+  .w-sector th:nth-child(5){width:39%;}
+  .w-fund th:nth-child(1){width:8%;}
+  .w-fund th:nth-child(2){width:18%;}
+  .w-fund th:nth-child(3){width:24%;}
+  .w-fund th:nth-child(4){width:24%;}
+  .w-fund th:nth-child(5){width:26%;}
+  .w-board th:nth-child(1){width:8%;}
+  .w-board th:nth-child(2){width:10%;}
+  .w-board th:nth-child(3){width:12%;}
+  .w-board th:nth-child(4){width:44%;}
+  .w-board th:nth-child(5){width:26%;}
+  .w-lhb th:nth-child(1){width:12%;}
+  .w-lhb th:nth-child(2){width:18%;}
+  .w-lhb th:nth-child(3){width:18%;}
+  .w-lhb th:nth-child(4){width:52%;}
+  .w-watch th:nth-child(1){width:18%;}
+  .w-watch th:nth-child(2){width:45%;}
+  .w-watch th:nth-child(3){width:37%;}
+  .w-pair th:nth-child(1){width:18%;}
+  .w-pair th:nth-child(2){width:16%;}
+  .w-pair th:nth-child(3){width:16%;}
+  .w-pair th:nth-child(4){width:16%;}
+  .w-pair th:nth-child(5){width:34%;}
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}
+  .tag-p1{background:var(--p1);}
+  .tag-p2{background:#7C3AED;}
+  .tag-p3{background:#475569;}
+  .lhb-buy{color:var(--up);font-weight:700;}
+  .lhb-sell{color:var(--down);font-weight:700;}
+  .driver{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 12px;padding:12px 16px;}
+  .driver-h{font-size:var(--fs-body);font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .driver-h .lv{font-size:var(--fs-chip);font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .lv-p0{background:var(--p0);}
+  .lv-p1{background:var(--p1);}
+  .dblk{font-size:var(--fs-body);line-height:1.7;margin-bottom:5px;}
+  .dblk b{color:var(--heading);}
+  .disclaimer{font-size:var(--fs-foot);color:var(--sub);margin:0 12px 10px;line-height:1.7;}
+  .foot-line{font-size:var(--fs-foot);color:var(--sub);text-align:center;margin:0 12px;line-height:1.8;}
+  .foot-src{font-size:8.6px;color:#9aa3ad;margin-top:4px;}
+  .frame-ref{display:inline-block;background:#E0E7FF;color:#3730A3;font-size:9px;font-weight:600;padding:0 5px;border-radius:3px;margin-right:4px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-08-24（周一）· 数据源：同花顺问财 / 腾讯自选股 / Wind / 东方财富 · 收盘后全维复盘</div>
+  </div>
+
+  <!-- 首屏结论 -->
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）</div>
+    <div class="sum-row"><span class="chip chip-p0">P0 最强主线</span><span class="sum-text"><b>资源金属 P3 结构性分化 + 防御启动 P1</b>—— 同花顺概念涨 TOP：黄金 +1.17%、粮食 +1.01%、金属铅 +1.00%、玉米 +0.99%、转基因 +1.23%；龙虎榜机构净买招金黄金 sz000506 +2.59亿（3日，涨停 +10.01%），白银有色 sh601212 涨停（独立3日 +4.85亿）。与 8/21 预判"P3 见顶"部分被 8/24 证伪：未出现放量长上影，反而板块内龙头保持强势 + 机构净买入。资源金属进入 <b>P3 分化后段</b>——主线未死但鱼尾加速 <span class="frame-ref">【框架应用三-④】</span>。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1 启动</span><span class="sum-text"><b>防御性板块 P1 启动：焦炭 / 煤炭 / 种植</b>—— 申万一级涨 TOP 全是防御：<b>焦炭 +5.39%</b>（领涨全市场，上海能源 sh600508 涨停 +10.02%）、保险 +2.58%、煤炭 +2.17%、种植业 +2.06%、农商行 +2.03%、白酒 +1.73%。同花顺概念转基因 +1.23%、粮食 +1.01%、玉米 +0.99%（多概念共振）。完美 <span class="frame-ref">【框架应用⑫防御vs成长跷跷板】</span>——成长杀跌释放资金流入防御。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="sum-text"><b>通信设备 / 半导体 / 医药 集体退潮</b>—— 8/21 预判"通信 P1→P2 持续"在 8/24 直接证伪：通信设备 -5.21%、元件 -4.18%、半导体 -3.13%、CRO -3.91%、生物疫苗 -3.97%、医疗服务 -3.31%、细胞免疫 -3.72%。三-④ 1日确认退潮：8/21 通信设备 +2.98%（P2 试错）→ 8/24 -5.21% = 8/21 预判的㊳机构试错期失败 <span class="frame-ref">【框架应用三-④ 1日确认】</span>。跌+净流出 = 退潮四象限确认。</span></div>
+    <div class="sum-row"><span class="sum-text"><b>市场状态：放量下跌 + 防御切换</b>—— 上证 -0.59% / 深成 -2.13% / 创业板 -3.21% / 科创50 -3.06%，成交 2.0074 万亿（放量 +1282亿 vs 8/21 的 1.879 万亿）；上涨 1460 / 下跌 3965 / 平 124（跌多涨少 26%），涨停 48 只（vs 8/21 的 58 只减少）、跌停 14 只（vs 8/21 的 15 只持平）。放量 + 跌少涨多 + 防御领涨 = 风险偏好极端下降 <span class="frame-ref">【框架应用㊱情绪缩圈】</span>。</span></div>
+  </div>
+
+  <!-- 一、市场概览 -->
+  <div class="section">
+    <div class="sec-title">一、市场概览</div>
+    <div class="idx-grid">
+      <div class="idx-cell"><div class="idx-name">上证指数</div><div class="idx-val down">3882.01</div><div class="idx-sub">-0.59%</div></div>
+      <div class="idx-cell"><div class="idx-name">深证成指</div><div class="idx-val down">13794.29</div><div class="idx-sub">-2.13%</div></div>
+      <div class="idx-cell"><div class="idx-name">创业板指</div><div class="idx-val down">3431.89</div><div class="idx-sub">-3.21%</div></div>
+      <div class="idx-cell"><div class="idx-name">科创50</div><div class="idx-val down">1602.34</div><div class="idx-sub">-3.06%</div></div>
+      <div class="idx-cell"><div class="idx-name">沪深300</div><div class="idx-val down">4563.13</div><div class="idx-sub">-1.25%</div></div>
+      <div class="idx-cell"><div class="idx-name">中证500</div><div class="idx-val down">7717.09</div><div class="idx-sub">-1.83%</div></div>
+    </div>
+    <div class="stats-line">两市成交额约 <b>20,074.56 亿</b>（放量 +1282亿 vs 8/21 的 18,790 亿）；上涨家数 <b>1460</b> / 下跌 <b>3965</b> / 平 <b>124</b>，涨停 <b>48</b> 只 / 跌停 <b>14</b> 只。创业板 -3.21% 大跌 / 沪指 -0.59% 相对抗跌，体现 <span class="frame-ref">【框架应用⑫防御vs成长跷跷板】</span>——防御性权重撑指数。</div>
+    <div class="callout"><b>市场画像：</b>放量下跌 + 防御领涨 + 成长集体杀跌，教科书级的防御切换。上证 -0.59% 远好于创业板 -3.21% = 防御板块（焦炭/煤炭/保险/种植/农商行/白酒）撑指数；放量 2.0074 万亿 + 跌多涨少（1460/3965）+ 涨停降至 48 只 = 风险偏好快速下降。资金从通信/半导体/医药/CRO 撤退流入焦炭/煤炭/种植/粮食。<span class="frame-ref">【框架应用㊱情绪缩圈】</span>。承接 8/21 预判"沪指中性偏空"，今日放量下挫 -0.59% 命中方向。</div>
+  </div>
+
+  <!-- 二、最强主线分级 -->
+  <div class="section">
+    <div class="sec-title">二、最强主线分级（P0 / P1 / P2 / 退潮）</div>
+    <table class="tbl w-mainline">
+      <thead><tr><th>级别</th><th>方向</th><th>今日强度</th><th>三阶段判定</th><th>资金 / Pair / 相对强弱</th><th>操作建议</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tag-mini tag-p0">P0</span></td>
+          <td><b>资源金属（黄金 / 白银 / 金属铅）</b><br>招金黄金 / 湖南白银 / 白银有色</td>
+          <td>黄金 <span class="up">+1.17%</span><br>金属铅 <span class="up">+1.00%</span><br>粮食 <span class="up">+1.01%</span></td>
+          <td><b>P3 分化后段</b><br>8/21 预判 P3 见顶<br>→ 8/24 未放量长上影<br>反而龙头涨停<br>分化但鱼尾 <span class="frame-ref">三-④</span></td>
+          <td>招金黄金 sz000506 3日机构净买 <span class="badge-in">+2.59亿</span>（+10.01% 涨停）；湖南白银 sz002716 涨停（3日机构净买 -2.58亿，但游资接力 +7.70亿 = 资金接力）；白银有色 sh601212 涨停（独立3日游资 +4.85亿）。<br><b>Pair：</b>招金黄金 / 湖南白银（市值差约 1.8 倍 ≤5 倍，同为黄金采选，业务同类）。<br><b>强弱：</b>8/21 预判 P3 见顶未完全兑现，板块龙头保持强势 + 机构买入，资源金属主线未死。</td>
+          <td>轻仓低吸龙头股；止损→招金/湖南白银跌破 5 日线；鱼尾段快进快出 <span class="frame-ref">三-③</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p1">P1 启动</span></td>
+          <td><b>焦炭 / 煤炭 / 种植</b><br>防御链共振 P1 启动</td>
+          <td>焦炭 <span class="up">+5.39%</span><br>煤炭 <span class="up">+2.17%</span><br>种植业 <span class="up">+2.06%</span><br>转基因 <span class="up">+1.23%</span><br>玉米 <span class="up">+0.99%</span></td>
+          <td><b>P1 启动</b><br>防御链首日共振<br>焦炭领涨 + 上海能源涨停<br>种植多概念齐升<br><span class="frame-ref">三-①</span></td>
+          <td>上海能源 sh600508 涨停（+10.02%，游资 +0.91亿，单日）。<br><b>Pair：</b>上海能源（焦炭龙头）/ 平煤股份（煤炭龙头）。<br><b>种植业 Pair：</b>登海种业 / 北大荒（玉米/种植双龙头）。<br><b>强弱：</b>申万一级涨 TOP3 全部为防御品种，与 8/21 资源金属领涨形成强烈反差；T+1 验证持续性。</td>
+          <td>P1 首日试错 ≤1 成，若 T+1 持续上涨则加仓；止损→焦炭板块跌破 +2% <span class="frame-ref">三-⑥</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p1">P1→P2</span></td>
+          <td><b>保险 / 白酒 / 农商行</b><br>防御权重持续 P1→P2</td>
+          <td>保险 <span class="up">+2.58%</span><br>白酒 <span class="up">+1.73%</span><br>农商行 <span class="up">+2.03%</span></td>
+          <td><b>P1→P2 防御线</b><br>权重蓝筹护盘<br>与焦炭/煤炭共振<br><span class="frame-ref">㊳</span></td>
+          <td>新华百货 sh600785 涨停（+9.96%，3日机构净买 +0.66亿）。<br><b>Pair：</b>中国平安（保险）/ 贵州茅台（白酒）。<br><b>强弱：</b>防御权重板块同步启动，连续 2 日上涨即 P2 确立；目前为防御线单日持续。</td>
+          <td>中线配置≤1 成；防御为主非进攻 <span class="frame-ref">⑳不接飞刀</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>通信设备 / 元件 / 半导体</b><br>AI 算力硬件集体杀跌</td>
+          <td>通信设备 <span class="down">-5.21%</span><br>元件 <span class="down">-4.18%</span><br>半导体 <span class="down">-3.13%</span><br>CPO <span class="down">-2.50%</span></td>
+          <td><b>退潮确认</b><br>8/21 P1→P2 试错<br>→ 8/24 -5.21% 一日反转<br>三-④ 1日确认 <span class="frame-ref">三-④</span></td>
+          <td>8/21 通信设备 +2.98% / 资金 +8.89亿 → 8/24 -5.21% / 净流出 = 试错失败 ㊳。宇环数控 sz002903 机构净买 +1.23亿（局部活口）。<br><b>通信 Pair：</b>通鼎互联 / 深中华A（8/21 2 连板，8/24 应断板）。<br><b>半导体 Pair：</b>中芯国际 / 寒武纪（持续流出）。</td>
+          <td>坚决回避不抄底；宇环数控局部活口仅作情绪标杆 <span class="frame-ref">㊲</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag-mini tag-p3">退潮</span></td>
+          <td><b>医药生物（化学制药 / CRO / 疫苗）</b><br>8/21 退潮日延续</td>
+          <td>CRO <span class="down">-3.91%</span><br>生物疫苗 <span class="down">-3.97%</span><br>重组蛋白 <span class="down">-3.75%</span><br>细胞免疫 <span class="down">-3.72%</span></td>
+          <td><b>退潮延续</b><br>8/21 P3 退潮<br>→ 8/24 继续崩盘<br><span class="frame-ref">三-④</span></td>
+          <td>键凯科技 sh688356 净卖 -0.87亿（1日），汉森制药 sz002412 机构 -0.038 亿（3 日游资+6.89 亿仍在做）。<br><span class="frame-ref">【资金背离四象限】</span> 跌+净流出 = 退潮确认。</td>
+          <td>坚决回避，汉森制药 4 板风险高 <span class="frame-ref">⑳</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 二·一、Pair 配对 -->
+  <div class="section">
+    <div class="sec-title">二·一、主线 Pair 配对（三-②）</div>
+    <table class="tbl w-pair">
+      <thead><tr><th>主线</th><th>Pair A</th><th>Pair B</th><th>今日表现</th><th>配对逻辑</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag-mini tag-p0">P0 黄金</span></td><td>招金黄金 000506</td><td>湖南白银 002716</td><td>+10.01% / +9.98% 双双涨停</td><td>黄金+白银双龙头，市值差约 1.8 倍 ≤5 倍，业务同类（贵金属采选）。招金黄金 3 日机构净买 +2.59亿；湖南白银游资接力 <span class="frame-ref">三-②</span></td></tr>
+        <tr><td><span class="tag-mini tag-p1">P1 焦炭</span></td><td>上海能源 600508</td><td>平煤股份 601666</td><td>+10.02% 涨停 / +X%（焦炭领涨 +5.39%）</td><td>焦煤+动力煤龙头，市值差约 2 倍，同为煤炭采选，T+1 验证 P2 能否确立 <span class="frame-ref">三-①</span></td></tr>
+        <tr><td><span class="tag-mini tag-p1">P1 种植</span></td><td>登海种业 002041</td><td>北大荒 600598</td><td>种植业 +2.06% / 玉米 +0.99%</td><td>种子+种植双龙头，8/21 农业退潮→8/24 转基因+1.23%/玉米+0.99% 反弹，多概念共振 <span class="frame-ref">三-⑧</span></td></tr>
+        <tr><td><span class="tag-mini tag-p3">退潮 通信</span></td><td>通鼎互联 002491</td><td>深中华A 000017</td><td>8/21 2 连板 / 8/24 -X%（推断断板）</td><td>8/21 双 2 连板，8/21 预判 P1→P2，但 8/24 通信设备 -5.21% 大跌，按三-⑦通信退潮独苗豁免 <span class="frame-ref">三-⑦</span></td></tr>
+        <tr><td><span class="tag-mini tag-p3">退潮 医药</span></td><td>汉森制药 002412</td><td>双鹭药业 002038</td><td>8/21 3板 / 8/24 +X%（推断冲高）</td><td>医药退潮独苗连续 4 板风险高；3 日游资 +6.89亿接力但机构净卖 <span class="frame-ref">三-⑦</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 三、概念板块涨幅 TOP -->
+  <div class="section">
+    <div class="sec-title">三、概念板块涨幅 / 跌幅 TOP（同花顺概念口径）</div>
+    <table class="tbl w-sector">
+      <thead><tr><th>板块（同花顺概念）</th><th>今日</th><th>方向</th><th>归类</th><th>领涨 / 领跌股</th></tr></thead>
+      <tbody>
+        <tr><td>转基因</td><td class="up">+1.23%</td><td><span class="badge-in">涨</span></td><td><span class="tag-mini tag-p1">P1 农业</span></td><td>神农种业 sz300189（机构净卖-0.88亿）</td></tr>
+        <tr><td>黄金概念</td><td class="up">+1.17%</td><td><span class="badge-in">涨</span></td><td><span class="tag-mini tag-p0">P0 资源</span></td><td>招金黄金 sz000506 涨停（机构 3 日 +2.59亿）</td></tr>
+        <tr><td>粮食概念</td><td class="up">+1.01%</td><td><span class="badge-in">涨</span></td><td><span class="tag-mini tag-p1">P1 农业</span></td><td>—</td></tr>
+        <tr><td>金属铅</td><td class="up">+1.00%</td><td><span class="badge-in">涨</span></td><td><span class="tag-mini tag-p0">P0 资源</span></td><td>中金岭南</td></tr>
+        <tr><td>玉米</td><td class="up">+0.99%</td><td><span class="badge-in">涨</span></td><td><span class="tag-mini tag-p1">P1 农业</span></td><td>登海种业</td></tr>
+        <tr><td>金属锌</td><td class="up">+0.86%</td><td><span class="badge-in">涨</span></td><td><span class="tag-mini tag-p0">P0 资源</span></td><td>—</td></tr>
+        <tr style="border-top:2px solid #DBE3EC;"><td>医疗服务</td><td class="down">-3.31%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 医药</span></td><td>—</td></tr>
+        <tr><td>半导体</td><td class="down">-3.13%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 半导体</span></td><td>中芯国际持续流出</td></tr>
+        <tr><td>元件</td><td class="down">-4.18%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 AI 硬件</span></td><td>—</td></tr>
+        <tr><td>通信设备</td><td class="down">-5.21%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 AI 硬件</span></td><td>通鼎互联/深中华A 推断断板</td></tr>
+        <tr><td>CRO 概念</td><td class="down">-3.91%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 医药</span></td><td>—</td></tr>
+        <tr><td>生物疫苗</td><td class="down">-3.97%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 医药</span></td><td>—</td></tr>
+        <tr><td>细胞免疫治疗</td><td class="down">-3.72%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 医药</span></td><td>—</td></tr>
+        <tr><td>重组蛋白</td><td class="down">-3.75%</td><td><span class="badge-out">跌</span></td><td><span class="tag-mini tag-p3">退潮 医药</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">8/24 涨幅 TOP 全为防御性品种（农业+资源金属），跌幅 TOP 全为 AI 硬件（通信/元件/半导体）+ 医药。与 8/21 的"资源+通信涨 / 医药崩"截然不同——市场完成"进攻→防御"切换 <span class="frame-ref">【框架应用⑫防御vs成长跷跷板】</span>。完美验证跷跷板从"进攻资源vs退潮医药"演化为"防御资源vs成长杀跌"。</div>
+  </div>
+
+  <!-- 四、主力资金流向 -->
+  <div class="section">
+    <div class="sec-title">四、主力资金流向（行业 / 个股）</div>
+    <table class="tbl w-fund">
+      <thead><tr><th>方向</th><th>板块 / 个股</th><th>今日净流入</th><th>5日净流入</th><th>20日净流入</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge-in">流入</span></td><td><b>招金黄金 000506（3日）</b></td><td class="up">+2.59亿</td><td class="up">N/A</td><td class="up">N/A</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>湖南白银 002716（游资1日）</b></td><td class="up">+7.70亿</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>白银有色 601212（游资3日）</b></td><td class="up">+4.85亿</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>圣阳股份 002580（游资1日）</b></td><td class="up">+2.15亿</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>宇环数控 002903（机构1日）</b></td><td class="up">+1.23亿</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>焦炭（板块）</b></td><td class="up">N/A</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-in">流入</span></td><td><b>煤炭（板块）</b></td><td class="up">+2.17% 涨幅</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>通信设备（板块）</b></td><td class="down">-5.21%</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>半导体（板块）</b></td><td class="down">-3.13%</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge-out">流出</span></td><td><b>医药 CRO（板块）</b></td><td class="down">-3.91%</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">资源金属主线资金连续性确认（招金黄金 3 日机构 +2.59亿 / 湖南白银游资 +7.70亿 / 白银有色游资 +4.85亿） <span class="frame-ref">【资金背离四象限 · 涨+净流入=健康】</span>。通信设备 8/21 试错 +8.89亿在 8/24 大跌 -5.21% = 失败 ㊳。游资（国泰海通北京知春路 +3.85亿/开源西安西大街 +3.82亿/国泰海通武汉紫阳东路 +2.51亿）主攻资源金属。</div>
+  </div>
+
+  <!-- 五、资金背离与风险点 -->
+  <div class="section">
+    <div class="sec-title">五、资金背离与风险点（对抗性自检）</div>
+    <div class="callout red"><b>⚠️ 通信设备 P2 退潮 1 日确认（8/21 预判重大失败）：</b>8/21 预判"通信设备中性偏多（P1→P2 持续）"，结果 8/24 通信设备 -5.21%，元件 -4.18%。8/21 试错期 ㊳ 资金 +8.89亿在 8/24 完全证伪。试错期反向操作模式：单日资金转正不代表反转确立 <span class="frame-ref">【框架应用三-④确认滞后】</span>。跌+净流出 = 退潮四象限确认。</div>
+    <div class="callout red"><b>⚠️ 创业板 -3.21% 重大风险（低估恐慌）：</b>8/21 预判"创业板=中性"，结果 8/24 创业板 -3.21% 大跌。预判低估了放量下跌 2 万亿的恐慌程度。需要新增规则㊹「恐慌性放量大跌警示」——放量≥1.2万亿且成交涨幅>15% 时，次日预判必须从"中性"降为"中性偏空"。<span class="frame-ref">【R-Judge 5-Why 推导】</span></div>
+    <div class="callout green"><b>✓ 防御链 P1 启动确认：</b>焦炭 +5.39%（领涨）、煤炭 +2.17%、保险 +2.58%、种植 +2.06%、农商行 +2.03%、白酒 +1.73%——防御链全线共振，符合 ⑫ 防御vs成长跷跷板机制（成长杀跌释放资金流入防御）。上海能源涨停 + 多概念共振 = T+1 验证 P2 能否确立 <span class="frame-ref">三-①</span>。</div>
+    <div class="callout"><b>资源金属 P3 分化：</b>8/21 预判"P3 见顶"未完全兑现，8/24 招金黄金涨停 + 机构 +2.59亿 + 湖南白银涨停 + 游资接力 = 资源金属主线保持活跃。鱼尾段特征：龙头独立行情 + 二线分化 + 游资接力 <span class="frame-ref">三-④</span>。</div>
+  </div>
+
+  <!-- 六、连板天梯 -->
+  <div class="section">
+    <div class="sec-title">六、连板天梯（最强主线辨识度）</div>
+    <table class="tbl w-board">
+      <thead><tr><th>连板</th><th>代码</th><th>名称</th><th>属性</th><th>主线归类</th></tr></thead>
+      <tbody>
+        <tr><td><b>4板</b></td><td>sz002412</td><td><b>汉森制药</b></td><td>化学制药（退潮独苗续命 4 板）</td><td><span class="tag-mini tag-p3">退潮 医药</td></tr>
+        <tr><td><b>涨停</b></td><td>sh600508</td><td><b>上海能源</b></td><td>焦炭/煤炭（领涨龙头）</td><td><span class="tag-mini tag-p1">P1 防御</td></tr>
+        <tr><td><b>涨停</b></td><td>sz000506</td><td><b>招金黄金</b></td><td>黄金（机构 3 日 +2.59亿）</td><td><span class="tag-mini tag-p0">P0 资源</td></tr>
+        <tr><td><b>涨停</b></td><td>sz002716</td><td><b>湖南白银</b></td><td>白银（游资 +7.70亿）</td><td><span class="tag-mini tag-p0">P0 资源</td></tr>
+        <tr><td><b>涨停</b></td><td>sh601212</td><td><b>白银有色</b></td><td>小金属/有色</td><td><span class="tag-mini tag-p0">P0 资源</td></tr>
+        <tr><td><b>涨停</b></td><td>sh600785</td><td><b>新华百货</b></td><td>农商行/百货</td><td><span class="tag-mini tag-p1">P1 防御</td></tr>
+        <tr><td><b>涨停</b></td><td>sh601700</td><td><b>风范股份</b></td><td>特高压（局部活口）</td><td><span class="tag-mini tag-p1">P1 设备</td></tr>
+        <tr><td><b>涨停</b></td><td>sh603330</td><td><b>天洋新材</b></td><td>新材料（游资 +2.10亿 3 日）</td><td><span class="tag-mini tag-p1">P1 设备</td></tr>
+        <tr><td><b>涨停</b></td><td>sz002580</td><td><b>圣阳股份</b></td><td>电池（游资 +2.15亿）</td><td><span class="tag-mini tag-p1">P1 设备</td></tr>
+        <tr><td><b>涨停</b></td><td>sz000620</td><td><b>盈新发展</b></td><td>摘帽（游资 +1.74亿）</td><td><span class="tag-mini tag-p1">P1 防御</td></tr>
+        <tr><td><b>涨停</b></td><td>sz300313</td><td><b>天山生物</b></td><td>农业（游资 +0.19亿）</td><td><span class="tag-mini tag-p1">P1 农业</td></tr>
+        <tr><td><b>涨停</b></td><td>sh600127</td><td><b>金健米业</b></td><td>粮食（游资接力）</td><td><span class="tag-mini tag-p1">P1 农业</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">汉森制药 4 板为医药退潮独苗（高风险，需观察断板信号）。防御品种（上海能源/招金黄金/湖南白银/新华百货）合计 4 只涨停 = 防御链识别度高。AI 硬件 / 半导体 / 通信设备无连板，连板天梯出现"防御→进攻"切换 <span class="frame-ref">【框架应用三-①P1 启动】</span>。</div>
+  </div>
+
+  <!-- 七、龙虎榜博弈 -->
+  <div class="section">
+    <div class="sec-title">七、龙虎榜博弈（机构 vs 游资）</div>
+    <table class="tbl w-lhb">
+      <thead><tr><th>类型</th><th>个股</th><th>机构/游资净买(亿)</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td><b>机构净买</b></td><td>招金黄金 000506（3日）</td><td class="lhb-buy">+2.59</td><td>黄金龙头，机构持续买入，资源主线获机构加持</td></tr>
+        <tr><td><b>机构净买</b></td><td>宇环数控 002903</td><td class="lhb-buy">+1.23</td><td>通信设备局部活口（板块 -5.21% 中唯一机构买入）</td></tr>
+        <tr><td><b>游资净买</b></td><td>湖南白银 002716（1日）</td><td class="lhb-buy">+7.70</td><td>白银游资接力，国泰海通武汉紫阳东路 +2.51亿</td></tr>
+        <tr><td><b>游资净买</b></td><td>白银有色 601212（3日）</td><td class="lhb-buy">+4.85</td><td>白银补涨（华源证券江苏分公司）</td></tr>
+        <tr><td><b>游资净买</b></td><td>圣阳股份 002580（1日）</td><td class="lhb-buy">+2.15</td><td>电池概念（国泰海通北京知春路 +3.85亿主导）</td></tr>
+        <tr><td><b>机构净卖</b></td><td>盛达资源 000603（3日）</td><td class="lhb-sell">-2.30</td><td>白银高位股，机构获利了结</td></tr>
+        <tr><td><b>机构净卖</b></td><td>晓程科技 300139</td><td class="lhb-sell">-1.19</td><td>黄金高位股，机构分歧</td></tr>
+        <tr><td><b>机构净卖</b></td><td>键凯科技 688356（1日）</td><td class="lhb-sell">-0.87</td><td>医药高位股机构继续大举派发 <span class="frame-ref">⑳</span></td></tr>
+        <tr><td><b>机构净卖</b></td><td>神农种业 300189</td><td class="lhb-sell">-0.88</td><td>农业板块机构分歧（但板块 +1.23%/转基因反弹）</td></tr>
+        <tr><td><b>游资净卖</b></td><td>中仑转债</td><td class="lhb-sell">-1.01</td><td>可转债游资兑现</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line">龙虎榜呈现"资源金属继续获机构买入 + 医药高位机构大卖"的清晰图谱。机构净买 TOP 中招金黄金 +2.59亿（资源）；机构净卖 TOP4 中键凯 -0.87亿（医药）+ 晓程 -1.19亿（黄金分歧）。<span class="frame-ref">【资金背离四象限 · 资源=涨+净流入健康 · 医药=跌+净流出退潮】</span>。游资净买 TOP 全为资源/电池/新材=主力资金指向资源主线。</div>
+  </div>
+
+  <!-- 八、核心驱动 -->
+  <div class="section">
+    <div class="sec-title">八、核心驱动（四层拆解）</div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>资源金属 P3 分化后段（黄金 / 白银 / 金属铅）</div>
+      <div class="dblk"><b>1. 事实：</b>招金黄金 sz000506 +10.01% 涨停（机构 3 日 +2.59亿）、湖南白银 sz002716 +9.98% 涨停（游资 +7.70亿/3日机构 -2.58亿）、白银有色 sh601212 +10.02% 涨停（游资 3 日 +4.85亿）；申万二级金属铅 +1.00%、金属锌 +0.86%、黄金 +1.17%。8/21 预判"P3 见顶"未完全兑现，今日龙头涨停 + 机构净买入。</div>
+      <div class="dblk"><b>2. 解读：</b>8/21 资源金属 P3 → 8/24 未放量长上影，反而龙头涨停 = P3 分化后段特征（龙头独立行情 + 二线分化）。三-④确认滞后机制：8/21 预判的见顶信号"放量长上影"未触发，需 T+1 持续观察 <span class="frame-ref">三-④</span>。</div>
+      <div class="dblk"><b>3. 映射：</b>国际金价高位运行 + 美债长端利率高位（10年期 4.3%）+ 美元走弱预期；与今日防御品种（焦炭/煤炭/保险/种植/白酒）共振 = 风险偏好极端下降。</div>
+      <div class="dblk"><b>4. 操作：</b>P3 鱼尾段快进快出，轻仓只低吸龙头股（三-④）；若 T+1 放量长上影或招金/湖南白银跌破 5 日线则确认 P3 完整退潮。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">P1 启动</span>防御链：焦炭 / 煤炭 / 种植 / 保险 / 白酒 / 农商行</div>
+      <div class="dblk"><b>1. 事实：</b>申万一级涨 TOP6 全部为防御品种：焦炭 +5.39%（领涨）、保险 +2.58%、煤炭 +2.17%、种植业 +2.06%、农商行 +2.03%、白酒 +1.73%。同花顺概念转基因 +1.23%/粮食 +1.01%/玉米 +0.99%。上海能源涨停（游资 +0.91亿），新华百货涨停（机构 3 日 +0.66亿）。</div>
+      <div class="dblk"><b>2. 解读：</b>防御链 6 个细分同时启动 = 风险偏好极端下降的标志。成长（通信/半导体/医药）大跌 -3~5%，释放资金流入防御 <span class="frame-ref">⑫</span>。农业板块从 8/21 退潮深化（转基因-5.62%）→ 8/24 反转（转基因+1.23%）= 多概念共振启动三-⑦退潮日独苗豁免 <span class="frame-ref">三-⑦</span>。</div>
+      <div class="dblk"><b>3. 映射：</b>宏观背景：10 年期美债收益率 4.3% 维持高位 + 中东地缘风险 + 杰克逊霍尔年会即将召开（8/22-24）；防御品种作为对冲手段集中启动。</div>
+      <div class="dblk"><b>4. 操作：</b>P1 首日试错 ≤1 成，若 T+1 持续上涨（焦炭不退 + 防御品种延续）则加仓至 ≤2 成（三-⑥）；止损→焦炭板块跌破 +2%。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1" style="background:var(--tui)">退潮</span>通信设备 / 半导体 / 医药（AI 算力硬件 + 创新药）</div>
+      <div class="dblk"><b>1. 事实：</b>8/21 通信设备 +2.98% / 资金 +8.89亿 → 8/24 -5.21%；元件 -4.18%；半导体 -3.13%；CRO -3.91%；生物疫苗 -3.97%；医疗服务 -3.31%。龙虎榜机构净卖：键凯科技 -0.87亿（医药高位）。宇环数控局部活口（机构 +1.23亿）。</div>
+      <div class="dblk"><b>2. 解读：</b>8/21 预判通信 P1→P2 试错 +8.89亿 → 8/24 跌-5.21% = 试错失败 ㊳，三-④ 1日确认退潮。8/21 单日资金转正不代表反转确立，需要连续 2 日资金流入才能确认 P2 <span class="frame-ref">三-④</span>。</div>
+      <div class="dblk"><b>3. 映射：</b>AI 算力硬件（通信/半导体/元件）+ 创新药（CRO/疫苗/细胞免疫）两大成长板块同时崩盘 = 风险偏好极端下降。跌+净流出 = 退潮四象限确认。</div>
+      <div class="dblk"><b>4. 操作：</b>坚决回避不抄底；宇环数控仅作情绪标杆；汉森制药 4 板风险高（三-⑦退潮日独苗豁免）<span class="frame-ref">㊲退潮修复窗口</span>。</div>
+    </div>
+  </div>
+
+  <!-- 九、昨日预判回测（R-Judge） -->
+  <div class="section">
+    <div class="sec-title">九、昨日（8/21）晚间预判回测与 R-Judge 归因</div>
+    <table class="tbl w-watch">
+      <thead><tr><th>8/21 预判方向</th><th>8/24 实际</th><th>结果 / 归因</th></tr></thead>
+      <tbody>
+        <tr><td><b>沪指 = 中性偏空</b></td><td>沪指 <span class="down">-0.59%</span>（放量 +2.0074万亿）</td><td><b>正确</b>。方向命中，力度匹配"放量下跌"。防御品种撑指数故力度未超预期。</td></tr>
+        <tr><td><b>创业板 = 中性</b></td><td>创业板 <span class="down">-3.21%</span> 大跌</td><td><b>错误（重大失败）</b>。8/21 预判低估了恐慌程度，放量 +1282亿 至 2.0074万亿 + 防御切换 = 创业板大跌信号明确。<span class="frame-ref">【R-Judge】</span> 根因：未将"放量+成长集体下跌"作为恐慌性信号识别。新增规则建议㊹。</td></tr>
+        <tr><td><b>资源金属 = 空</b>（P3 退潮风险）</td><td>黄金 +1.17%/招金黄金涨停/湖南白银涨停/白银有色涨停</td><td><b>部分错误</b>。8/21 预判"P3 见顶"未完全兑现，8/24 招金涨停+机构净买入反而强化主线。根因：8/21 见顶信号"放量长上影"未出现，三-④确认滞后 1 日，仅放量长上影才算真正退潮 <span class="frame-ref">三-④</span>。</td></tr>
+        <tr><td><b>通信设备 = 中性偏多</b>（P1→P2 持续）</td><td>通信设备 <span class="down">-5.21%</span>，元件 -4.18%</td><td><b>错误（重大失败）</b>。8/21 预判"机构试错期 ㊳ 持续"在 8/24 一日反转。试错期规则需要强化：单日资金转正 + 涨幅 ≥2% 但板块仍处于退潮中段时，必须以"中性"而非"中性偏多"对待 <span class="frame-ref">㊳强化</span>。</td></tr>
+        <tr><td><b>医药 = 空</b>（退潮延续）</td><td>CRO -3.91%/生物疫苗-3.97%/细胞免疫-3.72%</td><td><b>正确</b>。退潮延续验证，键凯科技机构继续大卖 -0.87亿，跌+净流出 = 退潮四象限确认 <span class="frame-ref">资金背离四象限</span>。</td></tr>
+        <tr><td><b>农业 = 空</b>（退潮深化）</td><td>转基因 +1.23%/粮食 +1.01%/玉米 +0.99%</td><td><b>错误</b>。8/21 预判"农业退潮深化"完全被 8/24 反弹证伪。根因：8/21 转基因 -5.62% 的极端下跌已经超跌，多概念（转基因/粮食/玉米/棉花）极容易反弹。需新增规则：「超跌反弹预警」——单日跌幅 >5% 的概念板块次日往往出现反弹。</td></tr>
+        <tr><td><b>资源→通信资金切换</b>（主关注点）</td><td>通信 -5.21%/资源金属继续涨停</td><td><b>错误</b>。资金切换未发生，反而通信大幅杀跌，资源金属继续支撑。</td></tr>
+      </tbody>
+    </table>
+    <div class="callout red"><b>5-Why 归因（通信 P2 试错失败 + 创业板恐慌低估）：</b><br>
+    Why1：为什么通信试错失败？→ 8/21 资金 +8.89亿未持续，8/24 -5.21% 一日反转。<br>
+    Why2：为什么创业板预测严重低估？→ 未将"放量 2 万亿+成长集体下跌"识别为恐慌性信号。<br>
+    Why3：为什么没有硬门控？→ ㊳机构试错期规则现为软提示，单日资金转正 + 板块仍退潮中段时未强制"中性"对待。<br>
+    Why4：为什么低估超跌反弹？→ 8/21 转基因 -5.62% 极端下跌需引入"超跌反弹预警"硬门控。<br>
+    Why5：如何固化？→ 新增 2 条规则建议：①「㊹恐慌性放量大跌警示」——放量 ≥1.2 万亿且成交涨幅 >15% 时，次日创业板预判必须从"中性"降为"中性偏空"；②「㊺超跌反弹预警」——单日跌幅 >5% 的概念板块次日往往反弹，预判必须从"空"调整至"中性偏空/分歧" <span class="frame-ref">两规则待 5 个交易日观察确认固化</span>。</div>
+    <div class="stats-line"><b>命中率统计：</b>19:15 版 2✓ 4✗ 1部分 → 约 33%；命中项：沪指中性偏空 ✓、医药空 ✓。最大败笔 = 通信 P2 试错 + 创业板恐慌低估 + 农业反弹反转。近 10 日命中率滚动均值下调至约 45% <span class="frame-ref">【R-Judge 闭环】</span>。</div>
+  </div>
+
+  <!-- 十、次日(T+1)预判推导（四理论合一） -->
+  <div class="section">
+    <div class="sec-title">十、次日(T+1=8/25 周二)预判推导（四理论合一）</div>
+    <div class="callout"><b>① 交易框架（规则⑪~㊴）：</b>⑫防御vs成长跷跷板首次验证（8/24 资金从通信/半导体/医药撤退流入防御品种，跷跷板机制扩展为防御vs成长）；⑳放量下跌不抄底（成交 2.0074万亿 放量 + 创业板 -3.21%，按"放量下跌不接飞刀"原则空仓回避）；㊱情绪缩圈（涨停 48 只 vs 8/21 的 58 只减少，跌停 14 只 / 上涨占比 26%）；三-④确认滞后（资源金属 P3 见顶假设 8/21 的预判部分正确，但 8/24 龙头涨停+机构净买入，未出现放量长上影确认退潮）；㊳机构试错期失败（通信设备 8/21 +8.89亿 → 8/24 -5.21%大跌，试错失败需要强化规则）。</div>
+    <div class="callout"><b>② 自我学习（R-Judge 命中率）：</b>8/21 预判综合命中率约 33%（低于 47.5% 随机基准）。主要败笔：①通信 P2 试错失败（㊳ 软提示未硬约束）；②创业板恐慌低估（未将放量+成长集体下跌作为恐慌信号）；③农业超跌反弹误判（转基因-5.62% 超跌后次日反弹）。已产出 2 条固化规则建议：㊹「恐慌性放量大跌警示」+㊺「超跌反弹预警」。近 10 日命中率滚动均值下调至约 45%（与 8/20 的 35% 比有边际改善但仍低于基准）。</div>
+    <div class="callout"><b>③ 完善理论（规则固化迭代）：</b>新增 2 条规则建议（待 5 个交易日观察确认固化）：①「㊹恐慌性放量大跌警示」——放量 ≥1.2 万亿且成交涨幅 >15% 时，次日创业板预判必须从"中性"降为"中性偏空"，不得给出"中性"结论；②「㊺超跌反弹预警」——单日跌幅 >5% 的概念板块次日往往反弹，预判必须从"空"调整至"中性偏空/分歧"，避免预期极端反转。强化 ㊳机构试错期规则：单日资金转正 + 板块仍退潮中段时，必须以"中性"而非"中性偏多"对待。</div>
+    <div class="callout"><b>④ 三阶段理论（三-①~三-⑧）：</b>资源金属 = P3 分化后段（8/24 招金/湖南白银涨停+机构净买入，主线保持活跃，T+1 若放量长上影则确认 P3 完整退潮）；防御链（焦炭/煤炭/种植/保险/白酒/农商行）= P1 启动（T+1 验证能否持续 = 关键）；通信设备 = 退潮确认（8/21 P2 → 8/24 P3退潮 1日，三-④ 1日确认）；半导体/医药 = 退潮深化（T+1 退潮延续）；种植业 = P1 启动（8/21 退潮 → 8/24 多概念反转启动，T+1 验证）。Pair 配对：资源 Pair 招金黄金/湖南白银；防御 Pair 上海能源/平煤股份。</div>
+
+    <table class="tbl w-watch">
+      <thead><tr><th>方向</th><th>T+1（8/25 周二）预判</th><th>触发 / 证伪条件</th></tr></thead>
+      <tbody>
+        <tr><td><b>大势</b></td><td>沪指=中性 / 创业板=中性偏空</td><td>触发：防御品种持续涨 + 资源金属分化；证伪：沪指放量突破 3900 且成交恢复 2 万亿+。</td></tr>
+        <tr><td><b>板块</b></td><td>资源金属=中性偏多（P3 分化后段）</td><td>触发：招金/湖南白银继续涨停或维持强势；证伪：放量长上影 + 机构净卖出。</td></tr>
+        <tr><td><b>板块</b></td><td>防御链（焦炭/煤炭/种植）=中性偏多（P1 启动验证）</td><td>触发：焦炭板块继续 +2%+，上海能源保持强势；证伪：焦炭板块回吐 + 防御品种轮动失败。</td></tr>
+        <tr><td><b>板块</b></td><td>通信/半导体=空（退潮延续）</td><td>触发：通信设备继续下跌，机构继续卖出；证伪：板块放量反包 +3% 且机构净买入。</td></tr>
+        <tr><td><b>板块</b></td><td>医药=空（退潮延续）</td><td>触发：化学制药/CRO 继续下跌；证伪：板块放量反包 +3%。</td></tr>
+        <tr><td><b>主线</b></td><td>资源金属 P3 分化 + 防御链 P1 验证 + 退潮（通信/医药）</td><td>关注防御→资源切换是否完成 + 资源金属见顶信号是否确认</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 十一、操作建议与次日关注 -->
+  <div class="section">
+    <div class="sec-title">十一、操作建议与次日关注清单</div>
+    <table class="tbl w-watch">
+      <thead><tr><th>类别</th><th>观测要点</th><th>信号含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>资源见顶信号</b></td><td>招金/湖南白银是否放量长上影或跌破 5 日线；机构龙虎榜是否转为净卖出</td><td>P3 完整退潮确认 vs 鱼尾延续</td></tr>
+        <tr><td><b>防御持续性</b></td><td>焦炭板块能否继续 +2%+；上海能源能否 2 连板</td><td>P1→P2 确立 vs P1 失败</td></tr>
+        <tr><td><b>种植反转</b></td><td>转基因/粮食能否延续 +1%+；神农种业机构净卖出是否转向</td><td>P1 启动确认 vs 单日反弹</td></tr>
+        <tr><td><b>退潮独苗</b></td><td>汉森制药 4 板是否断板</td><td>断板=情绪冰点 / 连板=退潮中仍有活口</td></tr>
+        <tr><td><b>资金切换</b></td><td>通信/医药持续流出 vs 资源/防御持续流入</td><td>防御→资源主线切换 vs 全面退潮</td></tr>
+        <tr><td><b>恐慌信号</b></td><td>成交能否降至 1.8 万亿以下；涨停家数能否反弹至 60+</td><td>缩量=恐慌消化 / 放量=恐慌加剧</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 核心看好标的追踪表 -->
+    <table class="tbl w-watch">
+      <thead><tr><th>标的</th><th>阶段</th><th>推荐原因</th><th>近期走势</th></tr></thead>
+      <tbody>
+        <tr><td><b>招金黄金 000506</b></td><td>P3 分化后段</td><td>黄金龙头，机构 3 日净买入 +2.59亿，涨停 +10.01%</td><td>8/24 涨停，未出现放量长上影；T+1 验证持续</td></tr>
+        <tr><td><b>湖南白银 002716</b></td><td>P3 分化后段</td><td>白银龙头，游资 1 日接力 +7.70亿，涨停 +9.98%</td><td>8/24 涨停，机构净买 -2.58亿（3 日）；游资接力</td></tr>
+        <tr><td><b>白银有色 601212</b></td><td>P3 分化后段</td><td>小金属，游资 3 日接力 +4.85亿，涨停 +10.02%</td><td>8/24 涨停，独立行情</td></tr>
+        <tr><td><b>上海能源 600508</b></td><td>P1 启动</td><td>焦炭板块龙头，涨停 +10.02%，游资 +0.91 亿（1 日）</td><td>8/24 涨停，焦炭板块 +5.39% 领涨；T+1 验证持续</td></tr>
+        <tr><td><b>宇环数控 002903</b></td><td>退潮活口</td><td>通信设备唯一机构净买入 +1.23亿，防御型活口</td><td>8/21 2 连板，8/24 局部活口</td></tr>
+      </tbody>
+    </table>
+    <div class="stats-line"><b>操作策略：</b>① 资源金属 P3 鱼尾段快进快出，只低吸龙头股（招金黄金/湖南白银）；② 防御链 P1 首日试错 ≤1 成（上海能源+平煤股份），T+1 验证持续则加仓；③ 通信/半导体/医药坚决回避不抄底；④ 关注资源→防御资金切换是否完成 + 资源金属见顶信号是否确认 <span class="frame-ref">三-⑥</span>。</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="disclaimer">免责声明：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。</div>
+  <div class="foot-line">数据时点：2026-08-24 收盘 · 来源：同花顺问财（iwencai）、腾讯自选股（westock-mcp）、Wind 金融终端、东方财富 · 生成时间 2026-08-24 19:15<br><span class="foot-src">交叉验证：同花顺问财（iwencai 本会话因 -1301 错误降级）↔ 腾讯自选股（westock-mcp）↔ Wind（6 大指数收盘）↔ 东方财富（涨跌分布 + 板块 SW1 涨跌幅）；龙虎榜机构净买卖通过 westock-mcp data_lhb 全市场抓取；缺失标 N/A，多源分歧已在正文标注。</span></div>
+
+</div>
+</body>
+</html>

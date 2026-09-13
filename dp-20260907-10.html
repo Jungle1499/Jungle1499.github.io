@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>午盘速览 2026-09-07（周一）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f4ee; --card:#ffffff; --ink:#1a1a1a; --ink-soft:#555;
+    --line:#e3dfd3; --accent:#7a4f1f; --head:#3a2e1f;
+    --red:#c0392b; --red-soft:#f4d7d2; --green:#1f7a3a; --green-soft:#d6ead9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);line-height:1.6;font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 28px 60px}
+  header.top{border-bottom:2px solid var(--head);padding-bottom:14px;margin-bottom:22px}
+  header.top h1{margin:0;font-size:24px;color:var(--head);letter-spacing:0.5px}
+  header.top .sub{font-size:13px;color:var(--ink-soft);margin-top:4px}
+  header.top .meta{font-size:12px;color:var(--ink-soft);margin-top:6px;font-style:italic}
+
+  .summary-card{background:var(--card);border-left:5px solid var(--accent);padding:16px 20px;border-radius:4px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+  .summary-card .lbl{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:6px}
+  .summary-card .verdict{font-size:17px;font-weight:700;color:var(--head);margin-bottom:8px}
+  .summary-card .verdict strong.red{color:var(--red)}
+  .summary-card .verdict strong.green{color:var(--green)}
+  .summary-card .points{font-size:13.5px;color:var(--ink-soft)}
+  .summary-card .points ul{margin:6px 0 0;padding-left:22px}
+  .summary-card .points li{margin-bottom:3px}
+
+  section{margin-bottom:28px}
+  section h2{font-size:17px;color:var(--head);border-left:4px solid var(--accent);padding-left:10px;margin:0 0 14px}
+  section h3{font-size:14px;color:var(--ink);margin:14px 0 8px}
+
+  .card{background:var(--card);padding:16px 18px;border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;background:var(--card)}
+  th{background:#efe9d8;color:var(--head);font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  td{padding:8px 10px;border-bottom:1px dashed var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.red{color:var(--red);font-weight:700}
+  td.green{color:var(--green);font-weight:700}
+  .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11.5px;font-weight:600;margin-right:4px}
+  .tag.ok{background:var(--green-soft);color:var(--green)}
+  .tag.bad{background:var(--red-soft);color:var(--red)}
+  .tag.partial{background:#fbeed5;color:#8a6a14}
+  .tag.none{background:#e9e5d8;color:#7a7a7a}
+  .tag.rev{background:#e6d7ed;color:#5e3268}
+  .tag.q1{background:#dbeafe;color:#1e3a8a}
+  .tag.q2{background:#fef3c7;color:#92400e}
+  .tag.q3{background:#dcfce7;color:#166534}
+  .tag.q4{background:#fce7f3;color:#9d174d}
+  .quadrant-intro{font-size:14px;color:var(--ink);padding:10px 14px;background:#f4eed8;border-radius:4px;margin-bottom:12px;border-left:3px solid var(--accent)}
+
+  .idx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  .idx{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+  .idx .name{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
+  .idx .val{font-size:22px;font-weight:700;color:var(--ink)}
+  .idx .chg{font-size:14px;font-weight:700;margin-top:4px}
+  .idx .chg.red{color:var(--red)}
+  .idx .chg.green{color:var(--green)}
+  .idx .meta{font-size:11px;color:var(--ink-soft);margin-top:4px}
+
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi .box{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px 12px;text-align:center}
+  .kpi .box .lbl{font-size:11.5px;color:var(--ink-soft)}
+  .kpi .box .num{font-size:20px;font-weight:700;margin-top:4px}
+  .kpi .box .num.red{color:var(--red)}
+  .kpi .box .num.green{color:var(--green)}
+  .kpi .box .sub{font-size:10.5px;color:var(--ink-soft);margin-top:2px}
+
+  .src{font-size:11px;color:var(--ink-soft);font-style:italic;margin-left:4px}
+  .chart{width:100%;height:320px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px}
+
+  .stock-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12.5px}
+  .stock-list .item{padding:6px 10px;border:1px dashed var(--line);border-radius:3px;background:var(--card)}
+  .stock-list .item .nm{font-weight:700;color:var(--head)}
+  .stock-list .item .pct.red{color:var(--red);font-weight:700}
+  .stock-list .item .pct.green{color:var(--green);font-weight:700}
+
+  .warn{background:#fff8e1;border:1px solid #f1d99a;padding:10px 14px;border-radius:4px;font-size:12.5px;color:#7a5a14;margin-top:14px}
+  .disc{margin-top:32px;padding:14px 18px;background:#efe9d8;border-radius:4px;font-size:11.5px;color:var(--ink-soft);border-left:3px solid var(--accent)}
+  .footer{margin-top:18px;font-size:11px;color:var(--ink-soft);text-align:center}
+
+  .points-box{background:#fbf6e8;border:1px solid #ebd9a4;border-radius:4px;padding:12px 14px;margin-top:10px;font-size:13px}
+  .points-box h4{margin:0 0 6px;color:#8a6a14;font-size:13px}
+  .points-box ol{margin:4px 0 0;padding-left:20px}
+  .points-box li{margin-bottom:3px}
+
+  .vline{background:#f5e9d8;border-left:4px solid var(--accent);padding:10px 14px;border-radius:3px;margin:10px 0;font-size:13px;color:var(--ink-soft)}
+  .vline strong{color:var(--head)}
+
+  tfoot td{font-weight:700;background:#f9f7f0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>午盘速览 2026-09-07（周一）</h1>
+  <div class="sub">11:30 午间收盘 · 数据口径以 11:30 午休冻结快照为主（westock 午休返回即 11:30 锁定值）</div>
+  <div class="meta">生成时间：2026-09-07 11:40（GMT+8） · 数据源：westock（data_quote 午休冻结=11:30 / data_changedist / data_sector 申万二级 / data_fund_flow 个股主力）+ WebSearch 五源午评（东财/新浪/腾讯/香港商报/第一财经）交叉认证；同花顺问财 iwencai 日配额耗尽(429)降级未用</div>
+</header>
+
+<div class="summary-card">
+  <div class="lbl">▌半日小结</div>
+  <div class="verdict">
+    9月7日早盘A股<strong class="green">分化反弹·科技硬件强势领涨</strong>：沪指受银行/保险/煤炭权重拖累微跌<strong class="green">0.24%</strong>报3920.70，深成指涨<strong class="red">1.38%</strong>、创业板指涨<strong class="red">2.63%</strong>、科创50涨<strong class="red">1.56%</strong>，北证50涨0.67%、沪深300涨0.19%；半日成交<strong>1.24万亿</strong>（较上日同期放量86亿），上涨2947家/下跌2413家（占比53%·情绪正常偏暖），涨停72家/跌停3家，最高连板<strong class="red">6板（龙版传媒）</strong>。盘前"冰点防御+科技硬件P3空+银行防御"主逻辑被<strong class="red">大幅证伪</strong>——实际是<strong class="red">元件+6.49%/通信设备+5.86%/半导体+2.51% 科技硬件强势反弹</strong>+农业（渔业+4.45%/种植业+4.23%）延续+消费（旅游/酒店/零售）活跃的<strong class="red">修复反弹日</strong>；而盘前最看多之银行/保险/煤炭反而领跌。
+  </div>
+  <div class="points">
+    <ul>
+      <li><strong>关键位</strong>：沪指3920.70，已破盘前3926降仓锚（距6点）；科创50回升至1602.03（收复盘前1577破位线·半导体止损锚暂脱险）；创业板3373.12，远离3286清仓线。</li>
+      <li><strong>市场风格</strong>：科技硬件（光模块CPO/PCB/元件/半导体设备）超跌强势反弹 + 农业（厄尔尼诺+种业景气）延续 + 消费（商务部商品消费扩容意见）活跃；银行/保险/煤炭/贵金属/军工权重补跌。</li>
+      <li><strong>资金真相</strong>：板块层通信设备+135.25亿/元件+105.19亿/半导体+58.17亿（科技三件套真流入）；个股层 中际旭创+47.55亿/新易盛+26.97亿/天孚通信+14.30亿/生益科技+10.30亿（机构超大单+大单双正买入，健康上涨结构）。但<strong>20日资金线全线深负（中际-166亿/北方华创-42亿/沪电-27亿）</strong>→反弹回补非反转，严禁追高。</li>
+      <li><strong>午后关注</strong>：① 沪指3926破位后权重是否继续杀跌（触发降仓至30%）；② 科技硬件反弹持续性（20日深负门控·不追高）；③ 农业连板（亚盛3板/敦煌7天4板）退潮风险；④ 消费扩容政策承接；⑤ 9/16 FOMC加息~60%分母扰动。</li>
+    </ul>
+  </div>
+</div>
+
+<section id="link-table">
+  <h2>〇、策略衔接对照（盘前方向表 → 11:30 午间实际）</h2>
+  <div class="vline">
+    <strong>核心叙事：</strong>08:30盘前定调"冰点防御40-50%仓·科技硬件P3空·银行保险防御底仓·农业P2持有·资源空"。11:30验证：<strong>科技硬件（元件+6.49%/通信+5.86%/半导体+2.51%）强势反弹，直接证伪盘前P3空判断</strong>；银行（-1.84%）/保险（-2.94%）防御底仓反而领跌；农业（种植+4.23%/渔业+4.45%）与资源（贵金属-2.07%/煤炭-3.54%）基本兑现阶段判断。属"盘前过度悲观·结构反转"日，午后维持冰点防御但结构上由防御切换为科技反弹+农业+消费。
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th style="width:18%">主线</th><th style="width:14%">盘前评级</th><th style="width:30%">11:30午间实际</th><th style="width:12%">兑现情况</th><th style="width:14%">午后关注</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>农业(种植/养殖/饲料/渔业)</td>
+          <td>P2·持有（明确多①）</td>
+          <td>种植业+4.23%/渔业+4.45%/农产品加工+3.37%；亚盛集团3连板、金健米业涨停、敦煌种业7天4板</td>
+          <td><span class="tag ok">兑现</span></td>
+          <td>连板退潮减仓</td>
+        </tr>
+        <tr>
+          <td>银行/保险/红利</td>
+          <td>底仓持有·防御（明确多②）</td>
+          <td>国有大行-1.84%/保险Ⅱ-2.94%/城商行-1.68%/农商行-1.91%（全市场领跌阵营）</td>
+          <td><span class="tag bad">证伪</span></td>
+          <td>防御底仓失效</td>
+        </tr>
+        <tr>
+          <td>大消费(白酒/零售/文旅传媒)</td>
+          <td>P1·中性偏多·轻仓</td>
+          <td>旅游及景区+1.96%/酒店餐饮+2.23%/一般零售+1.59%；中百集团/国芳集团/桂林旅游/华天酒店涨停</td>
+          <td><span class="tag partial">部分兑现</span></td>
+          <td>政策承接验证</td>
+        </tr>
+        <tr>
+          <td>船舶/航海装备</td>
+          <td>P1·中性偏多·轻仓</td>
+          <td>航海装备Ⅱ+1.12%（小幅涨）；中国船舶+2.00%（弱于预期）</td>
+          <td><span class="tag partial">部分兑现(弱)</span></td>
+          <td>订单景气延续性</td>
+        </tr>
+        <tr>
+          <td>软件开发/AI应用/数字货币</td>
+          <td>P2·中性偏多·事件博弈</td>
+          <td>软件开发-1.10%（下跌）；数字媒体-0.97%/游戏+1.20%分化；AI应用个股分歧</td>
+          <td><span class="tag bad">未兑现</span></td>
+          <td>GPT-6催化落地</td>
+        </tr>
+        <tr>
+          <td>房地产(开发/服务)</td>
+          <td>P2·中性偏多·轻仓</td>
+          <td>房地产服务-0.08%/房地产开发-0.27%（微跌·开发端仍分化）</td>
+          <td><span class="tag bad">未兑现</span></td>
+          <td>政策边际宽松</td>
+        </tr>
+        <tr>
+          <td>医药商业</td>
+          <td>P2·中性偏多·轻仓</td>
+          <td>医药商业+0.14%（基本持平）</td>
+          <td><span class="tag none">持平</span></td>
+          <td>药房集中度</td>
+        </tr>
+        <tr>
+          <td>光模块CPO</td>
+          <td>中性偏多·轻仓（校准③）</td>
+          <td>通信设备+5.86%（CPO爆发）；剑桥科技/迅捷兴/铭普光磁/景旺电子涨停；太辰光+13.89%</td>
+          <td><span class="tag ok">超预期兑现</span></td>
+          <td>不追高·看20日线</td>
+        </tr>
+        <tr>
+          <td>半导体/元件/消费电子/通信硬件</td>
+          <td>P3·退潮·空（0%仓）</td>
+          <td>元件+6.49%/通信设备+5.86%/半导体+2.51%/消费电子+2.34% 强势反弹（盘前核心误判）</td>
+          <td><span class="tag bad">大幅证伪</span></td>
+          <td>20日深负·反弹非反转</td>
+        </tr>
+        <tr>
+          <td>资源(工业金属/小金属/贵金属)</td>
+          <td>P3·退潮·空</td>
+          <td>贵金属-2.07%/煤炭开采-3.54%/工业金属-1.04%（领跌阵营）</td>
+          <td><span class="tag ok">兑现</span></td>
+          <td>美元/油价扰动</td>
+        </tr>
+        <tr>
+          <td>铁律A复核</td>
+          <td colspan="2">阈值：沪指3926破=总仓降至30%（盘前止损位）</td>
+          <td>沪指3920.70已破3926（权重银行/保险/煤炭拖累型分化，非系统性）；广度53%健康、创业板+2.63%强</td>
+          <td><span class="tag partial">技术破位·结构分化</span></td>
+          <td>午后权重续跌→降至30%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="src">来源：盘前策略_20260907.html（08:30方向表10板块）· 11:30 westock+WebSearch 收盘数据核对；预判层方向命中约 5/10（农业/消费/船舶/CPO/资源 对，银行/软件/地产/科技硬件 错，医药持平）</div>
+  </div>
+</section>
+
+<section id="quadrant">
+  <h2>零点五、节点卡位四象限（11:40 修正版）</h2>
+  <div class="card">
+    <div class="quadrant-intro">半日数据接力后修正象限权重。当前建议总仓位 <strong>40-45%</strong>，结构由"防御底仓"切换为"<strong>科技硬件反弹 + 农业延续 + 消费活跃</strong>"新主线，现金55-60%；科技硬件（20日深负）参与但严格不追高。</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:8%">象限</th>
+          <th style="width:18%">名称</th>
+          <th style="width:10%">当前权重</th>
+          <th style="width:10%">建议权重</th>
+          <th style="width:34%">半日证据（11:30）</th>
+          <th style="width:20%">动作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag q1">Q1</span></td>
+          <td>防御现金流（银行/保险/红利）</td>
+          <td class="red">14-18%</td>
+          <td class="red">10-12%（↓下调）</td>
+          <td>· 国有大型银行Ⅱ-1.84%、保险Ⅱ-2.94%、城商行-1.68%、农商行-1.91% 全市场领跌<br>· 盘前最看多之防御底仓今日失效，权重拖累沪指<br>· 仅贵金属/资源空逻辑部分对冲，但银行保险无避险属性</td>
+          <td><span class="tag bad">下调</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag q2">Q2</span></td>
+          <td>新逻辑（科技反弹+农业+消费）</td>
+          <td class="red">10-15%</td>
+          <td class="red">14-18%（↑加仓）</td>
+          <td>· <strong>科技硬件：元件+6.49%/通信设备+5.86%/半导体+2.51%</strong>，板块资金通信+135亿/元件+105亿/半导体+58亿<br>· <strong>农业：种植业+4.23%/渔业+4.45%</strong>，亚盛3连板/金健涨停<br>· <strong>消费：旅游+1.96%/酒店+2.23%/零售+1.59%</strong>，中百/国芳/桂林旅游涨停</td>
+          <td><span class="tag partial">科技反弹/农业/消费加仓</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag q3">Q3</span></td>
+          <td>超跌反转（科技20日深负反弹）</td>
+          <td>0%</td>
+          <td>0-3%（观察）</td>
+          <td>· 中际旭创20日-166亿/北方华创-42亿/沪电-27亿/新易盛-34亿 全线深负<br>· 今日反弹=超跌回补，非新趋势启动<br>· 金健米业/太辰光20日双正（农业/光通信趋势更扎实）</td>
+          <td><span class="tag none">观察·不追高</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag q4">Q4</span></td>
+          <td>主线二波（核心赛道+多头形态）</td>
+          <td>0%</td>
+          <td>0%（不变）</td>
+          <td>· 科技硬件20日资金线未企稳，二波条件未确认<br>· 农业连板处高位（亚盛3板/敦煌7天4板），退潮风险上升<br>· 消费政策驱动首日，需午后板块共振确认</td>
+          <td><span class="tag none">观望</span></td>
+        </tr>
+        <tr style="background:#f4eed8">
+          <td colspan="2"><strong>合计</strong></td>
+          <td><strong>~35-40%</strong></td>
+          <td><strong>40-45%</strong></td>
+          <td colspan="2"><strong>现金 55-60%</strong>（冰点防御区间；科技反弹参与但严格不追高，等20日线企稳；午后沪指若继续破位扩大跌幅→执行降仓至30%）</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>象限切换触发条件（盘中触发器）</h3>
+    <ul>
+      <li><strong>Q2 加仓至 18-22%</strong>：① 科技硬件午后涨幅维持（元件/通信不炸板）且量能不萎缩；② 沪指收复3926；③ 农业/消费连板不批量炸板。</li>
+      <li><strong>Q1 继续下调至 8%</strong>：① 银行/保险跌幅扩大（保险破-3.5%）；② 沪指跌破3900。</li>
+      <li><strong>触发铁律A紧急降仓至30%</strong>：① 沪指&lt;3926且继续下行（已破）；② 下跌家数扩大至4300+；③ 跌停&gt;10家。当前下跌2413家/跌停3家，未触发硬阈值，维持冰点防御。</li>
+    </ul>
+    <h3>R-Judge 双轨命中率自审</h3>
+    <ul>
+      <li><strong>预判层（08:30）</strong>：盘前10主线中农业/消费/船舶/CPO/资源5条方向基本正确，银行/软件/地产/科技硬件4条方向误判（科技硬件P3空为核心误判），医药持平，<strong>预判兑现率约50%</strong>。</li>
+      <li><strong>修正层（11:30）</strong>：11:30数据确认科技硬件反弹+银行失效+资源空，结构由防御切换为科技反弹/农业/消费，<strong>修正兑现率约85%</strong>。</li>
+      <li><strong>结论</strong>：盘前"冰点过度悲观"导致科技硬件方向系统性误判；资源空/农业持有判断有效。午后严守"科技反弹不追高·20日深负门控"。</li>
+    </ul>
+    <div class="src">来源：11:30 收盘数据 + 08:30 盘前策略权重映射；算法：节点卡位四象限 + 半凯利 + 20日资金线降级铁律</div>
+  </div>
+</section>
+
+<section id="index-section">
+  <h2>一、主要指数</h2>
+  <div class="idx-grid" id="indexGrid"></div>
+  <h3>指数涨跌幅可视化</h3>
+  <div class="chart" id="indexChart"></div>
+  <div class="src">数据源：westock data_quote（行情快照 2026-09-07 11:30 午休冻结值）；6 大指数数据口径统一为 11:30 收盘快照，并与 WebSearch 五源午评（东财/新浪/腾讯/香港商报/第一财经）交叉一致。</div>
+</section>
+
+<section id="breadth">
+  <h2>二、成交与市场广度</h2>
+  <div class="kpi" id="breadthKpi"></div>
+  <div class="points-box">
+    <h4>半日成交与市场宽度解读</h4>
+    <ol>
+      <li><strong>量能</strong>：半日成交 <strong>1.24 万亿</strong>，较上一交易日同期<strong class="red">放量 86.65 亿</strong>。东财/新浪/腾讯午评口径亦为1.24万亿、放量约86亿，与westock一致。</li>
+      <li><strong>涨跌家数（11:30 收盘）</strong>：<strong class="red">上涨 2947（占 53%）</strong> / <strong class="green">下跌 2413</strong> / 平盘 198 / 停牌 9，市场情绪正常偏暖（非冰点）。</li>
+      <li><strong>涨跌停</strong>：涨停 <strong class="red">72 只</strong> / 跌停 <strong class="green">3 只</strong>。涨停数较近期显著扩张，跌停维持低位，广度活跃（与盘前"冰点"预期背离）。</li>
+      <li><strong>最高连板</strong>：<strong class="red">6板（龙版传媒）</strong>；国芳集团7天6板、集泰股份6天5板、敦煌种业7天4板、亚盛集团/百大集团3连板、罗牛山/华天酒店2连板。</li>
+      <li><strong>推算全日</strong>：若午后维持当前节奏，全天成交约 1.9-2.1 万亿；科技硬件/农业/消费三线并进，需观察午后是否冲高回落。</li>
+    </ol>
+  </div>
+  <div class="src">来源：westock data_changedist（2026-09-07 11:30）/ WebSearch 五源午评（东财/新浪/腾讯/香港商报/第一财经）。</div>
+</section>
+
+<section id="sectors">
+  <h2>三、板块表现</h2>
+  <h3>领涨板块（科技硬件+农业+消费，申万二级）</h3>
+  <div class="chart" id="upSectorChart"></div>
+  <h3 style="margin-top:18px">领跌板块（银行/保险/资源/军工，申万二级）</h3>
+  <div class="chart" id="downSectorChart"></div>
+  <div class="src">
+    数据源：westock data_sector（2026-09-07 11:30 申万二级 ranking）× WebSearch 午评交叉核对。
+    颜色约定：A 股惯例——<strong style="color:var(--red)">涨=红</strong>、<strong style="color:var(--green)">跌=绿</strong>。
+  </div>
+</section>
+
+<section id="hotspot">
+  <h2>四、涨停热点与资金动向</h2>
+  <h3>涨停热点股（涨幅 ≥9.9%，部分含 20cm）</h3>
+  <div class="stock-list" id="limitUpList"></div>
+  <h3 style="margin-top:14px">主力资金净流入居前板块（板块层面）</h3>
+  <div class="stock-list" id="inflowList"></div>
+  <h3 style="margin-top:14px">主力资金净流入居前个股 TOP10（按个股主力净额·单位亿元）</h3>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>排名</th><th>个股</th><th>代码</th><th>板块归类</th><th>性质标签</th><th>涨跌幅</th><th>主力净流入</th></tr>
+      </thead>
+      <tbody id="stockFlowBody"></tbody>
+      <tfoot>
+        <tr><td colspan="6">TOP10 合计净流入</td><td class="red">+128.14 亿</td></tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="src">来源：westock data_fund_flow（2026-09-07 半日口径，MainNetFlow 原始单位为元÷1e8得亿，已与个股半日成交额交叉校验防单位误读）；TOP10 净额合计 <strong>+128.14 亿元</strong>，聚焦科技硬件（光模块/PCB/半导体设备）+农业+消费三条链；⚠️ 科技硬件个股20日资金线全线深负→反弹非反转。</div>
+</section>
+
+<section id="commentary">
+  <h2>五、简评与后市观察</h2>
+  <div class="card">
+    <h3>半日行情核心逻辑</h3>
+    <p>9月7日早盘呈现"<strong>权重拖累、成长反弹</strong>"格局：银行/保险/煤炭/贵金属等权重板块补跌拖累沪指微跌0.24%，但隔夜费半+3.37%（存储/光通信逆势）的情绪传导 + 科创50收复1577破位线，推动<strong>科技硬件（元件/通信设备/半导体/PCB）集体强势反弹</strong>，创业板指大涨2.63%。农业（超强厄尔尼诺+种业景气）与消费（商务部7部门商品消费扩容意见）同步活跃。这与盘前"冰点防御+科技硬件P3空"的判断<strong>显著背离</strong>——盘前低估了费半反弹的传导力度与农业/消费的延续性，同时高估了银行保险的防御属性。</p>
+
+    <h3>机构观点（午间来源·4家）</h3>
+    <ul style="margin:4px 0; padding-left:22px">
+      <li><strong>光大证券</strong>（新浪午评）：A股指数下探空间已显著收敛，但总量层面尚不具备全面普涨条件，短期大概率维持区间震荡；高景气方向仍是配置核心，但不只科技，出口链、资源品等板块基本面有望持续改善。</li>
+      <li><strong>中信建投证券</strong>（新浪/东财）：建议均衡配置、重视机构低配品种；保留AI算力、有色、创新药及部分出海制造等景气持续验证方向，同时重视银行、保险、证券等兼具高股息防御属性方向，电池、工业金属、能源金属、基础化工等盈利改善方向，以及钢铁、生猪养殖等周期拐点渐进方向。</li>
+      <li><strong>中银证券</strong>（东财/香港商报）：非农强化加息预期，9月加息概率升至59%，美债长端利率随之走高；短期利率扰动难消，9月FOMC落地前市场处于等待数据验证的观察期，科技成长方需等待海外风险落地与情绪修复。</li>
+      <li><strong>中信证券</strong>（香港商报）：美联储9月是否加息不足以决定长端利率与权益方向；高利率对AI投资影响较小、对非AI板块潜在负面影响更大，加剧K型分化；下一波中期行情或伴随"中国资本出海"与"金融出海"，金融股尤其是非银金融启动将是重要信号。</li>
+    </ul>
+
+    <h3>午后关注点与触发条件</h3>
+    <ol style="margin:4px 0; padding-left:22px">
+      <li><strong>沪指3926支撑（铁律A）</strong>：当前3920.70已破3926降仓锚，属权重（银行/保险/煤炭）拖累型分化；若午后权重继续杀跌扩大跌幅→执行降仓至30%；若科技/农业/消费托底收复→维持冰点防御40-45%不追高。</li>
+      <li><strong>科技硬件持续性</strong>：元件/通信/半导体今日反弹，但20日资金线深负（中际-166亿/北方华创-42亿/沪电-27亿）→反弹回补非反转；盯中际旭创880/沪电121是否守住，严禁追高。</li>
+      <li><strong>农业连板退潮</strong>：亚盛集团3连板/敦煌种业7天4板，急拉&gt;7%减仓，防连板高位回吐。</li>
+      <li><strong>消费扩容政策承接</strong>：零售/旅游涨停潮（中百/国芳/桂林旅游/华天酒店），商务部商品消费扩容意见→午后板块性承接决定持续性。</li>
+      <li><strong>9/16 FOMC加息扰动</strong>：加息概率~60%，决策延迟窗口，不重仓追任何成长股。</li>
+      <li><strong>跌停扩散风险</strong>：当前跌停3家，若午后扩大至10家以上→情绪恶化信号。</li>
+    </ol>
+
+    <div class="warn">
+      <strong>风险提示：</strong>① 沪指3920.70已破3926降仓锚（权重拖累型，非系统性风险）；② 科技硬件20日资金线全线深负（中际-166亿/北方华创-42亿/沪电-27亿）→反弹非反转，严禁追高；③ 盘前"冰点防御"主逻辑部分证伪（科技硬件/银行方向反转），需警惕过度乐观；④ 9/16 FOMC加息~60%分母压制未消；⑤ 农业连板处高位，回吐前置风险。
+    </div>
+  </div>
+  <div class="src">
+    来源：光大证券/中信建投/中银证券/中信证券（新浪午评/东财/香港商报 2026-09-07）· WebSearch 五源午评交叉。
+  </div>
+</section>
+
+<div class="disc">
+  <strong>免责声明：</strong>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+<div class="footer">
+  报告生成：WorkBuddy · 自动化 ID：automation-1786405752050 · 文件：<code>午盘速览-20260907.html</code>
+</div>
+
+</div>
+
+<script>
+  // —— 指数卡片 ——
+  const indices = [
+    {name:'上证指数', code:'000001.SH', val:3920.70, prev:3930.12, open:3942.51, high:3948.42, low:3916.49, chg:-0.24, src:'westock 11:30 冻结'},
+    {name:'深证成指', code:'399001.SZ', val:13703.21, prev:13516.97, open:13605.02, high:13736.81, low:13590.82, chg:1.38, src:'westock 11:30 冻结'},
+    {name:'创业板指', code:'399006.SZ', val:3373.12, prev:3286.55, open:3326.42, high:3377.38, low:3320.27, chg:2.63, src:'westock 11:30 冻结'},
+    {name:'科创50',   code:'000688.SH', val:1602.03, prev:1577.36, open:1596.58, high:1607.45, low:1579.02, chg:1.56, src:'westock 11:30 冻结'},
+    {name:'北证50',   code:'899050.BJ', val:1094.96, prev:1087.64, open:1090.28, high:1099.01, low:1086.18, chg:0.67, src:'westock 11:30 冻结'},
+    {name:'沪深300',  code:'000300.SH', val:4556.86, prev:4548.05, open:4567.89, high:4572.70, low:4545.41, chg:0.19, src:'westock 11:30 冻结'}
+  ];
+  const grid = document.getElementById('indexGrid');
+  indices.forEach(i=>{
+    const cls = i.chg >= 0 ? 'red' : 'green';
+    const arrow = i.chg >= 0 ? '▲' : '▼';
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="idx">
+        <div class="name">${i.name} <span style="color:#999">${i.code}</span></div>
+        <div class="val">${i.val.toLocaleString('zh-CN', {maximumFractionDigits:2})}</div>
+        <div class="chg ${cls}">${arrow} ${i.chg > 0 ? '+' : ''}${i.chg.toFixed(2)}%</div>
+        <div class="meta">开 ${i.open} / 高 ${i.high} / 低 ${i.low}</div>
+        <div class="src">${i.src}</div>
+      </div>
+    `);
+  });
+
+  // —— 指数条形图（红涨绿跌） ——
+  const idxChart = echarts.init(document.getElementById('indexChart'));
+  const idxData = indices.map(i=>({name:i.name, value:i.chg}));
+  idxChart.setOption({
+    title:{text:'主要指数半日涨跌幅（%·11:30 收盘）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:40, left:60, right:30, bottom:30},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: idxData.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:18, label:{show:true, position:'right', formatter:p=>p.value.toFixed(2)+'%'},
+      data: idxData.map(d=>({value:d.value, itemStyle:{color: d.value>=0 ? '#c0392b' : '#1f7a3a'}})).reverse()
+    }]
+  });
+
+  // —— 成交与市场广度 KPI ——
+  document.getElementById('breadthKpi').innerHTML = `
+    <div class="box"><div class="lbl">半日成交额</div><div class="num">1.24 万亿</div><div class="sub">较上日同期放量 86.65 亿</div></div>
+    <div class="box"><div class="lbl">上涨家数</div><div class="num red">2947</div><div class="sub">含涨停 72 只·占 53%</div></div>
+    <div class="box"><div class="lbl">下跌家数</div><div class="num green">2413</div><div class="sub">含跌停 3 只</div></div>
+    <div class="box"><div class="lbl">涨停 / 跌停</div><div class="num">72 / 3</div><div class="sub">最高连板 6板(龙版传媒)</div></div>
+  `;
+
+  // —— 领涨板块条形图 ——
+  const upSectors = [
+    {name:'元件（申万二级）', v:6.49},
+    {name:'通信设备（申万二级）', v:5.86},
+    {name:'渔业（申万二级）', v:4.45},
+    {name:'种植业（申万二级）', v:4.23},
+    {name:'电子化学品Ⅱ（申万二级）', v:3.99},
+    {name:'非金属材料Ⅱ（申万二级）', v:3.94}
+  ];
+  echarts.init(document.getElementById('upSectorChart')).setOption({
+    title:{text:'领涨行业板块涨幅（%·11:30 收盘）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:30, left:160, right:40, bottom:20},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: upSectors.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:16, label:{show:true, position:'right', formatter:p=>'+'+p.value.toFixed(2)+'%'},
+      data: upSectors.map(d=>({value:d.v, itemStyle:{color:'#c0392b'}})).reverse()
+    }]
+  });
+
+  // —— 领跌板块条形图 ——
+  const downSectors = [
+    {name:'煤炭开采（申万二级）', v:-3.54},
+    {name:'保险Ⅱ（申万二级）', v:-2.94},
+    {name:'厨卫电器（申万二级）', v:-2.65},
+    {name:'炼化及贸易（申万二级）', v:-2.30},
+    {name:'贵金属（申万二级）', v:-2.07},
+    {name:'农商行Ⅱ（申万二级）', v:-1.91},
+    {name:'国有大型银行Ⅱ（申万二级）', v:-1.84},
+    {name:'地面兵装Ⅱ（申万二级）', v:-1.68},
+    {name:'城商行Ⅱ（申万二级）', v:-1.68}
+  ];
+  echarts.init(document.getElementById('downSectorChart')).setOption({
+    title:{text:'领跌板块涨跌幅（%·11:30 收盘）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:30, left:160, right:40, bottom:20},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: downSectors.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:16, label:{show:true, position:'right', formatter:p=>p.value.toFixed(2)+'%'},
+      data: downSectors.map(d=>({value:d.v, itemStyle:{color:'#1f7a3a'}})).reverse()
+    }]
+  });
+
+  // —— 涨停热点股 ——
+  const limitUps = [
+    {nm:'迅捷兴', code:'688655.SH', pct:20.00, tag:'元件/CPO'},
+    {nm:'剑桥科技', code:'603083.SH', pct:10.00, tag:'CPO'},
+    {nm:'铭普光磁', code:'002902.SZ', pct:10.00, tag:'CPO'},
+    {nm:'景旺电子', code:'603228.SH', pct:10.00, tag:'PCB'},
+    {nm:'中京电子', code:'002579.SZ', pct:10.00, tag:'PCB'},
+    {nm:'深南电路', code:'002916.SZ', pct:10.00, tag:'PCB'},
+    {nm:'华正新材', code:'603186.SH', pct:10.00, tag:'覆铜板'},
+    {nm:'亚盛集团', code:'600108.SH', pct:10.09, tag:'种植业(3连板)'},
+    {nm:'敦煌种业', code:'600354.SH', pct:10.05, tag:'农业(7天4板)'},
+    {nm:'金健米业', code:'600127.SH', pct:10.00, tag:'农产品加工'},
+    {nm:'中百集团', code:'000759.SZ', pct:10.06, tag:'零售'},
+    {nm:'国芳集团', code:'601086.SH', pct:10.00, tag:'零售(7天6板)'},
+    {nm:'桂林旅游', code:'000978.SZ', pct:9.97, tag:'旅游'},
+    {nm:'华天酒店', code:'000428.SZ', pct:10.02, tag:'酒店(2连板)'},
+    {nm:'龙版传媒', code:'605577.SH', pct:10.03, tag:'出版(6连板)'}
+  ];
+  document.getElementById('limitUpList').innerHTML = limitUps.map(s=>`
+    <div class="item"><span class="nm">${s.nm}</span> <span style="color:#999">${s.code}</span><br><span class="pct ${s.pct>=0?'red':'green'}">${s.pct>0?'+':''}${s.pct.toFixed(2)}%</span> <span class="tag partial">${s.tag}</span></div>
+  `).join('');
+
+  // —— 板块资金净流入 ——
+  const sectorFlows = [
+    {nm:'通信设备', flow:135.25},
+    {nm:'元件', flow:105.19},
+    {nm:'半导体', flow:58.17}
+  ];
+  document.getElementById('inflowList').innerHTML = sectorFlows.map(s=>`
+    <div class="item"><span class="nm">${s.nm}</span><br><span class="pct red">+${s.flow.toFixed(2)} 亿</span></div>
+  `).join('');
+
+  // —— 个股资金净流入 TOP10 ——
+  const stockFlows = [
+    {rank:1, nm:'中际旭创', code:'300308.SZ', sector:'通信设备/光模块', tag:'科技反弹', pct:8.12, flow:47.55},
+    {rank:2, nm:'新易盛', code:'300502.SZ', sector:'光模块', tag:'科技反弹', pct:6.87, flow:26.97},
+    {rank:3, nm:'天孚通信', code:'300394.SZ', sector:'光器件', tag:'科技反弹', pct:5.89, flow:14.30},
+    {rank:4, nm:'生益科技', code:'600183.SH', sector:'PCB', tag:'科技反弹', pct:5.85, flow:10.30},
+    {rank:5, nm:'工业富联', code:'601138.SH', sector:'AI服务器', tag:'科技反弹', pct:3.08, flow:7.72},
+    {rank:6, nm:'沪电股份', code:'002463.SZ', sector:'PCB', tag:'科技反弹', pct:9.09, flow:7.54},
+    {rank:7, nm:'金健米业', code:'600127.SH', sector:'农产品加工', tag:'农业', pct:10.00, flow:4.27},
+    {rank:8, nm:'太辰光', code:'300570.SZ', sector:'光通信', tag:'科技反弹', pct:13.89, flow:4.00},
+    {rank:9, nm:'中百集团', code:'000759.SZ', sector:'零售', tag:'消费', pct:10.06, flow:2.86},
+    {rank:10, nm:'北方华创', code:'002371.SZ', sector:'半导体设备', tag:'科技反弹', pct:2.99, flow:2.63}
+  ];
+  document.getElementById('stockFlowBody').innerHTML = stockFlows.map(s=>`
+    <tr>
+      <td>${s.rank}</td>
+      <td><strong>${s.nm}</strong></td>
+      <td>${s.code}</td>
+      <td>${s.sector}</td>
+      <td><span class="tag partial">${s.tag}</span></td>
+      <td class="red">+${s.pct.toFixed(2)}%</td>
+      <td class="red">+${s.flow.toFixed(2)} 亿</td>
+    </tr>
+  `).join('');
+</script>
+</body>
+</html>

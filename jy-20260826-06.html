@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>比价配对框架 · 方法论总结</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1f2329; --sub:#656d76;
+    --line:#e5e8ec; --accent:#2f6fed; --accentbg:#eaf1ff;
+    --green:#0a8043; --greenbg:#eaf5ea; --orange:#b25e00; --orangebg:#fdf3e7;
+    --red:#c8102e; --redbg:#fdecef; --gray:#656d76; --graybg:#f0f2f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;padding:28px 16px}
+  .wrap{max-width:920px;margin:0 auto}
+  .head{background:linear-gradient(135deg,#2f6fed,#5b8def);color:#fff;
+    border-radius:16px;padding:28px 30px;margin-bottom:22px}
+  .head h1{font-size:24px;font-weight:700;letter-spacing:.5px}
+  .head p{opacity:.92;margin-top:8px;font-size:14px}
+  .tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;
+    padding:3px 12px;font-size:12px;margin-top:12px;margin-right:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .card h2{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .num{width:28px;height:28px;border-radius:8px;background:var(--accentbg);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex:none}
+  .card h3{font-size:14px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  p.d{font-size:14px;color:var(--sub);margin-bottom:8px}
+  ul{margin:6px 0 6px 4px;padding-left:18px}
+  li{font-size:13.5px;color:var(--ink);margin-bottom:6px}
+  li b{color:var(--accent)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:10px 0;
+    font-size:13.5px;align-items:baseline}
+  .kv .k{font-weight:700;color:var(--sub);white-space:nowrap}
+  .badge{display:inline-block;border-radius:6px;padding:2px 9px;font-size:12px;font-weight:700;margin-right:6px}
+  .gA{background:var(--greenbg);color:var(--green)}
+  .gB{background:var(--accentbg);color:var(--accent)}
+  .gC{background:var(--graybg);color:var(--gray)}
+  .table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+  .table th{background:var(--graybg);text-align:left;padding:8px 10px;font-weight:700;color:var(--sub);border:1px solid var(--line)}
+  .table td{padding:8px 10px;border:1px solid var(--line);vertical-align:top}
+  .note{background:var(--orangebg);border-left:4px solid var(--orange);border-radius:0 8px 8px 0;
+    padding:12px 16px;font-size:13px;color:#5a3a00;margin:12px 0}
+  .note b{color:var(--orange)}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;margin:10px 0}
+  .step{background:var(--accentbg);color:var(--accent);border-radius:8px;padding:6px 12px;font-weight:600}
+  .arrow{color:var(--sub)}
+  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:22px}
+  code{background:var(--graybg);border-radius:4px;padding:1px 6px;font-size:12.5px;color:#b25e00}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>比价配对框架 · 方法论总结</h1>
+    <p>从「概念+产业逻辑配对」任务中抽离的纯方法骨架 —— 不含任何仓位/止损/不追高等投资纪律，可复用于任意「两标的相对强弱/补涨」场景。</p>
+    <div>
+      <span class="tag">配对构造</span>
+      <span class="tag">可比性过滤</span>
+      <span class="tag">量化指标</span>
+      <span class="tag">信号触发</span>
+      <span class="tag">池子维护</span>
+    </div>
+  </div>
+
+  <!-- 1 -->
+  <div class="card">
+    <h2><span class="num">1</span>配对构造：按「概念 + 产业逻辑」聚类</h2>
+    <p class="d">核心：把两只标的配成一对，依据的是<b>它们在产业上的同源性</b>，而不是价格走势的相似度。</p>
+    <h3>为什么不用「走势最相似」</h3>
+    <ul>
+      <li>同行业问句「和 X 走势最相似的股票」返回的是<b>同日技术形态</b>（如缩量、价跌量缩）的几百只杂股，跨行业混进茅台/招行，根本不可比。</li>
+      <li>正确做法：同簇标的须处于<b>同一产业环节</b>或受<b>同一概念驱动</b>，天然可比、天然可对冲。</li>
+    </ul>
+    <h3>结构</h3>
+    <ul>
+      <li>先按大方向分类（示例：电子计算机 / 通信传媒 / 电力设备 / 交运 / 医药），每方向下再拆<b>簇</b>（如「半导体设备」「液冷」「CXO」）。</li>
+      <li>簇内成员需为<b>真同环节</b>标的，避免「沾边就塞」。</li>
+    </ul>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <h2><span class="num">2</span>可比性过滤：硬约束（可配置参数）</h2>
+    <p class="d">不是所有同簇标的都能配 —— 须满足可比性，否则比价信号失真。</p>
+    <div class="kv">
+      <div class="k">市值可比</div>
+      <div><b>max(市值) / min(市值) ≤ 4×</b>。逻辑：市值差太大 → 波动量级、资金属性、关注度不在同一量级，比价含义失真。龙头位放左，跟随位放右。</div>
+      <div class="k">制度一致</div>
+      <div>涨跌幅制度须一致才算<b>等价比较</b>（示例：主板 10% 制 vs 双创 20% 制，同一 7% 阈值含义不等价）。不一致的 pair 降级处理，不参与高评级。</div>
+    </div>
+    <div class="note"><b>参数化提示：</b>4× 与制度阈值都是<b>可配置旋钮</b>，换场景（如不同市场/不同资产）时按实际波动量级重设，不要当死规则。</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <h2><span class="num">3</span>量化指标：不依赖 K 线，用行情快照即可</h2>
+    <table class="table">
+      <tr><th>指标</th><th>算法</th><th>含义 / 用途</th></tr>
+      <tr>
+        <td><b>动量同步度</b></td>
+        <td>两只标的 [5日 / 10日 / 20日 / 60日 涨幅] 四维向量的<b>余弦相似度</b></td>
+        <td>衡量中期是否同频。≥0.85 = 高同步；≥0.60 = 可用；&lt;0.60 = 纯巧合，剔除。</td>
+      </tr>
+      <tr>
+        <td><b>20日离散度</b></td>
+        <td>龙头位20日涨幅 − 跟随位20日涨幅</td>
+        <td>正值 = 跟随位滞涨 = <b>补涨候选</b>；负值 = 跟随位已领先。</td>
+      </tr>
+      <tr>
+        <td><b>市值比</b></td>
+        <td>max(市值) / min(市值)</td>
+        <td>第 2 节硬约束的实测值，同时用于评级（见第 4 节）。</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <h2><span class="num">4</span>配对评级：A / B / C 三级</h2>
+    <p class="d">用于决定「监控优先级」与「是否值得推送」。</p>
+    <table class="table">
+      <tr><th>级</th><th>条件</th><th>定性</th></tr>
+      <tr><td><span class="badge gA">A</span></td><td>市值比 ≤ 2 且 同步度 ≥ 0.85</td><td>最优，互为镜像</td></tr>
+      <tr><td><span class="badge gB">B</span></td><td>市值比 ≤ 3 且 同步度 ≥ 0.60</td><td>可用</td></tr>
+      <tr><td><span class="badge gC">C</span></td><td>仅满足硬性可比约束</td><td>备选（制度不一致者归此）</td></tr>
+    </table>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <h2><span class="num">5</span>信号触发：阈值 + 共振 / 离散二分</h2>
+    <p class="d">一对中<b>任一只达阈值</b>即触发。阈值须做<b>制度等价换算</b>。</p>
+    <div class="kv">
+      <div class="k">阈值等价</div>
+      <div>用「定价分位」而非绝对涨幅：示例主板 7% ≈ 涨停 70% 位；双创需 ~12% 才到同样分位。换算后两者才可比。</div>
+      <div class="k">共振</div>
+      <div>双≥阈值 = <b>产业环节级共振</b>（强信号）。</div>
+      <div class="k">离散</div>
+      <div>单≥阈值、另一只滞涨 = <b>补涨机会</b>，提示另一只可能接力（用第 3 节 20日离散度定位滞涨方）。</div>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <h2><span class="num">6</span>信号研判门槛：只推「有机会的」</h2>
+    <ul>
+      <li><b>机会门</b>：动量同步度 ≥ 0.6 的同类 pair 才算「有机会」；&lt;0.6 的纯巧合不推。</li>
+      <li><b>盘中（实时）</b>：只推 强共振 + 高同步补涨，过滤掉 C 级 / 弱共振 / 中等补涨，避免刷屏。</li>
+      <li><b>盘后（统计/回测）</b>：保留全量统计，但对「有机会」的标 ⭐ 标注，与盘中推送内容互补不重复。</li>
+    </ul>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <h2><span class="num">7</span>池子维护：增量模式（只加不减）</h2>
+    <ul>
+      <li><b>并集原则</b>：定期（如每日盘前）用新行情快照重算，与历史累计池取并集 —— <b>历史 pair 永不被删</b>。</li>
+      <li><b>休眠转正</b>：市值比收窄重新满足约束的「休眠」pair 会自动转正，并标注原因。</li>
+      <li><b>首现日</b>：每对记录 <code>first_seen</code>（首次出现日），便于追溯。</li>
+      <li><b>按日去重</b>：推送侧同一 pair 当日只推一次，不因盘中先共振后分化而重复打扰。</li>
+      <li><b>心跳</b>：无新增时只发一句「池子稳定」状态，不重算/不重部署（省资源）。</li>
+    </ul>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <h2><span class="num">8</span>技术实现要点（可复用的工程经验）</h2>
+    <h3>数据源选型</h3>
+    <ul>
+      <li>批量行情接口（示例 <code>qt.gtimg.cn</code>，50 只/批）含总市值 + 多周期涨幅，体积小、可脚本化，优于「问财 MCP 返回 90–110KB 自动落盘、且 503 频发」的通道。</li>
+      <li>涨跌幅制度不能用行情字段直接取（字段错位陷阱），改用<b>代码前缀</b>判定（主板 / 创业板·科创 / 北交所）。</li>
+    </ul>
+    <h3>字段索引（示例接口）</h3>
+    <table class="table">
+      <tr><th>索引</th><th>含义</th><th>索引</th><th>含义</th></tr>
+      <tr><td>1</td><td>名称</td><td>32</td><td>涨跌幅 %</td></tr>
+      <tr><td>45</td><td>总市值（亿）</td><td>44</td><td>流通市值（亿）</td></tr>
+      <tr><td>63</td><td>5日 %</td><td>69 / 70 / 71</td><td>10日 / 20日 / 60日 %</td></tr>
+    </table>
+    <h3>调度与门控分层</h3>
+    <ul>
+      <li>定时任务用 <code>DAILY + BYHOUR列表 + BYMINUTE列表</code>（非 <code>HOURLY</code>，后者会退化成全局 tick 导致空跑）。</li>
+      <li>脚本内再兜一层门控（工作日 / 未开盘 / 休市），双保险。</li>
+    </ul>
+  </div>
+
+  <!-- 流程 -->
+  <div class="card">
+    <h2><span class="num">★</span>端到端流程</h2>
+    <div class="flow">
+      <span class="step">① 簇定义</span><span class="arrow">→</span>
+      <span class="step">② 取市值/涨幅快照</span><span class="arrow">→</span>
+      <span class="step">③ 4× 可比过滤</span><span class="arrow">→</span>
+      <span class="step">④ 算同步度/离散度</span><span class="arrow">→</span>
+      <span class="step">⑤ A/B/C 评级</span><span class="arrow">→</span>
+      <span class="step">⑥ 阈值触发扫描</span><span class="arrow">→</span>
+      <span class="step">⑦ 机会研判(≥0.6)</span><span class="arrow">→</span>
+      <span class="step">⑧ 推送/归档</span>
+    </div>
+    <div class="flow">
+      <span class="step">⑨ 盘后全量回测</span><span class="arrow">→</span>
+      <span class="step">⑩ 次日盘前增量(只加不减)</span><span class="arrow">↻</span>
+      <span class="step">回到 ②</span>
+    </div>
+  </div>
+
+  <div class="foot">本框架为方法论骨架，所有数值阈值（4× / 7%·12% / 0.85·0.60 等）均为<b>示例参数</b>，落地时按目标市场的实际波动量级重设。</div>
+
+</div>
+</body>
+</html>

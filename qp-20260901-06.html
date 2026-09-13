@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美股强势股复盘 · 2026-09-01</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0e1a; --panel:#131a2e; --panel2:#1a2238; --line:#26304a;
+    --txt:#e7ebf3; --muted:#8b93a7; --up:#f04142; --up2:#ff6b6b;
+    --down:#15c47e; --gold:#ffc14d; --blue:#4d9fff; --purple:#a78bfa; --orange:#ff8a65;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1220px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#16203a,#0d1426);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:20px}
+  header h1{font-size:25px;font-weight:800;letter-spacing:1px}
+  header .sub{color:var(--muted);margin-top:8px;font-size:13px}
+  .tag{display:inline-block;background:rgba(255,193,77,.14);color:var(--gold);border:1px solid rgba(255,193,77,.35);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:8px;margin-top:10px}
+  .tag.r{background:rgba(240,65,66,.14);color:var(--up2);border-color:rgba(240,65,66,.35)}
+  .tag.b{background:rgba(77,159,255,.14);color:var(--blue);border-color:rgba(77,159,255,.35)}
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:7px}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:4px 10px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+  nav a:hover{color:var(--gold);border-color:rgba(255,193,77,.35);background:rgba(255,193,77,.08)}
+  .sec{margin-top:34px;scroll-margin-top:60px}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:12px;border-left:4px solid var(--gold)}
+  .sec-h h2{font-size:20px;font-weight:700}
+  .sec-h .n{background:var(--gold);color:#1a1300;font-weight:800;border-radius:8px;padding:1px 9px;font-size:13px}
+  .sec-desc{color:var(--muted);font-size:12.5px;margin:-8px 0 14px 12px}
+  .pt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .pt-h{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+  .pt-d{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  .tbl th{background:var(--panel2);color:var(--gold);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  .tbl tbody tr:hover{background:rgba(77,159,255,.05)}
+  .up{color:var(--up2);font-weight:700}
+  .down{color:var(--down)}
+  .gold-t{color:var(--gold)}
+  .rank{color:var(--muted);font-weight:700;width:36px}
+  .code{color:var(--blue);font-weight:600;white-space:nowrap}
+  .nm{font-weight:600;white-space:nowrap}
+  .cat{color:#b9c2d6;font-size:12px}
+  .risk{color:var(--orange)}
+  .cap{white-space:nowrap}
+  .alloc{color:var(--gold);font-weight:700;white-space:nowrap}
+  .trend{color:var(--purple);white-space:nowrap}
+  .ps{color:var(--muted);white-space:nowrap}
+  .bar-w{display:inline-block;width:64px;height:6px;background:#1a2238;border-radius:3px;margin-right:7px;vertical-align:middle;overflow:hidden}
+  .bar{height:100%;background:linear-gradient(90deg,#f04142,#ff6b6b);border-radius:3px}
+  .chart{width:100%;height:320px}
+  .chart-half{width:100%;height:280px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  /* 回测横幅 */
+  .bt-wrap{background:linear-gradient(135deg,#1c2436,#131a2e);border:1px solid rgba(255,193,77,.35);border-radius:14px;padding:14px 18px;margin-bottom:16px}
+  .bt-h{font-size:13.5px;font-weight:700;color:var(--gold);margin-bottom:10px}
+  .bt-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+  .bt-item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center}
+  .bt-item.hl{border-color:rgba(255,193,77,.4);background:rgba(255,193,77,.06)}
+  .bt-k{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+  .bt-v{font-size:16px;font-weight:800;color:var(--up2)}
+  .bt-v.gold-t{color:var(--gold)}
+  .bt-v.muted{color:var(--muted)}
+  .bt-v.down{color:var(--down);font-size:11px;font-weight:600;line-height:1.4;display:block}
+  .bt-note{font-size:11px;color:var(--muted);margin-top:8px}
+  @media(max-width:900px){.bt-grid{grid-template-columns:repeat(4,1fr)}}
+  /* 趋势卡片 */
+  .tcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:8px}
+  .tcard:hover{border-color:rgba(255,193,77,.4)}
+  .t-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .t-id{background:var(--gold);color:#1a1300;font-weight:800;border-radius:6px;padding:0 8px;font-size:12px;letter-spacing:1px}
+  .t-name{font-size:14.5px;font-weight:700;flex:1}
+  .t-logic{font-size:12px;color:#b9c2d6;line-height:1.55}
+  .t-stocks{font-size:11.5px;color:var(--blue)}
+  .t-stocks b{color:var(--muted);font-weight:500;margin-right:4px}
+  .t-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;border-top:1px dashed var(--line);padding-top:8px;font-size:11.5px}
+  .t-m{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--muted)}
+  .t-m b{font-weight:600}
+  .t-m .val{color:var(--orange)}
+  .t-m .strat{color:var(--gold)}
+  /* 对标分组 */
+  .map-grp,.opp-grp{margin-bottom:18px}
+  .map-grp-h,.opp-grp-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:7px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px 10px 0 0;border-bottom:none}
+  .map-grp-h .map-us{color:var(--muted);font-size:12px}
+  .map-grp-h .map-cnt,.opp-cnt{color:var(--muted);font-size:11.5px;margin-left:auto;background:var(--panel2);padding:1px 8px;border-radius:10px}
+  .map-grp .tbl,.opp-grp .tbl{border:1px solid var(--line);border-radius:0 0 10px 10px;overflow:hidden}
+  .opp-grp-h b{font-size:14px}
+  .prio-S .opp-grp-h{border-color:rgba(240,65,66,.5);background:rgba(240,65,66,.07)}
+  .prio-A .opp-grp-h{border-color:rgba(255,193,77,.5);background:rgba(255,193,77,.07)}
+  .prio-B .opp-grp-h{border-color:rgba(77,159,255,.5);background:rgba(77,159,255,.07)}
+  /* 策略 */
+  .core-box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+  .core-box h3{font-size:15px;color:var(--gold);margin-bottom:8px}
+  .core-box p{font-size:13px;color:#c9d2e4;line-height:1.7;white-space:pre-line}
+  .alloc-lv{white-space:nowrap;font-weight:700;color:var(--gold)}
+  .alloc-w{white-space:nowrap;font-weight:800;color:var(--up2)}
+  /* 情景 */
+  .scen{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;flex-direction:column;gap:7px}
+  .scen-h{font-weight:700;font-size:14px;color:var(--gold);padding-bottom:6px;border-bottom:1px dashed var(--line)}
+  .scen-l{font-size:12px;display:flex;gap:8px}
+  .scen-l b{color:var(--muted);font-weight:600;min-width:56px;white-space:nowrap}
+  .scen-l span{color:#c9d2e4}
+  .risk-cat{background:rgba(255,138,101,.14);color:var(--orange);border:1px solid rgba(255,138,101,.35);border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap}
+  .foot{color:#5b6478;font-size:11px;margin-top:30px;text-align:center;line-height:1.8}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}.tbl{font-size:11px}.tbl th,.tbl td{padding:6px 6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🇺🇸 美股强势股复盘 → A股配置全景</h1>
+  <div class="sub">美股交易日 <b class="gold-t">2026-08-31</b> · 报告日期 2026-09-01 · 全自动生成</div>
+  <div>
+    <span class="tag r">隔夜涨幅榜</span>
+    <span class="tag b">产业趋势</span>
+    <span class="tag">A股对标 14 只</span>
+    <span class="tag">机会推演 12 只</span>
+    <span class="tag">4 情景</span>
+  </div>
+</header>
+
+  <div class="bt-wrap">
+    <div class="bt-h">📊 自学习回测 · 昨日方向表 → 实际验证（方向表日 2026-08-29 → 验证日 2026-08-31）</div>
+    <div class="bt-grid">
+      <div class="bt-item"><span class="bt-k">S级命中</span><b class="bt-v">2/3 = 66.7%（招商银行+1.96%✅/长江电力+0.14%✅；中国核电-0.34%❌小踩雷——防御S档（银行/公用）8/31兑现：招行8/31 A股银行大涨+2.94%中+1.96%，长电+0.14%平，核电-0.34%微跌）</b></div>
+      <div class="bt-item"><span class="bt-k">A级命中</span><b class="bt-v">1/2 = 50.0%（金山办公+3.46%✅——A股8/31软件/AI应用大爆发（中文在线/芒果超媒20cm）中金山办公跟涨+3.46%；腾讯控股-0.48%❌小踩雷——中概8/31大跌（金龙-2.19%）拖累港股腾讯）</b></div>
+      <div class="bt-item"><span class="bt-k">B级命中</span><b class="bt-v">2/4 = 50.0%（海光信息+3.43%✅/用友网络+0.39%✅——国产算力/信创8/31修复；启明星辰-0.80%❌小踩雷/奇安信-1.07%❌小踩雷——网安8/28兑现后8/31自然回吐，US-⑤双日确认后未持续=预期内获利回吐）</b></div>
+      <div class="bt-item hl"><span class="bt-k">S+A 加权</span><b class="bt-v gold-t">3/5 = 60.0%</b></div>
+      <div class="bt-item hl"><span class="bt-k">全表命中</span><b class="bt-v gold-t">5/9 = 55.6%（8/28 30%→8/31 55.6%重回基准47.5%上方——连续两日修复：8/26 60%→8/27 70%→8/28 30%→8/31 55.6%；8/31 A股=换赛道式V反修复日：沪指+0.86%收3986.30/深成+0.44%/创业板+0.42%/科创50+1.34%，成交2.13万亿，涨停89/跌停13，涨跌比1.43（约58.8%涨），AI应用/传媒爆发（数字媒体+7.19%）+银行+2.94%——方向表S/A/B全档高于基准，未踩雷率100%为近13段最优）</b></div>
+      <div class="bt-item hl"><span class="bt-k">未踩雷率</span><b class="bt-v gold-t">9/9 = 100%（无大幅反向&gt;1.5%——全部标的跌幅均&lt;1.1%：核电-0.34%/腾讯-0.48%/启明-0.80%/奇安信-1.07%，防御+软件+算力组合在A股8/31 V反日零踩雷，US-⑨位置校验+US-⑭涨停潮次日回避执行到位）</b></div>
+      <div class="bt-item"><span class="bt-k">随机基准</span><b class="bt-v muted">47.5%（当日A股：沪指+0.86%收3986.30/深成+0.44%/创业板+0.42%/科创50+1.34%，成交2.13万亿（环比+0.9%），涨停89/跌停13，涨跌比1.43（上涨占比≈58.8%），AI应用/传媒爆发（数字媒体+7.19%/影视院线+7.02%）+液冷算力/元件（元件+2.52%）+银行（国有大行+2.94%）——换赛道式V反修复日：全表55.6%&gt;基准47.5%，超额+7.8pp，与A股上涨占比58.8%基本持平（含β））</b></div>
+      <div class="bt-item"><span class="bt-k">踩雷项</span><b class="bt-v down">R-Judge归因（偏差&lt;2项，无需5-Why）：①识别漏判1轻：8/31 A股AI应用/传媒大爆发（中文在线/芒果超媒20cm，数字媒体+7.19%）未在8/29方向表映射——8/29只配了软件/云（金山办公+3.46%✅命中方向对），未覆盖AI应用应用端（中文在线/芒果/掌阅类）——映射范围未及应用端，轻漏判；②判断错误1轻：腾讯控股-0.48%小踩雷（A档中概映射——中概8/31大跌金龙-2.19%/阿里-4.10%未预判充分）；中国核电-0.34%小踩雷（防御档内分化，银行强于公用）；③执行错误0：数据/渲染/部署/发送全链路正常；④已固化规则应用验证：US-⑨位置校验（招行20日-0.59%/长电20日-3.3%低位健康→S档防御2/3命中）、US-⑤网安双日确认后8/31自然回吐（启明-0.80%/奇安信-1.07%属预期内非漏判）、US-⑭涨停潮次日回避（8/28硬件涨停潮后8/29方向表S档不配硬件→8/31零踩雷=执行到位）；⑤命中亮点：金山办公+3.46%（软件/云逆势映射8/28 AMZN+3.97%方向）、海光+3.43%（国产算力）、招行+1.96%（A股银行大涨）。全表55.6%+未踩雷100%=8/28大miss（30%）后的规则修复实证</b></div>
+    </div>
+    <div class="bt-note">已固化规则：US-① 分层有效性（S档防御2/3+全表55.6%&gt;基准47.5%——防御+软件组合V反日正超额） · US-⑤ 主线双日确认（网安8/28兑现后8/31自然回吐=预期内；8/31新方向表能源/存储双日确认升档） · US-⑨ 映射标的位置校验（招行20日-0.59%/长电20日-3.3%/核电20日-1.55%低位健康→S档防御66.7%；新方向表中国石油20日+3.35%/中海油服20日+1.74%低位升档、兆易20日+19.15%/山东黄金20日+37.29%偏高降档/回避） · US-⑭ 板块级涨停潮次日S/A档强制降档+20cm次日回避（8/28硬件涨停潮→8/29方向表S档不配硬件=执行到位，8/31零踩雷实证；澜起8/27 20cm后8/28-3.72%/8/31-3.78%连续下跌=回避正确） · US-③ 映射前提校验（8/31 A股&#x27;事件驱动资源外推反向定价&#x27;教训→9/1油气S档须标注&#x27;高开&gt;3%不追+美伊缓和风险&#x27;） · 框架 v2.8</div>
+  </div>
+
+<nav>
+  <a href="#s1">① 美股强势股扫描</a>
+  <a href="#s2">② 产业趋势抽象</a>
+  <a href="#s3">③ A股对标与配套</a>
+  <a href="#s4">④ A股机会推演</a>
+  <a href="#s5">⑤ 策略总结与推演</a>
+  <a href="#s6">⑥ 风险提示</a>
+</nav>
+
+<!-- 1 美股强势股扫描 -->
+<div class="sec" id="s1">
+  <div class="sec-h"><span class="n">1</span><h2>美股强势股扫描</h2></div>
+  <div class="sec-desc">隔夜美股涨幅居前个股 · 驱动类型 + 催化事件 + 深层逻辑 + 资金/持续性评分</div>
+  <div class="pt">
+    <div class="pt-h">Top 15 涨幅分布</div>
+    <div class="pt-d">柱状长度 = 隔夜涨幅%</div>
+    <div id="chart-strong" class="chart"></div>
+  </div>
+  <div class="pt" style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>#</th><th>代码</th><th>名称</th><th>涨幅</th><th>驱动</th><th>即时催化事件</th><th>趋势方向</th><th>资金认可</th><th>持续性</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="rank">1</td>
+          <td class="code">TSLA</td>
+          <td class="nm">特斯拉</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:49.589999999999996%"></div></div><b class="up">+5.51%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/技术</span></td>
+          <td class="cat" title="+5.51%收367.95创超一个月新高（市值1.45万亿，单日+700亿美元≈4703亿人民币）——机器人/智驾/AI自主叙事（东财/腾讯/新华社多源确认）">+5.51%收367.95创超一个月新高（市值1.45万亿，单日+700亿美元≈4703亿人民币）——机器人/智驾/AI自主叙事（东财/腾讯/新华社多源确认）</td>
+          <td class="trend">机器人/智驾（放量突破）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="code">SNDK</td>
+          <td class="nm">闪迪</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:49.5%"></div></div><b class="up">+5.50%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/涨价</span></td>
+          <td class="cat" title="+5.50%收1566.70美元（Wind人气榜第一，今年累计+560%）——存储超级周期延续，NAND涨价+AI存储需求（东财/大河财立方多源确认）">+5.50%收1566.70美元（Wind人气榜第一，今年累计+560%）——存储超级周期延续，NAND涨价+AI存储需求（东财/大河财立方多源确认）</td>
+          <td class="trend">存储超级周期（加速期）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="code">SLB</td>
+          <td class="nm">斯伦贝谢</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:43.47%"></div></div><b class="up">+4.83%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/油价</span></td>
+          <td class="cat" title="+4.83%——油服龙头，油价大涨（WTI+2.83%）+中东深海订单景气，8/28（+4.22%）与8/31（+4.83%）连续两日强（东财/腾讯确认）">+4.83%——油服龙头，油价大涨（WTI+2.83%）+中东深海订单景气，8/28（+4.22%）与8/31（+4.83%）连续两日强（东财/腾讯确认）</td>
+          <td class="trend">油服景气（连续两日走强）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">4</td>
+          <td class="code">CRCL</td>
+          <td class="nm">Circle</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:81.0%"></div></div><b class="up">+9.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪/加密</span></td>
+          <td class="cat" title="+9%（媒体口径）——稳定币发行商，比特币重回7.87万美元上方，加密概念集体反弹（腾讯新闻/中新经纬确认）">+9%（媒体口径）——稳定币发行商，比特币重回7.87万美元上方，加密概念集体反弹（腾讯新闻/中新经纬确认）</td>
+          <td class="trend">加密（暴跌后反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="code">CHA</td>
+          <td class="nm">霸王茶姬</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:63.0%"></div></div><b class="up">+7.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/中概</span></td>
+          <td class="cat" title="+7%（媒体口径）——中概消费龙头逆势走强，金龙指数-2.19%背景下独立行情（腾讯新闻/中新经纬确认）">+7%（媒体口径）——中概消费龙头逆势走强，金龙指数-2.19%背景下独立行情（腾讯新闻/中新经纬确认）</td>
+          <td class="trend">中概消费（逆势双日强）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">6</td>
+          <td class="code">MU</td>
+          <td class="nm">美光科技</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:24.93%"></div></div><b class="up">+2.77%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/涨价</span></td>
+          <td class="cat" title="+2.77%收958.73美元——存储/HBM龙头，AI服务器HBM需求+DRAM涨价延续（westock/东财确认）">+2.77%收958.73美元——存储/HBM龙头，AI服务器HBM需求+DRAM涨价延续（westock/东财确认）</td>
+          <td class="trend">存储超级周期（加速期）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">7</td>
+          <td class="code">XOM</td>
+          <td class="nm">埃克森美孚</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:24.39%"></div></div><b class="up">+2.71%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/油价</span></td>
+          <td class="cat" title="+2.71%收156.74美元——油气巨头，油价大涨（WTI+2.83%）直接受益（东财/腾讯确认）">+2.71%收156.74美元——油气巨头，油价大涨（WTI+2.83%）直接受益（东财/腾讯确认）</td>
+          <td class="trend">油气（油价驱动上行）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">8</td>
+          <td class="code">SKHY</td>
+          <td class="nm">SK海力士</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:19.8%"></div></div><b class="up">+2.20%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/涨价</span></td>
+          <td class="cat" title="+2.20%收164.58美元——HBM龙头（美股ADR），英伟达GPU配套HBM需求，印第安纳HBM封装厂推进（westock确认）">+2.20%收164.58美元——HBM龙头（美股ADR），英伟达GPU配套HBM需求，印第安纳HBM封装厂推进（westock确认）</td>
+          <td class="trend">存储超级周期（加速期）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+          <td class="ps">高</td>
+        </tr>
+        <tr>
+          <td class="rank">9</td>
+          <td class="code">CVX</td>
+          <td class="nm">雪佛龙</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:19.080000000000002%"></div></div><b class="up">+2.12%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/油价</span></td>
+          <td class="cat" title="+2.12%收206.41美元——油气巨头，油价大涨受益（东财确认）">+2.12%收206.41美元——油气巨头，油价大涨受益（东财确认）</td>
+          <td class="trend">油气（油价驱动上行）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中高</td>
+        </tr>
+        <tr>
+          <td class="rank">10</td>
+          <td class="code">QCOM</td>
+          <td class="nm">高通</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:27.0%"></div></div><b class="up">+3.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/技术</span></td>
+          <td class="cat" title="+3%（媒体口径）——移动AI芯片+PC端侧AI，半导体板块反弹先锋（中新经纬确认）">+3%（媒体口径）——移动AI芯片+PC端侧AI，半导体板块反弹先锋（中新经纬确认）</td>
+          <td class="trend">半导体（反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">11</td>
+          <td class="code">OXY</td>
+          <td class="nm">西方石油</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:16.47%"></div></div><b class="up">+1.83%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/油价</span></td>
+          <td class="cat" title="+1.83%——油气生产商，油价大涨受益（腾讯新闻确认）">+1.83%——油气生产商，油价大涨受益（腾讯新闻确认）</td>
+          <td class="trend">油气（油价驱动上行）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">12</td>
+          <td class="code">COP</td>
+          <td class="nm">康菲石油</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:14.76%"></div></div><b class="up">+1.64%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/油价</span></td>
+          <td class="cat" title="+1.64%——油气生产商，油价大涨受益（东财确认）">+1.64%——油气生产商，油价大涨受益（东财确认）</td>
+          <td class="trend">油气（油价驱动上行）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">13</td>
+          <td class="code">NVDA</td>
+          <td class="nm">英伟达</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:13.32%"></div></div><b class="up">+1.48%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/技术</span></td>
+          <td class="cat" title="+1.48%收220.78美元——8/28（-3.91%~-4.57%⚠️）后反弹，财报后（8/27 +8.74%）获利回吐后的技术性修复（westock/东财确认）">+1.48%收220.78美元——8/28（-3.91%~-4.57%⚠️）后反弹，财报后（8/27 +8.74%）获利回吐后的技术性修复（westock/东财确认）</td>
+          <td class="trend">AI算力（反弹待确认）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">14</td>
+          <td class="code">COIN</td>
+          <td class="nm">Coinbase</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:45.0%"></div></div><b class="up">+5.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪/加密</span></td>
+          <td class="cat" title="+5%（媒体口径）——加密交易所，比特币重回7.87万美元上方带动（腾讯新闻确认）">+5%（媒体口径）——加密交易所，比特币重回7.87万美元上方带动（腾讯新闻确认）</td>
+          <td class="trend">加密（暴跌后反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">15</td>
+          <td class="code">LEGN</td>
+          <td class="nm">传奇生物</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:36.0%"></div></div><b class="up">+4.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">业绩/医药</span></td>
+          <td class="cat" title="+4%（媒体口径）——CAR-T细胞治疗龙头，中概医药逆势走强（中新经纬确认）">+4%（媒体口径）——CAR-T细胞治疗龙头，中概医药逆势走强（中新经纬确认）</td>
+          <td class="trend">生物医药（逆势）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">16</td>
+          <td class="code">MSTR</td>
+          <td class="nm">Strategy</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:36.0%"></div></div><b class="up">+4.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">情绪/加密</span></td>
+          <td class="cat" title="+4%（媒体口径）——比特币持仓公司，BTC重回7.87万带动（腾讯新闻确认）">+4%（媒体口径）——比特币持仓公司，BTC重回7.87万带动（腾讯新闻确认）</td>
+          <td class="trend">加密（暴跌后反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">17</td>
+          <td class="code">EOG</td>
+          <td class="nm">EOG能源</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:10.080000000000002%"></div></div><b class="up">+1.12%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/油价</span></td>
+          <td class="cat" title="+1.12%——美国页岩油龙头，油价大涨受益（东财确认）">+1.12%——美国页岩油龙头，油价大涨受益（东财确认）</td>
+          <td class="trend">油气（油价驱动上行）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">18</td>
+          <td class="code">ARM</td>
+          <td class="nm">ARM控股</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:9.0%"></div></div><b class="up">+1.00%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">产业/技术</span></td>
+          <td class="cat" title="+1%+（媒体口径）——半导体IP龙头，费半+0.57%反弹带动（中新经纬确认）">+1%+（媒体口径）——半导体IP龙头，费半+0.57%反弹带动（中新经纬确认）</td>
+          <td class="trend">半导体（反弹）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+          <td class="ps">中</td>
+        </tr>
+        <tr>
+          <td class="rank">19</td>
+          <td class="code">EIX</td>
+          <td class="nm">爱迪生国际</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:100%"></div></div><b class="up">-23.07%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">监管/负面</span></td>
+          <td class="cat" title="-23.07%收53.98（25年最大单日跌幅）——加州SB 492山火法案未含责任上限，Eaton山火3万起索赔诉讼悬顶（StockTwits/AOL多源确认）">-23.07%收53.98（25年最大单日跌幅）——加州SB 492山火法案未含责任上限，Eaton山火3万起索赔诉讼悬顶（StockTwits/AOL多源确认）</td>
+          <td class="trend">公用事业（监管风险暴跌）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564">☆☆☆☆</span></span></td>
+          <td class="ps">低</td>
+        </tr>
+        <tr>
+          <td class="rank">20</td>
+          <td class="code">PCG</td>
+          <td class="nm">太平洋煤电</td>
+          <td class="chg"><div class="bar-w"><div class="bar" style="width:100%"></div></div><b class="up">-20.06%</b></td>
+          <td><span style="background:rgba(139,147,167,.18);color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">监管/负面</span></td>
+          <td class="cat" title="-20.06%收13.27（52周新低）——加州SB 492法案未含野火基金补充与责任上限条款，BBB-以下投资级边缘（AOL/WSJ多源确认）">-20.06%收13.27（52周新低）——加州SB 492法案未含野火基金补充与责任上限条款，BBB-以下投资级边缘（AOL/WSJ多源确认）</td>
+          <td class="trend">公用事业（监管风险暴跌）</td>
+          <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564">☆☆☆☆</span></span></td>
+          <td class="ps">低</td>
+        </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2 产业趋势抽象 -->
+<div class="sec" id="s2">
+  <div class="sec-h"><span class="n">2</span><h2>产业趋势抽象</h2></div>
+  <div class="sec-desc">从强势股提炼的 12 条产业主线 · 阶段/持续性/资金认可/估值空间/配置策略</div>
+  <div class="pt">
+    <div class="pt-h">主线持续性 vs 资金认可度（★ 数 0-5）</div>
+    <div id="chart-trends" class="chart"></div>
+  </div>
+  <div class="grid3">
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T1</span>
+            <span class="t-name">地缘能源主线（美伊冲突→油价大涨）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期（事件+涨价共振）</span>
+          </div>
+          <div class="t-logic">美伊时隔一月再交火（美打击拉腊克岛→伊打击约旦/阿联酋美军+油轮触雷）→WTI+2.83%/布油+2.71%站上90美元；能源板块+2.10%领涨、SLB+4.83%油服景气；油价上行=通胀二次风险+地缘溢价双驱动，A股油气链直接映射</div>
+          <div class="t-stocks"><b>代表个股</b> SLB+4.83%、XOM+2.71%、CVX+2.12%、OXY+1.83%、COP+1.64%、EOG+1.12%</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">大</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">核心仓位（15-20%）——中国海油/中国石油，高开&gt;3%不追</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T2</span>
+            <span class="t-name">存储超级周期（闪迪+560%/HBM）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">放量期/加速期</span>
+          </div>
+          <div class="t-logic">闪迪+5.50%（今年+560%）、美光+2.77%、SK海力士+2.20%双日确认（US-⑤）；NAND/DRAM/HBM涨价共振+AI服务器存储需求+原厂减产；A股存储8/28已洗盘（兆易-3.50%）→9/1修复候选</div>
+          <div class="t-stocks"><b>代表个股</b> SNDK+5.50%、MU+2.77%、SKHY+2.20%、QCOM+3%</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">重点配置（5-10%）——兆易创新/中芯国际；费半整体未双日确认（US-⑦）限A档</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T3</span>
+            <span class="t-name">油服景气（独立于油价的定价韧性）</span>
+            <span style="background:#37e0a022;color:#37e0a0;border:1px solid #37e0a066;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">上升期</span>
+          </div>
+          <div class="t-logic">SLB连续两日强（8/28 +4.22%/8/31 +4.83%），全球油服资本开支上行+中东深海订单+地缘溢价；A股中海油服20日+1.74%低位</div>
+          <div class="t-stocks"><b>代表个股</b> SLB+4.83%（连续2日强）</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">卫星仓位（2-5%）——中海油服</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T4</span>
+            <span class="t-name">特斯拉机器人/智驾（+5.51%一个月新高）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">验证期→上升期</span>
+          </div>
+          <div class="t-logic">特斯拉+5.51%收367.95创一个月新高（市值1.45万亿），FSD+Optimus+AI数据中心三线叙事；A股机器人8/31+1.97%但宇树-3.44%分化，特斯拉催化→9/1智驾/机器人低位标的</div>
+          <div class="t-stocks"><b>代表个股</b> TSLA+5.51%（367.95）</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">大</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">卫星仓位（2-5%）——德赛西威/双环传动（20日低位）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T5</span>
+            <span class="t-name">加密反弹（BTC重回7.87万）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">反弹（未确认反转）</span>
+          </div>
+          <div class="t-logic">BTC重回7.87万美元上方，Circle+9%/Coinbase+5%/Strategy+4%——8/28暴跌（破7.8万9.6万人爆仓）后修复；高波动，A股概念映射弱</div>
+          <div class="t-stocks"><b>代表个股</b> CRCL+9%、COIN+5%、MSTR+4%</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">—</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（C档）——A股加密概念标的不明确</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T6</span>
+            <span class="t-name">中概消费逆势（霸王茶姬双日强）</span>
+            <span style="background:#4d9fff22;color:#4d9fff;border:1px solid #4d9fff66;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">验证期</span>
+          </div>
+          <div class="t-logic">金龙指数-2.19%背景下霸王茶姬+7%（8/28 +4.35%双日强）+传奇生物+4%逆势——中概消费/医药细分独立主线；但中概科技（阿里-4.1%）续弱</div>
+          <div class="t-stocks"><b>代表个股</b> CHA+7%、LEGN+4%</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（C档）——中概整体偏空，消费细分低仓</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T7</span>
+            <span class="t-name">AI硬件分化修复（英伟达+1.48%反弹）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">退潮后修复（未确认）</span>
+          </div>
+          <div class="t-logic">英伟达+1.48%（220.78）8/28暴跌后反弹、费半+0.57%；但仅1日反弹，周线仍弱（US-⑦未解除）；A股光模块中际旭创20日-5.61%深调</div>
+          <div class="t-stocks"><b>代表个股</b> NVDA+1.48%、ARM+1%+、AMD+1%+</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">大</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（C档）——光通信/设备等美股连续2日止跌+资金回流双确认</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T8</span>
+            <span class="t-name">油气运输/集运（油轮触雷）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">事件驱动</span>
+          </div>
+          <div class="t-logic">霍尔木兹海峡油轮触雷火灾停航+美伊冲突升级→油运运价预期；A股招商轮船20日+10.1%偏高、中远海控20日+8.14%相对健康</div>
+          <div class="t-stocks"><b>代表个股</b> 油价WTI+2.83%（地缘事件）</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">中</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">卫星仓位（2-5%）——中远海控</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T9</span>
+            <span class="t-name">黄金高位震荡（8月+9.9%后企稳）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">高位震荡（P3后回落）</span>
+          </div>
+          <div class="t-logic">现货金-0.13%收4449.19（4500下方）/COMEX金-0.72%——8月+9.9%大涨后加息预期62%压制；A股8/31贵金属-2.67%大跌但山东黄金+6.65%逆势异动（20日+37.29%极高位背离⚠️）</div>
+          <div class="t-stocks"><b>代表个股</b> 现货金4449.19/COMEX金4497.30</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">—</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（C档）——山东黄金极高位防补跌，等企稳</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T10</span>
+            <span class="t-name">公用事业监管风险（加州SB 492）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">负面事件</span>
+          </div>
+          <div class="t-logic">EIX-23.07%/PCG-20.06%——加州山火法案未含责任上限，BMO警示&#x27;无上限野火负债&#x27;；A股公用/核电（长电/核电）业务与加州监管无关，情绪传导有限</div>
+          <div class="t-stocks"><b>代表个股</b> EIX-23.07%、PCG-20.06%（负面）</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564">☆☆☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★<span style="color:#3a4564">☆☆☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">—</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">风险提示（A股公用/核电影响小，持有观察）</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T11</span>
+            <span class="t-name">银行息差逻辑（加息预期62-66%）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">验证期（已定价）</span>
+          </div>
+          <div class="t-logic">9月加息概率升至62~66.1%——息差改善逻辑延续，但美股银行8/31全线回调（花旗-1%）+A股银行8/31国有大行+2.94%已大涨；A股银行9/1续涨空间收窄</div>
+          <div class="t-stocks"><b>代表个股</b> 花旗-1%、高盛-0.7%（回调）</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">低</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">持有观察——不追高，等回调低吸</b></div>
+          </div>
+        </div>
+        <div class="tcard">
+          <div class="t-head">
+            <span class="t-id">T12</span>
+            <span class="t-name">AI应用/传媒（A股8/31涨停潮后）</span>
+            <span style="background:#8b93a722;color:#8b93a7;border:1px solid #8b93a766;border-radius:20px;padding:1px 9px;font-size:11px;white-space:nowrap">P3高潮（涨停潮后）</span>
+          </div>
+          <div class="t-logic">A股8/31 AI应用/传媒大爆发（中文在线/芒果超媒20cm，数字媒体+7.19%）——9/1兑现风险（US-⑪①/㊷）；美股软件/云8/31走弱（微软-1.22%/谷歌-2.09%）不提供外援</div>
+          <div class="t-stocks"><b>代表个股</b> 微软-1.22%、谷歌-2.09%（美股走弱）</div>
+          <div class="t-meta">
+            <div class="t-m"><span>持续性</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>资金认可</span><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></div>
+            <div class="t-m"><span>估值空间</span><b class="val">高</b></div>
+            <div class="t-m"><span>配置策略</span><b class="strat">观察（C档）——9/1防兑现，等回踩</b></div>
+          </div>
+        </div></div>
+</div>
+
+<!-- 3 A股对标与配套 -->
+<div class="sec" id="s3">
+  <div class="sec-h"><span class="n">3</span><h2>A股对标与配套</h2></div>
+  <div class="sec-desc">美股产业趋势 → A股映射标的 14 只 · 按主线分组</div>
+  
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T1 地缘能源主线</span>
+            <span class="map-us">美股: XOM+2.71%/CVX+2.12%/OXY+1.83%/COP+1.64%</span>
+            <span class="map-cnt">2 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国海油</td>
+            <td class="code">600938.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">WTI+2.83%/布油+2.71%站上90美元→9/1 A股油气链首日反应；8/31已温和启动+1.52%</td>
+            <td class="cat">PE 11.9倍/股息3.3%</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">中国石油</td>
+            <td class="code">601857.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">油价大涨+8/31 A股已+1.69%；20日+3.35%位置健康（US-⑨）</td>
+            <td class="cat">PE 11.9倍/股息4.1%</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T2 存储超级周期</span>
+            <span class="map-us">美股: SNDK+5.50%/MU+2.77%/SKHY+2.20%</span>
+            <span class="map-cnt">2 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">兆易创新</td>
+            <td class="code">603986.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">美股存储双日确认（US-⑤）+A股半导体8/31资金回流+1.85%；8/28 -3.50%洗盘后8/31 +2.31%反弹</td>
+            <td class="cat">PE 35.9倍/20日+19.15%偏高⚠️（US-⑨降档）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">中芯国际</td>
+            <td class="code">688981.SH</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">A股半导体资金回流代表，8/31 +2.24%；5日+6.73%资金认可</td>
+            <td class="cat">PE 152倍（高）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T8 油气运输/集运</span>
+            <span class="map-us">美股: 油价+2.83%（地缘）</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中远海控</td>
+            <td class="code">601919.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">霍尔木兹油轮触雷+美伊冲突→运价预期；20日+8.14%相对健康</td>
+            <td class="cat">PE 9.7倍/股息5.9%</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T3 油服景气</span>
+            <span class="map-us">美股: SLB+4.83%（连续2日强）</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中海油服</td>
+            <td class="code">601808.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">SLB连续两日强+油价大涨；20日+1.74%低位（US-⑨健康）</td>
+            <td class="cat">PE 15.8倍</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T4 特斯拉机器人/智驾</span>
+            <span class="map-us">美股: TSLA+5.51%</span>
+            <span class="map-cnt">2 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">德赛西威</td>
+            <td class="code">002920.SZ</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">特斯拉FSD叙事+智驾渗透；20日-5.52%低位（US-⑨）</td>
+            <td class="cat">PE 21.3倍</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr>
+          <tr>
+            <td class="nm">双环传动</td>
+            <td class="code">002472.SZ</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">特斯拉Optimus机器人叙事；20日-8.60%深调低位（US-⑨）</td>
+            <td class="cat">PE 23.8倍</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T12 AI应用/传媒</span>
+            <span class="map-us">美股: 美股软件/云走弱（MSFT-1.22%）</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">科大讯飞</td>
+            <td class="code">002230.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">A股8/31 AI应用涨停潮（中文在线20cm）但讯飞仅+0.60%滞涨；20日-5.86%低位——9/1补涨候选但板块涨停潮后防兑现（US-⑪①）</td>
+            <td class="cat">PE 110倍（高）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T7 AI硬件分化修复</span>
+            <span class="map-us">美股: NVDA+1.48%（反弹1日）</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中际旭创</td>
+            <td class="code">300308.SZ</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">费半+0.57%仅反弹1日（US-⑦未解除）；20日-5.61%深调——等美股连续2日止跌</td>
+            <td class="cat">PE 49倍/20日-5.61%</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T9 黄金高位震荡</span>
+            <span class="map-us">美股: 现货金4449.19/COMEX金4497.30</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">山东黄金</td>
+            <td class="code">600547.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">8/31 A股贵金属-2.67%但山东黄金+6.65%逆势异动——20日+37.29%极高位背离⚠️防补跌（US-⑨/⑪）</td>
+            <td class="cat">20日+37.29%（极高位）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T11 银行息差</span>
+            <span class="map-us">美股: 美股银行回调（C-1%）</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">招商银行</td>
+            <td class="code">600036.SH</td>
+            <td>直接对标</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">9月加息概率62-66%息差逻辑+A股8/31招行+1.96%已兑现（8/29方向表S档命中）——9/1续涨空间收窄</td>
+            <td class="cat">PE 6.7倍/股息5.0%</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T10 公用事业监管</span>
+            <span class="map-us">美股: EIX-23.07%/PCG-20.06%（负面）</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国核电</td>
+            <td class="code">601985.SH</td>
+            <td>参照（反向）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">加州SB 492为美国州级监管事件，A股核电/公用无同类敞口——情绪传导有限</td>
+            <td class="cat">PE 25倍</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="map-grp">
+          <div class="map-grp-h"><span class="t-id">T6 中概消费逆势</span>
+            <span class="map-us">美股: CHA+7%/LEGN+4%</span>
+            <span class="map-cnt">1 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>A股标的</th><th>代码</th><th>映射</th><th>关联度</th><th>催化逻辑</th><th>估值</th><th>关注</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">腾讯控股</td>
+            <td class="code">0700.HK</td>
+            <td>配套</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+            <td class="cat">中概科技续弱（阿里-4.1%），腾讯ADR-1.33%；8/31 A股腾讯-0.48%小踩雷——9/1中概整体偏空</td>
+            <td class="cat">PE 15.2倍</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px"><span style="color:#3a4564"></span></span></td>
+          </tr></tbody>
+          </table>
+        </div>
+</div>
+
+<!-- 4 A股机会推演 -->
+<div class="sec" id="s4">
+  <div class="sec-h"><span class="n">4</span><h2>A股机会推演</h2></div>
+  <div class="sec-desc">按优先级 S/A/B/C 分层 · 含催化时点、风险因素与配置建议</div>
+  
+        <div class="opp-grp prio-S">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#f0414222;color:#f04142;border:1px solid #f0414288;font-weight:800;font-size:13px">S</span> <b>核心仓位</b><span class="opp-cnt">2 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中国海油</td>
+            <td class="code">600938.SH</td>
+            <td class="cat">T1 地缘能源主线（上升期）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">PE 11.9倍/股息3.3%（估值低）</td>
+            <td class="cat">油价WTI+2.83%/布油+2.71%站上90美元——8/31 A股盘中无此催化，9/1首日反应；美股能源双日确认（US-⑤）</td>
+            <td class="cat risk">美伊若快速缓和油价回落；A股8/31&#x27;事件驱动资源外推反向定价&#x27;教训（US-③）；高开&gt;3%不追</td>
+            <td class="alloc">核心仓位 15-20%（S档）</td>
+          </tr>
+          <tr>
+            <td class="nm">中国石油</td>
+            <td class="code">601857.SH</td>
+            <td class="cat">T1 地缘能源主线（上升期）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">PE 11.9倍/股息4.1%（估值低）</td>
+            <td class="cat">油价大涨+天然气双受益；20日+3.35%位置健康（US-⑨）；8/31已+1.69%启动</td>
+            <td class="cat risk">油价回落/大盘回调拖累权重</td>
+            <td class="alloc">核心仓位 15-20%（S档）</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-A">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#ffc14d22;color:#ffc14d;border:1px solid #ffc14d88;font-weight:800;font-size:13px">A</span> <b>重点配置</b><span class="opp-cnt">3 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">兆易创新</td>
+            <td class="code">603986.SH</td>
+            <td class="cat">T2 存储超级周期（加速期）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cat">PE 35.9倍（20日+19.15%偏高⚠️US-⑨降档）</td>
+            <td class="cat">美股存储双日确认（闪迪+5.5%/美光+2.77%US-⑤）+A股半导体8/31资金回流+1.85%；8/28 -3.50%洗盘后8/31 +2.31%</td>
+            <td class="cat risk">费半整体仅反弹1日（US-⑦未解除）；20日涨幅偏高短线兑现</td>
+            <td class="alloc">重点配置 5-10%（A档）</td>
+          </tr>
+          <tr>
+            <td class="nm">中芯国际</td>
+            <td class="code">688981.SH</td>
+            <td class="cat">T2 存储超级周期（加速期）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★★<span style="color:#3a4564"></span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">PE 152倍（高估值）</td>
+            <td class="cat">A股半导体资金回流代表（8/31 +2.24%/5日+6.73%）；美股存储双日确认映射</td>
+            <td class="cat risk">高估值+费半未确认；权重股弹性弱于存储弹性标的（US-⑨）</td>
+            <td class="alloc">重点配置 5-10%（A档）</td>
+          </tr>
+          <tr>
+            <td class="nm">中远海控</td>
+            <td class="code">601919.SH</td>
+            <td class="cat">T8 油气运输/集运（事件驱动）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">PE 9.7倍/股息5.9%（估值低）</td>
+            <td class="cat">霍尔木兹油轮触雷+美伊冲突→运价预期；20日+8.14%相对健康（US-⑨）</td>
+            <td class="cat risk">地缘缓和运价回落；事件驱动持续性弱</td>
+            <td class="alloc">重点配置 5-10%（A档）</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-B">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#4d9fff22;color:#4d9fff;border:1px solid #4d9fff88;font-weight:800;font-size:13px">B</span> <b>卫星/精选</b><span class="opp-cnt">4 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">德赛西威</td>
+            <td class="code">002920.SZ</td>
+            <td class="cat">T4 特斯拉机器人/智驾（验证期→上升期）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">PE 21.3倍（20日-5.52%低位）</td>
+            <td class="cat">特斯拉+5.51%创一个月新高（FSD叙事）；A股智驾低位标的</td>
+            <td class="cat risk">特斯拉链A股联动弱（8/31 A股机器人+1.97%但宇树-3.44%分化）</td>
+            <td class="alloc">卫星仓位 2-5%（B档）</td>
+          </tr>
+          <tr>
+            <td class="nm">双环传动</td>
+            <td class="code">002472.SZ</td>
+            <td class="cat">T4 特斯拉机器人/智驾</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">PE 23.8倍（20日-8.60%深调低位）</td>
+            <td class="cat">特斯拉Optimus机器人叙事；机器人减速器核心标的，20日深调低位（US-⑨）</td>
+            <td class="cat risk">机器人主题情绪反复；特斯拉链联动弱</td>
+            <td class="alloc">卫星仓位 2-5%（B档）</td>
+          </tr>
+          <tr>
+            <td class="nm">中海油服</td>
+            <td class="code">601808.SH</td>
+            <td class="cat">T3 油服景气（上升期）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★★<span style="color:#3a4564">☆</span></span></td>
+            <td class="cat">PE 15.8倍（20日+1.74%低位）</td>
+            <td class="cat">SLB连续两日强（+4.22%/+4.83%）+油价大涨；20日低位健康（US-⑨）</td>
+            <td class="cat risk">油价回落油服承压</td>
+            <td class="alloc">卫星仓位 2-5%（B档）</td>
+          </tr>
+          <tr>
+            <td class="nm">科大讯飞</td>
+            <td class="code">002230.SZ</td>
+            <td class="cat">T12 AI应用/传媒（P3涨停潮后）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">PE 110倍（高）</td>
+            <td class="cat">A股8/31 AI应用涨停潮（中文在线/芒果超媒20cm）但讯飞滞涨+0.60%；20日-5.86%低位——9/1补涨候选</td>
+            <td class="cat risk">板块涨停潮后9/1兑现风险（US-⑪①/㊷）；美股软件/云走弱无外援</td>
+            <td class="alloc">卫星仓位 2-5%（B档，轻仓试错）</td>
+          </tr></tbody>
+          </table>
+        </div>
+        <div class="opp-grp prio-C">
+          <div class="opp-grp-h"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#8b93a722;color:#8b93a7;border:1px solid #8b93a788;font-weight:800;font-size:13px">C</span> <b>观察</b><span class="opp-cnt">3 只</span></div>
+          <table class="tbl">
+            <thead><tr><th>标的</th><th>代码</th><th>所属趋势</th><th>持续性</th><th>资金认可</th><th>估值空间</th><th>催化时点</th><th>风险</th><th>配置建议</th></tr></thead>
+            <tbody>
+          <tr>
+            <td class="nm">中际旭创</td>
+            <td class="code">300308.SZ</td>
+            <td class="cat">T7 AI硬件分化修复（未确认）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">PE 49倍（20日-5.61%深调）</td>
+            <td class="cat">费半+0.57%仅反弹1日（US-⑦未解除）；英伟达+1.48%反弹待确认——等美股连续2日止跌+A股资金回流双信号</td>
+            <td class="cat risk">高估值+加息压制；反弹夭折二次探底</td>
+            <td class="alloc">观察（C档）</td>
+          </tr>
+          <tr>
+            <td class="nm">山东黄金</td>
+            <td class="code">600547.SH</td>
+            <td class="cat">T9 黄金高位震荡（P3后回落）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cat">20日+37.29%（极高位背离⚠️）</td>
+            <td class="cat">8/31 A股贵金属-2.67%但山东黄金+6.65%逆势异动（振幅12.65%）——外盘金价弱势（4449）vs内盘逆势=高危背离</td>
+            <td class="cat risk">极高位补跌（US-⑨/⑪）；加息62%压制金价</td>
+            <td class="alloc">回避（C档观察）</td>
+          </tr>
+          <tr>
+            <td class="nm">中文在线</td>
+            <td class="code">300364.SZ</td>
+            <td class="cat">T12 AI应用/传媒（P3高潮）</td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★<span style="color:#3a4564">☆☆☆</span></span></td>
+            <td class="cap"><span style="color:#ffc14d;font-size:13px;letter-spacing:1px">★★★<span style="color:#3a4564">☆☆</span></span></td>
+            <td class="cat">高（20cm后）</td>
+            <td class="cat">8/31 20cm涨停（+20.02%/+7.29亿）——9/1涨停潮次日兑现风险（US-⑪①/㊷）</td>
+            <td class="cat risk">20cm涨停次日兑现；AI应用一日游</td>
+            <td class="alloc">回避（C档观察，不追）</td>
+          </tr></tbody>
+          </table>
+        </div>
+</div>
+
+<!-- 5 策略总结 -->
+<div class="sec" id="s5">
+  <div class="sec-h"><span class="n">5</span><h2>策略总结与推演</h2></div>
+  <div class="core-box">
+    <h3>核心逻辑</h3><p>一、核心逻辑：美股 8/31（美东周一）**美伊时隔一月再交火+油价大涨日**——三大指数收跌但结构分化：道指-0.70%（53185.90）/标普-0.33%（7686.14）/纳指-0.12%（26370.89），纳指100+0.08%（29456.97）唯一收涨，罗素2000-0.54%（2956.45）；标普11大板块9跌2涨（能源+2.10%领涨/科技+0.30%，通信服务-1.63%/公用-1.18%领跌）。**★美伊军事冲突升级**：美国打击伊朗拉腊克岛火箭发射装置（一月来首次直接军事行动）→伊朗打击约旦/阿联酋美军目标+击落MQ-9+霍尔木兹油轮触雷→**WTI+2.83%收85.76/布油+2.71%收90.49站上90美元**→能源股集体上涨（SLB+4.83%/XOM+2.71%/CVX+2.12%/OXY+1.83%/COP+1.64%）；特朗普扬言&#x27;狠狠打击&#x27;伊朗+贝森特预测伊朗经济数周内崩溃。**★沃什放鹰余波**：9月加息概率升至62~66.1%（CME FedWatch，CNBC口径66.1%）——G20财长会上贝森特反对&#x27;供应冲击&#x27;中加息。**★存储超级周期延续（双日确认US-⑤）**：闪迪SNDK+5.50%（1566.70，Wind人气榜第一，今年+560%）、美光MU+2.77%（958.73）、SK海力士+2.20%（164.58）、高通+3%+、ARM/AMD+1%+；西部数据-1.94%/希捷-0.17%分化；费半+0.57%反弹（仅1日，US-⑦未完全解除）。**★特斯拉+5.51%收367.95（创一个月新高，市值1.45万亿单日+700亿美元≈4703亿人民币）**；英伟达+1.48%（220.78）反弹。**大型科技分化**：亚马逊-2.50%（FTC+22州反垄断诉讼：数字广告拍卖定价）/谷歌-2.09%/微软-1.22%/META-0.98%/苹果-0.89%（库克最后一天CEO）。**★加密反弹**：BTC重回7.87万上方，Circle+9%/Coinbase+5%/Strategy+4%。**★公用事业暴跌=加州监管事件**：EIX爱迪生国际-23.07%（25年最大单日跌幅）/PCG太平洋煤电-20.06%（52周新低）——加州SB 492山火法案未含纽森提出的单次60亿美元责任上限与禁止保险公司追偿条款→BMO/Mizuho/富国集体下调，XLU仅-1%（板块内个股事件非全板块）。**中概大跌**：金龙指数-2.19%，房多多-20%/名创优品-10%/世纪互联/禾赛/晶科-7%/小马智行/贝壳-6%/阿里-4.10%；霸王茶姬CHA+7%/传奇生物+4%逆势。**黄金弱势企稳**：现货金-0.13%收4449.19（8月+9.9%）/COMEX金-0.72%收4497.30；白银现货+0.24%（8月+15.5%）；美元指数-0.28%收99.428。**银行股全线走低**（花旗-1%/高盛-0.7%/大摩-0.66%）。映射A股：昨日回测（8/29方向表→8/31 A股收盘）**S 2/3=66.7%（招行+1.96%✅/长电+0.14%✅；核电-0.34%小踩雷）、A 1/2=50.0%（金山办公+3.46%✅；腾讯-0.48%小踩雷）、B 2/4=50.0%（海光+3.43%✅/用友+0.39%✅；启明星辰-0.80%/奇安信-1.07%小踩雷）、S+A 60.0%、全表55.6%、未踩雷100%**——全部回到基准47.5%上方（8/28 30%→8/31 55.6%修复），未踩雷率100%为近13段最优（US-⑨防御低位+US-⑭涨停潮次日回避执行到位）。今日方向表（承接美伊冲突油价大涨+存储双日确认+特斯拉催化+A股8/31 AI应用涨停潮兑现风险）：S档=油气链（中国海油/中国石油，油价WTI+2.83%为当日最硬映射，美股能源双日确认US-⑤）；A档=存储链+油运（兆易创新/中芯国际——闪迪+5.5%双日强+A股半导体8/31资金回流+1.85%，中远海控——油轮触雷运价预期）；B档=特斯拉链（德赛西威/双环传动低位）+油服（中海油服）+AI应用低位（科大讯飞）；C档=AI应用/传媒（8/31涨停潮9/1兑现US-⑪①）、中概（金龙-2.19%）、黄金链（山东黄金20日+37.29%极高位背离）、光通信/半导体设备（费半仅反弹1日US-⑦）、公用/核电（美股加州监管风险）。</p>
+  </div>
+  <div class="core-box">
+    <h3>美股信号</h3><p>【美股信号】（2026-08-31 美东收盘，多源交叉认证：westock / 东财 / 新华社 / 中新经纬 / 腾讯新闻 / 大河财立方 / StockTwits，两源以上一致）
+• 三大指数收跌但结构分化：道指-0.70%（53185.90，-374.09）/标普500-0.33%（7686.14，-25.62）/纳指-0.12%（26370.89，-31.53）/纳指100+0.08%（29456.97）唯一收涨/罗素2000-0.54%（2956.45）/费半+0.57%——8月整月三大指数收涨（道指+1.34%/标普+2.62%/纳指+3.93%），道指连续第五个月上涨
+• ★美伊时隔一月再交火（美国打击伊朗拉腊克岛火箭发射装置→伊朗打击约旦/阿联酋美军目标+击落MQ-9无人机+霍尔木兹海峡油轮触雷火灾停航）→WTI+2.83%收85.76（东财连续合约口径+3.49%收86.31）/布油+2.71%收90.49站上90美元——能源股集体上涨：斯伦贝谢SLB+4.83%/埃克森美孚XOM+2.71%/雪佛龙CVX+2.12%（206.41）/西方石油OXY+1.83%/康菲COP+1.64%/EOG+1.12%；能源板块+2.10%为标普11大板块领涨（9跌2涨，通信服务-1.63%/公用-1.18%领跌）
+• ★沃什放鹰余波：9月加息25bp概率升至62~66.1%（CME FedWatch，CNBC口径66.1%，周五57.5%→周一66.1%）——G20财长会（北卡阿什维尔）：贝森特反对&#x27;供应冲击&#x27;中加息、称核心通胀&#x27;非常克制&#x27;、预测伊朗经济数周内崩溃；沃什仅谈增长投资无新政策信号
+• ★存储超级周期延续（双日确认）：闪迪SNDK+5.50%（1566.70，Wind人气榜第一/今年+560%）/美光MU+2.77%（958.73）/SK海力士+2.20%（164.58）/高通QCOM+3%+/ARM+1%+/AMD+1%+——西部数据WDC-1.94%/希捷STX-0.17%分化（五大存储巨头涨跌不一）；费半+0.57%整体仅反弹1日（8/28暴跌-3.47%后）
+• ★特斯拉TSLA+5.51%收367.95（创超一个月新高，市值1.45万亿美元，单日+700亿美元≈4703亿人民币）——机器人/智驾/AI自主叙事；英伟达NVDA+1.48%（220.78）反弹（8/28 -3.91%后）
+• 大型科技分化：亚马逊AMZN-2.50%（FTC+22州反垄断诉讼：数字广告拍卖定价不公平）/谷歌GOOGL-2.09%/微软MSFT-1.22%/META-0.98%/苹果AAPL-0.89%（316.85，库克最后一天CEO）——科技七巨头指数-0.50%
+• ★加密反弹：比特币重回7.87万美元上方（24h 9.56万人爆仓）；Circle CRCL+9%/Coinbase COIN+5%/Strategy MSTR+4%——8/28暴跌后修复
+• ★公用事业暴跌（加州监管事件）：爱迪生国际EIX-23.07%收53.98（25年最大单日跌幅）/太平洋煤电PCG-20.06%收13.27（52周新低）/Sempra SRE-2%（德克萨斯敞口缓冲）——加州SB 492山火法案修正版未含纽森提出的&#x27;单次60亿美元责任上限+禁止保险公司追偿+野火基金补充&#x27;条款→BMO/美银/富国/瑞穗集体下调，XLU仅-1%（板块内个股事件非全板块）
+• 中概大跌：金龙指数-2.19%（中概科技龙头指数-2.1%），房多多-20%/名创优品-10%/世纪互联-7%/禾赛科技-7%/晶科能源-7%/小马智行-6%/贝壳-6%/阿里巴巴-4.10%/B站-2.65%/蔚来-3.20%；逆势：霸王茶姬CHA+7%/传奇生物LEGN+4%/爱奇艺+1%+
+• 黄金弱势企稳：现货金-0.13%收4449.19（8月+9.9%）/COMEX金-0.72%收4497.30/现货银+0.24%收66.55（8月+15.5%）/COMEX银-0.86%收67.205——4500下方弱势震荡，8月累计涨幅仍大
+• 银行股全线走低：花旗-1%/高盛-0.7%/摩根士丹利-0.66%/美国银行-0.59%/摩根大通-0.41%/富国-0.32%——加息预期下先涨后回调
+• 航空股普跌：达美/西南/美联航跌逾2%/美国航空-1%+/波音-1%（油价大涨成本压制）
+• 美元指数-0.28%收99.428；全球股基与美股8/28净流出余波延续
+• 8月总结：三大指数月线收涨（道指+1.34%/标普+2.62%/纳指+3.93%），现货金8月+9.9%/白银+15.5%——月度级别金银行情后9月面临加息62%+油价飙升双重压力
+</p>
+  </div>
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="pt">
+      <div class="pt-h">配置结构（按方向权重）</div>
+      <div id="chart-alloc" class="chart-half"></div>
+    </div>
+    <div class="pt">
+      <div class="pt-h">A股配置策略</div>
+      <table class="tbl">
+        <thead><tr><th>层级</th><th>方向</th><th>核心标的</th><th>仓位</th><th>逻辑简述</th><th>关键催化</th><th>风险</th></tr></thead>
+        <tbody>
+      <tr>
+        <td class="alloc-lv">核心仓位
+(15-20%)</td>
+        <td class="nm">油气链（美伊冲突+油价大涨）</td>
+        <td class="cat">中国海油600938、中国石油601857</td>
+        <td class="alloc-w">15-20%（油价WTI+2.83%为当日最硬映射·高开&gt;3%不追）</td>
+        <td class="cat">美伊时隔一月再交火（美打击拉腊克岛→伊打击约旦/阿联酋美军+油轮触雷）→WTI+2.83%/布油+2.71%站上90美元——8/31 A股盘中无此催化、9/1首日反应；美股能源板块+2.10%领涨+双日确认（US-⑤：8/28 SLB+4.22%+8/31 +4.83%）；A股石油石化8/31已温和启动（+0.31~1.69%），9/1油价落地催化升级【承接8/29方向表A档油气预演】</td>
+        <td class="cat">美伊冲突升级/油价站上90美元/油服景气（SLB+4.83%）</td>
+        <td class="cat risk">美伊快速缓和油价回落；A股8/31&#x27;事件驱动资源外推反向定价&#x27;教训（US-③）；高开&gt;3%不追</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">重点配置
+(5-10%)</td>
+        <td class="nm">存储链+油运</td>
+        <td class="cat">兆易创新603986、中芯国际688981、中远海控601919</td>
+        <td class="alloc-w">5-10%（美股存储双日确认·费半未确认限A档）</td>
+        <td class="cat">存储超级周期延续：闪迪+5.50%（今年+560%）/美光+2.77%/SK海力士+2.20%双日确认（US-⑤）；A股半导体8/31资金回流+1.85%、存储8/28已洗盘（兆易-3.50%）→9/1修复候选（US-⑨：兆易20日+19.15%偏高降档A）；油运：霍尔木兹油轮触雷运价预期</td>
+        <td class="cat">美股存储双日确认/油价大涨运价预期/A股半导体资金回流</td>
+        <td class="cat risk">费半整体仅反弹1日（US-⑦未解除）；存储20日涨幅偏高短线兑现；油运事件驱动持续性弱</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">卫星仓位
+(2-5%)</td>
+        <td class="nm">特斯拉链（智驾/机器人）+油服+AI应用低位</td>
+        <td class="cat">德赛西威002920、双环传动002472、中海油服601808、科大讯飞002230</td>
+        <td class="alloc-w">2-5%（低位试错·不追高）</td>
+        <td class="cat">特斯拉+5.51%创一个月新高（FSD+Optimus+AI数据中心）→A股智驾/机器人低位标的（20日-5.5%~-8.6%位置健康US-⑨）；油服SLB连续两日强映射中海油服；AI应用8/31涨停潮中讯飞滞涨、20日-5.86%低位补涨候选</td>
+        <td class="cat">特斯拉催化/油服景气/AI应用补涨</td>
+        <td class="cat risk">特斯拉链A股联动弱（8/31机器人分化）；AI应用涨停潮后9/1兑现（US-⑪①）——讯飞轻仓</td>
+      </tr>
+      <tr>
+        <td class="alloc-lv">观察仓位
+(C档)</td>
+        <td class="nm">AI应用/传媒、中概、黄金链、光通信/设备、公用/核电、加密</td>
+        <td class="cat">中际旭创300308（等双确认）、山东黄金600547（极高位回避）、中文在线300364（20cm后不追）、腾讯控股0700.HK（中概偏空）</td>
+        <td class="alloc-w">0-2%（观察·不配置或≤2%试错）</td>
+        <td class="cat">AI应用/传媒：A股8/31涨停潮（中文在线/芒果超媒20cm）→9/1兑现风险（US-⑪①/㊷）；中概：金龙-2.19%/阿里-4.10%偏空；黄金链：山东黄金20日+37.29%极高位背离防补跌；光通信/设备：费半仅反弹1日（US-⑦未解除）；公用/核电：美股加州SB 492监管风险（EIX-23%）但A股业务无关</td>
+        <td class="cat">AI应用兑现/中概企稳/金价企稳/费半双日确认</td>
+        <td class="cat risk">不追涨停潮后高位；等回踩确认</td>
+      </tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="sec-h" style="margin-top:26px;border-left-color:var(--blue)"><span class="n" style="background:var(--blue)">5.2</span><h2 style="font-size:17px">情景推演与应对</h2></div>
+  <div class="grid2">
+        <div class="scen">
+          <div class="scen-h">情景A
+(基准情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>A股9/1承接油价大涨高开分化：油气链（中海油/中石油）受油价WTI+2.83%催化高开领涨（8/31 A股盘中无此催化=首日反应）、存储链（兆易/中芯）随美股存储双日确认+半导体资金回流接力、AI应用/传媒（8/31涨停潮）高开兑现分化；沪指3980-4030震荡，量能维持2.1-2.2万亿</span></div>
+          <div class="scen-l"><b>市场反应</b><span>油气+存储领涨、AI应用兑现分化、中概/黄金承压、银行高位震荡</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">按方向表：S档油气（中海油/中石油，高开&gt;3%不追）低吸+A档存储（兆易/中芯）+油运（中远海控）+B档特斯拉链/油服低位试错；AI应用/传媒/黄金/中概不追；总仓位40-50%</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景B
+(乐观情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>油价大涨全面传导：A股油气链集体放量涨停潮（中石油/中海油）+存储主升（兆易20cm）+特斯拉链爆发（智驾/机器人）+大盘放量突破4030，量能2.3万亿+——美伊冲突持续升级（特朗普&#x27;狠狠打击&#x27;+伊朗回击）推升油价至90+</span></div>
+          <div class="scen-l"><b>市场反应</b><span>油气/存储/特斯拉链共振上行，风险偏好回升</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">S档油气持有+加仓存储A档（突破确认后）；B档特斯拉链加至5%；但涨停潮次日（9/2）防兑现（US-⑪①）——分批兑现</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景C
+(悲观情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>油价高开低走（美伊暂缓/伊朗和谈信号）+沃什加息担忧压制：油气链高开兑现（8/31 A股&#x27;事件驱动外推反向定价&#x27;教训重演US-③）+存储反弹夭折+AI应用涨停潮后大幅兑现；沪指回落至3950下方，量能萎缩</span></div>
+          <div class="scen-l"><b>市场反应</b><span>油气/存储/科技全线承压，防御（银行/公用）相对抗跌</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">降仓至30%：S档油气高开即减半（不追高）；A档存储止损-8%或破20日线；切防御（银行/公用）等待企稳；跟踪美伊局势与9/16 FOMC</span></div>
+        </div>
+        <div class="scen">
+          <div class="scen-h">情景D
+(黑天鹅情景)</div>
+          <div class="scen-l"><b>触发条件</b><span>美伊全面开战（伊朗封锁霍尔木兹海峡/袭击沙特油田）→油价单日暴涨8%+破100美元+全球risk-off；或伊朗核设施遭袭→中东全面战争；美联储紧急会议讨论加息</span></div>
+          <div class="scen-l"><b>市场反应</b><span>全球风险资产暴跌（美股-3%+），A股油气暴涨但大盘重挫，黄金/美元大涨</span></div>
+          <div class="scen-l"><b>A股应对</b><span class="gold-t">油气链短线兑现离场（事件高潮=卖点）；全面降仓至20%以下防御；黄金链（若外盘暴涨）可对冲但A股黄金股滞后；等待局势明朗，禁止抄底</span></div>
+        </div></div>
+</div>
+
+<!-- 6 风险提示 -->
+<div class="sec" id="s6">
+  <div class="sec-h"><span class="n">6</span><h2>风险提示与跟踪指标</h2></div>
+  <div class="pt" style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>类别</th><th>风险描述</th><th>影响标的</th><th>概率</th><th>影响程度</th><th>对冲方式</th></tr></thead>
+      <tbody>
+      <tr>
+        <td><span class="risk-cat">宏观风险</span></td>
+        <td class="cat">沃什放鹰余波：9月加息概率升至62~66.1%（CME FedWatch，CNBC口径66.1%，周五57.5%→周一66.1%）——利率上行压制高估值成长；G20财长会贝森特反对&#x27;供应冲击&#x27;中加息（政策分歧加大）；美国股基8/28单周净流出223亿（5/20以来首次）</td>
+        <td class="cat">高估值成长（AI硬件/存储/加密）+黄金链</td>
+        <td class="cap">高</td>
+        <td class="cap">高</td>
+        <td class="cat">S档油气（油价对冲加息）+防御仓位；跟踪9/16 FOMC与周五8月非农</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">地缘风险</span></td>
+        <td class="cat">美伊时隔一月再交火双向升级：美打击拉腊克岛→伊打击约旦/阿联酋美军+击落MQ-9+霍尔木兹油轮触雷；特朗普扬言&#x27;狠狠打击&#x27;+贝森特预测伊朗经济数周内崩溃——油价WTI+2.83%收85.76/布油+2.71%收90.49，若全面开战油价破100</td>
+        <td class="cat">油气链（双刃剑：暴涨后回落）、航空、全球风险资产</td>
+        <td class="cap">中高</td>
+        <td class="cap">高</td>
+        <td class="cat">油气S档高开&gt;3%不追+事件高潮离场；美伊缓和信号出现立即减仓</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">产业风险</span></td>
+        <td class="cat">存储/半导体高估值+费半仅反弹1日（8/28暴跌-3.47%后8/31 +0.57%，US-⑦未完全解除）；英伟达+1.48%反弹是否趋势反转待确认（US-⑩：财报落地≠趋势反转）；闪迪今年+560%后回调风险；A股存储20日涨幅偏高（兆易+19.15%）</td>
+        <td class="cat">存储（兆易/中芯）、光通信（中际/新易盛）、半导体设备</td>
+        <td class="cap">中</td>
+        <td class="cap">中高</td>
+        <td class="cat">存储限A档（费半双日确认后升S）；光通信/设备维持C档等待双信号；存储止损-8%或破20日线</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">流动性风险</span></td>
+        <td class="cat">全球股基8/28净流出57亿美元+美国股基净流出223亿（5/20以来首次单周净赎回）——加息预期+油价飙升推升通胀担忧双重压制风险偏好；美股市场宽度负（标普345跌:158涨，比率2.18:1）</td>
+        <td class="cat">全球风险资产、A股高估值题材（AI应用/传媒）</td>
+        <td class="cap">中</td>
+        <td class="cap">中</td>
+        <td class="cat">控制总仓位40-50%；不追涨停潮后高位（US-⑪①）；聚焦确定性油气/存储主线</td>
+      </tr>
+      <tr>
+        <td><span class="risk-cat">监管风险</span></td>
+        <td class="cat">加州SB 492山火法案未含责任上限→EIX-23.07%（25年最大跌幅）/PCG-20.06%（52周新低）+BMO警示&#x27;无上限野火负债&#x27;——美股公用事业监管风险事件；A股公用/核电无同类敞口但情绪传导需观察</td>
+        <td class="cat">美股公用事业（EIX/PCG）、A股公用/核电情绪</td>
+        <td class="cap">低（A股）</td>
+        <td class="cap">低</td>
+        <td class="cat">A股公用/核电（长电/核电）持有观察，不受影响；若A股公用跟跌则视为错杀低吸机会</td>
+      </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="foot">
+  数据来源：美股隔夜收盘行情 · 本报告由自动化程序生成，仅供参考，不构成投资建议<br>
+  生成时间：2026-09-01 07:30
+</div>
+</div>
+
+<script>
+// 涨幅分布
+var c1 = echarts.init(document.getElementById('chart-strong'));
+c1.setOption({
+  grid:{left:50,right:20,top:20,bottom:30},
+  tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+'%';}},
+  xAxis:{type:'value',axisLabel:{color:'#8b93a7',formatter:'{value}%'},splitLine:{lineStyle:{color:'#1a2238'}}},
+  yAxis:{type:'category',data:["TSLA", "SNDK", "SLB", "CRCL", "CHA", "MU", "XOM", "SKHY", "CVX", "QCOM", "OXY", "COP", "NVDA", "COIN", "LEGN"],axisLabel:{color:'#4d9fff',fontWeight:600},axisLine:{show:false},axisTick:{show:false}},
+  series:[{type:'bar',data:[5.51, 5.5, 4.83, 9.0, 7.0, 2.77, 2.71, 2.2, 2.12, 3.0, 1.83, 1.64, 1.48, 5.0, 4.0],barWidth:12,
+    itemStyle:{borderRadius:[0,6,6,0],color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#f04142'},{offset:1,color:'#ff6b6b'}])},
+    label:{show:true,position:'right',color:'#ff6b6b',formatter:'{c}%'}}]
+});
+window.addEventListener('resize',function(){c1.resize();});
+
+// 主线持续性 vs 资金认可
+var c2 = echarts.init(document.getElementById('chart-trends'));
+c2.setOption({
+  grid:{left:110,right:40,top:20,bottom:30},
+  tooltip:{trigger:'axis'},
+  legend:{data:['持续性','资金认可'],textStyle:{color:'#8b93a7'},top:0},
+  xAxis:{type:'value',max:5,min:0,axisLabel:{color:'#8b93a7'},splitLine:{lineStyle:{color:'#1a2238'}}},
+  yAxis:{type:'category',data:["T1 地缘能源主线（美伊冲突→油价大涨）", "T2 存储超级周期（闪迪+560%/HBM）", "T3 油服景气（独立于油价的定价韧性）", "T4 特斯拉机器人/智驾（+5.51%一个月新高）", "T5 加密反弹（BTC重回7.87万）", "T6 中概消费逆势（霸王茶姬双日强）", "T7 AI硬件分化修复（英伟达+1.48%反弹）", "T8 油气运输/集运（油轮触雷）", "T9 黄金高位震荡（8月+9.9%后企稳）", "T10 公用事业监管风险（加州SB 492）", "T11 银行息差逻辑（加息预期62-66%）", "T12 AI应用/传媒（A股8/31涨停潮后）"],axisLabel:{color:'#c9d2e4',fontSize:11},axisLine:{show:false},axisTick:{show:false}},
+  series:[
+    {name:'持续性',type:'bar',data:[4, 5, 4, 3, 2, 2, 3, 3, 2, 1, 3, 3],barWidth:6,itemStyle:{borderRadius:[0,4,4,0],color:'#ffc14d'}},
+    {name:'资金认可',type:'bar',data:[5, 5, 4, 4, 3, 3, 3, 3, 2, 1, 3, 3],barWidth:6,itemStyle:{borderRadius:[0,4,4,0],color:'#4d9fff'}}
+  ]
+});
+window.addEventListener('resize',function(){c2.resize();});
+
+// 配置结构
+var c3 = echarts.init(document.getElementById('chart-alloc'));
+c3.setOption({
+  tooltip:{trigger:'item',formatter:'{b}: {c}%'},
+  legend:{orient:'vertical',right:10,top:'center',textStyle:{color:'#8b93a7',fontSize:11}},
+  series:[{type:'pie',radius:['42%','68%'],center:['38%','50%'],
+    itemStyle:{borderColor:'#131a2e',borderWidth:2},
+    label:{color:'#c9d2e4',fontSize:11},
+    data:[{"name": "油气链（美伊冲突+油价大涨）", "value": 15.0}, {"name": "存储链+油运", "value": 5.0}, {"name": "特斯拉链（智驾/机器人）+油服+AI应用低位", "value": 2.0}, {"name": "AI应用/传媒、中概、黄金链、光通信/设备、公用/核电、加密", "value": 0.0}],
+    color:['#f04142','#ff8a65','#ffc14d','#4d9fff','#a78bfa','#37e0a0','#f472b6','#38bdf8']
+  }]
+});
+window.addEventListener('resize',function(){c3.resize();});
+</script>
+</body>
+</html>

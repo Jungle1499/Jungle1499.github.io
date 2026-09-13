@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最强主线_每日复盘_20260904</title>
+<style>
+  :root{
+    --bg:#F5F7FA;
+    --card-white:#FFFFFF;
+    --card-border:#DBE3EC;
+    --card-border-strong:#ACB6C5;
+    --ink:#1F2937;
+    --sub:#64748B;
+    --heading:#1E3A5F;
+    --up:#DC2626;
+    --down:#16A34A;
+    --accent-blue:#2563EB;
+    --p0:#DC2626;
+    --p1:#B45309;
+    --p2:#7C3AED;
+    --p3:#475569;
+    --tui:#64748B;
+    --thead-bg:#F1F5F9;
+    --callout-bg:#F8FAFC;
+    --fs-title:16.8px;
+    --fs-section:13.0px;
+    --fs-subhead:11.4px;
+    --fs-body:10.8px;
+    --fs-table:10.5px;
+    --fs-idx-name:9.6px;
+    --fs-idx-val:17.4px;
+    --fs-idx-sub:9.8px;
+    --fs-foot:9.0px;
+    --fs-chip:9.4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:#FFFFFF;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .page{width:840px;margin:0 auto;background:var(--bg);padding-bottom:30px;}
+  .header{background:linear-gradient(90deg,#1E3C65 0%,#214DA2 100%);color:#FFFFFF;text-align:center;padding:26px 0 24px;}
+  .header h1{font-size:var(--fs-title);font-weight:700;letter-spacing:1px;}
+  .header .sub{font-size:var(--fs-chip);opacity:.92;margin-top:10px;}
+  .card{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 14px;}
+  .card-inner{padding:14px 16px;}
+  .summary-card{background:var(--card-white);border:1px solid var(--card-border-strong);border-radius:4px;margin:0 12px 16px;padding:16px 18px;}
+  .summary-head{font-size:var(--fs-subhead);color:var(--heading);font-weight:700;margin-bottom:10px;}
+  .sum-row{margin-bottom:8px;font-size:var(--fs-body);line-height:1.65;}
+  .sum-row:last-child{margin-bottom:0;}
+  .chip{display:inline-block;color:#fff;font-size:var(--fs-chip);font-weight:700;padding:1px 8px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+  .chip-p0{background:var(--p0);}
+  .chip-p1{background:var(--p1);}
+  .chip-p2{background:var(--p2);}
+  .chip-tui{background:var(--tui);}
+  .sum-text{color:var(--ink);}
+  .section{margin-bottom:14px;}
+  .sec-title{font-size:var(--fs-section);color:var(--heading);font-weight:700;padding:0 12px 6px;border-bottom:2px solid var(--heading);margin:0 12px 10px;}
+  .idx-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 12px 12px;}
+  .idx-cell{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;padding:8px 10px;text-align:left;}
+  .idx-name{font-size:var(--fs-idx-name);color:var(--sub);}
+  .idx-val{font-size:var(--fs-idx-val);font-weight:700;margin:2px 0 1px;line-height:1;}
+  .idx-val.up{color:var(--up);}
+  .idx-val.down{color:var(--down);}
+  .idx-sub{font-size:var(--fs-idx-sub);color:var(--sub);}
+  .stats-line{font-size:var(--fs-idx-sub);color:var(--sub);margin:0 12px 8px;line-height:1.8;}
+  .callout{background:var(--callout-bg);border-left:3px solid var(--accent-blue);border-radius:0 4px 4px 0;padding:10px 14px;margin:0 12px 14px;font-size:var(--fs-idx-sub);color:var(--sub);line-height:1.8;}
+  .callout b{color:var(--ink);}
+  .callout.warn{border-left-color:var(--p1);background:#FFFBEB;}
+  .callout.danger{border-left-color:var(--p0);background:#FEF2F2;}
+  .callout.ok{border-left-color:var(--down);background:#F0FDF4;}
+  .tbl{width:calc(100% - 24px);margin:0 12px 14px;border-collapse:collapse;background:var(--card-white);border:1px solid var(--card-border);font-size:var(--fs-table);border-radius:4px;overflow:hidden;}
+  .tbl thead th{background:var(--thead-bg);color:var(--sub);font-weight:600;text-align:left;padding:7px 10px;border-bottom:1px solid var(--card-border);font-size:var(--fs-table);}
+  .tbl tbody td{padding:7px 10px;border-bottom:1px solid #EEF1F4;color:var(--ink);vertical-align:top;font-size:var(--fs-table);}
+  .tbl tbody tr:last-child td{border-bottom:none;}
+  .tbl tbody tr:hover{background:#FAFBFC;}
+  .up{color:var(--up);font-weight:600;}
+  .down{color:var(--down);font-weight:600;}
+  .badge-in{color:var(--up);}
+  .badge-out{color:var(--down);}
+  .tag-mini{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;}
+  .tag-p0{background:var(--p0);}
+  .tag-p1{background:var(--p1);}
+  .tag-p2{background:var(--p2);}
+  .tag-p3{background:var(--p3);}
+  .tag-tui{background:var(--tui);}
+  .driver{background:var(--card-white);border:1px solid var(--card-border);border-radius:4px;margin:0 12px 12px;padding:12px 16px;}
+  .driver-h{font-size:var(--fs-body);font-weight:700;color:var(--heading);margin-bottom:6px;}
+  .driver-h .lv{font-size:var(--fs-chip);font-weight:700;color:#fff;padding:1px 7px;border-radius:3px;margin-right:6px;}
+  .lv-p0{background:var(--p0);}
+  .lv-p1{background:var(--p1);}
+  .lv-p2{background:var(--p2);}
+  .lv-p3{background:var(--p3);}
+  .dblk{font-size:var(--fs-body);line-height:1.7;margin-bottom:5px;}
+  .dblk b{color:var(--heading);}
+  .disclaimer{font-size:var(--fs-foot);color:var(--sub);margin:0 12px 10px;line-height:1.7;}
+  .foot-line{font-size:var(--fs-foot);color:var(--sub);text-align:center;margin:0 12px;line-height:1.8;}
+  .foot-src{font-size:8.6px;color:#9aa3ad;margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>A股每日复盘 · 最强主线研判</h1>
+    <div class="sub">日期：2026-09-04（周五）· 数据时点：15:00 收盘 · 数据源：腾讯自选股 westock（六指数+申万二级99行业+概念802个+个股资金四维）+ 东方财富妙想/中新经纬/证券时报/中新社/财联社/香港商报 多源交叉 · 收盘后全维复盘</div>
+  </div>
+
+  <div class="summary-card">
+    <div class="summary-head">首屏结论（最该盯的方向）</div>
+    <div class="sum-row"><span class="chip chip-p0">P0 唯一主线</span><span class="sum-text"><b>农业全链（猪肉为核心 · 猪周期反转预期）</b>——同花顺/东财概念 <b>猪肉（pt02003882）+5.83%</b>（33/35 只上涨，中新社引东财口径 +5.42%、证券时报 +5.89%，三源口径差异已标注）、<b>养鸡（pt02010001）+4.66%</b>（22/23）、<b>水产品（pt02011358）+3.77%</b>（19/19 全红）、玉米（pt02GN2073）+2.64%、预制菜（pt02021419）+2.50%；申万二级 <b>养殖业 +5.30%（21/22）、饲料 +4.79%（17/18）、渔业 +3.96%（6/6）、种植业 +3.20%（19/20）→ 四链主力资金三周期全正</b>；猪肉概念主力 <b>+15.84亿 / 5日 +13.07亿 / 20日 +19.75亿</b>，20日资金概念榜 Top8 中农业独占 6 席（粮食概念 +48.73亿 全市场第 1、农业种植 +40.50亿 第 2）。<b>阶段判定：P3 加速（连续第 2 日）【框架应用 三-①】</b>。</span></div>
+    <div class="sum-row"><span class="chip chip-p1">P1 次线</span><span class="sum-text"><b>中船系 / 航海装备Ⅱ（造船订单 + 业绩双击）</b>：航海装备Ⅱ（pt01801744）<b>+6.49% 全市场行业第一</b>、10/10 全涨、主力 +22.19亿、5日 +21.69亿、20日 +3.26亿（刚转正）；中船系概念（pt02GN2081）+2.92%、9/9 全红、主力 +21.69亿、5日 +21.98亿、20日 +10.26亿。龙头 <b>中国船舶（sh600150）+9.18%</b>（盘中触及涨停，成交 123.93亿、量比 4.13，<b>主力净流入 +20.65亿 = 全市场个股第 1</b>）。<b>阶段判定：P1 启动（逻辑龙头先涨·Pair 连 2 天跑赢）【框架应用 三-① 三-⑧】</b>／<b>稳定币概念（pt02GN2376）+5.09%</b>（7/7 全红，+13.99/+13.35/+9.53亿 三周期全正）<b>阶段：P2 修复扩散</b>。</span></div>
+    <div class="sum-row"><span class="chip chip-p2">诱多·降级</span><span class="sum-text"><b>传媒 / AI应用（涨幅集群但 20日资金全线深负 → ㊸ 板块方向资金门控：禁止给"多"）</b>——AI营销（pt02GN2418）+2.88%、主力 <b>+48.48亿 全市场概念第 1</b>，但 <b>20日 -33.34亿</b>；文化传媒概念（pt02002486）+1.76%、主力 +64.39亿、<b>20日 -40.74亿</b>；短剧/互动游戏 +1.51%、20日 -41.07亿；数字货币（pt02061321）+1.18%、20日 -62.75亿；广告营销 SW2 +3.87%、20日 -21.77亿。高标 <b>龙版传媒 5 连板、欢瑞世纪 5天4板</b> 而权重昆仑万维仅 +2.64% → <b>㊱ 情绪缩圈 + 🟠 诱多出货象限</b>。<b>阶段判定：P3 高潮 / 退潮前夜（只减不加）</b>。</span></div>
+    <div class="sum-row"><span class="chip chip-tui">退潮</span><span class="sum-text"><b>半导体 + 电子化学品 + 玻纤 = 主跌出货</b>——半导体（pt01801081）<span class="down">-2.85%</span>（12/180 上涨、主力 <b>-157.56亿</b>、5日 -427.38亿、<b>20日 -1128.00亿</b>，钱江晚报/东财口径 -160.4亿 两源一致）；电子化学品Ⅱ <span class="down">-3.86%</span>（<b>0/35 全跌</b>）；玻璃玻纤 <span class="down">-4.86%</span>（20日 -152.75亿）、电子布概念 -4.28%（0/7）、覆铜板 -3.94%（0/5）、靶材 -4.06%（0/5）；存储/算力链：长鑫存储概念 -3.40%（20日 -378.01亿）、国家大基金持股 -3.39%（20日 -413.03亿）、中芯国际概念 -3.31%（20日 -706.70亿）、HBM -3.25%。<b>贵金属 -1.18%（1/11、5日 -26.41亿、20日 -27.82亿）→ 盘前"中性偏多"连续第 3 日证伪</b>；培育钻石 -1.34%（昨日 P0 → 今日回落，㊹ 真趋势豁免验证案例）。</span></div>
+    <div class="sum-row"><span class="sum-text">市场状态：<b>放量冲高回落 · 权重护盘成长杀跌（弱结构非反转）</b> —— 沪指 <span class="down">-0.30%</span> 报 <b>3930.12</b>（高开 3955.55 → 冲高 <b>3980.20</b> → 低 3915.22 → 收 3930.12，<b>长上影 50 点、日内振幅 1.65%</b>），深成 <span class="down">-0.79%</span>，创业板 <span class="down">-0.78%</span>，<b>科创50 <span class="down">-2.10%</span>（收 1577.36，深破 1620 止损锚）</b>，中证500 <span class="down">-1.32%</span>，北证50 <span class="down">-0.10%</span>；<b>上证50 <span class="up">+0.15%</span> 为唯一红盘权重</b>。沪深成交 <b>2.0307 万亿</b>（沪 9382.55亿 + 深 10924.13亿），较 9/3 的 1.759 万亿 <b>放量 2717.52 亿（+15.4%）→ 放量下跌</b>；上涨 <span class="up">2444</span> / 下跌 <span class="down">2914</span>（涨跌比 <b>0.839</b>、上涨占比 <b>45.6%</b>），涨停 <b>41</b>（另一源 42）/ 跌停 <b>9</b>（9/3：46 / 17）。<b>❗ ㊱ 情绪缩圈核心证据：昨日涨停概念 -0.63%（46 只中仅 15 只上涨、主力 -16.79亿、20日 -505.37亿）、昨日连板概念 -0.89%（9 只中仅 3 只上涨、主力 -6.35亿、20日 -175.28亿）→ 接力赚钱效应极差，周一严禁追高标。</b></span></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">一、市场概览（15:00 收盘快照）</div>
+    <div class="idx-grid">
+      <div class="idx-cell"><div class="idx-name">上证指数</div><div class="idx-val down">3930.12</div><div class="idx-sub">-0.30%</div></div>
+      <div class="idx-cell"><div class="idx-name">深证成指</div><div class="idx-val down">13516.97</div><div class="idx-sub">-0.79%</div></div>
+      <div class="idx-cell"><div class="idx-name">创业板指</div><div class="idx-val down">3286.55</div><div class="idx-sub">-0.78%</div></div>
+      <div class="idx-cell"><div class="idx-name">科创50</div><div class="idx-val down">1577.36</div><div class="idx-sub">-2.10%</div></div>
+      <div class="idx-cell"><div class="idx-name">沪深300</div><div class="idx-val down">4548.05</div><div class="idx-sub">-0.10%</div></div>
+      <div class="idx-cell"><div class="idx-name">上证50</div><div class="idx-val up">2923.81</div><div class="idx-sub">+0.15%</div></div>
+    </div>
+    <div class="stats-line">沪深成交额 <b>2.0307 万亿</b>（沪市 9382.55 亿 + 深市 10924.13 亿），较 9/3 的 1.759 万亿 <b>放量 2717.52 亿（+15.4%）</b>；沪深京三市口径 2.05 万亿（增量 2708 亿，钱江晚报）。涨跌家数 <span class="up">2444 涨</span> / <span class="down">2914 跌</span>（涨跌比 <b>0.839</b>、上涨占比 <b>45.6%</b>），涨停 <b>41</b> 只（中新经纬）/ 42 只（Wind 指标口径，两源差异 1 只已标注）、跌停 <b>9</b> 只。中证500 <span class="down">-1.32%</span>、北证50 <span class="down">-0.10%</span>。全市场主力资金净流出超 400 亿（同花顺，钱江晚报引用）。申万一级：农林牧渔、国防军工、食品饮料、传媒涨幅居前；电子、有色金属、计算机、通信跌幅居前。</div>
+    <div class="callout danger"><b>市场画像：</b>早盘三大指数集体冲高（沪指一度逼近 4000、最高 3980.20），午后资金流出明显、集体翻绿，收出 <b>50 点长上影的放量阴线</b>。结构上是典型的 <b>"权重护盘 + 成长杀跌 + 主线极窄"</b>：上证50 独红（银行/保险微涨）、科创50 深破 1620 止损锚（-2.10%，60日 -5.12%）、中证500 -1.32% —— 中小盘与科技成长同步失血，仅 <b>农业全链</b> 与 <b>中船系</b> 两条有真实资金支撑（三周期全正）。<b>放量下跌 + 长上影 + 昨日涨停股 15/46 红盘</b> 三者叠加，定性为 <b>反弹结构中的获利兑现日，非趋势反转日</b>；按 ㉓「反弹=减仓窗口非反转确认」执行。</div>
+    <div class="callout warn"><b>⚠️ 数据口径差异如实标注（多源交叉结果，不取单一源）：</b>① 猪肉概念涨幅 westock <b>+5.83%</b> / 东财（中新社引）<b>+5.42%</b> / 证券时报 <b>+5.89%</b> —— 差异源于成分股与加权方式，方向一致；② 中船系概念涨幅 westock <b>+2.92%</b> / 证券时报数据宝 <b>+2.42%</b>；③ 中国船舶主力净流入 westock <b>+20.65亿</b> / 数据宝 <b>+20.00亿</b>（差 0.65亿，主力资金定义口径差异）；④ 涨停家数 41（中新经纬）/ 42（Wind 指标）；⑤ 成交额 2.0307 万亿（沪深两市·westock 逐项加总）/ 2.05 万亿（沪深京三市）。<b>全部结论均基于方向一致的部分，差异项已单独标注不做合并。</b></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">二、主线分级（P0 / P1 / P2 / 诱多 / 退潮 · 含三阶段判定）</div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p0">P0</span>农业全链（猪肉为核心 · 猪周期反转预期）—— 阶段：P3 加速（连续第 2 日）</div>
+      <div class="dblk"><b>① 涨幅与广度（概念口径，802 个概念排名）：</b>猪肉 <span class="up">+5.83%</span>（33/35）、养鸡 <span class="up">+4.66%</span>（22/23）、水产品 <span class="up">+3.77%</span>（<b>19/19 全红</b>）、玉米 <span class="up">+2.64%</span>（25/28）、预制菜 <span class="up">+2.50%</span>（87/99）、粮食概念 <span class="up">+1.82%</span>（39/46）、农业种植 <span class="up">+1.34%</span>（69/88）、转基因 <span class="up">+2.19%</span>（17/20）、土地流转 <span class="up">+1.86%</span>（42/55）、生态农业 <span class="up">+1.70%</span>（53/63）。申万二级：养殖业 <span class="up">+5.30%</span>（21/22）、饲料 <span class="up">+4.79%</span>（17/18）、渔业 <span class="up">+3.96%</span>（6/6）、种植业 <span class="up">+3.20%</span>（19/20）、农产品加工 <span class="up">+1.26%</span>、动物保健Ⅱ <span class="up">+1.52%</span>。</div>
+      <div class="dblk"><b>② 资金质量（三周期）：</b>猪肉 +15.84 / 5日 +13.07 / 20日 <b>+19.75亿</b>；养殖业 +7.53 / +4.19 / <b>+6.70亿</b>；饲料 +7.88 / +7.59 / <b>+5.84亿</b>；渔业 +1.22 / +0.96 / <b>+1.71亿</b>；种植业 +6.92 / +9.84 / <b>+36.69亿</b>；水产品 +4.87 / +4.70 / +7.72亿；养鸡 +5.36 / +4.76 / +5.19亿 —— <b>全链三周期全正，全市场唯一"多链共振"集群</b>。20日资金概念榜 Top8 农业占 6 席（粮食 +48.73、农业种植 +40.50、玉米 +33.94、预制菜 +29.40、土地流转 +28.77、猪肉 +19.75亿）。</div>
+      <div class="dblk"><b>③ 催化（五源交叉）：</b>全国生猪均价 <b>11.06 元/kg</b>（中新社，另一源 11.04 元/kg），较 6 月下旬 9.47 元/kg 低点<b>累计反弹近 17%</b>，集团猪企缩量出栏 + 开学季食堂备货 + 中秋国庆双节前置消费；国家统计局：2026Q2 末能繁母猪存栏降至 <b>3780 万头</b>，同比 -263 万头（-6.5%）、环比 -3.20%（降幅较 Q1 的 1.41% 加速），距农业农村部 3750 万头正常保有量目标<b>仅差 0.8%</b>，产能调减完成时限已提前至<b>三季度末（9 月底交卷）</b>；多个国际气象机构预测超强厄尔尼诺 → 农产品涨价预期。机构：东方证券"4 月底以来反弹正演变为持续性更强的反转行情"、国信证券"2027 年猪价有望开启周期反转"、中信建投"Q2 大概率为本轮猪价底部"。</div>
+      <div class="dblk"><b>④ 阶段判定依据【框架应用 三-①】：</b>板块<b>连续 2 日进全市场涨幅前三</b>（P1 预警已达成且完成扩散）→ 五链齐涨（猪/鸡/水产/饲料/种业）+ 涨停潮（罗牛山、新五丰、播恩集团、正虹科技、邦基科技、天邦食品、新希望、金新农、傲农生物、大禹生物 +23% 等 <b>≥10 只</b>）= <b>群体狂热 = P3 特征</b>；14:30 档已判"P2→P3 加速"，收盘确认维持。<b>但 Pair 未连 2 天跑赢（见第三节）→ 不进一步升级</b>，且按 <b>三-④ 确认滞后认知</b>，P3 确认≈情绪顶部附近，右侧框架宿命易吃鱼尾，须配合风控。</div>
+      <div class="dblk"><b>⑤ 纪律定位【框架应用 ㊹ ㊺ ㊼】：</b>㊹ 真趋势豁免——20日资金全正，<b>禁止因单日强涨判顶/降档</b>；但 ㊺ 退潮期真趋势 P3 加速段锁盈降级——<b>"多"降级为"持有锁盈·中性偏多"，禁止给加仓"多"信号，破 5 日线即减半</b>。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">P1</span>中船系 / 航海装备Ⅱ（造船订单 + 业绩双击）—— 阶段：P1 启动（逻辑龙头先涨）</div>
+      <div class="dblk"><b>① 涨幅与广度：</b>航海装备Ⅱ（pt01801744）<b>+6.49% 全市场申万二级第一</b>（10/10 全涨，量比 2.66）；中船系概念（pt02GN2081）<b>+2.92%</b>（9/9 全红，量比 3.01，证券时报数据宝口径 +2.42%）。成分：中国船舶 <span class="up">+9.18%</span>（盘中触及涨停）、江龙船艇 <span class="up">+6.84%</span>、中船防务 <span class="up">+3.82%</span>、中船科技 <span class="up">+3.07%</span>、昆船智能 <span class="up">+2.86%</span>、中船汉光 <span class="up">+2.42%</span>、天海防务 <span class="up">+2.38%</span>、亚星锚链 <span class="up">+2.35%</span>、中国海防 <span class="up">+1.30%</span>、中国动力 <span class="up">+0.92%</span>；板块内唯一失血股 中船特气 <span class="down">-2.09%</span>（主力 -1.41亿，净流入比率 -6.96%）。</div>
+      <div class="dblk"><b>② 资金质量（三周期）：</b>航海装备Ⅱ 主力 +22.19亿 / 5日 +21.69亿 / 20日 <b>+3.26亿（刚转正）</b>；中船系 +21.69 / +21.98 / <b>+10.26亿</b> —— <b>板块级三周期全正</b>。中国船舶个股主力 <b>+20.65亿 = 全市场第 1</b>（数据宝 +20.00亿），净流入比率 16.14%。</div>
+      <div class="dblk"><b>③ 催化（三源交叉）：</b>9/2 晚公告——控股子公司广船国际联合中船贸易于 9/1 与某知名船东签订 <b>10 艘 8200 车 LNG 双燃料动力汽车运输船</b>新造船合同，<b>总金额逾 10 亿美元</b>；8/28 外高桥造船签 <b>12 艘 21700TEU LNG 双燃料集装箱船、26.88 亿美元</b>；2026H1 营收 915 亿（+26%）、<b>归母净利 99.54 亿（+163%）</b>、毛利率 17.37%（+5.16pp）、新接订单 1194 亿同比翻倍、<b>手持订单超 5262 亿</b>；中国船舶工业行业协会：2026H1 造船完工量 3650 万载重吨（+51.2%，全球 62.2%）、<b>新接订单量 12106 万载重吨（+173.1%，全球 82.3%）</b>、手持订单 36325 万载重吨（+54.9%，全球 71.2%）。</div>
+      <div class="dblk"><b>④ 阶段判定依据【框架应用 三-① 三-⑧】：</b>板块<b>首次进全市场涨幅榜首</b>（三-① P1 预警）；<b>龙头独涨</b>（中国船舶 +9.18% vs 二线 +0.92%~+3.82%，差距 5~10 倍）= <b>P1"逻辑龙头先涨"特征</b>，<b>非 P3</b>（无群体普涨涨停潮，仅中国船舶 1 只触板）；20日资金<b>刚转正</b>（+3.26亿）符合启动期特征。Pair <b>连 2 天跑赢已成立</b>（见第三节）。<b>㊽ 事件驱动新主线 P1 启动扫描</b>实证：订单 + 业绩双催化属"政策/业绩催化"独立事件驱动，支持给"多"。</div>
+      <div class="dblk"><b>⑤ 纪律定位【框架应用 ㊼ ㊽】：</b>㊼ 单日脉冲次日回落门控——今日 +6.49% 属单日爆发，但 20日资金<b>刚转正（+3.26亿）且为订单/业绩驱动非纯题材</b>，按 ㊽ 事件驱动豁免<b>部分适用</b>，周一防冲高兑现但<b>不整体降档</b>；三-③ P1 试错买入 ≤10% 仓，回踩低吸不追高。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p1">P1</span>稳定币概念（7/7 全红 · 三周期全正）—— 阶段：P2 修复扩散</div>
+      <div class="dblk"><b>① 涨幅与广度：</b>稳定币概念（pt02GN2376）<b>+5.09%</b>（<b>7/7 全红</b>），概念涨幅榜第 3。成分：四方精创 <span class="up">+14.58%</span>（成交 41.05亿、换手 27.56%）、楚天龙 <span class="up">+10.00%</span> 涨停、恒宝股份 <span class="up">+7.66%</span>（换手 33.70%）。</div>
+      <div class="dblk"><b>② 资金质量（三周期）：</b>板块主力 +13.99亿 / 5日 +13.35亿 / 20日 <b>+9.53亿 → 三周期全正</b>。<b>但个股严重分化</b>：恒宝股份 +4.75 / +1.69 / +3.05 / 20日 <b>+2.61亿 全正</b>；楚天龙 +6.75 / 5日 -0.65 / 10日 +3.85 / 20日 <b>+4.02亿</b>（5日小负）；<b>四方精创 +6.97亿 但 5日 -2.41 / 10日 -1.93 / 20日 -2.77亿 → 三周期全负</b>。</div>
+      <div class="dblk"><b>③ 阶段判定依据【框架应用 ㊻ 三-①】：</b>9/3 稳定币系集体暴跌（楚天龙 <span class="down">-9.09%</span>、恒宝 <span class="down">-3.40%</span>、四方精创 <span class="down">-1.76%</span>），9/4 全线反包 → <b>㊻ 暴跌次日修复情景</b>（板块 T-1 单日暴跌≥-3%、龙头 20日双正 → 判"修复·P1启动"而非延续看空）；考虑 20日 +9.53亿已正且 7/7 全涨（非独苗），判 <b>P2 修复扩散</b>。Pair <b>未连 2 天跑赢</b> → 不升级 P3。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p2">诱多</span>传媒 / AI应用（涨幅集群 · 20日资金全线深负）—— 阶段：P3 高潮 / 退潮前夜（㊸ 禁多）</div>
+      <div class="dblk"><b>① 涨幅集群：</b>广告营销 SW2 <span class="up">+3.87%</span>（25/28）、游戏Ⅱ <span class="up">+3.57%</span>（23/26）、数字媒体 <span class="up">+2.51%</span>、出版 <span class="up">+2.47%</span>（27/29）、影视院线 <span class="up">+2.24%</span>、文化传媒概念 <span class="up">+1.76%</span>（164/212）、短剧/互动游戏 <span class="up">+1.51%</span>、AI营销 <span class="up">+2.88%</span>（30/36）。</div>
+      <div class="dblk"><b>② 资金背离（核心风险）：</b><b>AI营销 主力 +48.48亿 全市场概念第 1，但 20日 -33.34亿</b>；文化传媒概念 +64.39亿 / 20日 <b>-40.74亿</b>；短剧/互动游戏 +45.34亿 / 20日 <b>-41.07亿</b>；数字货币概念 +24.08亿 / 20日 <b>-62.75亿</b>；广告营销 +38.84亿 / 20日 <b>-21.77亿</b>；游戏Ⅱ 20日 -9.75亿；影视院线 20日 -15.13亿。<b>涨 + 20日主力巨额净流出 = 🟠 诱多出货象限（PUA 背离四象限），触发 ㊸ 板块方向资金门控：禁止给"多/中性偏多"，仅可"中性偏空/空"。</b></div>
+      <div class="dblk"><b>③ 情绪结构【框架应用 ㊱ 三-⑧】：</b>高标 <b>龙版传媒 5 连板</b>（+9.97%，市值仅 69.11亿，5日 +61.14%、20日 +63.68%）、<b>欢瑞世纪 5天4板</b>（+10.04%，换手 43.85%，市值 54.84亿）、中国出版 +10.00% 涨停、新炬网络 2 连板；而权重 昆仑万维仅 <span class="up">+2.64%</span>（583.79亿）、易点天下 +11.12%（236.77亿，20日 -2.17%）。<b>小市值高标涨停潮 + 权重滞涨 = 典型"缩圈炒作"</b>，㊱ 情绪缩圈实证。</div>
+      <div class="dblk"><b>④ 阶段判定依据【框架应用 三-① 三-④】：</b>高标 5 连板 = 情绪顶部特征；全链 20日资金 -9.75亿 ~ -62.75亿 全线深负；<b>判 P3 高潮 / 退潮前夜，只减不加，次日严禁追高标</b>。</div>
+    </div>
+
+    <div class="driver">
+      <div class="driver-h"><span class="lv lv-p3">退潮</span>半导体 / 电子化学品 / 玻纤电子链 / 贵金属（主跌出货 · ㊸ 禁多）</div>
+      <div class="dblk"><b>① 半导体（pt01801081）<span class="down">-2.85%</span></b>：180 只中仅 <b>12 只上涨</b>，主力 <b>-157.56亿</b>（钱江晚报/东财口径 -160.4亿，两源一致）、5日 -427.38亿、<b>20日 -1128.00亿（全市场最深）</b> → ㊸ 禁多 + 主跌出货象限（跌 + 资金流出 = 退潮确认）。个股：国科微、华虹宏力跌幅靠前。</div>
+      <div class="dblk"><b>② 电子化学品Ⅱ <span class="down">-3.86%</span>（0/35 全跌）</b>、玻璃玻纤 <span class="down">-4.86%</span>（3/16，主力 -27.74亿，20日 -152.75亿）、非金属材料Ⅱ <span class="down">-3.35%</span>（0/8 全跌）、电子布概念 -4.28%（0/7，20日 -148.03亿）、覆铜板 -3.94%（0/5）、靶材 -4.06%（0/5）、锗镓概念 -3.55%。宏和科技跌停。</div>
+      <div class="dblk"><b>③ 存储/算力链</b>：长鑫存储概念 -3.40%（0/18，20日 -378.01亿）、国家大基金持股 -3.39%（0/23，主力 -63.82亿，20日 -413.03亿）、中芯国际概念 -3.31%（4/75，主力 -86.60亿，20日 -706.70亿）、HBM -3.25%（3/53，主力 -66.70亿，20日 -280.40亿）、MLCC -3.31%、光刻机、CPO、液冷服务器跌幅居前。元件 -2.44%（20日 -375.57亿）、消费电子 -2.28%、光学光电子 -2.39%、计算机设备 -1.86%、通信设备 -1.15%（20日 -356.15亿）。</div>
+      <div class="dblk"><b>④ 贵金属 <span class="down">-1.18%</span></b>：11 只中仅 1 只上涨，主力 -0.88亿、5日 -26.41亿、20日 -27.82亿 → <b>盘前「中性偏多」连续第 3 日证伪（9/2、9/3、9/4）</b>，COMEX 金新高完全未传导，㊲ 修复窗口判据失效。</div>
+      <div class="dblk"><b>⑤ 培育钻石 <span class="down">-1.34%</span></b>（4/16，主力 -6.61亿，但 5日 +11.33亿、20日 +9.53亿仍正）→ 昨日（9/3）P0 主线今日回落。<b>㊹ 真趋势豁免验证案例</b>：20日未转负、价格未破位 → 按 ㊹ 不判退潮，但列入观察（若下周 20日转负则确认退潮）。</div>
+      <div class="dblk"><b>⑥ 汽车零部件 <span class="down">-1.07%</span></b>（49/243）：09:25 竞价"7 分 + 5/20日双正健康象限 · 核心看多"今日<b>被证伪</b>（跌 + 主力仅 +0.10亿）→ 竞价双正不等于当日上涨，需叠加板块 20日资金位置与全局情绪。</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">三、三阶段 Pair 配对与相对强弱（【框架应用 三-① 三-② 三-⑧】）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:15%">主线</th><th style="width:24%">Pair（市值可匹配 + 业务类似 + 涨幅最大两只）</th><th style="width:22%">连 2 天跑赢判定（T-1 → T）</th><th style="width:13%">阶段判定</th><th>相对强弱方向</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>农业全链</b><br><span style="color:#64748B">P0</span></td>
+          <td><b>牧原股份</b>（sz002714，2538.39亿）<br>vs <b>温氏股份</b>（sz300498，1022.04亿）<br><span style="color:#64748B">市值比 2.48x &lt; 5x ✅；业务类似：生猪养殖双寡头 ✅（三-②）</span></td>
+          <td>9/3：牧原 <span class="up">+0.12%</span> &gt; 温氏 <span class="down">-0.14%</span> → <b>牧原赢</b><br>9/4：温氏 <span class="up">+6.15%</span> &gt; 牧原 <span class="up">+4.49%</span> → <b>温氏赢</b><br><b>❌ 未连 2 天跑赢（交替）</b></td>
+          <td><span class="tag-mini tag-p3">P3 加速</span><br><span style="color:#64748B">不升级</span></td>
+          <td>9/4 <b>后排（温氏）跑赢龙头（牧原）</b> = P2→P3 扩散特征；但 9/3 反向 → <b>方向未确认，维持 P3 不升级</b>。<b>逻辑龙头（三-⑤）= 亚盛集团</b>（种植业分支，5日涨幅 + 主力净流入双第一）；<b>权重锚（三-⑧）= 牧原 2538.39亿</b>，今日 +4.49% 但 20日主力 -1.11亿 → 权重资金未确认。</td>
+        </tr>
+        <tr>
+          <td><b>中船系</b><br><span style="color:#64748B">P1</span></td>
+          <td><b>中国船舶</b>（sh600150，2819.85亿）<br>vs <b>中国动力</b>（sh600482，748.07亿）<br><span style="color:#64748B">市值比 3.77x &lt; 5x ✅；业务类似：船舶总装 vs 船用动力，同属中船集团船舶产业链 ✅（三-②/三-⑧：龙头为权重，另取二线构成 Pair）</span></td>
+          <td>9/3：中国船舶 <span class="up">+1.15%</span> &gt; 中国动力 <span class="up">+0.28%</span> → <b>船舶赢</b><br>9/4：中国船舶 <span class="up">+9.18%</span> &gt; 中国动力 <span class="up">+0.92%</span> → <b>船舶赢</b><br><b>✅ 连 2 天跑赢成立</b></td>
+          <td><span class="tag-mini tag-p1">P1 启动</span><br><span style="color:#64748B">龙头独涨</span></td>
+          <td><b>龙头（中国船舶）连 2 天跑赢补涨（中国动力）</b>，但涨幅差 5~10 倍、二线未跟上 = <b>P1"逻辑龙头先涨"而非 P3"龙头涨速反超"</b>（三-① 严格区分）。<b>逻辑龙头（三-⑤）= 中国船舶</b>（主力净流入 +20.65亿全市场第 1）。<b>二线滞涨 = 后续 P1→P2 的补涨空间所在。</b></td>
+        </tr>
+        <tr>
+          <td><b>稳定币</b><br><span style="color:#64748B">P1</span></td>
+          <td><b>恒宝股份</b>（sz002104，99.52亿）<br>vs <b>楚天龙</b>（sz003040，≈97.4亿）<br><span style="color:#64748B">市值比 1.02x ✅；业务类似：智能卡/数字身份/稳定币硬件载体 ✅</span></td>
+          <td>9/3：恒宝 <span class="down">-3.40%</span> &gt; 楚天龙 <span class="down">-9.09%</span> → <b>恒宝赢</b>（跌幅小）<br>9/4：楚天龙 <span class="up">+10.00%</span> &gt; 恒宝 <span class="up">+7.66%</span> → <b>楚天龙赢</b><br><b>❌ 未连 2 天跑赢（交替）</b></td>
+          <td><span class="tag-mini tag-p2">P2 修复扩散</span></td>
+          <td>9/3 深跌 → 9/4 反包，属 <b>㊻ 暴跌次日修复</b>；板块 7/7 全红（非独苗）→ 判 P2 而非 P1。<b>龙头四方精创（+14.58%）资金三周期全负 → 按三-⑤ 不能标定为逻辑龙头</b>，改以恒宝股份（唯一个股级三周期全正）为资金质量锚。</td>
+        </tr>
+        <tr>
+          <td><b>传媒/AI应用</b><br><span style="color:#64748B">诱多</span></td>
+          <td><b>龙版传媒</b>（sh605577，69.11亿）<br>vs <b>欢瑞世纪</b>（sz000892，54.84亿）<br><span style="color:#64748B">市值比 1.26x ✅；业务类似：影视传媒/内容制作 ✅</span></td>
+          <td>9/4：欢瑞 <span class="up">+10.04%</span> &gt; 龙版 <span class="up">+9.97%</span> → <b>欢瑞微幅跑赢</b><br>9/3 数据未取 —— <b>标注 N/A，不虚构</b></td>
+          <td><span class="tag-mini tag-p3">P3 高潮</span><br><span style="color:#64748B">退潮前夜</span></td>
+          <td>后排（欢瑞）微幅跑赢高标（龙版）= P2→P3 特征；但<b>板块 20日资金 -40.74亿 深负 → 三-⑥ stage-aware 降权 + ㊸ 禁多</b>，即便阶段确认也<b>禁止给"多"</b>，只减不加。<b>权重锚（三-⑧）= 昆仑万维 583.79亿 仅 +2.64% → 权重缺席，缩圈炒作。</b></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout warn"><b>三阶段框架应用小结：</b>今日 4 条主线中，<b>仅中船系满足"Pair 连 2 天跑赢"的逐级确认条件</b>（三-①）；农业全链与稳定币均为交替跑赢 → <b>维持原阶段不升级</b>；传媒虽呈现 P2→P3 特征但因 20日资金深负被 ㊸ 门控强制降级。<b>按 三-④ 确认滞后认知，农业 P3 判定存在"鱼尾风险"，须以破 5 日线为硬性减半触发条件，不可依赖阶段判定本身做加仓决策。</b></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">四、逻辑龙头资金质量审计（对抗自检：涨停 ≠ 资金进 · 20cm ≠ 吸筹）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:16%">标的</th><th style="width:8%">今日涨幅</th><th style="width:11%">主力净流入</th><th style="width:10%">5日</th><th style="width:10%">10日</th><th style="width:11%">20日</th><th style="width:11%">象限判定</th><th>结论</th></tr></thead>
+      <tbody>
+        <tr><td><b>中国船舶</b><br>sh600150</td><td class="up">+9.18%</td><td class="badge-in">+20.65亿<br><span style="color:#64748B">全场第1</span></td><td class="badge-out">-0.07亿</td><td class="badge-in">+4.62亿</td><td class="badge-out">-14.92亿</td><td>🟠 单日脉冲<br><span style="color:#64748B">20日线降级</span></td><td><b>⚠️ 20日资金线降级规则触发：降级"反弹回补·非反转"，禁止标"吸筹/反转"。</b>订单+业绩催化真实（H1归母+163%），但个股资金未确认 → <b>仅持有/回踩低吸，禁止追高</b>。</td></tr>
+        <tr><td><b>中国动力</b><br>sh600482</td><td class="up">+0.92%</td><td class="badge-in">+0.30亿</td><td class="badge-in">+1.84亿</td><td class="badge-in">+2.86亿</td><td class="badge-in">+5.70亿</td><td>🟢 健康<br><span style="color:#64748B">三周期全正</span></td><td><b>中船系内资金质量最优</b>：三周期全正且龙头已大涨而它滞涨（+0.92%）→ <b>P1→P2 补涨首选，性价比最高</b>。</td></tr>
+        <tr><td><b>江龙船艇</b><br>sz300589</td><td class="up">+6.84%</td><td class="badge-in">+0.60亿</td><td class="badge-in">+0.68亿</td><td class="badge-in">+0.63亿</td><td class="badge-in">+0.34亿</td><td>🟢 健康<br><span style="color:#64748B">三周期全正</span></td><td>航海装备内<b>唯一"涨幅居前 + 资金三周期全正"</b>的小市值弹性标的 → P2 补涨。</td></tr>
+        <tr><td><b>亚盛集团</b><br>sh600108</td><td class="up">+10.10%</td><td class="badge-in">+1.17亿</td><td class="badge-in">+2.42亿</td><td class="badge-in">+3.11亿</td><td class="badge-in">+4.15亿</td><td>🟢 健康<br><span style="color:#64748B">三周期全正</span></td><td><b>农业链内资金质量最优</b>，种植业逻辑龙头【三-⑤】（5日涨幅 + 主力净流入双第一），20日涨幅 +38.41% → P2 补涨。</td></tr>
+        <tr><td><b>温氏股份</b><br>sz300498</td><td class="up">+6.15%</td><td class="badge-in">+0.11亿</td><td class="badge-in">+0.50亿</td><td class="badge-in">+0.45亿</td><td class="badge-in">+0.58亿</td><td>🟢 健康<br><span style="color:#64748B">三周期全正</span></td><td>三周期全正但<b>量级极小</b>（主力仅 +0.11亿，全市场排名 706）→ 资金认可度弱，但相对牧原（20日 -1.11亿）更优 → P3 后排补涨。</td></tr>
+        <tr><td><b>牧原股份</b><br>sz002714</td><td class="up">+4.49%</td><td class="badge-in">+3.65亿<br><span style="color:#64748B">排名21</span></td><td class="badge-out">-0.19亿</td><td class="badge-in">+1.25亿</td><td class="badge-out">-1.11亿</td><td>🟠 龙头背离<br><span style="color:#64748B">20日线降级</span></td><td><b>权重锚 20日资金为负</b> → 板块三周期全正但龙头不认账，<b>P3 群体狂热的典型风险信号</b>；持有锁盈不加仓。</td></tr>
+        <tr><td><b>罗牛山</b><br>sz000735</td><td class="up">+10.05%</td><td class="badge-in">+1.45亿</td><td class="badge-out">-0.91亿</td><td class="badge-out">-1.48亿</td><td class="badge-in">+0.12亿</td><td>🟠 诱多出货<br><span style="color:#64748B">涨停≠资金进</span></td><td><b>❌ 猪肉概念龙一（涨停）但 5/10 日资金双负</b> = 典型"涨停≠资金进"反例 → <b>禁止追买，纯游资脉冲</b>。</td></tr>
+        <tr><td><b>四方精创</b><br>sz300468</td><td class="up">+14.58%</td><td class="badge-in">+6.97亿<br><span style="color:#64748B">排名10</span></td><td class="badge-out">-2.41亿</td><td class="badge-out">-1.93亿</td><td class="badge-out">-2.77亿</td><td>🟠 诱多出货<br><span style="color:#64748B">20cm≠吸筹</span></td><td><b>❌ 全场涨幅第 2 但 5/10/20 日资金全负</b> = 典型"20cm 大涨≠吸筹"反例 → <b>禁止追买</b>。稳定币板块正 ≠ 个股正。</td></tr>
+        <tr><td><b>恒宝股份</b><br>sz002104</td><td class="up">+7.66%</td><td class="badge-in">+4.75亿<br><span style="color:#64748B">排名19</span></td><td class="badge-in">+1.69亿</td><td class="badge-in">+3.05亿</td><td class="badge-in">+2.61亿</td><td>🟢 健康<br><span style="color:#64748B">三周期全正</span></td><td><b>稳定币内唯一"个股级三周期全正"</b> → 修复行情中资金质量最优，P2 修复（㊻）。</td></tr>
+        <tr><td><b>中船防务</b><br>sh600685</td><td class="up">+3.82%</td><td class="badge-in">+0.50亿</td><td class="badge-out">-0.67亿</td><td class="badge-out">-0.78亿</td><td class="badge-out">-2.24亿</td><td>🟠 诱多<br><span style="color:#64748B">三周期全负</span></td><td><b>❌ 涨幅居前但三周期全负</b> → 排除在推荐之外，禁止追买。</td></tr>
+        <tr><td><b>中国出版</b><br>sh601949</td><td class="up">+10.00%</td><td class="badge-in">+0.85亿</td><td class="badge-in">+0.24亿</td><td class="badge-in">+0.16亿</td><td class="badge-in">+0.27亿</td><td>⚠️ 板块冲突<br><span style="color:#64748B">㊸ 门控否决</span></td><td><b>个股三周期全正，但所属传媒板块 20日 -40.74亿 → ㊸ 板块方向资金门控优先，判"禁止给多"</b>。个股质量不能对抗板块门控（规则冲突案例，见 ⚠️框架待更新）。</td></tr>
+        <tr><td><b>华天酒店</b><br>sz000428</td><td class="up">+10.09%</td><td class="badge-in">+0.90亿</td><td class="badge-out">-0.05亿</td><td class="badge-in">+0.91亿</td><td class="badge-in">+1.19亿</td><td>🟢 健康<br><span style="color:#64748B">10/20日正</span></td><td>酒店餐饮 SW2 +2.91% <b>9/9 全涨且板块三周期全正</b>（+1.30/+2.56/+4.26亿）→ 低位未启动分支，P1。</td></tr>
+      </tbody>
+    </table>
+    <div class="callout danger"><b>对抗自检核心结论（防"顺着表象写结论"）：</b>① <b>涨停 ≠ 资金进</b>：罗牛山（猪肉龙一、涨停）5/10 日主力 -0.91/-1.48亿 → 游资脉冲；② <b>20cm 大涨 ≠ 吸筹</b>：四方精创 +14.58% 但 5/10/20 日全负（-2.41/-1.93/-2.77亿）→ 诱多出货；③ <b>主力净流入全场第 1 ≠ 可追</b>：中国船舶 +20.65亿全场第 1，但 20日 -14.92亿 → 20日资金线降级；④ <b>板块三周期全正 ≠ 个股安全</b>：猪肉板块全正但牧原 20日 -1.11亿、罗牛山 5/10 日双负；⑤ <b>个股三周期全正 ≠ 可做多</b>：中国出版个股全正但传媒板块 20日 -40.74亿 → ㊸ 板块门控优先。<b>以上 5 类标的（罗牛山/四方精创/中船防务/中船科技）已全部排除在核心看好标的之外。</b></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">五、板块涨跌榜与催化（申万二级 99 行业 + 概念 802 个 · 15:00 收盘）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:20%">涨幅榜（SW2/概念）</th><th style="width:8%">涨幅</th><th style="width:9%">上涨比</th><th style="width:9%">主力</th><th style="width:9%">5日</th><th style="width:10%">20日</th><th>催化 / 判读</th></tr></thead>
+      <tbody>
+        <tr><td>航海装备Ⅱ <span style="color:#94a3b8">pt01801744</span></td><td class="up">+6.49%</td><td>10/10</td><td class="badge-in">+22.19亿</td><td class="badge-in">+21.69亿</td><td class="badge-in">+3.26亿</td><td><b>全市场行业第 1</b>；广船 10 艘 LNG 汽车运输船（逾 10 亿美元）+ 外高桥 26.88 亿美元 + H1 新接订单 +173.1%</td></tr>
+        <tr><td>猪肉 <span style="color:#94a3b8">pt02003882</span></td><td class="up">+5.83%</td><td>33/35</td><td class="badge-in">+15.84亿</td><td class="badge-in">+13.07亿</td><td class="badge-in">+19.75亿</td><td>猪价 11.06 元/kg（+17% from 低点）+ 能繁母猪 3780 万头（距目标 0.8%）+ 双节旺季</td></tr>
+        <tr><td>养殖业 <span style="color:#94a3b8">pt01801017</span></td><td class="up">+5.30%</td><td>21/22</td><td class="badge-in">+7.53亿</td><td class="badge-in">+4.19亿</td><td class="badge-in">+6.70亿</td><td>猪周期反转预期（东方证券/国信证券/中信建投共识）</td></tr>
+        <tr><td>稳定币概念 <span style="color:#94a3b8">pt02GN2376</span></td><td class="up">+5.09%</td><td>7/7</td><td class="badge-in">+13.99亿</td><td class="badge-in">+13.35亿</td><td class="badge-in">+9.53亿</td><td>㊻ 暴跌次日修复（9/3 楚天龙 -9.09% → 9/4 +10.00%）</td></tr>
+        <tr><td>饲料 <span style="color:#94a3b8">pt01801014</span></td><td class="up">+4.79%</td><td>17/18</td><td class="badge-in">+7.88亿</td><td class="badge-in">+7.59亿</td><td class="badge-in">+5.84亿</td><td>养殖后周期联动</td></tr>
+        <tr><td>养鸡 <span style="color:#94a3b8">pt02010001</span></td><td class="up">+4.66%</td><td>22/23</td><td class="badge-in">+5.36亿</td><td class="badge-in">+4.76亿</td><td class="badge-in">+5.19亿</td><td>猪鸡替代 + 厄尔尼诺农产品涨价预期</td></tr>
+        <tr><td>渔业 <span style="color:#94a3b8">pt01801015</span></td><td class="up">+3.96%</td><td>6/6</td><td class="badge-in">+1.22亿</td><td class="badge-in">+0.96亿</td><td class="badge-in">+1.71亿</td><td>水产品概念 19/19 全红</td></tr>
+        <tr><td>广告营销 <span style="color:#94a3b8">pt01801765</span></td><td class="up">+3.87%</td><td>25/28</td><td class="badge-in">+38.84亿</td><td class="badge-in">+21.10亿</td><td class="badge-out">-21.77亿</td><td><b>⚠️ 20日深负 → 🟠 诱多降级</b></td></tr>
+        <tr><td>房地产服务 <span style="color:#94a3b8">pt01801183</span></td><td class="up">+3.85%</td><td>10/12</td><td class="badge-in">+7.12亿</td><td class="badge-in">+4.38亿</td><td class="badge-in">+9.82亿</td><td>我爱我家 +10.14% 涨停；<b>三周期全正但广度仅 10/12</b></td></tr>
+        <tr><td>游戏Ⅱ <span style="color:#94a3b8">pt01801764</span></td><td class="up">+3.57%</td><td>23/26</td><td class="badge-in">+11.71亿</td><td class="badge-in">+18.48亿</td><td class="badge-out">-9.75亿</td><td>⚠️ 20日负 → 诱多降级</td></tr>
+        <tr><td>种植业 <span style="color:#94a3b8">pt01801016</span></td><td class="up">+3.20%</td><td>19/20</td><td class="badge-in">+6.92亿</td><td class="badge-in">+9.84亿</td><td class="badge-in">+36.69亿</td><td><b>农业链内 20日资金最强分支</b></td></tr>
+        <tr><td>酒店餐饮 <span style="color:#94a3b8">pt01801219</span></td><td class="up">+2.91%</td><td>9/9</td><td class="badge-in">+1.30亿</td><td class="badge-in">+2.56亿</td><td class="badge-in">+4.26亿</td><td><b>三周期全正 · 9/9 全涨 · 低位未启动</b></td></tr>
+        <tr><td>AI营销 <span style="color:#94a3b8">pt02GN2418</span></td><td class="up">+2.88%</td><td>30/36</td><td class="badge-in">+48.48亿</td><td class="badge-in">+31.71亿</td><td class="badge-out">-33.34亿</td><td><b>⚠️ 主力全场概念第 1 但 20日 -33.34亿 → 🟠 诱多出货（㊸ 禁多）</b></td></tr>
+        <tr><td>白酒Ⅱ <span style="color:#94a3b8">pt01801125</span></td><td class="up">+2.64%</td><td>19/19</td><td class="badge-in">+9.87亿</td><td class="badge-in">+6.09亿</td><td class="badge-out">-32.20亿</td><td>19/19 全涨但 20日 -32.20亿 → 反弹回补</td></tr>
+        <tr><td>粮食概念 <span style="color:#94a3b8">pt02GN2154</span></td><td class="up">+1.82%</td><td>39/46</td><td class="badge-in">+2.86亿</td><td class="badge-in">+5.02亿</td><td class="badge-in">+48.73亿</td><td><b>20日资金全市场概念第 1</b></td></tr>
+        <tr><td>一般零售 <span style="color:#94a3b8">pt01801203</span></td><td class="up">+1.07%</td><td>46/60</td><td class="badge-in">+6.16亿</td><td class="badge-in">+18.64亿</td><td class="badge-in">+28.36亿</td><td>翠微股份 +10.04% 一字；三周期全正</td></tr>
+      </tbody>
+    </table>
+    <table class="tbl">
+      <thead><tr><th style="width:20%">跌幅榜（SW2/概念）</th><th style="width:8%">涨幅</th><th style="width:9%">上涨比</th><th style="width:9%">主力</th><th style="width:9%">5日</th><th style="width:10%">20日</th><th>判读</th></tr></thead>
+      <tbody>
+        <tr><td>玻璃玻纤 <span style="color:#94a3b8">pt01801712</span></td><td class="down">-4.86%</td><td>3/16</td><td class="badge-out">-27.74亿</td><td class="badge-out">-45.61亿</td><td class="badge-out">-152.75亿</td><td>主跌出货加速；宏和科技跌停、中国巨石重挫</td></tr>
+        <tr><td>电子布 <span style="color:#94a3b8">概念</span></td><td class="down">-4.28%</td><td>0/7</td><td class="badge-out">-28.40亿</td><td>—</td><td class="badge-out">-148.03亿</td><td><b>0/7 全跌</b>；与玻纤/覆铜板同链共振下跌</td></tr>
+        <tr><td>电子化学品Ⅱ <span style="color:#94a3b8">pt01801086</span></td><td class="down">-3.86%</td><td>0/35</td><td class="badge-out">-20.92亿</td><td class="badge-out">-39.62亿</td><td class="badge-out">-82.01亿</td><td><b>0/35 全跌</b> · 全市场最惨广度</td></tr>
+        <tr><td>非金属材料Ⅱ <span style="color:#94a3b8">pt01801039</span></td><td class="down">-3.35%</td><td>0/8</td><td class="badge-out">-2.99亿</td><td class="badge-out">-2.90亿</td><td class="badge-in">+3.40亿</td><td>0/8 全跌；20日仍正但今日破位</td></tr>
+        <tr><td>长鑫存储概念</td><td class="down">-3.40%</td><td>0/18</td><td class="badge-out">-42.16亿</td><td>—</td><td class="badge-out">-378.01亿</td><td>存储链全线杀跌</td></tr>
+        <tr><td>国家大基金持股</td><td class="down">-3.39%</td><td>0/23</td><td class="badge-out">-63.82亿</td><td>—</td><td class="badge-out">-413.03亿</td><td><b>0/23 全跌</b></td></tr>
+        <tr><td>中芯国际概念</td><td class="down">-3.31%</td><td>4/75</td><td class="badge-out">-86.60亿</td><td>—</td><td class="badge-out">-706.70亿</td><td>主力失血 86.60亿</td></tr>
+        <tr><td>HBM 高带宽存储</td><td class="down">-3.25%</td><td>3/53</td><td class="badge-out">-66.70亿</td><td>—</td><td class="badge-out">-280.40亿</td><td>算力链共振</td></tr>
+        <tr><td>其他电子Ⅱ <span style="color:#94a3b8">pt01801082</span></td><td class="down">-3.09%</td><td>5/33</td><td class="badge-out">-8.90亿</td><td class="badge-out">-6.52亿</td><td class="badge-in">+11.03亿</td><td><b>盘前"20日双正多"证伪</b>（20日仍正但今日大跌）</td></tr>
+        <tr><td>小金属 <span style="color:#94a3b8">pt01801054</span></td><td class="down">-2.86%</td><td>3/27</td><td class="badge-out">-29.57亿</td><td class="badge-out">-77.26亿</td><td class="badge-out">-240.69亿</td><td>资源链延续失血</td></tr>
+        <tr><td>半导体 <span style="color:#94a3b8">pt01801081</span></td><td class="down">-2.85%</td><td>12/180</td><td class="badge-out">-157.56亿</td><td class="badge-out">-427.38亿</td><td class="badge-out">-1128.00亿</td><td><b>㊸ 禁多 · 主跌出货 · 20日全市场最深</b></td></tr>
+        <tr><td>能源金属 <span style="color:#94a3b8">pt01801056</span></td><td class="down">-2.89%</td><td>0/11</td><td class="badge-out">-13.72亿</td><td class="badge-out">-39.02亿</td><td class="badge-out">-75.02亿</td><td>0/11 全跌</td></tr>
+        <tr><td>元件 <span style="color:#94a3b8">pt01801083</span></td><td class="down">-2.44%</td><td>4/61</td><td class="badge-out">-19.88亿</td><td class="badge-out">-133.88亿</td><td class="badge-out">-375.57亿</td><td>PCB/覆铜板链</td></tr>
+        <tr><td>消费电子 <span style="color:#94a3b8">pt01801085</span></td><td class="down">-2.28%</td><td>13/91</td><td class="badge-out">-29.47亿</td><td class="badge-out">-25.91亿</td><td class="badge-out">-115.63亿</td><td>—</td></tr>
+        <tr><td>贵金属 <span style="color:#94a3b8">pt01801053</span></td><td class="down">-1.18%</td><td>1/11</td><td class="badge-out">-0.88亿</td><td class="badge-out">-26.41亿</td><td class="badge-out">-27.82亿</td><td><b>盘前"中性偏多"连续第 3 日证伪</b></td></tr>
+        <tr><td>培育钻石 <span style="color:#94a3b8">pt02231435</span></td><td class="down">-1.34%</td><td>4/16</td><td class="badge-out">-6.61亿</td><td class="badge-in">+11.33亿</td><td class="badge-in">+9.53亿</td><td><b>昨日 P0 → 今日回落；㊹ 真趋势豁免验证案例（20日未转负不判退潮）</b></td></tr>
+        <tr><td>汽车零部件 <span style="color:#94a3b8">pt01801093</span></td><td class="down">-1.07%</td><td>49/243</td><td class="badge-in">+0.10亿</td><td class="badge-in">+18.02亿</td><td class="badge-in">+22.33亿</td><td><b>09:25 竞价"双正健康"被证伪</b>（跌 + 主力近零）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">六、情绪指标与连板梯队（【框架应用 ㉚ ㉛ ㊱】）</div>
+    <div class="stats-line">涨停 <b>41</b> 只（Wind 指标口径 42，9/3 为 46）/ 跌停 <b>9</b> 只（9/3 为 17）；最高连板高度 <b>5 板</b>（龙版传媒）；上涨 2444 / 下跌 2914（涨跌比 0.839，上涨占比 45.6%）；成交 2.0307 万亿（放量 2717.52 亿）；全市场主力净流出超 400 亿。</div>
+    <table class="tbl">
+      <thead><tr><th style="width:22%">情绪指标</th><th style="width:20%">数值</th><th style="width:16%">较 9/3 变化</th><th>判读</th></tr></thead>
+      <tbody>
+        <tr><td>涨停家数</td><td><b>41</b>（另源 42）</td><td class="down">46 → 41（-5）</td><td>涨停数连续第 2 日收缩（9/2 的 55 → 9/3 的 46 → 9/4 的 41）</td></tr>
+        <tr><td>跌停家数</td><td><b>9</b></td><td class="up">17 → 9（-8）</td><td>跌停减半，恐慌情绪边际缓解（唯一正面指标）</td></tr>
+        <tr><td>上涨家数占比</td><td><b>45.6%</b>（2444/5358）</td><td class="down">33.3% → 45.6%</td><td>宽度改善但<b>收盘远低于午盘的 74%</b>，午后跳水吃掉大半涨幅</td></tr>
+        <tr><td>成交额</td><td><b>2.0307 万亿</b></td><td class="up">+2717.52 亿（+15.4%）</td><td><b>放量下跌</b> —— 增量资金为抛压而非买盘</td></tr>
+        <tr><td><b>昨日涨停概念</b><br><span style="color:#94a3b8">pt02031283</span></td><td class="down"><b>-0.63%</b><br>15/46 上涨</td><td>主力 -16.79亿<br>20日 -505.37亿</td><td><b>❗ 昨日涨停股今日仅 1/3 红盘，首板无溢价</b></td></tr>
+        <tr><td><b>昨日连板概念</b><br><span style="color:#94a3b8">pt02031398</span></td><td class="down"><b>-0.89%</b><br>3/9 上涨</td><td>主力 -6.35亿<br>20日 -175.28亿</td><td><b>❗ 连板梯队塌陷：9 只仅 3 只红盘 → ㊱ 情绪缩圈确认</b></td></tr>
+        <tr><td>连板高度</td><td><b>5 板</b>（龙版传媒）</td><td>高度维持</td><td>高标尚存但梯队断层（5板→4板→2板），接力风险高</td></tr>
+      </tbody>
+    </table>
+    <div class="callout danger"><b>㊱ 情绪缩圈信号成立：</b>「连板占比逆势抬升 + 首板无溢价 = 退潮确认」。今日数据 —— 昨日连板概念 <b>-0.89%（3/9 上涨）</b>、昨日涨停概念 <b>-0.63%（15/46 上涨）</b>，首板与连板双双无溢价，而高标（龙版 5 板、欢瑞 5天4板）仍在封板 → <b>典型的"资金向极少数高标收缩、后排全面失血"</b>。<b>纪律：周一严禁追高标（≥3 板），高标仅作为情绪温度计观察，不参与。</b></div>
+    <div class="callout warn"><b>连板梯队（㉛ 完整性）：</b>5 板 龙版传媒（+9.97%，影视/AI应用，市值 69.11亿）→ 5天4板 欢瑞世纪（+10.04%，换手 43.85%，市值 54.84亿）→ 2 板 新炬网络（IT服务）→ 首板梯队：楚天龙、翠微股份、我爱我家、中国出版、亚盛集团、罗牛山、新五丰、播恩集团、正虹科技、邦基科技、天邦食品、大禹生物（+23%）、傲农生物、金新农 等。<b>梯队断层明显（5板直落 2板，3~4 板空缺）</b>，且高标集中于小市值传媒股、首板集中于农业小票 —— <b>梯队完整性差，不具备主线接力条件。</b></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">七、全天预测-回测链校验（连续铁律① · 承接 08:00 → 09:25 → 10:00 → 11:40 → 14:30 → 19:15）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:11%">时点</th><th style="width:32%">当时判断</th><th style="width:24%">15:00 收盘实际</th><th style="width:9%">判定</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><b>08:00</b><br>盘前策略</td><td>贵金属/种植业/一般零售=多；半导体=空（㊸禁多）；银行/保险=多；其他电子Ⅱ=多（20日双正）；通信/CPO=中性偏多</td><td>贵金属 -1.18%；种植业 +3.20%；一般零售 +1.07%；半导体 -2.85%；国有大行 +0.65%/股份行 +1.18%/城商行 +0.78%；保险Ⅱ +0.35%；其他电子Ⅱ -3.09%；通信设备 -1.15%</td><td><b>5 中 3 错</b><br><span style="color:#64748B">2 项边缘</span></td><td>✅ 种植业/一般零售/半导体空/银行/保险命中；❌ <b>贵金属连续第 3 日证伪</b>、其他电子Ⅱ"20日双正"失效（-3.09%）、通信中性偏多错。<b>盘前 10 项命中 5 项 = 50%，与随机基准 47.5% 基本持平。</b></td></tr>
+        <tr><td><b>09:25</b><br>竞价强度</td><td>汽车零部件 7分+5/20日双正=核心看多；通信设备/IT服务/软件 7分降级不参与；一般零售 6分</td><td>汽车零部件 <b>-1.07%</b>（49/243）；通信设备 -1.15%；软件开发 +1.06%；IT服务Ⅱ -0.60%；一般零售 +1.07%</td><td><b>1 中 1 错</b><br><span style="color:#64748B">3 项中性</span></td><td>❌ <b>汽车零部件"唯一健康象限·核心看多"被证伪</b>（跌 + 主力仅 +0.10亿）；✅ 三只科技链降级不参与全部正确（软件 +1.06% 小涨、通信 -1.15%、IT服务 -0.60%）。一般零售 +1.07% 弱命中。</td></tr>
+        <tr><td><b>10:00</b><br>盘中速览</td><td>稳定币/AI应用=多（第一主线）；种业/地产=多；半导体=空；贵金属=中性偏多弱</td><td>稳定币 +5.09%；AI应用/传媒 20日 -33~-41亿；种植业 +3.20%；房地产服务 +3.85%；半导体 -2.85%；贵金属 -1.18%</td><td><b>4 中 2 错</b></td><td>✅ 稳定币/种业/地产/半导体空命中；❌ 贵金属中性偏多弱错；⚠️ <b>AI应用判"多"漏用 ㊸ 门控</b>（20日深负应禁多）—— 规则漏用，非数据错。</td></tr>
+        <tr><td><b>11:40</b><br>午盘速览</td><td>普涨 74% 但定性"存量调仓非增量趋势"；软科技 AI应用=多；贵金属=空；半导体=空</td><td>收盘上涨占比收敛至 <b>45.6%</b>；AI应用/传媒 20日深负；贵金属 -1.18%；半导体 -2.85%</td><td><b>3 中 1 错</b></td><td>✅ <b>午后收敛预判正确</b>（74%→45.6%）；✅ 贵金属空、半导体空修正正确；❌ AI应用"多"仍漏用 ㊸。</td></tr>
+        <tr><td><b>14:30</b><br>盘中速览</td><td>农业全链=多（P3）；中船系=多（P1·盘前漏判）；半导体/玻纤/贵金属=空；稳定币/AI应用=<b>中性偏空</b></td><td>农业全链 P3 确认（养殖业 +5.30%）；航海装备Ⅱ <b>+6.49% 全市场第 1</b>；半导体 -2.85%；玻纤 -4.86%；贵金属 -1.18%；<b>稳定币 +5.09%</b></td><td><b>8 中 1 错</b><br><span style="color:#64748B">88.9%</span></td><td>✅ 农业 P3、中船系 P1、半导体空、玻纤空、贵金属空全中；❌ <b>稳定币"中性偏空"为当日唯一大错</b>——14:30 判"较 10:00 的 +7.62% 降温"，实际收盘 +5.09% 且<b>三周期全正</b>，把真健康主线误判为降温。<b>教训：降温判定须叠加 20日资金线，不能只看日内涨幅回落。</b></td></tr>
+      </tbody>
+    </table>
+    <div class="callout ok"><b>全天链收敛形态（与 9/3 一致 · 已连续第 2 日复现）：</b>盘前 50% → 竞价 33% → 10:00 67% → 11:40 75% → 14:30 <b>88.9%</b> → 19:15 收盘档。<b>越晚越准的单调收敛形态稳定成立</b>，进一步印证「盘前方向表权重应下调、盘中方向表权重应上调」的合成机制需求（见 ⚠️框架待更新③）。<b>14:30 档已连续 2 日成为最佳信号源（9/3 为 9/9 全中，9/4 为 8/9）。</b></div>
+    <div class="callout warn"><b>19:15 相对 14:30 的增量修正（本报告的独立价值）：</b>① <b>稳定币概念由"中性偏空"上修为"P1 次线·P2 修复扩散"</b>——依据 7/7 全红 + 三周期全正（+13.99/+13.35/+9.53亿），修正 14:30 的唯一大错；② <b>传媒/AI应用由"多/中性偏空"明确下修为"㊸ 禁多·诱多出货"</b>——依据全链 20日资金 -9.75亿~-62.75亿 全线深负，补足 10:00/11:40 漏用的 ㊸ 门控；③ <b>中国船舶"主力净流入全场第 1"降级标注</b>——依据 20日 -14.92亿 触发 20日资金线降级规则。</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">八、次日（T+1 = 9/7 周一）预判推导 · 四理论合一</div>
+    <div class="driver">
+      <div class="driver-h">① 交易框架（⑪~㊽ + 三阶段）：规则如何支撑 T+1 方向</div>
+      <div class="dblk"><b>㊹ 真趋势豁免 + ㊺ P3 锁盈降级（农业）：</b>农业全链 20日资金全正（猪肉 +19.75亿、种植业 +36.69亿、粮食 +48.73亿）→ <b>㊹ 禁止因单日强涨判顶</b>，方向不给"空"；但已处 P3 加速第 2 日 → <b>㊺ 降级为"持有锁盈·中性偏多"，禁止加仓，破 5 日线即减半</b>。→ <b>农林牧渔 T+1 = 多（但不加仓）</b>。</div>
+      <div class="dblk"><b>㊽ 事件驱动新主线 + 三-① P1 启动（中船系）：</b>订单（逾 10 亿美元 + 26.88 亿美元）+ 业绩（H1 归母 +163%）+ 行业数据（新接订单 +173.1%）三重硬催化，属 ㊽ 定义的"政策/业绩催化独立事件驱动主线"；Pair 连 2 天跑赢、板块首次进涨幅榜首 → <b>P1 启动确认，T+1 方向 = 多</b>。同时 ㊼ 单日脉冲门控<b>部分豁免</b>（非纯题材），但需防冲高兑现。</div>
+      <div class="dblk"><b>㊸ 板块方向资金门控（电子/传媒）：</b>半导体 20日 <b>-1128.00亿</b>（全市场最深）、元件 -375.57亿、消费电子 -115.63亿、电子化学品 -82.01亿；传媒全链 20日 -9.75亿~-62.75亿 → <b>规则明文：禁止给"多/中性偏多"，仅可"中性偏空/空"</b>。→ <b>电子 T+1 = 空、传媒 T+1 = 空</b>。</div>
+      <div class="dblk"><b>㊱ 情绪缩圈 + 三-④ 确认滞后（全局风控）：</b>昨日连板 3/9、昨日涨停 15/46 → 接力赚钱效应极差，<b>T+1 严禁追高标（≥3 板）</b>；农业 P3 确认≈情绪顶部附近（三-④），右侧框架易吃鱼尾 → <b>以破 5 日线为硬触发，不依赖阶段判定加仓</b>。</div>
+      <div class="dblk"><b>㉒ 风格切换跷跷板 + ㉔ 往复周期缩短：</b>今日"防御（银行/保险/白酒）微涨 ↔ 科技（半导体/CPO/存储）暴跌"跷跷板再现，且农业/中船系承接资金 → <b>风格切换方向已明确为"科技 → 低位周期/制造"，但按 ㉔ 往复周期仅 1-2 日，勿线性外推，T+1 需防科技超跌反弹反抽</b>。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">② 自我学习（R-Judge 闭环）：历史命中率对本次置信度的约束</div>
+      <div class="dblk"><b>随机基准 47.5%（框架 v2.8 · 报告 v3.3）。</b>今日各档命中率：盘前 50%、竞价 33%、10:00 67%、11:40 75%、14:30 <b>88.9%</b>。</div>
+      <div class="dblk"><b>约束一：盘前档命中率 50% ≈ 随机基准</b> → 本次 T+1 大势预判<b>不采用盘前口径</b>，以 14:30 + 19:15 收盘档口径为准（88.9%）。</div>
+      <div class="dblk"><b>约束二：连续 2 日"越晚越准"单调收敛</b>（9/3 与 9/4 复现）→ 说明本框架在<b>盘中实时数据充分时可靠，在盘前外推时不可靠</b>。因此 T+1 大势给"<b>中性</b>"而非单向判断——因为 T+1 存在盘前无法预知的变量（见下）。</div>
+      <div class="dblk"><b>约束三：中性档在普涨日踏空教训（㊴ 情绪重启日升档触发器的由来）</b> —— 若周一出现"昨日涨停/连板溢价转正 + 量能放大 + 外围主线延续"三重确认，则中性档须升档。<b>但今日昨日涨停仅 15/46 红盘、连板 3/9 红盘，三重确认第一条即不成立</b> → 维持中性，不升档。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">③ 完善理论（规则固化迭代）：本次是否已吸收最新迭代、哪些盲区待归因</div>
+      <div class="dblk"><b>已吸收的近期固化规则：</b>㊹ 真趋势豁免（农业不判顶）✅、㊺ P3 锁盈降级（农业不给加仓多）✅、㊼ 单日脉冲门控（中船系部分豁免）✅、㊽ 事件驱动新主线 P1 扫描（中船系命中）✅、㊸ 板块资金门控（电子/传媒禁多）✅、㊻ 暴跌次日修复（稳定币）✅、㊱ 情绪缩圈 ✅、三-①~三-⑧ 全系列 ✅。</div>
+      <div class="dblk"><b>本次新暴露、待 20:30 归因固化的盲区（4 项）：</b>① <b>板块门控 vs 个股质量的优先级冲突</b>（中国出版个股三周期全正但传媒板块 20日 -40.74亿）；② <b>"日内降温"判定缺少 20日资金线约束</b>（14:30 误判稳定币降温）；③ <b>竞价"5/20日双正健康象限"当日被证伪</b>（汽车零部件双正但 -1.07%）；④ <b>板块 20日资金刚转正（+3.26亿）时，㊼ 单日脉冲门控是否豁免无判据</b>（中船系）。</div>
+    </div>
+    <div class="driver">
+      <div class="driver-h">④ 三阶段理论（三-①~三-⑧）：阶段演进预判 → 板块方向直接依据</div>
+      <div class="dblk"><b>农业全链 P3 加速（第 2 日）</b>：Pair（牧原 vs 温氏）<b>未连 2 天跑赢</b>（9/3 牧原赢、9/4 温氏赢）→ 不升级；但五链齐涨 + 涨停潮 ≥10 只 + 20日全正 → <b>维持 P3</b>。<b>T+1 演进预判：P3 → 高位震荡或退潮概率上升</b>（三-④ 确认滞后，P3 确认≈顶部附近）。方向：<b>多（持有锁盈·不加仓）</b>。</div>
+      <div class="dblk"><b>中船系 P1 启动</b>：Pair（中国船舶 vs 中国动力）<b>连 2 天跑赢成立</b>，但二线滞涨（+0.92% vs 龙头 +9.18%）→ <b>P1 未向 P2 扩散</b>。<b>T+1 演进预判：若二线（中国动力/中船防务/亚星锚链/江龙船艇）补涨 → P1→P2 确认，方向升级为强多；若仅龙头独涨而二线回落 → P1 夭折（一日游风险）</b>。方向：<b>多（P1 试错 ≤10% 仓，回踩低吸）</b>。</div>
+      <div class="dblk"><b>稳定币 P2 修复扩散</b>：Pair（恒宝 vs 楚天龙）<b>未连 2 天跑赢</b> → 维持 P2；7/7 全红 + 三周期全正 → 修复健康。<b>T+1 演进预判：P2 维持，若连 2 天跑赢成立则升 P3</b>。方向：<b>中性偏多（修复性质，按 ㉓ 防次日回落）</b>。</div>
+      <div class="dblk"><b>传媒/AI应用 P3 高潮 / 退潮前夜</b>：高标 5 连板 + 全链 20日深负 + 权重缺席。<b>T+1 演进预判：P3 → 退潮</b>（㊱ 情绪缩圈 + ㊸ 门控）。方向：<b>空</b>。</div>
+      <div class="dblk"><b>半导体/电子链 退潮（主跌出货）</b>：跌 + 资金流出 = 退潮确认象限。<b>T+1 演进预判：退潮延续，反抽不改方向</b>。方向：<b>空</b>。</div>
+    </div>
+    <div class="callout">
+      <b>【T+1 结论汇总】</b><br>
+      <b>大势：沪指 = 中性</b>（放量长上影后方向未明 + 上证50 独红有支撑 vs 科创50 深破 1620 + 今晚 22:00 美国 8 月非农为 T+1 最大 exogenous 变量，公布前不给单向判断）／<b>创业板 = 中性偏空</b>（科创50 -2.10% 破位、半导体 20日 -1128亿继续失血、CPO/存储/液冷全跌，成长端无支撑）。<br>
+      <b>板块：农林牧渔 = 多（持有锁盈·不加仓）／国防军工 = 多（P1 试错 ≤10% 仓）／电子 = 空（㊸ 禁多）／传媒 = 空（㊸ 禁多 + 退潮前夜）。</b><br>
+      <b>主线：农业全链（猪肉 · 猪周期反转）、中船系/航海装备（造船订单 + 业绩双击）。</b><br>
+      <b>仓位：维持 35-40%（现金 60-65%）</b>；降档触发：沪指放量跌破 3920 生命线 或 科创50 跌破 1570 → 降至 25-30%。
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">九、操作建议与风控纪律</div>
+    <table class="tbl">
+      <thead><tr><th style="width:13%">方向</th><th style="width:24%">标的 / 板块</th><th style="width:13%">动作</th><th style="width:11%">仓位</th><th>纪律与触发条件</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2"><b>进攻</b><br><span class="tag-mini tag-p1">P1</span></td><td><b>中船系 / 航海装备Ⅱ</b><br><span style="color:#64748B">中国动力 sh600482 / 江龙船艇 sz300589 / 中国船舶 sh600150</span></td><td>P1 试错买入<br><span style="color:#64748B">回踩低吸·严禁追高</span></td><td>≤10%<br><span style="color:#64748B">分 2 笔</span></td><td>三-③ P1 试错纪律。<b>首选资金三周期全正的二线（中国动力 +5.70亿 / 江龙船艇 +0.34亿）</b>；中国船舶因 20日 -14.92亿 降级为"仅持有·不加仓"。<b>止损 -8% 或跌破 20 日线</b>；若周一二线补涨（P1→P2 确认）可加至 15%。</td></tr>
+        <tr><td><b>酒店餐饮 / 低位消费</b><br><span style="color:#64748B">华天酒店 sz000428（SW2 9/9 全涨·三周期全正）</span></td><td>小仓试探</td><td>2-3%</td><td>板块三周期全正（+1.30/+2.56/+4.26亿）且低位未启动；个股 10/20 日主力 +0.91/+1.19亿。破 5 日线即出。</td></tr>
+        <tr><td rowspan="2"><b>持有锁盈</b><br><span class="tag-mini tag-p3">P3</span></td><td><b>农业全链</b><br><span style="color:#64748B">亚盛集团 sh600108 / 温氏股份 sz300498</span></td><td>持有·不加仓<br><span style="color:#64748B">㊺ 锁盈降级</span></td><td>维持现有</td><td><b>㊺ 退潮期真趋势 P3 加速段锁盈降级</b>：禁止加仓"多"，<b>破 5 日线即减半</b>。权重锚牧原 20日 -1.11亿未确认 → 只持二线（亚盛/温氏），不碰罗牛山（5/10 日资金双负·游资脉冲）。</td></tr>
+        <tr><td><b>稳定币</b><br><span style="color:#64748B">恒宝股份 sz002104 / 楚天龙 sz003040</span></td><td>持有观察<br><span style="color:#64748B">修复性质</span></td><td>≤5%</td><td>㊻ 修复行情，按 ㉓ 防次日回落。<b>严禁碰四方精创</b>（+14.58% 但 5/10/20 日全负 = 诱多出货）。若 Pair 连 2 天跑赢成立再评估加仓。</td></tr>
+        <tr><td rowspan="2"><b>回避</b><br><span class="tag-mini tag-tui">退潮</span></td><td><b>半导体 / 电子化学品 / 玻纤 / 存储算力链</b></td><td>清仓·严禁抄底</td><td>0%</td><td><b>㊸ 板块方向资金门控</b>：半导体 20日 -1128.00亿、元件 -375.57亿、电子化学品 -82.01亿、玻纤 -152.75亿 → 禁止给"多"。跌 + 资金流出 = 退潮确认象限，反抽不改方向。</td></tr>
+        <tr><td><b>传媒 / AI应用</b><br><span style="color:#64748B">龙版传媒（5板）/ 欢瑞世纪（5天4板）/ 中国出版</span></td><td>只减不加·严禁追高标</td><td>→0%</td><td><b>㊸ 禁多（全链 20日 -9.75~-62.75亿）+ ㊱ 情绪缩圈（昨日连板 3/9）</b>。<b>中国出版虽个股三周期全正，但板块门控优先 → 不参与</b>。高标 5 连板仅作情绪温度计观察。</td></tr>
+        <tr><td><b>风控</b></td><td colspan="2"><b>全局：总仓 35-40%（现金 60-65%）</b>　单票 ≤15%（热门板块 ≤10%）　止损 -8% 或跌破 20 日线</td><td>—</td><td>降档触发：① 沪指放量跌破 <b>3920 生命线</b> → 降至 25-30%；② 科创50 跌破 <b>1570</b> → 降至 25-30%（今日已收 1577.36，距离仅 7.36 点，<b>高危</b>）。<b>今晚 22:00 美国 8 月非农（市场预期 -23K）为周一开盘最大 exogenous 变量，结果公布前不新增方向性头寸。</b></td></tr>
+      </tbody>
+    </table>
+    <div class="callout danger"><b>最该盯的三个风险点：</b>① <b>科创50 收 1577.36，距 1570 降档线仅 7.36 点</b> —— 半导体 20日 -1128亿仍在扩大，周一若继续杀跌将直接触发组合降档；② <b>农业 P3 的鱼尾风险</b>（三-④）—— 五链齐涨 + 涨停潮 + 权重锚牧原 20日资金为负，三者叠加属 P3 顶部特征，破 5 日线必须机械减半，不做主观判断；③ <b>今晚 22:00 非农</b> —— 预期 -23K，若大幅偏离将重塑周一开盘方向与外资流向，届时以 09:25 竞价档重新校准（盘前档命中率仅 50%，不作为决策主依据）。</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">⚠️ 框架待更新（供 20:30 整体回测节点统一归因固化 · 本报告只读不写积累文档）</div>
+    <div class="callout warn">
+      <b>①（规则冲突）板块门控 vs 个股资金质量的优先级无判据：</b>中国出版（sh601949）个股主力 +0.85亿 / 5日 +0.24亿 / 10日 +0.16亿 / 20日 +0.27亿 <b>三周期全正</b>，但其所属传媒板块 20日 <b>-40.74亿</b>。本次按 <b>㊸ 板块门控优先</b> 判"不参与"，但该优先级无明文规则支撑 → 建议固化：<b>「㊸ 板块级资金门控为一级否决项，个股级三周期全正不得对抗板块门控；仅当个股 20日资金正贡献占板块绝对值 ≥5% 时可申请豁免」</b>。<br><br>
+      <b>②（判据缺失）"日内降温"判定缺少 20日资金线约束：</b>14:30 档把稳定币从 10:00 的 +7.62% 回落至 +5.55% 判为"降温·中性偏空"，实际收盘 +5.09% 且<b>板块三周期全正</b>，为当日唯一大错。建议固化：<b>「日内降温判定须同时满足 ①日内涨幅回落 ≥2pct 且 ②5日或20日资金线为负；仅满足①而资金线全正者，判'强度维持'不降档」</b>。<br><br>
+      <b>③（规则漏用）竞价"5/20日双正健康象限"当日被证伪：</b>汽车零部件 09:25 竞价 7 分 + 5日 +18.02亿 / 20日 +22.33亿 双正，判"核心看多"，收盘 <b>-1.07%</b>（49/243 上涨）。建议固化：<b>「竞价资金双正仅代表存量资金未撤离，需叠加 ①板块当日成交额占比 ②全局情绪档（昨日涨停红盘率）方可给'核心看多'；两者缺失时降级为'观察'」</b>。<br><br>
+      <b>④（三阶段）20日资金"刚转正"阶段的 ㊼ 豁免判据缺失：</b>中船系/航海装备Ⅱ 20日资金 <b>+3.26亿（刚转正）</b>，今日 +6.49% 属单日爆发。按 ㊼ 应"次日降半档+列入兑现情景"，但按 ㊽ 事件驱动（订单 + 业绩）应给"多"。本次判"部分豁免"，无明文阈值 → 建议固化：<b>「20日资金线在 0 ~ +10亿 区间（刚转正）时，㊼ 门控部分适用：方向可给'多'但仓位上限 ≤10%（P1 试错档），禁止给 15% 满仓档；20日资金 &gt; +10亿 时才完全豁免」</b>。<br><br>
+      <b>⑤（三阶段）主线内部"板块正 vs 龙头负"的背离无处置规则：</b>猪肉板块三周期全正（+15.84/+13.07/+19.75亿）但权重锚牧原 20日 <b>-1.11亿</b>、概念龙一罗牛山 5/10 日 <b>-0.91/-1.48亿</b>。当前 P3 判定未纳入"龙头资金质量"权重 → 建议固化：<b>「板块阶段判定须附加'龙头资金一致性校验'：若 Pair 内任一标的 20日资金为负，阶段判定维持但不给加仓信号，且须标注'龙头不认账'风险标签」</b>。
+    </div>
+    <div class="callout"><b>【框架应用】本报告引用规则编号：</b>⑪（资金三档判据）、⑳（高位放量出货不接飞刀）、㉒（风格切换跷跷板）、㉓（反弹=减仓窗口非反转确认）、㉔（风格切换往复周期缩短）、㉕（政策脉冲不追连板）、㉚（涨停主题强度排序）、㉛（连板梯队完整性）、㉜（游资席位拆解，用于识别罗牛山/四方精创脉冲）、㉝（双轨选股）、㊱（情绪缩圈）、㊲（修复窗口，贵金属失效案例）、㊸（板块方向资金门控）、㊹（真趋势豁免）、㊺（P3 锁盈降级）、㊻（暴跌次日修复）、㊼（单日脉冲次日回落门控）、㊽（事件驱动新主线 P1 扫描）、三-①（三阶段主链路·阶段判定）、三-②（配对原则）、三-③（买卖纪律）、三-④（确认滞后认知）、三-⑤（逻辑龙头自动标定）、三-⑥（方向表 stage-aware）、三-⑦（退潮日独苗主线豁免，用于稳定币 7/7 全红非独苗判定）、三-⑧（权重龙头+弹性补涨分层配对）。</div>
+  </div>
+
+  <div class="disclaimer">数据说明：本报告全部数据取自 2026-09-04 15:00 收盘快照，主数据源为腾讯自选股 westock（六指数 / 申万二级 99 行业 / 概念 802 个 / 个股资金四维），交叉源为东方财富妙想 mx、中新经纬、证券时报、中新社、中国新闻网、财联社、香港商报、钱江晚报、环球网（≥2 源一致方采用，差异项已单独标注）。红涨绿跌符合 A 股惯例。本报告为量化复盘记录，不构成投资建议。</div>
+  <div class="foot-line">A股每日复盘 · 最强主线研判 · 2026-09-04 19:15 生成<br><span class="foot-src">框架版本 v2.8 · 报告版本 v3.3 · 随机基准命中率 47.5% · 产出者：19:15 最强主线自动化（automation-zqzx-20260811）· 只读不写积累文档</span></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>午盘策略观察 2026-08-20（周四）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --card-bg: #ffffff;
+    --text: #1f2329;
+    --text-secondary: #5c626b;
+    --border: #e4e6eb;
+    --up: #d93026;
+    --down: #238636;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: 0.5px; }
+  header .meta { font-size: 13px; color: var(--text-secondary); }
+  .card {
+    background: var(--card-bg); border-radius: 12px; padding: 20px;
+    margin-bottom: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border);
+  }
+  .card h2 {
+    font-size: 17px; font-weight: 700; margin: 0 0 14px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border); color: var(--text);
+  }
+  .card h3 { font-size: 14px; font-weight: 700; margin: 16px 0 8px; color: var(--text); }
+  .summary-box {
+    background: var(--accent-light); border-left: 4px solid var(--accent);
+    padding: 16px 18px; border-radius: 8px; margin-bottom: 18px;
+  }
+  .summary-box .lead { font-size: 16px; font-weight: 600; margin: 0 0 8px; color: var(--text); }
+  .summary-box .sub { font-size: 13px; color: var(--text-secondary); margin: 0; }
+  .index-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .index-item {
+    background: #fafbfc; border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center;
+  }
+  .index-item .name { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+  .index-item .price { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+  .index-item .change { font-size: 13px; font-weight: 600; }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .stat-box {
+    background: #fafbfc; border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border);
+  }
+  .stat-box .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .stat-box .value { font-size: 18px; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: #fafbfc; font-weight: 600; color: var(--text-secondary); }
+  tr:last-child td { border-bottom: none; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .tag-fulfill { background: #e6f4ea; color: #1e8e3e; }
+  .tag-partial { background: #fff3e0; color: #ea8600; }
+  .tag-unfulfill { background: #fce8e8; color: #c5221f; }
+  .tag-na { background: #f1f3f4; color: var(--text-secondary); }
+  /* 三阶段理论 阶段标签 */
+  .tag-p1 { background: #e6f4ea; color: #1e8e3e; }
+  .tag-p2 { background: #e8f0fe; color: #1a73e8; }
+  .tag-p3 { background: #fef7e0; color: #b06000; }
+  .tag-retreat { background: #fce8e8; color: #c5221f; }
+  .source { font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+  .chart-container { width: 100%; height: 320px; margin: 14px 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+  .disclaimer {
+    font-size: 12px; color: var(--text-secondary); line-height: 1.8;
+    padding: 16px; background: #fafbfc; border-radius: 10px; border: 1px solid var(--border);
+  }
+  .hot-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hot-item {
+    background: #fafbfc; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px;
+  }
+  .hot-item .name { font-weight: 600; }
+  .hot-item .code { color: var(--text-secondary); margin-left: 4px; font-size: 11px; }
+  .hot-item .pct { margin-left: 8px; font-weight: 700; }
+  .footprint {
+    font-size: 12px; color: #1a73e8; background: var(--accent-light);
+    border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 8px; margin: 14px 0 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>午盘策略观察 2026-08-20（周四）</h1>
+    <div class="meta">数据时点：2026-08-20 11:30 午盘收盘 ｜ 对齐基准：《午盘速览》结构 ｜ 来源：NeoData 实时行情 / 财联社午评 / 同花顺问财 iwencai / westock</div>
+  </header>
+
+  <div class="summary-box">
+    <p class="lead">8·19 暴跌后修复性反弹，三大指数集体收红，医药生物全线爆发，超 4300 只个股上涨；半日成交 1.37 万亿较昨日缩量 2469 亿，市场情绪偏高但量能退坡。</p>
+    <p class="sub">【环境判定】普涨率 ≈81% &gt; 40% 阈值 → <b>环境层通过</b>；双主线：医药 CXO（P2 主升·US-④）＋ 贵金属（P2 主升·⑪20D 转正反转档）；科技（半导体/CPO/模拟芯片）退潮按 ㉓ 反弹减仓窗口；午后允许分歧低吸、<b>严禁追高</b>（止损线 20 日线 +8%）。</p>
+  </div>
+
+  <!-- 〇、策略衔接对照 -->
+  <div class="card">
+    <h2>〇、策略衔接对照</h2>
+    <table>
+      <thead>
+        <tr><th>盘前策略预判</th><th>上午实际走势</th><th>兑现情况</th><th>午后关注点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>系统性退潮期修复窗口，仓位上限 35-45% 低位防御（08:30）</td><td>三大指数收红，超 4300 家上涨，反弹力度超预期；10:00 监控建议可适度加仓至 50-55%</td><td><span class="tag tag-partial">部分兑现</span></td><td>若量能持续萎缩，需警惕反弹高度受限</td></tr>
+        <tr><td>沪指 3890 / 创业板 3455 / 科创 50 1660 关键支撑（08:30）</td><td>沪指 3905、创业板 3509、科创 1667，均守住关键位</td><td><span class="tag tag-fulfill">兑现</span></td><td>观察沪指 3920-3950 阻力区能否突破</td></tr>
+        <tr><td>黄金 / 创新药 / CXO 为进攻方向，黄金股延续强势（08:30）</td><td>贵金属 +5.15%，医药生物集体爆发，CRO +8.37%，创新药资金净流入居前</td><td><span class="tag tag-fulfill">兑现</span></td><td>医药涨停潮后关注分化节奏</td></tr>
+        <tr><td>半导体 / CPO / 存储"绝抄底"，等 4 个企稳条件（08:30）</td><td>10:00 出现超跌反弹，午盘科创 50 微跌 -0.01%，模拟芯片（康希通信、思瑞浦）活跃</td><td><span class="tag tag-partial">部分兑现</span></td><td>不追反弹，观察中际旭创 880 元等关键位</td></tr>
+        <tr><td>种植业退潮 / 分歧确认（08:30）</td><td>农业板块走弱，万向德农、农发种业触及跌停</td><td><span class="tag tag-fulfill">兑现</span></td><td>农业主线资金是否继续撤离</td></tr>
+        <tr><td>开盘半小时成交 &gt;1000 亿 = 有承接（08:30）</td><td>半日成交 1.37 万亿，虽较昨日缩量 2469 亿但绝对量仍高</td><td><span class="tag tag-fulfill">兑现</span></td><td>午后能否维持单日 2 万亿以上成交</td></tr>
+      </tbody>
+    </table>
+    <div class="source">来源：交易日志 08:30 盘前策略 / 10:00 盘中监控</div>
+  </div>
+
+  <!-- 一、主要指数 -->
+  <div class="card">
+    <h2>一、主要指数</h2>
+    <div class="index-grid">
+      <div class="index-item"><div class="name">上证指数</div><div class="price">3905.23</div><div class="change up">+0.28%</div></div>
+      <div class="index-item"><div class="name">深证成指</div><div class="price">14024.41</div><div class="change up">+0.97%</div></div>
+      <div class="index-item"><div class="name">创业板指</div><div class="price">3509.44</div><div class="change up">+1.04%</div></div>
+      <div class="index-item"><div class="name">科创 50</div><div class="price">1667.28</div><div class="change down">-0.01%</div></div>
+      <div class="index-item"><div class="name">北证 50</div><div class="price">1090.73</div><div class="change up">+0.79%</div></div>
+      <div class="index-item"><div class="name">沪深 300</div><div class="price">4598.14</div><div class="change up">+0.21%</div></div>
+    </div>
+    <div class="chart-container" id="indexChart"></div>
+    <div class="source">来源：NeoData 统一行情查询 2026-08-20 11:31:55</div>
+  </div>
+
+  <!-- 二、成交与市场广度 -->
+  <div class="card">
+    <h2>二、成交与市场广度</h2>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="label">半日成交额</div><div class="value">1.37 万亿</div></div>
+      <div class="stat-box"><div class="label">较昨日变化</div><div class="value down">-2469 亿</div></div>
+      <div class="stat-box"><div class="label">上涨家数</div><div class="value up">4396</div></div>
+      <div class="stat-box"><div class="label">下跌家数</div><div class="value">1038</div></div>
+      <div class="stat-box"><div class="label">涨停家数</div><div class="value up">84</div></div>
+      <div class="stat-box"><div class="label">跌停家数</div><div class="value">5</div></div>
+    </div>
+    <div class="source">来源：NeoData 大盘市场宽度统计 2026-08-20 11:31:54；普涨率 ≈81% &gt; 40% 阈值</div>
+  </div>
+
+  <!-- 三、板块表现（含三阶段定位） -->
+  <div class="card">
+    <h2>三、板块表现（含三阶段定位）</h2>
+    <h3>领涨行业</h3>
+    <table>
+      <thead><tr><th>板块</th><th>涨跌幅</th><th>领涨股</th><th>阶段（三阶段理论）</th></tr></thead>
+      <tbody>
+        <tr><td>生物制品</td><td class="up">+9.31%</td><td>优宁维 +20.01%</td><td><span class="tag tag-p2">P2 主升</span></td></tr>
+        <tr><td>医疗服务</td><td class="up">+6.27%</td><td>博腾股份 +20.00%</td><td><span class="tag tag-p2">P2 主升</span></td></tr>
+        <tr><td>医疗器械</td><td class="up">+5.22%</td><td>华大智造 +20.00%</td><td><span class="tag tag-p2">P2 主升</span></td></tr>
+        <tr><td>贵金属</td><td class="up">+5.15%</td><td>晓程科技 +7.13%</td><td><span class="tag tag-p2">P2 主升·⑪20D 转正</span></td></tr>
+        <tr><td>化学制药</td><td class="up">+3.77%</td><td>莱美药业 +20.00%</td><td><span class="tag tag-p2">P2 主升</span></td></tr>
+      </tbody>
+    </table>
+    <h3>领涨概念</h3>
+    <table>
+      <thead><tr><th>板块</th><th>涨跌幅</th><th>领涨股</th><th>阶段（三阶段理论）</th></tr></thead>
+      <tbody>
+        <tr><td>CRO</td><td class="up">+8.37%</td><td>博腾股份 +20.00%</td><td><span class="tag tag-p2">P2 主升</span></td></tr>
+        <tr><td>生物疫苗</td><td class="up">+8.33%</td><td>百克生物 +20.01%</td><td><span class="tag tag-p2">P2 主升</span></td></tr>
+        <tr><td>细胞免疫治疗</td><td class="up">+8.20%</td><td>优宁维 +20.01%</td><td><span class="tag tag-p2">P2 扩散</span></td></tr>
+        <tr><td>干细胞</td><td class="up">+7.36%</td><td>优宁维 +20.01%</td><td><span class="tag tag-p2">P2 扩散</span></td></tr>
+        <tr><td>基因测序</td><td class="up">+7.17%</td><td>优宁维 +20.01%</td><td><span class="tag tag-p2">P2 扩散</span></td></tr>
+      </tbody>
+    </table>
+    <p><b>领跌 / 走弱：</b>农业板块走弱，万向德农、农发种业触及跌停（<span class="tag tag-retreat">退潮</span>，盘前"种植业退潮"预判兑现）。</p>
+    <div class="source">来源：NeoData 板块涨跌排行 2026-08-20 11:32:13；财联社午评；同花顺问财 iwencai 概念定位</div>
+  </div>
+
+  <!-- 四、涨停热点与资金动向 -->
+  <div class="card">
+    <h2>四、涨停热点与资金动向</h2>
+    <h3>主力净流入居前板块</h3>
+    <table>
+      <thead><tr><th>板块</th><th>当日涨跌幅</th><th>主力净流入</th><th>领涨股</th></tr></thead>
+      <tbody>
+        <tr><td>转融券标的</td><td class="up">+1.74%</td><td class="up">+91.70 亿</td><td>N绿控传动 +325.29%</td></tr>
+        <tr><td>生物医药</td><td class="up">+5.53%</td><td class="up">+84.66 亿</td><td>优宁维 +20.01%</td></tr>
+        <tr><td>创新药</td><td class="up">+5.94%</td><td class="up">+80.17 亿</td><td>莱美药业 +20.00%</td></tr>
+      </tbody>
+    </table>
+    <h3>涨停热点个股（涨幅前列）</h3>
+    <div class="hot-list">
+      <div class="hot-item"><span class="name">N绿控传动</span><span class="code">301655</span><span class="pct up">+325.29%</span></div>
+      <div class="hot-item"><span class="name">优宁维</span><span class="code">301166</span><span class="pct up">+20.01%</span></div>
+      <div class="hot-item"><span class="name">万隆光电</span><span class="code">300710</span><span class="pct up">+20.01%</span></div>
+      <div class="hot-item"><span class="name">百克生物</span><span class="code">688276</span><span class="pct up">+20.01%</span></div>
+      <div class="hot-item"><span class="name">义翘神州</span><span class="code">301047</span><span class="pct up">+20.00%</span></div>
+      <div class="hot-item"><span class="name">康华生物</span><span class="code">300841</span><span class="pct up">+20.00%</span></div>
+      <div class="hot-item"><span class="name">石药创新</span><span class="code">300765</span><span class="pct up">+20.00%</span></div>
+      <div class="hot-item"><span class="name">华大基因</span><span class="code">300676</span><span class="pct up">+20.00%</span></div>
+      <div class="hot-item"><span class="name">博腾股份</span><span class="code">300363</span><span class="pct up">+20.00%</span></div>
+      <div class="hot-item"><span class="name">沃森生物</span><span class="code">300142</span><span class="pct up">+20.00%</span></div>
+    </div>
+    <h3>连板高度</h3>
+    <table>
+      <thead><tr><th>标的</th><th>连板 / 趋势</th><th>阶段</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>金健米业</td><td><b>4 连板</b>（全市场最高）</td><td><span class="tag tag-retreat">退潮中的分歧高度板</span></td><td>农业链活口，但农业整体退潮，属分歧抱团高度板</td></tr>
+        <tr><td>风范股份</td><td>14 天 8 板（趋势龙）</td><td><span class="tag tag-p2">P2 趋势加速</span></td><td>电网设备主线趋势核心，正泰电器同步涨停</td></tr>
+        <tr><td>涨停 / 跌停</td><td>84 / 5</td><td><span class="tag tag-p2">情绪偏高</span></td><td>连板梯队偏薄，高度集中于农业分歧板</td></tr>
+      </tbody>
+    </table>
+    <h3>主题线索</h3>
+    <p>医药生物（疫苗、细胞免疫、重组蛋白、基因编辑）全线爆发；电网设备（风范股份 14 天 8 板、正泰电器涨停）；数字货币（楚天龙、翠微股份涨停）；模拟芯片（康希通信、思瑞浦涨超 10%）；光纤（长盈通 20CM 涨停、通鼎互联涨停）。</p>
+    <div class="source">来源：NeoData A股个股交易排行榜 / 板块资金排行 2026-08-20 11:31:54；财联社午评；同花顺问财 iwencai 连板高度</div>
+  </div>
+
+  <!-- 五、核心看好标的追踪（午盘策略观察分析层） -->
+  <div class="card">
+    <h2>五、核心看好标的追踪（午盘策略观察分析层）</h2>
+    <table>
+      <thead><tr><th>标的（名称+代码）</th><th>阶段（P1/P2/P3/退潮）</th><th>推荐原因</th><th>近期走势</th><th>推荐方向</th></tr></thead>
+      <tbody>
+        <tr><td>药明康德（603259）</td><td><span class="tag tag-p2">P2 主升</span></td><td>创新药 CXO 龙头·MRNA III 期映射（US-④）·主力净流入第 2（9.81 亿）</td><td>今日 +4.37%，CRO 板块 20 日 +33% 同步走强</td><td><span class="tag tag-fulfill">多</span></td></tr>
+        <tr><td>凯莱英（002821）</td><td><span class="tag tag-p2">P2 主升</span></td><td>CRO / 减肥药·创新药刚需·主力净流入 +3.45 亿</td><td>今日 +10.00%</td><td><span class="tag tag-fulfill">多</span></td></tr>
+        <tr><td>华大基因（300676）</td><td><span class="tag tag-p2">P2 扩散</span></td><td>基因测序 / 精准医疗龙头·20cm 涨停·主力 +2.33 亿</td><td>今日 +20.00%</td><td><span class="tag tag-fulfill">多</span></td></tr>
+        <tr><td>紫金矿业（601899）</td><td><span class="tag tag-p2">P2 主升</span></td><td>黄金超级周期·金价破 4500·主力净流入全市场第 1（22.97 亿）·⑪20D 转正反转档</td><td>今日 +4.85%，20 日 +3.9%，60 日 +9.96%</td><td><span class="tag tag-fulfill">多</span></td></tr>
+        <tr><td>赤峰黄金（600988）</td><td><span class="tag tag-p2">P2 主升</span></td><td>黄金弹性标的·金价破 4500·游资抱团</td><td>今日 +7.02%，20 日 +17.74%，60 日 +27.92%</td><td><span class="tag tag-fulfill">多</span></td></tr>
+        <tr><td>山东黄金（600547）</td><td><span class="tag tag-p2">P2 主升</span></td><td>黄金龙头·今日 +6.96%·主力净流入 +5.02 亿</td><td>今日 +6.96%</td><td><span class="tag tag-fulfill">多</span></td></tr>
+      </tbody>
+    </table>
+    <div class="source">来源：westock 深度池 + 同花顺问财 iwencai；框架 ⑪⑳㉓ 三-①~三-④ US-④；推荐方向=多 / 推荐时刻=11:45（同步入《标的推荐追踪表》）</div>
+  </div>
+
+  <!-- 六、简评与后市观察 -->
+  <div class="card">
+    <h2>六、简评与后市观察</h2>
+    <p>上午市场延续 10:00 盘中监控的修复态势，医药生物在 Moderna 癌症疫苗 III 期达标、创新药中报催化及超跌修复共振下成为绝对主线，资金净流入居前。贵金属延续避险逻辑（金价破 4500 美元），农业板块则承接昨日分歧继续走弱。指数层面，沪指守住 3890 关键支撑但冲高至 3925 后小幅回落，显示 3920-3950 阻力区仍需量能配合。</p>
+    <p><strong>午后关注点：</strong></p>
+    <ul>
+      <li>沪指能否突破并站稳 3920-3950 阻力区，创业板能否守住 3500 关口；</li>
+      <li>医药生物涨停潮后是否出现分化，资金能否扩散至电网设备、数字货币等支线；</li>
+      <li>半导体 / CPO 超跌反弹的持续性，重点观察中际旭创 880 元、寒武纪 1050 元等关键位（㉓ 反弹=减仓窗口非反转）；</li>
+      <li>农业 / 种植业是否继续走弱，主线资金切换是否完成；</li>
+      <li>半日成交已缩量 2469 亿，午后需关注全天成交能否维持在 2 万亿附近。</li>
+    </ul>
+    <p class="footprint">【框架应用】⑪（20D 转正反转档）· ⑳（高位放量不接飞刀）· ㉓（反弹减仓窗口）· 三-①~三-④（启动→扩散→高潮→退潮）· US-④（外强内弱修复·Moderna 癌苗 III 期映射）。</p>
+    <div class="disclaimer">免责声明：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。</div>
+  </div>
+</div>
+
+<script>
+  var upColor = '#d93026';
+  var downColor = '#238636';
+  var indexChart = echarts.init(document.getElementById('indexChart'));
+  var indexOption = {
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    xAxis: { type: 'category', data: ['上证', '深证', '创业板', '科创50', '北证50', '沪深300'] },
+    yAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
+    series: [{ name: '涨跌幅', type: 'bar', data: [
+      { value: 0.28, itemStyle: { color: upColor } },
+      { value: 0.97, itemStyle: { color: upColor } },
+      { value: 1.04, itemStyle: { color: upColor } },
+      { value: -0.01, itemStyle: { color: downColor } },
+      { value: 0.79, itemStyle: { color: upColor } },
+      { value: 0.21, itemStyle: { color: upColor } }
+    ], label: { show: true, position: 'top', formatter: '{c}%' } }]
+  };
+  indexChart.setOption(indexOption);
+  window.addEventListener('resize', function() { indexChart.resize(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>午盘速览 2026-08-25（周二）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f4ee; --card:#ffffff; --ink:#1a1a1a; --ink-soft:#555;
+    --line:#e3dfd3; --accent:#7a4f1f; --head:#3a2e1f;
+    --red:#c0392b; --red-soft:#f4d7d2; --green:#1f7a3a; --green-soft:#d6ead9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);line-height:1.6;font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 28px 60px}
+  header.top{border-bottom:2px solid var(--head);padding-bottom:14px;margin-bottom:22px}
+  header.top h1{margin:0;font-size:24px;color:var(--head);letter-spacing:0.5px}
+  header.top .sub{font-size:13px;color:var(--ink-soft);margin-top:4px}
+  header.top .meta{font-size:12px;color:var(--ink-soft);margin-top:6px;font-style:italic}
+
+  .summary-card{background:var(--card);border-left:5px solid var(--accent);padding:16px 20px;border-radius:4px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+  .summary-card .lbl{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:6px}
+  .summary-card .verdict{font-size:17px;font-weight:700;color:var(--head);margin-bottom:8px}
+  .summary-card .verdict strong.red{color:var(--red)}
+  .summary-card .verdict strong.green{color:var(--green)}
+  .summary-card .points{font-size:13.5px;color:var(--ink-soft)}
+  .summary-card .points ul{margin:6px 0 0;padding-left:22px}
+  .summary-card .points li{margin-bottom:3px}
+
+  section{margin-bottom:28px}
+  section h2{font-size:17px;color:var(--head);border-left:4px solid var(--accent);padding-left:10px;margin:0 0 14px}
+  section h3{font-size:14px;color:var(--ink);margin:14px 0 8px}
+
+  .card{background:var(--card);padding:16px 18px;border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;background:var(--card)}
+  th{background:#efe9d8;color:var(--head);font-weight:700;padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  td{padding:8px 10px;border-bottom:1px dashed var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.red{color:var(--red);font-weight:700}
+  td.green{color:var(--green);font-weight:700}
+  .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11.5px;font-weight:600;margin-right:4px}
+  .tag.ok{background:var(--green-soft);color:var(--green)}
+  .tag.bad{background:var(--red-soft);color:var(--red)}
+  .tag.partial{background:#fbeed5;color:#8a6a14}
+  .tag.none{background:#e9e5d8;color:#7a7a7a}
+  .tag.rev{background:#e6d7ed;color:#5e3268}
+
+  .idx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  .idx{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+  .idx .name{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
+  .idx .val{font-size:22px;font-weight:700;color:var(--ink)}
+  .idx .chg{font-size:14px;font-weight:700;margin-top:4px}
+  .idx .chg.red{color:var(--red)}
+  .idx .chg.green{color:var(--green)}
+  .idx .meta{font-size:11px;color:var(--ink-soft);margin-top:4px}
+
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi .box{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px 12px;text-align:center}
+  .kpi .box .lbl{font-size:11.5px;color:var(--ink-soft)}
+  .kpi .box .num{font-size:20px;font-weight:700;margin-top:4px}
+  .kpi .box .num.red{color:var(--red)}
+  .kpi .box .num.green{color:var(--green)}
+  .kpi .box .sub{font-size:10.5px;color:var(--ink-soft);margin-top:2px}
+
+  .src{font-size:11px;color:var(--ink-soft);font-style:italic;margin-left:4px}
+  .chart{width:100%;height:320px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:10px}
+
+  .stock-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12.5px}
+  .stock-list .item{padding:6px 10px;border:1px dashed var(--line);border-radius:3px;background:var(--card)}
+  .stock-list .item .nm{font-weight:700;color:var(--head)}
+  .stock-list .item .pct.red{color:var(--red);font-weight:700}
+  .stock-list .item .pct.green{color:var(--green);font-weight:700}
+
+  .warn{background:#fff8e1;border:1px solid #f1d99a;padding:10px 14px;border-radius:4px;font-size:12.5px;color:#7a5a14;margin-top:14px}
+  .disc{margin-top:32px;padding:14px 18px;background:#efe9d8;border-radius:4px;font-size:11.5px;color:var(--ink-soft);border-left:3px solid var(--accent)}
+  .footer{margin-top:18px;font-size:11px;color:var(--ink-soft);text-align:center}
+
+  .points-box{background:#fbf6e8;border:1px solid #ebd9a4;border-radius:4px;padding:12px 14px;margin-top:10px;font-size:13px}
+  .points-box h4{margin:0 0 6px;color:#8a6a14;font-size:13px}
+  .points-box ol{margin:4px 0 0;padding-left:20px}
+  .points-box li{margin-bottom:3px}
+
+  .full-table{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:4px}
+  .full-table table{margin:0;font-size:12.5px}
+  .full-table th{position:sticky;top:0}
+  .rank-num{display:inline-block;width:22px;color:var(--ink-soft);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>午盘速览 2026-08-25（周二）</h1>
+  <div class="sub">11:30 午间收盘 · 数据口径以 11:30 收盘快照为准（部分指标引用 11:48-11:52 盘中节点，差异见备注）</div>
+  <div class="meta">生成时间：2026-08-25 11:40（GMT+8） · 数据源：westock 行情快照 / 东方财富妙想 mx-ds-mcp 申万一级 / 同花顺问财 iwencai 概念+连板 / 腾讯财经·新浪财经·金融界 8/25 午评交叉核对</div>
+</header>
+
+<div class="summary-card">
+  <div class="lbl">▌半日小结</div>
+  <div class="verdict">
+    "退潮防守"预判<strong class="red">大幅反向</strong> → 实际为<strong class="green">修复普涨·主线切换日</strong>：沪指<strong class="red">-0.15%</strong> / 创业板<strong class="red">-1.43%</strong>（低开探底后反弹，指数微跌因隔夜低开），但<strong class="green">涨 3684 / 跌 1777（upRatio 66%）</strong>、涨停 <strong>48 只</strong>、连板高度 <strong>5 板</strong>（汉森制药）较盘前 4 板修复；半日成交 <strong>1.147 万亿</strong>（缩量 2239 亿）。盘前"资源线（黄金/煤炭/有色）多"判断<strong class="red">反向证伪</strong>——贵金属领跌（西部黄金 -7.95%、恒星科技跌停、国城矿业 -9%）、有色金属 -3.27% 全市场最弱且主力净流出 <strong class="red">-56.3 亿</strong>（最大出逃）；接力主线为<strong class="green">农业/大消费/医药</strong>（转基因 +3.94%、医药生物主力净流入 +18.5 亿居首、机械设备 +16.4 亿）。
+  </div>
+  <div class="points">
+    <ul>
+      <li><strong>沪指关键位</strong>：3882（已破 MA20≈3888）→ 午间 3876；3850（破=降仓至 30%）未触及；3900（站稳=加仓信号）未触及，全天维持 3850-3900 区间震荡。</li>
+      <li><strong>创业板关键位</strong>：3411（盘中低点）/ 3420（压力）；创业板 -1.43% 仍弱于主板，高位成长修复滞后。</li>
+      <li><strong>市场风格</strong>：消费（旅游/乳业/免税/小家电）+ 农业（转基因/粮食/玉米）+ 医药（创新药）+ 数字货币（CIPS）四线齐发；资源（贵金属/有色）与科技硬件（半导体/CPO/PCB）集体退潮。</li>
+      <li><strong>午后关注</strong>：沪指 3850 铁律线（距当前 3876 仅 26 点）、农业/消费/医药连板梯队能否延续、贵金属/有色是否止跌、成交能否放量确认修复。</li>
+    </ul>
+  </div>
+</div>
+
+<section id="link-table">
+  <h2>〇、策略衔接对照</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th style="width:16%">维度</th><th style="width:30%">08:30 盘前预判（退潮防守·多头≤2）</th><th style="width:30%">11:30 午间实际</th><th style="width:24%">兑现情况</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>大势环境</strong></td>
+          <td>退潮期（涨跌比 0.37&lt;0.4、跌停 11、连板 4 板）→ 总仓≤45%、现金≥55%</td>
+          <td>低开探底反弹，上证 -0.15%/深成 -0.78%/创业 -1.43%；涨 3684/跌 1777（upRatio 66%）；涨停 48、连板 5 板（汉森 5 板）</td>
+          <td><span class="tag partial">部分修正</span>指数弱势符合，但广度修复（非延续退潮）、连板 4→5 修复</td>
+        </tr>
+        <tr>
+          <td><strong>贵金属/黄金</strong></td>
+          <td>P2→P3·多（减半）6-8%（山东黄金/紫金，㊲修复窗口）</td>
+          <td>贵金属领跌：西部黄金 -7.95%、恒星科技跌停、国城矿业 -9%、湖南白银跟跌；申万有色 -3.27%</td>
+          <td><span class="tag bad">严重未兑现（反向）</span></td>
+        </tr>
+        <tr>
+          <td><strong>煤炭</strong></td>
+          <td>P2·多 5-8%（中国神华/陕西煤业，持有）</td>
+          <td>申万煤炭 -0.01%、煤炭概念 +0.44%（基本平盘），远未达"多"预期</td>
+          <td><span class="tag bad">未兑现</span></td>
+        </tr>
+        <tr>
+          <td><strong>有色/工业金属</strong></td>
+          <td>P2·中性偏多 3-5%（洛阳钼业/紫金，回踩介入）</td>
+          <td>申万有色 -3.27%（全市场最弱），主力净流出 -56.3 亿（全市场最大出逃）</td>
+          <td><span class="tag bad">反向未兑现（实际空）</span></td>
+        </tr>
+        <tr>
+          <td><strong>科技硬件（通信/半导体/CPO/PCB）</strong></td>
+          <td>退潮·空·清仓 0%（㊸资金门控禁给多，严禁抄底⑳）</td>
+          <td>半导体（江丰 -8%/康希 -9%）、CPO/PCB 下行；通信 -1.05%/电子主力 -48.6 亿/电力设备 -32 亿</td>
+          <td><span class="tag ok">兑现 ✅（空正确）</span></td>
+        </tr>
+        <tr>
+          <td><strong>医药/CXO</strong></td>
+          <td>P1·中性 0-5%（仅权重，不追汉森 4 板）</td>
+          <td>医药生物 +1.22%，创新药 +1.36%；汉森 5 板/华森/海南海药涨停；主力净流入 +18.5 亿（全市场最强）</td>
+          <td><span class="tag ok">超预期（实际走强至 P2）</span></td>
+        </tr>
+        <tr>
+          <td><strong>农业/大消费</strong></td>
+          <td>未列入主线（退潮防守，总仓压至 45%）</td>
+          <td>农业领涨（转基因 +3.94%/粮食 +3.29%/玉米 +3.27%，金健 7 天 5 板/登海 2 板）；大消费（旅游/乳业/免税/小家电活跃，石头科技涨停）；主力净流入农林 +9.1 亿/商贸 +5.0 亿</td>
+          <td><span class="tag rev">盘前遗漏·实际领涨（重大预期差）</span></td>
+        </tr>
+        <tr>
+          <td><strong>数字货币/跨境支付</strong></td>
+          <td>未重点配置</td>
+          <td>数字货币 +2.26%/CIPS +2.25%；楚天龙 3 板、新晨科技/科蓝软件涨停</td>
+          <td><span class="tag rev">超盘前预期</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11.5px; color:var(--ink-soft); margin-top:8px; font-style:italic">
+      来源：盘前策略 08/30 方向表（/Users/jungle1499/WorkBuddy/大盘复盘/盘前策略_20260825.html）+ 11:30 实盘（westock/mx/iwencai/午评交叉）。注：本自动化运行于 11:45，10:00 盘中监控详见 10:00 盘中速览，本表聚焦"盘前 vs 午间"对照。
+    </div>
+  </div>
+</section>
+
+<section id="index-section">
+  <h2>一、主要指数</h2>
+  <div class="idx-grid" id="indexGrid"></div>
+  <h3>指数涨跌幅可视化</h3>
+  <div class="chart" id="indexChart"></div>
+  <div class="src">数据源：westock 行情快照 2026-08-25 11:30:00（午间休市，snapshot=上午收盘）；北证50/科创50/沪深300 同口径。A 股惯例涨=红、跌=绿。</div>
+</section>
+
+<section id="breadth">
+  <h2>二、成交与市场广度</h2>
+  <div class="kpi" id="breadthKpi"></div>
+  <div class="points-box">
+    <h4>半日成交与市场宽度解读</h4>
+    <ol>
+      <li><strong>量能</strong>：半日成交约 <strong>1.147 万亿</strong>，较 8/24 同期（约 1.37 万亿）缩量约 2239 亿（-16%），符合"低开后修复但量能未放大"特征；预计全天 1.9-2.1 万亿。</li>
+      <li><strong>涨跌家数</strong>：涨 3684 / 跌 1777 / 平 89，<strong>upRatio 66%</strong> &gt; 40% 阈值 → 环境层<strong class="green">不触发否决</strong>，属"修复普涨"而非退潮（与盘前 0.37 退潮预期相反）。涨超 9% 个股近 68 只。</li>
+      <li><strong>涨跌停</strong>：涨停 48 只（含 20cm 创业板/科创板及多只连板），跌停仅 4 只，连板高度 5 板（汉森制药）→ 情绪较盘前 4 板修复，但绝对高度仍偏低。</li>
+      <li><strong>风格</strong>：指数微跌因隔夜低开，内资从资源/科技切向消费/农业/医药——属"高低切换"，非系统性风险。</li>
+    </ol>
+  </div>
+  <div class="src">来源：westock 涨跌分布（2026-08-25 11:30）+ 腾讯财经/新浪财经/金融界 8/25 11:40 午评。</div>
+</section>
+
+<section id="sectors">
+  <h2>三、板块表现</h2>
+  <h3>领涨板块（消费+农业+医药+数字货币 四线齐发）</h3>
+  <div class="chart" id="upSectorChart"></div>
+  <h3 style="margin-top:18px">领跌板块（资源贵金属+科技硬件 退潮）</h3>
+  <div class="chart" id="downSectorChart"></div>
+  <div class="src">
+    数据源：东方财富妙想 mx-ds-mcp 申万一级（2026-08-25 11:48 口径，vs 昨收）。⚠️ 同花顺问财概念指数"分时涨跌幅"口径显示为全线红盘（日内反弹口径），与申万一级（昨收口径）存在口径差，本报告以<strong>申万一级为涨跌幅权威口径</strong>，问财仅作概念热度排名参考。
+  </div>
+
+  <h3 style="margin-top:22px">全行业排名（用户硬性要求·申万一级 31 行业完整表）</h3>
+  <div class="full-table">
+    <table>
+      <thead>
+        <tr><th style="width:8%">排名</th><th style="width:30%">行业（申万一级）</th><th style="width:20%">11:30 涨跌幅</th><th style="width:22%">主力净流入（亿）</th><th style="width:20%">阶段判定</th></tr>
+      </thead>
+      <tbody id="fullSectorBody"></tbody>
+    </table>
+  </div>
+  <div class="src">数据源：mx-ds-mcp 申万一级涨跌幅（11:48）+ 主力净流入（超大单+大单，11:52）。主力净流入=超大单净流入+大单净流入（东财口径）。颜色：<span style="color:var(--red)">红=涨/净流入</span>、<span style="color:var(--green)">绿=跌/净流出</span>。</div>
+</section>
+
+<section id="hotspot">
+  <h2>四、涨停热点与资金动向</h2>
+  <h3>涨停热点股（涨幅 ≥9.9%，含连板/20cm，来源 8/25 午评）</h3>
+  <div class="stock-list" id="limitUpList"></div>
+  <h3 style="margin-top:14px">主力资金净流入居前方向（行业主力净流入 + 聚焦龙头，午评+mx 口径）</h3>
+  <div class="stock-list" id="inflowList"></div>
+  <div class="src">来源：腾讯财经/新浪财经/金融界 8/25 午评 + mx-ds-mcp 申万一级主力净流入（医药 +18.5 亿 / 机械设备 +16.4 亿 / 农林牧渔 +9.1 亿 / 计算机 +6.3 亿 / 传媒 +6.0 亿 居前；有色金属 -56.3 亿 / 电子 -48.6 亿 / 电力设备 -32.0 亿 净流出居前）。</div>
+</section>
+
+<section id="commentary">
+  <h2>五、简评与后市观察</h2>
+  <div class="card">
+    <h3>本轮切换的核心矛盾</h3>
+    <p>盘前"退潮防守 + 资源线（黄金/煤炭/有色）多"的方向与午间实际<strong>大幅相反</strong>：隔夜商品（COMEX 金、伦铜）高开低走，贵金属/有色在连续抱团后于今日<strong>高位派发（⑳/三-⑦）</strong>——西部黄金 -7.95%、恒星科技跌停、国城矿业 -9%、湖南白银跟跌，有色金属主力净流出 -56.3 亿为全市场之最。与此同时，内资高低切换至<strong>消费（旅游/乳业/免税/小家电，财政部+人行+金融监管总局促内需贴息政策催化）+ 农业（厄尔尼诺极端天气预期，金健 7 天 5 板/登海 2 板）+ 医药（国家药监局支持仿制药，汉森 5 板，主力 +18.5 亿居首）+ 数字货币（CIPS，楚天龙 3 板）</strong>。指数微跌仅因隔夜低开，广度（upRatio 66%）与连板（5 板）均较盘前修复，属"修复普涨·主线切换日"而非退潮延续。</p>
+
+    <h3>机构观点（午评 / 盘后发酵期，来源 8/25 午评）</h3>
+    <ul style="margin:4px 0; padding-left:22px">
+      <li><strong>中信建投</strong>：指数发生系统性大跌的概率有限；政策底+经济底夯实，宜均衡配置（高景气科技成长 + 低估值防御），耐心等待企稳。</li>
+      <li><strong>高盛</strong>：维持 A 股"增持"观点；AI 硬科技前期投机涨幅/估值溢价/杠杆/持仓集中度风险已在回调中释放，保持对 AI 硬科技投资偏好。</li>
+      <li><strong>中信证券</strong>：本轮调整是拥挤交易修正，非韩国式去杠杆；局部流动性压力基本消除，8 月普遍修复概率提升；银行中报信号积极，绝对收益空间延续。</li>
+      <li><strong>方正证券</strong>：5-6 月非科技、7 月科技轮流调整已释放绝大部分风险；超跌反弹窗口到来，未来两个月均有利，但筑底修复过程拉长、波动率下降。</li>
+    </ul>
+
+    <h3>午后关注点与触发条件</h3>
+    <ol style="margin:4px 0; padding-left:22px">
+      <li><strong>沪指 3850 铁律线</strong>：当前 3876，距触发线 26 点；13:00-13:30 若跌穿 → 触发降仓至 30%；守稳 + 跌家收窄 → 维持 45-50% 轻仓试错。</li>
+      <li><strong>主线延续性</strong>：农业（金健 7 天 5 板）/ 消费（凯撒/华天/石头）/ 医药（汉森 5 板）连板梯队能否维持，决定修复成色；若炸板扩大则降仓。</li>
+      <li><strong>资源线止跌信号</strong>：有色金属 -3.27% / 贵金属领跌后是否止跌；若继续杀跌，警惕补跌扩散至其他高位抱团。</li>
+      <li><strong>科技硬件</strong>：半导体（江丰 -8%/康希 -9%）/ CPO/PCB 是否缩量企稳；㊸资金门控仍禁给多，严禁抄底（⑳）。</li>
+      <li><strong>放量确认</strong>：反弹若无量（半日已缩量 2239 亿）则视为虚晃；成交明显放大+真金白银进场才可靠（午评五大信号之二）。</li>
+      <li><strong>连板高度</strong>：汉森 5 板后能否拓展至 6 板+，是㊴情绪重启的关键观察点。</li>
+      <li><strong>外围与政策</strong>：美债 30Y 是否回落缓解高估值压制；中美 1.5 轨对话（8/25 北京）及促内需政策细则落地节奏。</li>
+    </ol>
+
+    <h3>关键事件跟踪（本周）</h3>
+    <ul style="margin:4px 0; padding-left:22px">
+      <li><strong>8/25（周二·今日）</strong>：中美 1.5 轨对话在北京举行；财政部+人行+金融监管总局《促内需政策》落地（单家银行年贴息上限提至 5000 元，扩至信用卡分期）。</li>
+      <li><strong>8/26（周三）</strong>：英伟达 Q2 财报——全球 AI 产业链短期方向锚，中际旭创/新易盛修复核心催化。</li>
+      <li><strong>8/28（周五）</strong>：鲍威尔杰克逊霍尔年会——9 月降息路径关键指引，决定成长股估值压力是否缓解。</li>
+    </ul>
+  </div>
+  <div class="src">来源：腾讯财经/新浪财经/金融界 8/25 午评 · 东方财富 · 中信建投/高盛/中信证券/方正证券 策略观点。</div>
+</section>
+
+<div class="disc">
+  <strong>免责声明：</strong>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+<div class="footer">
+  报告生成：WorkBuddy · 午盘观察自动化 ID：automation-1786405752050（午盘速览模板·8/25）· 数据已交叉认证：westock 行情 / 东方财富妙想 mx-ds-mcp / 同花顺问财 iwencai / 腾讯·新浪·金融界 午评 多源一致 · 文件：<code>午盘速览_20260825.html</code>
+</div>
+
+</div>
+
+<script>
+  // —— 指数卡片 ——
+  const indices = [
+    {name:'上证指数', code:'000001', val:3876.38, prev:3882.01, open:3863.37, high:3884.27, low:3850.86, chg:-0.15, src:'westock 11:30 行情'},
+    {name:'深证成指', code:'399001', val:13687.06, prev:13794.29, open:13683.91, high:13771.76, low:13568.51, chg:-0.78, src:'westock 11:30 行情'},
+    {name:'创业板指', code:'399006', val:3382.81, prev:3431.89, open:3403.20, high:3420.24, low:3359.74, chg:-1.43, src:'westock 11:30 行情'},
+    {name:'科创50',   code:'000688', val:1592.11, prev:1602.34, open:1584.52, high:1609.69, low:1564.77, chg:-0.64, src:'westock 11:30 行情'},
+    {name:'沪深300',  code:'000300', val:4542.25, prev:4563.13, open:4542.24, high:4559.11, low:4523.02, chg:-0.46, src:'westock 11:30 行情'},
+    {name:'北证50',   code:'899050', val:1060.98, prev:1053.62, open:1051.21, high:1061.26, low:1047.69, chg:0.70, src:'westock 11:30 行情'}
+  ];
+  const grid = document.getElementById('indexGrid');
+  indices.forEach(i=>{
+    const cls = i.chg >= 0 ? 'red' : 'green';
+    const arrow = i.chg >= 0 ? '▲' : '▼';
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="idx">
+        <div class="name">${i.name} <span style="color:#999">${i.code}</span></div>
+        <div class="val">${i.val.toLocaleString('zh-CN', {maximumFractionDigits:2})}</div>
+        <div class="chg ${cls}">${arrow} ${i.chg > 0 ? '+' : ''}${i.chg.toFixed(2)}%</div>
+        <div class="meta">开 ${i.open} / 高 ${i.high} / 低 ${i.low}</div>
+        <div class="src">${i.src}</div>
+      </div>
+    `);
+  });
+
+  // —— 指数条形图 ——
+  const idxChart = echarts.init(document.getElementById('indexChart'));
+  const idxData = indices.map(i=>({name:i.name, value:i.chg}));
+  idxChart.setOption({
+    title:{text:'主要指数半日涨跌幅（%）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:40, left:60, right:30, bottom:30},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: idxData.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:18, label:{show:true, position:'right', formatter:p=>p.value.toFixed(2)+'%'},
+      data: idxData.map(d=>({value:d.value, itemStyle:{color: d.value>=0 ? '#c0392b' : '#1f7a3a'}})).reverse()
+    }]
+  });
+
+  // —— 成交与市场广度 KPI ——
+  document.getElementById('breadthKpi').innerHTML = `
+    <div class="box"><div class="lbl">半日成交额</div><div class="num">1.147万亿</div><div class="sub">较8/24同期缩量约2239亿</div></div>
+    <div class="box"><div class="lbl">上涨家数</div><div class="num green">3684</div><div class="sub">含涨停48只·涨超9%近68只</div></div>
+    <div class="box"><div class="lbl">下跌家数</div><div class="num red">1777</div><div class="sub">跌停仅4只</div></div>
+    <div class="box"><div class="lbl">涨停 / 跌停</div><div class="num">48 / 4</div><div class="sub">连板高度5板（汉森制药）</div></div>
+  `;
+
+  // —— 领涨板块（申万一级 top9 涨，升序排列，reverse后最高在顶）——
+  const upSectors = [
+    {name:'传媒（申万一级）', v:1.04},
+    {name:'商贸零售（申万一级）', v:1.16},
+    {name:'轻工制造（申万一级）', v:1.19},
+    {name:'医药生物（申万一级）', v:1.22},
+    {name:'房地产（申万一级）', v:1.23},
+    {name:'社会服务（申万一级）', v:1.41},
+    {name:'家用电器（申万一级）', v:1.48},
+    {name:'农林牧渔（申万一级）', v:1.78},
+    {name:'美容护理（申万一级）', v:3.21}
+  ];
+  echarts.init(document.getElementById('upSectorChart')).setOption({
+    title:{text:'领涨板块涨幅（%）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:30, left:150, right:40, bottom:20},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: upSectors.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:14, label:{show:true, position:'right', formatter:p=>'+'+p.value.toFixed(2)+'%'},
+      data: upSectors.map(d=>({value:d.v, itemStyle:{color:'#c0392b'}})).reverse()
+    }]
+  });
+
+  // —— 领跌板块（申万一级 top9 跌，升序排列，reverse后最弱在顶）——
+  const downSectors = [
+    {name:'银行（申万一级）', v:-0.13},
+    {name:'钢铁（申万一级）', v:-0.16},
+    {name:'建筑材料（申万一级）', v:-0.64},
+    {name:'基础化工（申万一级）', v:-0.72},
+    {name:'电子（申万一级）', v:-0.94},
+    {name:'通信（申万一级）', v:-1.05},
+    {name:'综合（申万一级）', v:-1.15},
+    {name:'电力设备（申万一级）', v:-1.29},
+    {name:'有色金属（申万一级）', v:-3.27}
+  ];
+  echarts.init(document.getElementById('downSectorChart')).setOption({
+    title:{text:'领跌板块涨幅（%）', left:'center', textStyle:{fontSize:13, color:'#3a2e1f'}},
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v.toFixed(2)+'%'},
+    grid:{top:30, left:150, right:40, bottom:20},
+    xAxis:{type:'value', axisLabel:{formatter:'{value}%'}, splitLine:{lineStyle:{type:'dashed', color:'#e3dfd3'}}},
+    yAxis:{type:'category', data: downSectors.map(d=>d.name).reverse(), axisLine:{lineStyle:{color:'#aaa'}}, axisTick:{show:false}},
+    series:[{
+      type:'bar', barWidth:14, label:{show:true, position:'right', formatter:p=>p.value.toFixed(2)+'%'},
+      data: downSectors.map(d=>({value:d.v, itemStyle:{color:'#1f7a3a'}})).reverse()
+    }]
+  });
+
+  // —— 全行业排名（申万一级 31 完整表）——
+  const fullSector = [
+    {nm:'美容护理', c:3.21, f:1.62, stage:'P1 政策/消费启动'},
+    {nm:'农林牧渔', c:1.78, f:9.08, stage:'P1 事件启动（厄尔尼诺）'},
+    {nm:'家用电器', c:1.48, f:1.00, stage:'P1 消费修复'},
+    {nm:'社会服务', c:1.41, f:1.99, stage:'P1 消费修复'},
+    {nm:'房地产', c:1.23, f:1.50, stage:'P1 政策博弈'},
+    {nm:'医药生物', c:1.22, f:18.46, stage:'P2 修复（主力+18.5亿居首）'},
+    {nm:'轻工制造', c:1.19, f:2.61, stage:'P1 消费扩散'},
+    {nm:'商贸零售', c:1.16, f:4.96, stage:'P1 促内需政策'},
+    {nm:'传媒', c:1.04, f:6.05, stage:'P1 修复'},
+    {nm:'建筑装饰', c:0.82, f:4.64, stage:'P1 政策'},
+    {nm:'计算机', c:0.75, f:6.35, stage:'P1 超跌反弹'},
+    {nm:'汽车', c:0.50, f:4.75, stage:'P1 修复'},
+    {nm:'公用事业', c:0.44, f:-2.52, stage:'中性'},
+    {nm:'纺织服饰', c:0.31, f:-1.00, stage:'中性'},
+    {nm:'食品饮料', c:0.23, f:-0.57, stage:'中性'},
+    {nm:'环保', c:0.21, f:-0.75, stage:'中性'},
+    {nm:'交通运输', c:0.17, f:-2.05, stage:'中性'},
+    {nm:'机械设备', c:0.12, f:16.36, stage:'P2 资金聚焦（+16.4亿）'},
+    {nm:'煤炭', c:-0.01, f:0.30, stage:'P2→平（盘前多未兑现）'},
+    {nm:'石油石化', c:-0.07, f:-2.52, stage:'中性'},
+    {nm:'国防军工', c:-0.12, f:-4.26, stage:'P3→退'},
+    {nm:'非银金融', c:-0.12, f:-1.88, stage:'中性'},
+    {nm:'银行', c:-0.13, f:-5.41, stage:'回调'},
+    {nm:'钢铁', c:-0.16, f:-1.62, stage:'中性偏弱'},
+    {nm:'通信', c:-1.05, f:1.65, stage:'P3→退（㊸门控）'},
+    {nm:'综合', c:-1.15, f:-0.10, stage:'中性'},
+    {nm:'建筑材料', c:-0.64, f:-5.42, stage:'P3→退'},
+    {nm:'基础化工', c:-0.72, f:-10.15, stage:'P3→退（资金出逃）'},
+    {nm:'电子', c:-0.94, f:-48.60, stage:'P3→退（主力-48.6亿）'},
+    {nm:'电力设备', c:-1.29, f:-32.00, stage:'P3→退（主力-32亿）'},
+    {nm:'有色金属', c:-3.27, f:-56.34, stage:'P3→退潮（高位派发·主力-56亿）'}
+  ];
+  document.getElementById('fullSectorBody').innerHTML = fullSector.map((s,idx)=>{
+    const cCls = s.c>=0?'red':'green';
+    const fCls = s.f>=0?'red':'green';
+    const fTxt = (s.f>=0?'+':'')+s.f.toFixed(2);
+    return `<tr>
+      <td><span class="rank-num">${idx+1}</span></td>
+      <td>${s.nm}</td>
+      <td class="${cCls}">${s.c>0?'+':''}${s.c.toFixed(2)}%</td>
+      <td class="${fCls}">${fTxt}</td>
+      <td style="font-size:11.5px">${s.stage}</td>
+    </tr>`;
+  }).join('');
+
+  // —— 涨停热点股 ——
+  const limitUp = [
+    {nm:'金健米业', pct:'9.95%', note:'7天5板·农业'},
+    {nm:'登海种业', pct:'10.01%', note:'2连板·农业'},
+    {nm:'万向德农', pct:'10.03%', note:'涨停·农业'},
+    {nm:'秋乐种业', pct:'跟涨', note:'农业（北交所）'},
+    {nm:'楚天龙', pct:'10.04%', note:'3连板·数字货币/CIPS'},
+    {nm:'新晨科技', pct:'20.00%', note:'20cm·数字货币'},
+    {nm:'科蓝软件', pct:'10%+', note:'CIPS'},
+    {nm:'汉森制药', pct:'9.99%', note:'5板·创新药'},
+    {nm:'华森制药', pct:'9.99%', note:'涨停·创新药'},
+    {nm:'海南海药', pct:'涨停', note:'创新药'},
+    {nm:'凯撒旅业', pct:'10.00%', note:'旅游消费'},
+    {nm:'华天酒店', pct:'9.92%', note:'旅游'},
+    {nm:'上海九百', pct:'10.01%', note:'免税零售'},
+    {nm:'石头科技', pct:'涨停', note:'小家电'},
+    {nm:'冀衡医药', pct:'涨停', note:'医药'},
+    {nm:'浙江世宝', pct:'10.04%', note:'首板·汽车'}
+  ];
+  document.getElementById('limitUpList').innerHTML = limitUp.map(s=>`
+    <div class="item"><span class="nm">${s.nm}</span> <span class="pct red">▲${s.pct}</span><br><span style="color:#888;font-size:11px">${s.note}</span></div>
+  `).join('');
+
+  // —— 资金净流入居前（行业主力净流入 + 聚焦龙头）——
+  const inflow = [
+    {nm:'汉森制药', pct:'5板', flow:'医药+18.5亿', note:'创新药龙头'},
+    {nm:'金健米业', pct:'7天5板', flow:'农林+9.1亿', note:'农业龙头'},
+    {nm:'楚天龙', pct:'3板', flow:'数字货币', note:'CIPS龙头'},
+    {nm:'登海种业', pct:'2板', flow:'农林+9.1亿', note:'农业'},
+    {nm:'凯撒旅业', pct:'涨停', flow:'商贸+5.0亿', note:'旅游消费'},
+    {nm:'上海九百', pct:'涨停', flow:'商贸+5.0亿', note:'免税零售'},
+    {nm:'新晨科技', pct:'20cm', flow:'CIPS', note:'数字货币'},
+    {nm:'华森制药', pct:'涨停', flow:'医药+18.5亿', note:'创新药'},
+    {nm:'石头科技', pct:'涨停', flow:'家电+1.0亿', note:'小家电'},
+    {nm:'万向德农', pct:'涨停', flow:'农林+9.1亿', note:'农业'},
+    {nm:'机械设备板块', pct:'+0.12%', flow:'+16.4亿', note:'资金聚焦（工业母机/工程机械）'},
+    {nm:'计算机板块', pct:'+0.75%', flow:'+6.3亿', note:'超跌反弹'}
+  ];
+  document.getElementById('inflowList').innerHTML = inflow.map(s=>`
+    <div class="item"><span class="nm">${s.nm}</span> <span class="pct ${s.pct.includes('板')||s.pct.includes('停')||s.pct.includes('cm')?'red':'green'}">${s.pct}</span> · 流入 <strong>${s.flow}</strong><br><span style="color:#888;font-size:11px">${s.note}</span></div>
+  `).join('');
+
+  // —— 响应式 ——
+  window.addEventListener('resize', ()=>{
+    idxChart.resize();
+    echarts.getInstanceByDom(document.getElementById('upSectorChart')).resize();
+    echarts.getInstanceByDom(document.getElementById('downSectorChart')).resize();
+  });
+</script>
+
+</body>
+</html>

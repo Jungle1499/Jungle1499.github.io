@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>持仓事件驱动分析 · 阿莱德案例 · 2026-08-24</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#fff; --ink:#1f2329; --sub:#5b6470;
+    --red:#d8392b; --green:#1a8a4f; --blue:#2563c9; --amber:#b7791f;
+    --line:#e6e8eb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:22px 16px 60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  h1{font-size:22px;margin:0 0 4px}
+  h2{font-size:17px;margin:6px 0 12px;border-left:4px solid var(--blue);padding-left:10px}
+  h3{font-size:14px;color:var(--sub);margin:14px 0 6px}
+  .verdict{border-radius:10px;padding:14px 16px;margin:10px 0;font-size:14px}
+  .v-bad{background:#fdecea;border:1px solid #f5c6c0}
+  .v-warn{background:#fff7e6;border:1px solid #f0d9a8}
+  .v-ok{background:#eaf6ee;border:1px solid #bfe3cb}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .pill{flex:1;min-width:150px;background:#fafbfc;border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+  .pill .k{font-size:12px;color:var(--sub)}
+  .pill .v{font-size:17px;font-weight:700;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:#f0f3f7;font-weight:600}
+  .up{color:var(--red);font-weight:700}
+  .down{color:var(--green);font-weight:700}
+  .note{font-size:12.5px;color:var(--sub);margin-top:6px}
+  .src{font-size:11.5px;color:#8a929c;margin-top:8px}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;background:#eef2f7;color:#41566e;margin:1px}
+  .tag.r{background:#fdecea;color:#c0392b}
+  .tag.a{background:#fff7e6;color:#9a6a00}
+  ul{margin:6px 0;padding-left:20px}
+  li{margin:4px 0}
+  .kp{font-size:13px;background:#f8fafc;border-left:3px solid var(--amber);padding:8px 12px;margin:8px 0;border-radius:0 6px 6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>持仓事件驱动分析 · 阿莱德（sz301419）案例</h1>
+<div class="note">分析时点：2026-08-24 凌晨（基于 2026-08-21 收盘数据）｜数据来源：westock 行情/资金流、公司公告（巨潮资讯）、证券时报/e公司/每经/中国基金报等公开披露｜仅作信息整理与方法论示范，不构成投资建议。</div>
+
+<!-- 结论卡 -->
+<div class="card">
+  <h2>一、一句话结论</h2>
+  <div class="verdict v-bad">
+    <b>「蹲收资产」的方向逻辑是对的，但你的买点踩错了两件事：①买在了消息已被大幅 price-in 的月内高位（8月已涨近50%）；②买在了「已签署未公告」的内幕敏感期窗口。</b> 图已经告诉你——钱在 <b>8/20 签署当日</b>就冲进去了，8/21 盘后公告只是「确认」而非「惊喜」。你 8/21 盘中进，是接盘抢跑资金，不是埋伏者。
+  </div>
+  <div class="row">
+    <div class="pill"><div class="k">8月累计涨幅（7/31→8/21）</div><div class="v up">+49.8%</div></div>
+    <div class="pill"><div class="k">8/20 签署当日涨幅</div><div class="v up">+11.05%</div></div>
+    <div class="pill"><div class="k">你买入窗口</div><div class="v">8/21 盘中（已签未公告）</div></div>
+    <div class="pill"><div class="k">事件确定性</div><div class="v" style="color:var(--amber)">低（仅意向）</div></div>
+  </div>
+</div>
+
+<!-- 图形证据 -->
+<div class="card">
+  <h2>二、图形证据：资金「提前蹲入」铁证</h2>
+  <div id="klineChart" style="width:100%;height:380px"></div>
+  <div class="note">红色=涨、绿色=跌（A股惯例）。关键标记：<span class="tag r">8/14 20cm涨停</span> 并购预期第一波；<span class="tag r">8/20 签署当日+11%大阳</span> 收资产实质落地提前反应；<span class="tag a">8/21 盘后公告</span> 你盘中买入当日。</div>
+  <table>
+    <tr><th>日期</th><th>收盘</th><th>当日涨跌</th><th>换手率</th><th>事件/含义</th></tr>
+    <tr><td>08-13</td><td>31.35</td><td>—</td><td>3.35%</td><td>阶段低位</td></tr>
+    <tr><td>08-14</td><td class="up">37.62</td><td class="up">+20.0% 涨停</td><td>12.31%</td><td><b>第一波资金涌入</b>（此时公告尚未签署，纯「赌并购」预期）</td></tr>
+    <tr><td>08-17</td><td>41.55</td><td>—</td><td>19.78%</td><td>阶段顶、巨量换手（分歧最大）</td></tr>
+    <tr><td>08-18</td><td>39.19</td><td class="down">-5.7%</td><td>15.44%</td><td>回落</td></tr>
+    <tr><td>08-19</td><td>36.20</td><td class="down">-7.6%</td><td>10.62%</td><td>系统性杀跌日（全市场91%个股下跌）</td></tr>
+    <tr><td>08-20</td><td class="up">40.20</td><td class="up">+11.05%</td><td>11.46%</td><td><b style="color:var(--red)">签署意向协议当日，放量大涨</b>（消息公告前已泄露/被掌握）</td></tr>
+    <tr><td>08-21</td><td>40.39</td><td class="up">+0.47%</td><td>9.54%</td><td><b style="color:var(--amber)">盘后公告收资产</b>；你盘中买入当日，多空僵持</td></tr>
+  </table>
+  <div class="kp">资金流（8/21）：5日主力净流 <b class="up">+4684万</b>、10日 <b class="up">+3334万</b>、20日 <b class="up">+2155万</b> —— 渐进式净流入（非单日脉冲），符合「有人慢慢蹲」。<b>但绝对金额不大，说明是散户+部分游资推动，非机构大举。</b> 8/21 当日超大单 +919万、主力 +2067万，但散户净流出 -2067万、小单 -1039万——公告日内资偏谨慎，散户在卖。</div>
+</div>
+
+<!-- 收资产拆解 -->
+<div class="card">
+  <h2>三、收资产公告拆解（一手来源：巨潮资讯 1225489035.PDF）</h2>
+  <div class="row">
+    <div class="pill"><div class="k">交易标的</div><div class="v" style="font-size:14px">惠州源宝精密</div></div>
+    <div class="pill"><div class="k">取得比例</div><div class="v" style="font-size:14px">≥51% 控股权</div></div>
+    <div class="pill"><div class="k">方式</div><div class="v" style="font-size:14px">现金受让+增资</div></div>
+    <div class="pill"><div class="k">性质</div><div class="v" style="font-size:14px;color:var(--amber)">预计重大资产重组</div></div>
+  </div>
+  <ul>
+    <li><b>标的业务</b>：光通信散热壳体（锌合金/铝合金压铸→CNC→组装全流程）。</li>
+    <li><b>协同逻辑</b>：补强阿莱德「散热壳体+电子散热材料+电磁屏蔽」全产品线 → 成为 ICT/AI 算力芯片散热整体方案商。与公司 2026 年一连串动作一致：1月建上海生产中心(≤5亿)、3月拿杭州湾地块（扩产 AI/光模块/服务器/储能）、5月参投产业基金、8月限制性股票激励（2026 营收/净利增速≥15%）。</li>
+    <li><b>交易对方</b>：BLUE MAX ENTERPRISE LIMITED（香港私人公司，持源宝100%）；<b>120日排他期</b>。</li>
+    <li><b>关键不确定性（⚠️）</b>：①尚处<b>初步筹划</b>、<b>不停牌</b>；②交易金额<b>未定</b>（以评估值为准）；③需审计/评估，<b>可能终止</b>；④不构成关联交易、不发行股份、不改控制权。</li>
+  </ul>
+  <div class="note">基本面：2025营收4.37亿(+24.4%)、归母6359万(+38.9%)；2026Q1营收9790万(+25.0%)、归母1238万(+19.9%)。公告日市值约60.6亿。</div>
+</div>
+
+<!-- 策略三问 -->
+<div class="card">
+  <h2>四、策略评估：蹲收资产有没有问题？</h2>
+  <div class="verdict v-ok"><b>① 方向对不对？✔ 对。</b> 光通信散热+ICT产业链，AI算力散热是真实产业趋势；公司围绕「AI散热平台」的叙事链条清晰、动作连续，产业逻辑成立。</div>
+  <div class="verdict v-bad"><b>② 买点对不对？✘ 错。</b> 买在月内+50%高位（距8/17高仅-2.9%）；且踩在「8/20已签署、8/21盘后公告」的内幕敏感期窗口。图已显示资金提前蹲入——你不是第一个知道的人，是接盘者之一。真正的 alpha 在 8/14→8/20 那波，你 8/21 才进，吃的是最后一口。</div>
+  <div class="verdict v-warn"><b>③ 事件确定性？✘ 低。</b> 公告白纸黑字「初步筹划、不停牌、120日排他、金额未定、需审计评估、可能终止」——这是高度不确定的<b>意向</b>，不是已落地的利好。等同「画饼」，随时可终止。</div>
+  <div class="kp"><b>合规提示（点到为止）</b>：8/20 签署、8/21 盘后公告，8/21 盘中处于内幕信息敏感期。若买入依据的是「已知 8/20 已签署」的确定信息而非公开预期，需注意内幕交易合规边界。即便基于公开预期，8/20 异常大涨本身已涉嫌信息提前泄露——蹲在这样的票上，本质是接盘抢跑资金。建议自查信息来源。</div>
+  <div class="kp"><b>反向声音（市场普遍误判）</b>：很多人把「收资产」当利好追涨。但图告诉你：钱 8/20 就进去了，8/21 公告只是确认。公告后看资金是否趁利好出货（8/21 当日主力仅 +2067万、散户净流出 -2067万，内资偏谨慎）。<b>「利好出尽是利空」的概率不低</b>——尤其不停牌、无保底。</div>
+</div>
+
+<!-- 持仓行业与事件总览 -->
+<div class="card">
+  <h2>五、你的整组持仓：行业分布 + 8月关键进展</h2>
+  <div id="pieChart" style="width:100%;height:300px"></div>
+  <div class="note">修正：此前晨析误将阿莱德归入「医药」。实际阿莱德=通信设备散热（非医药）。真实分布：<b>医药 76.9%</b> + 通信散热(阿莱德)9.4% + 电子面板(联得)7.6% + 化工/诊断(新开源)6.1%。集中度仍高，且 8 月事件显示多只已炒高（异动公告 = 监管关注信号）。</div>
+  <table>
+    <tr><th>标的</th><th>申万三级行业</th><th>8月关键事件</th><th>性质</th></tr>
+    <tr><td>北陆药业 300016</td><td>化学制剂</td><td>8/3 吡格列酮二甲双胍<b>拟中选第十二批集采</b>（采购至2029年底）</td><td><span class="tag r">实质利好</span></td></tr>
+    <tr><td>华大智造 688114</td><td>医疗设备</td><td>8/21 中报（营收+18%、美洲+101%）、计提减值、股票异动公告</td><td><span class="tag a">利好+波动</span></td></tr>
+    <tr><td>百普赛斯 301080</td><td>其他生物制品</td><td>8/10 股价异动公告、8/4 回购、8/6 换届</td><td><span class="tag a">已炒高</span></td></tr>
+    <tr><td>沃森生物 300142</td><td>疫苗</td><td>8/3 定增上调至22.03亿、8/19 股东会过审 → <b>腾云新沃入主、黄涛成实控人</b></td><td><span class="tag r">重大·摊薄</span></td></tr>
+    <tr><td>华兰股份 301093</td><td>医疗耗材</td><td>8/21 董事高管辞职、8/7 股价异动、8/10 减持完成</td><td><span class="tag a">人事+波动</span></td></tr>
+    <tr><td>义翘神州 301047</td><td>其他生物制品</td><td>8/14 与机构共投基金、8/11 股价异动公告</td><td><span class="tag a">已炒高</span></td></tr>
+    <tr><td>联得装备 300545</td><td>面板（自动化设备）</td><td>8/18 为子公司担保3000万；互动：UTG贴合批量、固态电池超声焊接设备出货</td><td><span class="tag">常规</span></td></tr>
+    <tr><td>新开源 300109</td><td>其他化学制品</td><td>8/20 <b>20cm涨停</b>（mRNA肿瘤疫苗催化）、8/26 披露中报</td><td><span class="tag r">事件驱动</span></td></tr>
+    <tr><td>海森药业 001367</td><td>原料药</td><td>8/21 中报（原料药+10.3%）、8/20 换届+外汇套保</td><td><span class="tag">常规</span></td></tr>
+    <tr><td>阿莱德 301419</td><td>通信设备散热</td><td>8/21 盘后<b>筹划重大资产重组（收源宝精密≥51%）</b></td><td><span class="tag r">事件驱动</span></td></tr>
+  </table>
+  <div class="note">行业归类与事件来源：agentic_search（申万行业口径 + 各公司8月公开公告）。北陆集采、沃森定增控变、新开源/mRNA、阿莱德收资产为最值得跟踪的四条主线。</div>
+</div>
+
+<!-- 方法论升级 -->
+<div class="card">
+  <h2>六、已固化进「每早8点持仓晨析」的方法论升级</h2>
+  <p style="font-size:13.5px">你要求晨析「不仅看图形，还要做行业分析+公司进展」。已写入自动化 <code>automation-1787502600837</code> 的分析框架，次早8点起每次自动包含：</p>
+  <ul style="font-size:13.5px">
+    <li><b>行业定位</b>：每只标的标准申万三级行业归类 + 产业趋势（P1/P2/P3阶段）。</li>
+    <li><b>公司进展/事件驱动</b>：拉取近期公告（data_notice/data_disclosure），标注「实质利好 / 已炒高异动 / 常规 / 重大不确定性」。</li>
+    <li><b>图形提前反应检测</b>：对「蹲事件」型持仓，比对「事件发生日 vs 公告日 vs 你买入日」，识别消息是否提前泄露/抢跑（如阿莱德 8/20 签署即大涨）。</li>
+    <li><b>买点合时性</b>：结合当日分时/位置，判断你是埋伏者还是接盘者。</li>
+  </ul>
+</div>
+
+<div class="src">数据来源：westock（行情/资金流/K线，统计日 2026-08-21）、巨潮资讯公告 1225489035.PDF、证券时报e公司/每经/中国基金报/网易/上证报等公开报道（非一手来源，需核实原文）。行业归类经 agentic_search 检索申万口径。</div>
+
+<div class="verdict v-warn" style="margin-top:18px">
+<b>免责声明</b>：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+</div>
+
+<script>
+// 阿莱德8月K线 + 成交量
+var kl = echarts.init(document.getElementById('klineChart'));
+var dates = ['08-13','08-14','08-17','08-18','08-19','08-20','08-21'];
+var kdata = [
+  [31.35,31.35,31.35,31.35],
+  [37.62,37.62,37.62,37.62],
+  [41.55,41.55,41.55,41.55],
+  [39.19,39.19,39.19,39.19],
+  [36.20,36.20,36.20,36.20],
+  [40.20,40.20,40.20,40.20],
+  [40.39,40.39,40.39,40.39]
+];
+var vol = [33199,122043,196180,153134,105329,113619,94637];
+kl.setOption({
+  tooltip:{trigger:'axis'},
+  grid:[{left:48,right:20,top:30,height:200},{left:48,right:20,top:250,height:90}],
+  xAxis:[
+    {type:'category',data:dates,gridIndex:0,axisLabel:{fontSize:11}},
+    {type:'category',data:dates,gridIndex:1,axisLabel:{show:false}}
+  ],
+  yAxis:[
+    {type:'value',gridIndex:0,name:'元',scale:true},
+    {type:'value',gridIndex:1,name:'手'}
+  ],
+  series:[
+    {type:'line',data:kdata.map(function(d){return d[1];}),xAxisIndex:0,yAxisIndex:0,
+     symbolSize:7,lineStyle:{width:2,color:'#d8392b'},itemStyle:{color:'#d8392b'},
+     markPoint:{symbol:'pin',symbolSize:46,data:[
+       {name:'8/14涨停',coord:['08-14',37.62],value:'涨停',itemStyle:{color:'#d8392b'}},
+       {name:'8/20签署大涨',coord:['08-20',40.20],value:'+11%',itemStyle:{color:'#b7791f'}},
+       {name:'8/21公告',coord:['08-21',40.39],value:'公告',itemStyle:{color:'#2563c9'}}
+     ]}},
+    {type:'bar',data:vol,xAxisIndex:1,yAxisIndex:1,itemStyle:{color:function(p){return p.value>=100000?'#b7791f':'#1a8a4f';}}}
+  ]
+});
+
+// 行业分布饼图
+var pie = echarts.init(document.getElementById('pieChart'));
+pie.setOption({
+  tooltip:{trigger:'item',formatter:'{b}: {c}%'},
+  legend:{bottom:0,type:'scroll'},
+  series:[{
+    type:'pie',radius:['38%','66%'],center:['50%','45%'],
+    data:[
+      {name:'医药生物(7只)',value:76.9},
+      {name:'通信散热(阿莱德)',value:9.4},
+      {name:'电子面板(联得)',value:7.6},
+      {name:'化工/诊断(新开源)',value:6.1}
+    ],
+    label:{formatter:'{b}\n{c}%',fontSize:11},
+    itemStyle:{borderColor:'#fff',borderWidth:2}
+  }]
+});
+</script>
+</body>
+</html>
