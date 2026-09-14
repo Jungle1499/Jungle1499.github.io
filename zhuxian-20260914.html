@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=975, initial-scale=1.0">
+<title>主线分析_20260914 · 三阶段框架 P2 扩散（医药CXO）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;background:#1a1a2e;color:#a0a0c0;min-width:975px;padding-bottom:60px}
+.num{font-family:"Segoe UI","Arial",sans-serif}
+.report{width:975px;margin:0 auto;background:#1a1a2e}
+
+/* ===== Header ===== */
+.header{width:975px;height:170px;background:linear-gradient(135deg,#1a2a6c 0%,#2d4a8a 40%,#1a1a2e 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #2a2a4a;border-radius:6px 6px 0 0}
+.header::before{content:"";position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(233,69,96,.28) 0%,transparent 70%);border-radius:50%}
+.header::after{content:"";position:absolute;bottom:-60px;left:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(126,200,255,.18) 0%,transparent 70%);border-radius:50%}
+.header-title{position:relative;z-index:2;font-size:33.4px;font-weight:700;color:#ffffff;letter-spacing:.5px;text-align:center}
+.header-title .accent{color:#e94560}
+.header-sub{position:relative;z-index:2;font-size:18.4px;color:#c0c0d0;margin-top:14px;text-align:center}
+.header-pill{display:inline-block;position:relative;z-index:2;background:rgba(233,69,96,.18);border:1px solid rgba(233,69,96,.45);color:#ff8fa0;padding:6px 18px;border-radius:20px;font-size:15.0px;margin-top:14px}
+
+/* ===== Section ===== */
+.section{padding:24px 18px;border-bottom:1px solid #22223c}
+.section-title{font-size:25.0px;font-weight:700;color:#e94560;margin-bottom:18px;padding-left:12px;border-left:3px solid #e94560}
+
+/* ===== 三阶段框架卡片 ===== */
+.framework{background:linear-gradient(135deg,rgba(233,69,96,.08),rgba(233,69,96,.02));border:1px solid #2a2a5a;border-radius:8px;padding:20px 24px;margin-bottom:24px}
+.framework-title{font-size:25.0px;font-weight:700;color:#faad14;margin-bottom:14px}
+.framework p{font-size:15.3px;line-height:1.85;margin-bottom:8px;color:#c0c0d0}
+.framework b{color:#e94560}
+.framework .yellow{color:#faad14}
+.framework .white{color:#fff}
+.framework .green{color:#52c41a}
+
+/* ===== 市场概况 ===== */
+.index-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.index-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 12px;text-align:center}
+.index-name{font-size:14.4px;color:#9aa3c0;margin-bottom:8px}
+.index-price{font-size:25.0px;font-weight:700;margin-bottom:6px;color:#e0e0e0}
+.index-pct{font-size:14.8px;font-weight:700}
+.up{color:#e94560}
+.down{color:#52c41a}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 16px;text-align:center}
+.stat-name{font-size:14.4px;color:#9aa3c0;margin-bottom:8px}
+.stat-value{font-size:33.4px;font-weight:700;margin-bottom:6px;color:#e0e0e0}
+.stat-sub{font-size:13.7px;color:#e94560}
+
+.judgment-line{font-size:15.3px;line-height:1.9;margin-bottom:6px;color:#c0c0d0}
+.judgment-line .ok{color:#52c41a}
+.judgment-line .yellow{color:#faad14}
+.judgment-line .red{color:#e94560}
+.judgment-line .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#e94560;margin-right:6px;vertical-align:middle}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.chart-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 16px}
+.chart-title{font-size:17.6px;color:#faad14;font-weight:700;margin-bottom:10px}
+.chart{width:100%;height:316px}
+
+/* ===== 主线确认 ===== */
+.confirm-text{font-size:15.3px;line-height:1.85;margin-bottom:14px;color:#c0c0d0}
+.confirm-text b{color:#fff}
+.confirm-text .red{color:#e94560}
+.confirm-text .yellow{color:#faad14}
+
+.table-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.data-table{width:100%;border-collapse:collapse;font-size:14.4px}
+.data-table th{background:#22223c;color:#a0a0c0;font-weight:400;padding:8px 10px;border:1px solid #2a2a4a;text-align:left}
+.data-table td{background:#16162e;color:#c0c0d0;padding:8px 10px;border:1px solid #2a2a4a}
+.data-table tr td:first-child{color:#8888aa;text-align:center;width:32px}
+.data-table .num{font-family:"Segoe UI","Arial",sans-serif}
+.up-pct{color:#e94560;font-weight:700}
+
+/* ===== 催化剂 2x2 ===== */
+.driver-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.driver-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #e94560;border-radius:6px;padding:16px 18px}
+.driver-title{font-size:15.3px;font-weight:700;color:#e94560;margin-bottom:10px}
+.driver-text{font-size:14.4px;line-height:1.8;color:#c0c0d0}
+.driver-text b{color:#faad14}
+
+/* ===== 龙头 hero ===== */
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.hero-card{background:#22223c;border:1px solid #2a2a4a;border-radius:8px;padding:18px 20px;position:relative}
+.hero-badge{position:absolute;top:14px;right:14px;background:#e94560;color:#fff;font-size:14.8px;padding:4px 12px;border-radius:14px;font-weight:700}
+.hero-name{font-size:20.1px;font-weight:700;color:#fff;margin-bottom:6px}
+.hero-code{font-size:14.8px;color:#9aa3c0;margin-bottom:14px}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;font-size:14.4px;margin-bottom:14px}
+.hero-stat-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #2a2a4a}
+.hero-label{color:#9aa3c0}
+.hero-val{color:#e0e0e0;font-weight:700}
+.hero-val.up{color:#e94560}
+.hero-val.down{color:#52c41a}
+.hero-reason{font-size:14.4px;line-height:1.85;color:#c0c0d0;border-top:1px solid #2a2a4a;padding-top:12px}
+.hero-reason b{color:#faad14}
+.hero-reason .red{color:#e94560}
+.hero-reason .green{color:#52c41a}
+.hero-reason .yellow{color:#faad14}
+
+/* ===== 飞书策略群 ===== */
+.strategy-intro{font-size:15.3px;color:#c0c0d0;margin-bottom:14px;padding:10px 14px;background:rgba(233,69,96,.05);border-left:2px solid #e94560;border-radius:4px}
+.p-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #faad14;border-radius:6px;padding:14px 18px;margin-bottom:14px}
+.p-card.p3{background:linear-gradient(135deg,rgba(233,69,96,.1),rgba(233,69,96,.03));border-left-color:#e94560}
+.p-card.p2{border-left-color:#faad14}
+.p-card.p1{border-left-color:#52c41a}
+.p-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.p-stage{font-size:14.8px;font-weight:700;color:#faad14;padding:3px 10px;border-radius:12px;background:rgba(250,173,20,.15);border:1px solid rgba(250,173,20,.4)}
+.p-stage.p3-confirm{color:#ff8fa0;background:rgba(233,69,96,.18);border-color:rgba(233,69,96,.45)}
+.p-stage.p3-warn{color:#faad14;background:rgba(250,173,20,.15);border-color:rgba(250,173,20,.4)}
+.p-stage.p2-stage{color:#faad14;background:rgba(250,173,20,.15);border-color:rgba(250,173,20,.4)}
+.p-stage.p1-stage{color:#52c41a;background:rgba(82,196,26,.15);border-color:rgba(82,196,26,.4)}
+.p-stage.p2-withdraw{color:#8888aa;background:rgba(136,136,170,.15);border-color:rgba(136,136,170,.4)}
+.p-stage.p2-defense{color:#7ec8ff;background:rgba(126,200,255,.15);border-color:rgba(126,200,255,.4)}
+.p-title{font-size:18.4px;font-weight:700;color:#fff;flex:1;margin:0 14px}
+.p-advice{font-size:15.3px;font-weight:700;color:#faad14;text-align:right;white-space:nowrap}
+.p-advice.sell{color:#e94560}
+.p-advice.hold{color:#52c41a}
+.p-advice.watch{color:#8888aa}
+.p-pairs{font-size:14.4px;color:#a0a0c0;margin-bottom:10px;line-height:1.7}
+.p-pairs b{color:#faad14}
+.p-stock-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.p-stock{background:#16162e;border:1px solid #2a2a4a;border-radius:4px;padding:8px 10px;text-align:center}
+.p-stock-name{font-size:14.8px;color:#c0c0d0;font-weight:700;margin-bottom:4px}
+.p-stock-val{font-size:14.4px;color:#e94560;font-weight:700}
+.p-stock-price{font-size:13.1px;color:#8888aa;margin-top:2px}
+.p-verify{font-size:14.4px;line-height:1.85;color:#c0c0d0;margin-bottom:6px;padding:8px 12px;background:rgba(0,0,0,.15);border-radius:4px}
+.p-verify b{color:#faad14}
+.p-verify .red{color:#e94560}
+.p-verify .green{color:#52c41a}
+.p-op{font-size:14.4px;line-height:1.7;color:#a0a0c0}
+.p-op b{color:#faad14}
+
+/* ===== 七大板块网格 ===== */
+.segment-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.segment-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #e94560;border-radius:6px;padding:14px 18px}
+.segment-card.b2{border-left-color:#faad14}
+.segment-card.b3{border-left-color:#52c41a}
+.segment-card.b4{border-left-color:#7ec8ff}
+.segment-card.b5{border-left-color:#52c41a}
+.segment-card.b6{border-left-color:#faad14}
+.segment-card.b7{border-left-color:#8888aa}
+.segment-name{font-size:18.4px;font-weight:700;color:#fff;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #2a2a4a}
+.segment-text{font-size:14.4px;line-height:1.85;color:#c0c0d0;margin-bottom:8px}
+.segment-text b{color:#faad14}
+.segment-text .red{color:#e94560}
+.segment-pair{font-size:14.4px;color:#52c41a;font-weight:700;padding:6px 10px;background:rgba(82,196,26,.08);border-radius:4px;margin-bottom:6px}
+.segment-pair b{color:#fff}
+.segment-pair-detail{font-size:14.4px;line-height:1.7;color:#a0a0c0;margin-top:4px}
+.segment-pair-detail b{color:#faad14}
+
+/* ===== 综合研判 ===== */
+.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.final-card{background:#22223c;border:1px solid #2a2a4a;border-radius:6px;padding:16px 20px}
+.final-title{font-size:18.4px;font-weight:700;color:#faad14;margin-bottom:12px;padding-bottom:8px;border-bottom:1px dashed #2a2a4a}
+.final-list{list-style:none;font-size:14.4px;line-height:1.85;color:#c0c0d0}
+.final-list li{margin-bottom:8px;padding-left:18px;position:relative}
+.final-list li::before{content:counter(li);counter-increment:li;position:absolute;left:0;top:0;color:#faad14;font-weight:700}
+.final-list{counter-reset:li}
+.final-list b{color:#fff}
+.final-list .red{color:#e94560}
+.final-list .green{color:#52c41a}
+
+.key-op-box{background:linear-gradient(135deg,rgba(250,173,20,.08),rgba(250,173,20,.02));border:1.5px solid #faad14;border-radius:6px;padding:16px 22px;margin-top:14px}
+.key-op-title{font-size:18.4px;font-weight:700;color:#faad14;margin-bottom:12px}
+.key-op-list{list-style:none;font-size:14.8px;line-height:1.95;color:#c0c0d0}
+.key-op-list li{padding-left:16px;position:relative;margin-bottom:6px}
+.key-op-list li::before{content:"●";position:absolute;left:0;top:0;color:#faad14}
+.key-op-list b{color:#fff}
+.key-op-list .red{color:#e94560}
+.key-op-list .green{color:#52c41a}
+.key-op-list .yellow{color:#faad14}
+
+/* ===== Footer ===== */
+.footer{padding:24px 18px;text-align:center;font-size:14.4px;color:#8888aa;line-height:1.85}
+.disclaimer b{color:#e94560}
+.footer-time{margin-top:8px;color:#a0a0c0}
+.footer-task{margin-top:4px;color:#e94560;font-weight:700}
+</style>
+</head>
+<body>
+<div class="report">
+
+<!-- ===== Header ===== -->
+<div class="header">
+  <div class="header-title">2026年9月14日 A股<span class="accent">最强主线</span></div>
+  <div class="header-sub">医药（CXO / 医疗服务 / 创新药）— 高低切换接棒主线，<span class="accent" style="color:#e94560;font-weight:700">P1 启动 → P2 扩散确认</span></div>
+  <div class="header-pill">2026年9月14日（周一）收盘 · <span class="num">三阶段框架</span> <span style="color:#e94560;font-weight:700">P2 扩散</span> · 次线：元件 ㊹ 吸筹背离</div>
+</div>
+
+<div style="padding:0 18px">
+
+<!-- ===== 三阶段理论框架 ===== -->
+<div class="framework" style="margin-top:20px">
+  <div class="framework-title">三阶段理论框架<span style="color:#e94560">（一性原理 = 人性的扩张与收缩）</span></div>
+  <p>板块行情的完整周期分为三个阶段：<span class="yellow">犹豫期</span> → <span class="yellow">共识期</span> → <span class="yellow">加速期</span>。</p>
+  <p><span class="yellow">P1（启动）</span>：逻辑龙头先涨；<span class="yellow">P2（二线）</span>：后排补涨，涨速反超龙头 = 人性扩张；<span class="yellow">P3（高潮）</span>：龙头涨速反超，群体狂热。</p>
+  <p><span class="yellow">配对原则</span>：选择市值可匹配、业务类似、涨幅最大的两个标的，例如 CRO/重组蛋白方向 <span style="color:#fff">Pair = 近岸蛋白 / 百普赛斯</span>，PCB 主升浪时 <span style="color:#fff">Pair = 胜宏科技 / 沪电股份</span>。</p>
+  <p><span class="yellow">起涨/阶段确认</span>：板块进入全市场涨幅前三 = <span class="green">P1 预警</span>；Pair 中的标的连续两天跑赢另一个 = 阶段确认（龙头连续 2 天跑赢补涨 = <span class="green">P1 确认</span>；补涨连续 2 天跑赢龙头 = <span class="green">P2 确认</span>；龙头再连续 2 天跑赢补涨 = <span class="green">P3 确认</span>）。否则 P1 预警后，后排跑赢 1 天仅是 P2 预警，需重新计数。</p>
+  <p><span class="yellow">买卖</span>：P1 试错买入；P2 加仓补涨；上涨情绪周期可拿到 P3，退潮周期 P2 确认即陆续卖出。</p>
+</div>
+
+<!-- ===== 一、市场概况 ===== -->
+<div class="section">
+  <div class="section-title">一、市场概况</div>
+  <div class="index-grid">
+    <div class="index-card"><div class="index-name">上证指数</div><div class="index-price num">3885.33</div><div class="index-pct down num">-0.07%</div></div>
+    <div class="index-card"><div class="index-name">深证成指</div><div class="index-price num">13384.57</div><div class="index-pct down num">-0.64%</div></div>
+    <div class="index-card"><div class="index-name">创业板指</div><div class="index-price num">3285.58</div><div class="index-pct down num">-1.10%</div></div>
+    <div class="index-card"><div class="index-name">科创50</div><div class="index-price num">1528.27</div><div class="index-pct down num">-1.62%</div></div>
+    <div class="index-card"><div class="index-name">上证50</div><div class="index-price num">2861.05</div><div class="index-pct down num">-0.25%</div></div>
+    <div class="index-card"><div class="index-name">沪深300</div><div class="index-price num">4480.08</div><div class="index-pct down num">-0.67%</div></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-name">两市成交额</div><div class="stat-value num">16292 亿</div><div class="stat-sub num">缩量 3427 亿（-17.4%）</div></div>
+    <div class="stat-card"><div class="stat-name">涨停 / 跌停</div><div class="stat-value num">57 / 18</div><div class="stat-sub num">涨停集中于医药·电子材料</div></div>
+    <div class="stat-card"><div class="stat-name">上涨 / 下跌 / 平</div><div class="stat-value num">3126 / 2224 / 212</div><div class="stat-sub num">上涨家数占比 56%</div></div>
+  </div>
+  <div class="judgment-line"><span class="dot"></span>大盘小绿：<span class="ok">无</span>（上涨 56%，未触发；需下跌家数占比 &gt; 65% 且连续 2 天）</div>
+  <div class="judgment-line"><span class="dot"></span>市场情绪：<span class="yellow">指数与情绪背离</span>——六指数全绿（科创50 <span class="red num">-1.62%</span>）但个股普涨（56% 上涨、涨停 57），权重/CPO 大票拖累指数，医药 + 元件吸金；regime 判定 = <span class="yellow">反弹修复日（规则55，广度 11.7%→56% 修复）</span></div>
+  <div class="judgment-line"><span class="dot"></span>主线轮动速度：<span class="yellow">9/10 商品冲击（退潮日）→ 9/11 医药 P1 试探启动 → 9/14 医药 P2 扩散 + 元件 ㊹ 吸筹确认</span>（隔周末后主线接棒确认）</div>
+  <div class="chart-row">
+    <div class="chart-card"><div class="chart-title">六大指数 · 收盘涨跌幅（全绿）</div><div id="chart-index" class="chart"></div></div>
+    <div class="chart-card"><div class="chart-title">涨跌家数分布（3126 涨 / 2224 跌 / 57 涨停）</div><div id="chart-dist" class="chart"></div></div>
+  </div>
+</div>
+
+<!-- ===== 二、主线确认 ===== -->
+<div class="section">
+  <div class="section-title">二、主线确认：<span style="color:#fff">医药（CXO / 医疗服务 / 创新药 / 生物制品）</span></div>
+  <div class="confirm-text">行业第 1 <span class="red">医疗服务 +4.65%</span> vs 第 2 <span class="red">摩托车及其他 +3.15%</span>，差 <span class="yellow">1.50%</span> 未达 3% 断层标准，但医药多子行业共振：医疗服务广度 <span class="red">47/51（92%）</span>、CRO 概念 <span class="red">885927 +4.89%</span>（广度 <span class="red">36/37 = 97%</span>，主力净流入 13.5 亿）、生物制品 <span class="red">+2.40%</span>（近岸蛋白 20cm）、化学制药 <span class="red">+2.12%</span>（诺诚健华 +11.93%），且 <span class="red">药明康德（4815 亿总龙头）+5.04% 放量 68.69 亿</span>——大票与情绪小票共振。五维综合判定<span class="red">医药（CXO / 医疗服务 / 创新药）</span>为今日最强主线，承接 9/11 P1 启动 → 今日 <span class="red">P2 扩散确认【框架应用 三-①】</span>。次线：<span class="yellow">元件（PCB/陶瓷基板/MLCC）主力 +31.26 亿全市场第 1、5D/20D 双正（㊹真趋势豁免）</span>，价格 -0.21% 未动 = 吸筹背离。</div>
+  <div class="table-row">
+    <div>
+      <div class="chart-title">申万二级行业 Top 6</div>
+      <table class="data-table">
+        <tr><th>排名</th><th>板块</th><th>涨幅</th><th class="num">主力净流入(亿)</th></tr>
+        <tr><td>1</td><td>医疗服务</td><td class="up-pct num">+4.65%</td><td class="num">+16.49</td></tr>
+        <tr><td>2</td><td>摩托车及其他</td><td class="up-pct num">+3.15%</td><td class="num">—</td></tr>
+        <tr><td>3</td><td>橡胶</td><td class="up-pct num">+2.84%</td><td class="num">—</td></tr>
+        <tr><td>4</td><td>生物制品</td><td class="up-pct num">+2.40%</td><td class="num">—</td></tr>
+        <tr><td>5</td><td>电子化学品Ⅱ</td><td class="up-pct num">+2.30%</td><td class="num">+17.98</td></tr>
+        <tr><td>6</td><td>化学制药</td><td class="up-pct num">+2.12%</td><td class="num">—</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="chart-title">概念板块 Top 8（剔除涨停/连板类）</div>
+      <table class="data-table">
+        <tr><th>排名</th><th>概念(指数代码)</th><th>涨幅</th><th class="num">主力净流入(亿)</th><th>代表标的</th></tr>
+        <tr><td>1</td><td>靶材（—）</td><td class="up-pct num">+5.38%</td><td class="num">+4.9</td><td>欧莱新材 <span class="up-pct num">+14.12%</span></td></tr>
+        <tr><td>2</td><td>CRO（885927）</td><td class="up-pct num">+4.89%</td><td class="num">+13.5</td><td>万邦医药 <span class="up-pct num">+20.00%</span></td></tr>
+        <tr><td>3</td><td>培育钻石（885937）</td><td class="up-pct num">+4.77%</td><td class="num">+17.8</td><td>英诺激光 <span class="up-pct num">+15.73%</span></td></tr>
+        <tr><td>4</td><td>陶瓷基板（—）</td><td class="up-pct num">+4.55%</td><td class="num">+16.1</td><td>科翔股份 <span class="up-pct num">+20.00%</span></td></tr>
+        <tr><td>5</td><td>一汽系（—）</td><td class="up-pct num">+4.44%</td><td class="num">+1.0</td><td>—</td></tr>
+        <tr><td>6</td><td>打印机（—）</td><td class="up-pct num">+3.57%</td><td class="num">+0.5</td><td>—</td></tr>
+        <tr><td>7</td><td>华为汽车股权合作（—）</td><td class="up-pct num">+3.35%</td><td class="num">+3.1</td><td>—</td></tr>
+        <tr><td>8</td><td>MLCC（886112）</td><td class="up-pct num">+3.02%</td><td class="num">+22.1</td><td>双星新材 <span class="up-pct num">+10.04%</span></td></tr>
+      </table>
+      <div style="font-size:13.1px;color:#8888aa;margin-top:6px;line-height:1.7">口径注：概念榜为 westock 概念口径（同花顺概念族）；指数代码 885xxx 仅标注经同花顺概念指数日报核实的条目，「—」为未核实不标注（不编造）。概念资金仅作排序参考，与申万二级行业口径不可直接相加。</div>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-top:14px"><div class="chart-title">概念板块涨幅排行 Top 8（医药 CRO 领涨 + 电子材料扩散）</div><div id="chart-sector" class="chart" style="height:316px"></div></div>
+</div>
+
+<!-- ===== 三、四重核心驱动因素 ===== -->
+<div class="section">
+  <div class="section-title">三、四重核心驱动因素</div>
+  <div class="driver-grid">
+    <div class="driver-card"><div class="driver-title">驱动 1 · 资金高低切换</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">AI 硬件主力大幅流出 → 低位医药 + 电子材料承接</div><div class="driver-text">通信设备主力净流出 <b>-74.85 亿（全市场倒数第 1，20 日 -336.07 亿）</b>、半导体 <b>-73.98 亿（20 日 -1268.77 亿）</b>；同期医疗服务 <b>+16.49 亿</b>、元件 <b>+31.26 亿（全市场第 1）</b>。存量资金从拥挤 AI 硬件切向低位医药与电子材料——背离四象限：AI 硬件「跌 + 净流出」= <b>主跌出货（回避）</b>，医药承接方为反弹修复主力。</div></div>
+    <div class="driver-card"><div class="driver-title">驱动 2 · 医药广度与大小票共振</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">医疗服务 47/51、CRO 36/37，龙头与情绪票齐涨</div><div class="driver-text">医疗服务上涨广度 <b>92%</b>、CRO 概念 <b>97%</b>——是普涨而非个别脉冲（三-① 主线资格验证）。情绪端：万邦医药 <b>20cm 涨停</b>（CRO + 减肥药双属性，换手 38.71%）、近岸蛋白 <b>20cm 涨停</b>（重组蛋白）、百普赛斯 <b>+16.57%</b>；产业端：药明康德 <b>4815 亿市值 +5.04% 放量 68.69 亿</b>。大票与情绪票共振是 P2 扩散的资格确认。</div></div>
+    <div class="driver-card"><div class="driver-title">驱动 3 · 元件 5D/20D 双正（㊹ 真趋势豁免）</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">主力 +31.26 亿全市场第 1，价格却 -0.21% 未动</div><div class="driver-text">元件（PCB/陶瓷基板/MLCC）主力净流入 <b>+31.26 亿全市场第 1</b>，5 日 <b>+145.44 亿</b> / 20 日 <b>+1.33 亿（由负转正）</b>→ 双正确认 ㊹ 真趋势豁免；价格 -0.21% 滞涨 = <b>吸筹背离（底背离吸筹·低吸象限）</b>。陶瓷基板科翔股份 20cm、MLCC 双星新材 +10.04%、电子化学品天通股份 +10.01% 为子环节亮点。<b>⚠️框架待更新：元件 20D 由负转正，14:30 的规则65「拐点过渡档」升级为㊹「真趋势豁免」。</b></div></div>
+    <div class="driver-card"><div class="driver-title">驱动 4 · 缩量结构 + 熔断纪律</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">缩量 3427 亿的存量博弈，规则58 熔断第 3 日</div><div class="driver-text">两市成交 <b>16291.76 亿，较上日缩量 3427 亿（-17.4%）</b>，指数普跌但涨停 57 只、上涨占比 56%——增量资金不足、存量高低切换的结构性行情。<b>规则58 单向失真熔断连续第 3 日</b>：总仓位维持 30-35% 下限不扩仓，新方向开仓只允许「分歧回踩低吸」，严禁追高。</div></div>
+  </div>
+</div>
+
+<!-- ===== 四、核心龙头 ===== -->
+<div class="section">
+  <div class="section-title">四、核心龙头：<span style="color:#fff">3 只标的精选</span></div>
+  <div class="hero-grid">
+    <div class="hero-card">
+      <div class="hero-badge">情绪龙头 · P2 扩散</div>
+      <div class="hero-name">万邦医药</div>
+      <div class="hero-code num">301520.SZ <span style="color:#8888aa">|</span> CRO·减肥药双属性</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">63.60 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+20.00%（涨停）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">7.49 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">38.71%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">59.26 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+4.76%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val down num">607.08</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+125.41%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>今日医药行情的<span class="red">绝对情绪龙头</span>——CRO 概念（885927）与减肥药概念（886051）双属性，20cm 涨停、换手 38.71% 全市场顶级人气。CRO 概念 +4.89%（36/37 广度 97%）为医药主线情绪发起点。<span class="red">注：PE 607 极度透支、流通市值仅 20.8 亿，纯情绪定价，严禁追高、严格止损 -8%。</span></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-badge">产业总龙头 · P2 确认</div>
+      <div class="hero-name">药明康德</div>
+      <div class="hero-code num">603259.SH <span style="color:#8888aa">|</span> CXO 全球龙头</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">158.86 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+5.04%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">68.69 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">1.78%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">4815 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+3.66%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val num">22.22</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+79.40%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>CXO 产业总龙头，今日放量 68.69 亿、+5.04% 创阶段新高，是医药主线<span class="red">大票资金确认</span>的关键——机构型资金入场而非纯情绪脉冲。<span class="yellow">PE(TTM) 22 倍在主线龙头中估值最低，20 日线附近有支撑（20 日涨幅 -4.52% 仍处相对低位），是医药方向仓位配置的首选载体。</span>医疗服务 47/51 广度 + CRO 36/37 广度为其提供板块贝塔。</div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-badge">元件吸筹代表 · ㊹ 豁免</div>
+      <div class="hero-name">科翔股份</div>
+      <div class="hero-code num">300903.SZ <span style="color:#8888aa">|</span> PCB·陶瓷基板</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">108.30 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+20.00%（涨停）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">35.09 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">9.93%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">471.52 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+21.47%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val down num">-188.10</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+461.43%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>元件方向（主力 +31.26 亿全市场第 1、5D/20D 双正㊹）的<span class="red">子环节情绪代表</span>——陶瓷基板概念 +4.55%（10/13）领涨，20cm 涨停、5 日 +21.47%。元件价格指数 -0.21% 未动而资金持续流入 = 吸筹背离，后续若大票（沪电/生益）企稳则有补涨传导。<span class="red">注：PE -188 亏损定价、年初至今 +461% 高位剧烈波动，只做低吸不做追涨。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 五、飞书策略群 ===== -->
+<div class="section">
+  <div class="section-title">五、飞书策略群 · <span style="color:#fff">七大板块 Pairs + 三阶段判定</span></div>
+  <div class="strategy-intro">基于 9/14 14:30 盘中框架（<span class="red">医药 CXO 集群 P1→P2 / 元件吸筹 / AI 硬件出货 / 军工未过规则66</span>），结合三阶段理论（<span class="yellow">犹豫 → 共识 → 加速</span>）与收盘数据综合研判；规则58 熔断第 3 日，总仓 30-35% 下限。</div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2 扩散 · 持有/低吸</span><div class="p-title">医药（CXO / 医疗服务 / 创新药）</div><div class="p-advice hold">建议：持有为主 · 分歧回踩低吸</div></div>
+    <div class="p-pairs"><b>Pairs：</b>近岸蛋白(688137) / 百普赛斯(301080) P2扩散 <span style="color:#8888aa">|</span> 万邦医药(301520) / 诺诚健华(688428) P1试错</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">万邦医药</div><div class="p-stock-val num">+20.00%</div><div class="p-stock-price num">63.60</div></div>
+      <div class="p-stock"><div class="p-stock-name">近岸蛋白</div><div class="p-stock-val num">+20.00%</div><div class="p-stock-price num">76.80</div></div>
+      <div class="p-stock"><div class="p-stock-name">百普赛斯</div><div class="p-stock-val num">+16.57%</div><div class="p-stock-price num">91.74</div></div>
+      <div class="p-stock"><div class="p-stock-name">诺诚健华</div><div class="p-stock-val num">+11.93%</div><div class="p-stock-price num">29.47</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 医疗服务 <span class="red">+4.65% 全市场行业第 1</span>（47/51 广度 92%，主力 +16.49 亿）；② CRO 概念 885927 <span class="red">+4.89%（36/37）</span>——9/11 P1 启动 → 今日多子行业共振 = <span class="red">P2 扩散确认【框架应用 三-①】</span>；③ 药明康德 4815 亿 +5.04% 放量 68.69 亿，大票与情绪票共振成立；④ 近岸蛋白/百普赛斯（重组蛋白双雄）+20.00%/+16.57% 同步爆发。</div>
+    <div class="p-op"><b>操作：</b>涨停双雄（万邦/近岸）<span class="red">不追高</span>；P2 阶段加仓补涨标的首选未启动二线（化学制药/中药Ⅱ/医药商业），等分歧回踩低吸；止损 -8% 或跌破 20 日线。医疗 20 日资金仍为 -57.53 亿，属超跌修复非右侧大趋势，仓位受规则58 约束。</div>
+  </div>
+
+  <div class="p-card p1">
+    <div class="p-card-head"><span class="p-stage p1-stage">P1 观察 · ㊹ 豁免</span><div class="p-title">元件 / PCB（陶瓷基板 / MLCC / 电子化学品）</div><div class="p-advice hold">建议：底背离低吸 · 不追涨停</div></div>
+    <div class="p-pairs"><b>Pairs：</b>科翔股份(300903) / 双星新材(002585) P1 <span style="color:#8888aa">|</span> 大票分化观察：沪电股份(002463) / 胜宏科技(300476)</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">科翔股份</div><div class="p-stock-val num">+20.00%</div><div class="p-stock-price num">108.30</div></div>
+      <div class="p-stock"><div class="p-stock-name">双星新材</div><div class="p-stock-val num">+10.04%</div><div class="p-stock-price num">10.96</div></div>
+      <div class="p-stock"><div class="p-stock-name">沪电股份</div><div class="p-stock-val down num">-1.99%</div><div class="p-stock-price num">125.70</div></div>
+      <div class="p-stock"><div class="p-stock-name">胜宏科技</div><div class="p-stock-val down num">-1.74%</div><div class="p-stock-price num">225.00</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 元件主力 <span class="red">+31.26 亿全市场第 1</span>、5D +145.44 亿 / 20D +1.33 亿（<span class="red">双正 → ㊹ 真趋势豁免</span>），价格却 -0.21% = <span class="red">吸筹背离（底背离吸筹·低吸）</span>；② 子环节亮点：陶瓷基板 +4.55%（科翔 20cm）、MLCC +3.02%（双星新材 +10.04%）、电子化学品Ⅱ +2.30%（天通股份 +10.01%）；③ <span class="red">大票未跟涨</span>：沪电 -1.99% / 胜宏 -1.74% / 生益 -1.64%——资金只进小票子环节，主线级别未到 P2。</div>
+    <div class="p-op"><b>操作：</b>㊹ 底背离低吸象限——涨停小票不追，关注沪电/生益大票企稳信号作为加仓确认；仓位 ≤10%（热门板块上限）。<b>⚠️框架待更新：元件 20D 由负转正，14:30 规则65「拐点过渡档」升级为㊹「真趋势豁免」；且「5D强正+20D负」无档位问题今日已自然消解。</b></div>
+  </div>
+
+  <div class="p-card p1">
+    <div class="p-card-head"><span class="p-stage p1-stage">P1 试错</span><div class="p-title">电池 / 锂电</div><div class="p-advice hold">建议：小仓试错 · 破位即弃</div></div>
+    <div class="p-pairs"><b>Pairs：</b>宁德时代(300750) / 亿纬锂能(300014) P1</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">宁德时代</div><div class="p-stock-val num">+2.00%</div><div class="p-stock-price num">337.11</div></div>
+      <div class="p-stock"><div class="p-stock-name">亿纬锂能</div><div class="p-stock-val num">+1.44%</div><div class="p-stock-price num">49.30</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 电池板块 +1.88%、主力 <span class="red">+16.72 亿（全行业第 4）</span>；② 宁德时代 +2.00%（但 20 日 -15.72% 仍处下降通道）、亿纬锂能 +1.44%——资金回流但价格结构未修复，属 P1 犹豫期试探。</div>
+    <div class="p-op"><b>操作：</b>P1 试错仓 ≤2%：宁德企稳 5 日线可小仓试探，跌破 20 日线即弃；不满足连续 2 天确认前不加仓。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-withdraw">退潮 · 回避</span><div class="p-title">通信设备 / CPO</div><div class="p-advice sell">建议：反弹减仓 · 不抄底</div></div>
+    <div class="p-pairs"><b>Pairs：</b>中际旭创(300308) / 新易盛(300502)（原 P2 → 今日确认退潮）</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">中际旭创</div><div class="p-stock-val down num">-5.72%</div><div class="p-stock-price num">873.00</div></div>
+      <div class="p-stock"><div class="p-stock-name">新易盛</div><div class="p-stock-val down num">-4.99%</div><div class="p-stock-price num">401.90</div></div>
+      <div class="p-stock"><div class="p-stock-name">天孚通信</div><div class="p-stock-val down num">-1.91%</div><div class="p-stock-price num">256.96</div></div>
+      <div class="p-stock"><div class="p-stock-name">意华股份</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">71.39</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 通信设备 <span class="red">-3.38%，主力 -74.85 亿全市场倒数第 1</span>（20 日 -336.07 亿）；② 中际旭创（1.03 万亿）-5.72% / 新易盛 -4.99%——「涨 + 净流出」象限确认 = <span class="red">主跌出货（回避）</span>；③ 规则64（5D 由正转负 → ㊹ 作废）昨日已触发，今日兑现——<span class="red">验证 14:30「AI 硬件为唯一系统性出货方向」</span>；④ 仅意华股份（通信连接器，5D +16.46%）独立逆势，不改板块整体出货。</div>
+    <div class="p-op"><b>操作：</b>退潮期 P2 确认即陆续卖出——持仓反弹即减、不抄底；中际旭创/新易盛 20 日 -12.79% / -13.88%，趋势已坏。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-withdraw">退潮 · 回避</span><div class="p-title">半导体（设备 / 材料 / 存储）</div><div class="p-advice sell">建议：回避 · 仅电子化学品细分观察</div></div>
+    <div class="p-pairs"><b>Pairs：</b>无有效多头 Pair（板块整体主力流出）</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">天通股份</div><div class="p-stock-val num">+10.01%</div><div class="p-stock-price num">30.23</div></div>
+      <div class="p-stock"><div class="p-stock-name">半导体板块</div><div class="p-stock-val down num">-1.31%</div><div class="p-stock-price num">20D-1269亿</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 半导体 <span class="red">-1.31%，主力 -73.98 亿（倒数第 2）</span>，20 日 <span class="red">-1268.77 亿</span>——<span class="red">㊸（20D 深负禁多）深负生效</span>；② 电子化学品Ⅱ +2.30%（主力 +17.98 亿第 2）为板块内唯一吸金子环节，天通股份 +10.01% 属独立行情，不入主线池。</div>
+    <div class="p-op"><b>操作：</b>㊸ 生效 = 板块方向只空不多；电子化学品个股行情与半导体整体出货并存，严格区分子环节与板块口径。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-withdraw">空 · 回避</span><div class="p-title">军工（地面兵装 / 航空装备）</div><div class="p-advice watch">建议：观望（规则66 未过）</div></div>
+    <div class="p-pairs"><b>Pairs：</b>无有效多头 Pair</div>
+    <div class="p-verify"><b>今日验证：</b>地面兵装Ⅱ <span class="red">-3.39%（1/12）</span>、航空装备Ⅱ <span class="red">-2.60%</span>、航海装备Ⅱ <span class="red">-1.99%（0/10）</span>——延续 14:30 空档，<span class="red">规则66「真趋势豁免」两道再确认（量能前置 + 次日开盘 30 分钟守 T-1 收盘）均未通过</span>。</div>
+    <div class="p-op"><b>操作：</b>观望回避，待广度与量能双重确认后再评估。</div>
+  </div>
+</div>
+
+<!-- ===== 六、七大板块 ===== -->
+<div class="section">
+  <div class="section-title">六、七大板块前三强细分环节 + 最优 Pair 配对</div>
+
+  <div class="segment-grid">
+    <div class="segment-card">
+      <div class="segment-name">① 医药 CXO / 创新药（主线 · P2）</div>
+      <div class="segment-text"><b>前三强：</b>① CXO/医疗服务（万邦医药 <span class="red">+20.00%</span> / 药明康德 +5.04%）② 重组蛋白·生物制品（近岸蛋白 <span class="red">+20.00%</span> / 百普赛斯 +16.57%）③ 创新药（诺诚健华 +11.93%）</div>
+      <div class="segment-pair"><b>最优配对：</b>近岸蛋白 (53.7 亿) + 百普赛斯 (153.8 亿) —— 重组蛋白/科研试剂双雄，业务同链、+20.00%/+16.57% 同步，P2 扩散代表。</div>
+      <div class="segment-pair-detail"><b>情绪观察：</b>万邦医药（59.3 亿，CRO+减肥药双属性）为情绪龙头，市值与诺诚健华（521 亿）不匹配，不作严格 Pair。</div>
+    </div>
+    <div class="segment-card b2">
+      <div class="segment-name">② 元件 / PCB / MLCC（次线 · ㊹）</div>
+      <div class="segment-text"><b>前三强：</b>① 陶瓷基板（科翔股份 <span class="red">+20.00%</span>）② MLCC 材料（双星新材 +10.04%）③ 电子化学品（天通股份 +10.01%）</div>
+      <div class="segment-pair"><b>最优配对：</b>科翔股份 (471.5 亿) + 双星新材 (125.1 亿) —— 元件子环节弹性双雄（市值差偏大，注记在案）。</div>
+      <div class="segment-pair-detail"><b>大票观察：</b><span class="red">沪电股份 -1.99% / 胜宏科技 -1.74% / 生益科技 -1.64% 均未跟涨</span>——资金仅进小票子环节，等待大票企稳作为加仓确认。<b>⚠️框架待更新：元件子环节跨度大（陶瓷基板/MLCC 离型膜/电子化学品），无标准市值匹配 Pair。</b></div>
+    </div>
+    <div class="segment-card b3">
+      <div class="segment-name">③ 电池 / 锂电（P1 试错）</div>
+      <div class="segment-text"><b>前三强：</b>① 电池板块（+1.88%，主力 +16.72 亿第 4）② 宁德时代 +2.00% ③ 亿纬锂能 +1.44%</div>
+      <div class="segment-pair"><b>最优配对：</b>宁德时代 (15597 亿) + 亿纬锂能 (1071 亿) —— 动力+储能双龙头，资金回流先行指标。</div>
+      <div class="segment-pair-detail"><b>风险点：</b>两者 20 日仍为 -15.72% / -13.81%，下降通道未修复，P1 试错仓 ≤2%。</div>
+    </div>
+    <div class="segment-card b4">
+      <div class="segment-name">④ 银行（防御底仓）</div>
+      <div class="segment-text"><b>前三强：</b>① 瑞丰银行 +2.19%（20D +7.55%）② 交通银行 +1.87%（20D +10.43%）③ 重庆银行 +1.69%</div>
+      <div class="segment-pair"><b>最优配对：</b>瑞丰银行 (100.7 亿) + 重庆银行 (414.1 亿) —— 城农商行双雄，市值相对匹配、股息率 6.04% / 3.86%。</div>
+      <div class="segment-pair-detail"><b>定位：</b>指数缩量普跌环境下的防御底仓 4-6%，交行 20D +10.43% 为权重端最稳载体。</div>
+    </div>
+    <div class="segment-card b5">
+      <div class="segment-name">⑤ 玻璃玻纤 / 电子新材料</div>
+      <div class="segment-text"><b>前三强：</b>① 凯盛新能 <span class="red">+10.00%</span>（5D +34.41%，中国建材集团概念 +2.77%）② 中材科技 +2.47% ③ 宏和科技 +0.67%（电子级玻纤布）</div>
+      <div class="segment-pair"><b>最优配对：</b>凯盛新能 (61.8 亿) + 中材科技 (885.9 亿) —— 玻纤双雄，凯盛 5D +34.41% 强势但 20cm 级波动剧烈。</div>
+      <div class="segment-pair-detail"><b>逻辑：</b>电子布/低介电玻纤受益 PCB 上游需求传导（元件 5D +145.44 亿吸金的延伸），宏和科技 YTD +255.64% 为前期龙头。</div>
+    </div>
+    <div class="segment-card b6">
+      <div class="segment-name">⑥ 半导体（空 · ㊸ 生效）</div>
+      <div class="segment-text"><b>现状：</b>板块 -1.31%、主力 <span class="red">-73.98 亿</span>、20D <span class="red">-1268.77 亿（㊸ 深负禁多）</span>；唯一亮点为电子化学品Ⅱ（+2.30%，天通股份 +10.01%）。</div>
+      <div class="segment-pair"><b>最优配对：</b>无（板块口径只空不多）。</div>
+      <div class="segment-pair-detail"><b>细分区分：</b>电子化学品（+17.98 亿吸金）与半导体制造/存储（-73.98 亿出货）资金方向相反，须按子环节分别处理，禁止板块一锅端。</div>
+    </div>
+    <div class="segment-card b7" style="grid-column:1/-1">
+      <div class="segment-name">⑦ 通信设备 / CPO（空 · 出货兑现）</div>
+      <div class="segment-text"><b>现状：</b>板块 -3.38%、主力 <span class="red">-74.85 亿全市场倒数第 1</span>、20D -336.07 亿；中际旭创 <span class="red">-5.72%</span>（1.03 万亿）/ 新易盛 -4.99% / 天孚通信 -1.91%——规则64 触发（5D 转负 → ㊹ 作废）今日兑现，14:30「AI 硬件为唯一系统性出货方向」判断被验证。</div>
+      <div class="segment-pair"><b>最优配对：</b>无多头配对；逆势观察：意华股份 +10.00%（通信连接器，5D +16.46%）为板块内唯一结构性行情，独立标的、不改板块出货定性。</div>
+      <div class="segment-pair-detail"><b>操作：</b><span class="red">主跌出货（回避）——反弹即减仓，中际旭创/新易盛 20 日 -12.79% / -13.88% 趋势已坏，等待 20 日线走平再评估。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 七、综合研判 ===== -->
+<div class="section">
+  <div class="section-title">七、综合研判与操作建议</div>
+  <div class="final-grid">
+    <div class="final-card">
+      <div class="final-title">收盘综合结论</div>
+      <ol class="final-list">
+        <li><b>指数与情绪背离：</b>六指数全绿（科创50 <span class="red">-1.62%</span>）vs 个股普涨（3126 涨 / 56%、涨停 57）——权重与 CPO 大票拖指数，医药 + 元件吸金，regime = <b>反弹修复日（规则55）</b>。</li>
+        <li><b>主线 = 医药（CXO/医疗服务/创新药）P2 扩散确认：</b>行业第 1 + CRO 885927 概念第 2、广度 92%/97%、大小票共振，承接 9/11 P1 启动。<b>【框架应用 三-①】</b></li>
+        <li><b>次线 = 元件（资金最强）：</b>主力 +31.26 亿全市场第 1、5D/20D 双正 ㊹，价格 -0.21% = <span class="green">底背离吸筹（低吸）</span>。<b>⚠️框架待更新：20D 由负转正，14:30 规则65 拐点档升级为㊹真趋势豁免。</b></li>
+        <li><b>AI 硬件出货兑现：</b>通信设备 -74.85 亿 / 半导体 -73.98 亿主力流出前二，中际旭创 -5.72%——14:30 判断今日兑现，<span class="red">主跌出货（回避）</span>。</li>
+        <li><b>仓位纪律：</b>缩量 3427 亿 + <b>规则58 熔断第 3 日</b> → 总仓维持 30-35% 下限不扩仓，医药/元件新开仓只允许分歧回踩低吸。</li>
+      </ol>
+    </div>
+    <div class="final-card">
+      <div class="final-title">风险提示</div>
+      <ol class="final-list">
+        <li><span class="red"><b>缩量隐患：</b></span>16292 亿缩量 17.4%，普涨缺乏增量，若明日续缩，医药 P2 扩散易夭折回落。</li>
+        <li><b>医药 20D 资金仍负：</b>医疗服务 20 日 -57.53 亿——属超跌修复而非右侧大趋势，追高风险大于低吸。</li>
+        <li><b>权重拖累：</b>中际旭创（1.03 万亿）-5.72% 等 CPO 大票若续跌，创业板/科创或补跌带动情绪退潮。</li>
+        <li><b>轮动速度过快：</b>9/10 商品冲击 → 9/11 医药试探 → 9/14 医药扩散，主线持续性存疑，追高次日易站岗。</li>
+        <li><b>情绪标的估值：</b>万邦医药 PE 607、科翔股份 PE -188（YTD +461%）——20cm 标的波动剧烈，严格止损 -8%。</li>
+        <li><b>熔断期纪律：</b>规则58 连续第 3 日单向失真，禁扩仓禁追高；解除需多头结构修复信号（多向广度 + 5D 资金转正）。</li>
+      </ol>
+    </div>
+  </div>
+  <div class="key-op-box">
+    <div class="key-op-title">关键操作建议（T+1 盘前框架）</div>
+    <ul class="key-op-list">
+      <li><b>医药 CXO：</b><span class="green">🟢 P2 扩散持有为主</span>——万邦/近岸涨停不追，等分歧回踩低吸二线补涨（化学制药/生物制品/医药商业）；止损 -8% 或跌破 20 日线。</li>
+      <li><b>元件 / PCB：</b><span class="green">🟢 ㊹ 底背离低吸</span>——关注沪电/生益大票企稳作为加仓确认，小票涨停不追；仓位 ≤10%（热门板块上限）。</li>
+      <li><b>电池 / 锂电：</b><span class="yellow">🟡 P1 试错小仓 ≤2%</span>——宁德企稳 5 日线可试探，破 20 日线即弃。</li>
+      <li><b>CPO / 通信设备：</b><span class="red">🔴 主跌出货（回避）</span>——反弹即减仓，不抄底；等待 20 日线走平。</li>
+      <li><b>半导体：</b><span class="red">🔴 ㊸ 深负生效（20D -1268.77 亿），回避</span>——电子化学品细分独立行情不入主线池。</li>
+      <li><b>军工 / 银行：</b>军工 <span class="red">🔴 回避（规则66 未过）</span>；银行 <span class="yellow">🟡 防御底仓 4-6%</span>（交行 20D +10.43%）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div class="footer">
+  <div class="disclaimer">以上内容由 AI（WorkBuddy）基于公开信息自动整理生成，数据来源：腾讯自选股 westock-mcp + 东方财富妙想（双源交叉，同花顺问财当日 429 降级）、同花顺概念指数日报（概念指数代码核实）。所有分析仅供参考，<b>不构成任何投资建议或个股推荐。</b></div>
+  <div>投资有风险，决策需谨慎。过往表现不代表未来收益。红涨绿跌 · 数据时点 = 2026-09-14 15:00 收盘。</div>
+  <div class="footer-time">生成时间：<span class="num">2026-09-14 20:30 CST</span> | 自动化任务：A股每日主线分析（收盘后） | 主线结论：<span class="footer-task">医药（CXO/医疗服务/创新药）P2 扩散 · 次线元件 ㊹ 吸筹背离</span></div>
+</div>
+
+</div><!-- /padding -->
+
+</div><!-- /report -->
+
+<script>
+// 6 指数涨跌幅柱状图
+var chartIndex = echarts.init(document.getElementById('chart-index'));
+chartIndex.setOption({
+  grid: { top: 30, bottom: 30, left: 40, right: 15 },
+  xAxis: { type: 'category', data: ['上证指数','深证成指','创业板指','科创50','上证50','沪深300'], axisLabel: { color: '#9aa3c0', fontSize:13 }, axisLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize:13, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{ type: 'bar',
+    data: [
+      { value: -0.07, itemStyle: { color: '#52c41a' } },
+      { value: -0.64, itemStyle: { color: '#52c41a' } },
+      { value: -1.10, itemStyle: { color: '#52c41a' } },
+      { value: -1.62, itemStyle: { color: '#52c41a' } },
+      { value: -0.25, itemStyle: { color: '#52c41a' } },
+      { value: -0.67, itemStyle: { color: '#52c41a' } }
+    ],
+    barWidth: '45%',
+    label: { show: true, position: 'bottom', color: '#e0e0e0', fontSize:14, formatter: function(p){ return p.value+'%'; } }
+  }]
+});
+
+// 涨跌家数饼图（3126 / 2224 / 212）
+var chartDist = echarts.init(document.getElementById('chart-dist'));
+chartDist.setOption({
+  tooltip: { trigger: 'item' },
+  legend: { bottom: 0, textStyle: { color: '#9aa3c0', fontSize:13 } },
+  series: [{
+    type: 'pie',
+    radius: ['38%', '70%'],
+    center: ['50%', '45%'],
+    label: { color: '#e0e0e0', fontSize:14 },
+    data: [
+      { value: 3126, name: '上涨家数', itemStyle: { color: '#e94560' } },
+      { value: 2224, name: '下跌家数', itemStyle: { color: '#52c41a' } },
+      { value: 212,  name: '平盘家数', itemStyle: { color: '#8888aa' } }
+    ],
+    labelLine: { lineStyle: { color: '#2c2c4a' } }
+  }]
+});
+
+// 概念板块涨幅 Top 8 横向条形图
+var chartSector = echarts.init(document.getElementById('chart-sector'));
+chartSector.setOption({
+  grid: { top: 10, bottom: 25, left: 110, right: 50 },
+  xAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize:13, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'category',
+    data: ['电子树脂','华为汽车股权合作','打印机','一汽系','陶瓷基板','培育钻石','CRO','靶材'],
+    axisLabel: { color: '#c0c0d0', fontSize:14 },
+    axisLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{ type: 'bar',
+    data: [3.32, 3.35, 3.57, 4.44, 4.55, 4.77, 4.89, 5.38],
+    itemStyle: {
+      color: function(p){ return p.value >= 4.5 ? '#e94560' : (p.value >= 4 ? '#ff8fa0' : '#8888aa'); }
+    },
+    barWidth: '55%',
+    label: { show: true, position: 'right', color: '#e0e0e0', fontSize:14, formatter: '{c}%' }
+  }]
+});
+
+window.addEventListener('resize', function(){
+  chartIndex.resize(); chartDist.resize(); chartSector.resize();
+});
+</script>
+</body>
+</html>
