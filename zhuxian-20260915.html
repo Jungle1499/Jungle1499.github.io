@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=975, initial-scale=1.0">
+<title>主线分析_20260915 · 三阶段框架 P3 预警</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;background:#1a1a2e;color:#a0a0c0;min-width:975px;padding-bottom:60px}
+.num{font-family:"Segoe UI","Arial",sans-serif}
+.report{width:975px;margin:0 auto;background:#1a1a2e}
+
+/* ===== Header ===== */
+.header{width:975px;height:170px;background:linear-gradient(135deg,#1a2a6c 0%,#2d4a8a 40%,#1a1a2e 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #2a2a4a;border-radius:6px 6px 0 0}
+.header::before{content:"";position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(233,69,96,.28) 0%,transparent 70%);border-radius:50%}
+.header::after{content:"";position:absolute;bottom:-60px;left:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(126,200,255,.18) 0%,transparent 70%);border-radius:50%}
+.header-title{position:relative;z-index:2;font-size:33.4px;font-weight:700;color:#ffffff;letter-spacing:.5px;text-align:center}
+.header-title .accent{color:#e94560}
+.header-sub{position:relative;z-index:2;font-size:18.4px;color:#c0c0d0;margin-top:14px;text-align:center}
+.header-pill{display:inline-block;position:relative;z-index:2;background:rgba(233,69,96,.18);border:1px solid rgba(233,69,96,.45);color:#ff8fa0;padding:6px 18px;border-radius:20px;font-size:15.0px;margin-top:14px}
+
+/* ===== Section ===== */
+.section{padding:24px 18px;border-bottom:1px solid #22223c}
+.section-title{font-size:25.0px;font-weight:700;color:#e94560;margin-bottom:18px;padding-left:12px;border-left:3px solid #e94560}
+
+/* ===== 三阶段框架卡片 ===== */
+.framework{background:linear-gradient(135deg,rgba(233,69,96,.08),rgba(233,69,96,.02));border:1px solid #2a2a5a;border-radius:8px;padding:20px 24px;margin-bottom:24px}
+.framework-title{font-size:25.0px;font-weight:700;color:#faad14;margin-bottom:14px}
+.framework p{font-size:15.3px;line-height:1.85;margin-bottom:8px;color:#c0c0d0}
+.framework b{color:#e94560}
+.framework .yellow{color:#faad14}
+.framework .white{color:#fff}
+.framework .green{color:#52c41a}
+
+/* ===== 市场概况 ===== */
+.index-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.index-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 12px;text-align:center}
+.index-name{font-size:14.4px;color:#9aa3c0;margin-bottom:8px}
+.index-price{font-size:25.0px;font-weight:700;margin-bottom:6px;color:#e0e0e0}
+.index-pct{font-size:14.8px;font-weight:700}
+.up{color:#e94560}
+.down{color:#52c41a}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 16px;text-align:center}
+.stat-name{font-size:14.4px;color:#9aa3c0;margin-bottom:8px}
+.stat-value{font-size:33.4px;font-weight:700;margin-bottom:6px;color:#e0e0e0}
+.stat-sub{font-size:13.7px;color:#e94560}
+
+.judgment-line{font-size:15.3px;line-height:1.9;margin-bottom:6px;color:#c0c0d0}
+.judgment-line .ok{color:#52c41a}
+.judgment-line .yellow{color:#faad14}
+.judgment-line .red{color:#e94560}
+.judgment-line .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#e94560;margin-right:6px;vertical-align:middle}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.chart-card{background:#22223c;border:1px solid #2c2c4a;border-radius:6px;padding:14px 16px}
+.chart-title{font-size:17.6px;color:#faad14;font-weight:700;margin-bottom:10px}
+.chart{width:100%;height:316px}
+
+/* ===== 主线确认 ===== */
+.confirm-text{font-size:15.3px;line-height:1.85;margin-bottom:14px;color:#c0c0d0}
+.confirm-text b{color:#fff}
+.confirm-text .red{color:#e94560}
+.confirm-text .yellow{color:#faad14}
+
+.table-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.data-table{width:100%;border-collapse:collapse;font-size:14.4px}
+.data-table th{background:#22223c;color:#a0a0c0;font-weight:400;padding:8px 10px;border:1px solid #2a2a4a;text-align:left}
+.data-table td{background:#16162e;color:#c0c0d0;padding:8px 10px;border:1px solid #2a2a4a}
+.data-table tr td:first-child{color:#8888aa;text-align:center;width:32px}
+.data-table .num{font-family:"Segoe UI","Arial",sans-serif}
+.up-pct{color:#e94560;font-weight:700}
+.down-pct{color:#52c41a;font-weight:700}
+
+/* ===== 催化剂 2x2 ===== */
+.driver-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.driver-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #e94560;border-radius:6px;padding:16px 18px}
+.driver-title{font-size:15.3px;font-weight:700;color:#e94560;margin-bottom:10px}
+.driver-text{font-size:14.4px;line-height:1.8;color:#c0c0d0}
+.driver-text b{color:#faad14}
+
+/* ===== 龙头 hero ===== */
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.hero-card{background:#22223c;border:1px solid #2a2a4a;border-radius:8px;padding:18px 20px;position:relative}
+.hero-badge{position:absolute;top:14px;right:14px;background:#e94560;color:#fff;font-size:14.8px;padding:4px 12px;border-radius:14px;font-weight:700}
+.hero-name{font-size:20.1px;font-weight:700;color:#fff;margin-bottom:6px}
+.hero-code{font-size:14.8px;color:#9aa3c0;margin-bottom:14px}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;font-size:14.4px;margin-bottom:14px}
+.hero-stat-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #2a2a4a}
+.hero-label{color:#9aa3c0}
+.hero-val{color:#e0e0e0;font-weight:700}
+.hero-val.up{color:#e94560}
+.hero-val.down{color:#52c41a}
+.hero-reason{font-size:14.4px;line-height:1.85;color:#c0c0d0;border-top:1px solid #2a2a4a;padding-top:12px}
+.hero-reason b{color:#faad14}
+.hero-reason .red{color:#e94560}
+.hero-reason .green{color:#52c41a}
+.hero-reason .yellow{color:#faad14}
+
+/* ===== 飞书策略群 ===== */
+.strategy-intro{font-size:15.3px;color:#c0c0d0;margin-bottom:14px;padding:10px 14px;background:rgba(233,69,96,.05);border-left:2px solid #e94560;border-radius:4px}
+.p-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #faad14;border-radius:6px;padding:14px 18px;margin-bottom:14px}
+.p-card.p3{background:linear-gradient(135deg,rgba(233,69,96,.1),rgba(233,69,96,.03));border-left-color:#e94560}
+.p-card.p2{border-left-color:#faad14}
+.p-card.p1{border-left-color:#52c41a}
+.p-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.p-stage{font-size:14.8px;font-weight:700;color:#faad14;padding:3px 10px;border-radius:12px;background:rgba(250,173,20,.15);border:1px solid rgba(250,173,20,.4)}
+.p-stage.p3-confirm{color:#ff8fa0;background:rgba(233,69,96,.18);border-color:rgba(233,69,96,.45)}
+.p-stage.p3-warn{color:#faad14;background:rgba(250,173,20,.15);border-color:rgba(250,173,20,.4)}
+.p-stage.p2-stage{color:#faad14;background:rgba(250,173,20,.15);border-color:rgba(250,173,20,.4)}
+.p-stage.p1-stage{color:#52c41a;background:rgba(82,196,26,.15);border-color:rgba(82,196,26,.4)}
+.p-stage.p2-withdraw{color:#8888aa;background:rgba(136,136,170,.15);border-color:rgba(136,136,170,.4)}
+.p-stage.p2-defense{color:#7ec8ff;background:rgba(126,200,255,.15);border-color:rgba(126,200,255,.4)}
+.p-title{font-size:18.4px;font-weight:700;color:#fff;flex:1;margin:0 14px}
+.p-advice{font-size:15.3px;font-weight:700;color:#faad14;text-align:right;white-space:nowrap}
+.p-advice.sell{color:#e94560}
+.p-advice.hold{color:#52c41a}
+.p-advice.watch{color:#8888aa}
+.p-pairs{font-size:14.4px;color:#a0a0c0;margin-bottom:10px;line-height:1.7}
+.p-pairs b{color:#faad14}
+.p-stock-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.p-stock{background:#16162e;border:1px solid #2a2a4a;border-radius:4px;padding:8px 10px;text-align:center}
+.p-stock-name{font-size:14.8px;color:#c0c0d0;font-weight:700;margin-bottom:4px}
+.p-stock-val{font-size:14.4px;color:#e94560;font-weight:700}
+.p-stock-price{font-size:13.1px;color:#8888aa;margin-top:2px}
+.p-verify{font-size:14.4px;line-height:1.85;color:#c0c0d0;margin-bottom:6px;padding:8px 12px;background:rgba(0,0,0,.15);border-radius:4px}
+.p-verify b{color:#faad14}
+.p-verify .red{color:#e94560}
+.p-verify .green{color:#52c41a}
+.p-op{font-size:14.4px;line-height:1.7;color:#a0a0c0}
+.p-op b{color:#faad14}
+
+/* ===== 七大板块网格 ===== */
+.segment-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.segment-card{background:#22223c;border:1px solid #2a2a4a;border-left:3px solid #e94560;border-radius:6px;padding:14px 18px}
+.segment-card.b2{border-left-color:#faad14}
+.segment-card.b3{border-left-color:#52c41a}
+.segment-card.b4{border-left-color:#7ec8ff}
+.segment-card.b5{border-left-color:#52c41a}
+.segment-card.b6{border-left-color:#faad14}
+.segment-card.b7{border-left-color:#8888aa}
+.segment-name{font-size:18.4px;font-weight:700;color:#fff;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #2a2a4a}
+.segment-text{font-size:14.4px;line-height:1.85;color:#c0c0d0;margin-bottom:8px}
+.segment-text b{color:#faad14}
+.segment-text .red{color:#e94560}
+.segment-pair{font-size:14.4px;color:#52c41a;font-weight:700;padding:6px 10px;background:rgba(82,196,26,.08);border-radius:4px;margin-bottom:6px}
+.segment-pair b{color:#fff}
+.segment-pair-detail{font-size:14.4px;line-height:1.7;color:#a0a0c0;margin-top:4px}
+.segment-pair-detail b{color:#faad14}
+
+/* ===== 综合研判 ===== */
+.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.final-card{background:#22223c;border:1px solid #2a2a4a;border-radius:6px;padding:16px 20px}
+.final-title{font-size:18.4px;font-weight:700;color:#faad14;margin-bottom:12px;padding-bottom:8px;border-bottom:1px dashed #2a2a4a}
+.final-list{list-style:none;font-size:14.4px;line-height:1.85;color:#c0c0d0}
+.final-list li{margin-bottom:8px;padding-left:18px;position:relative}
+.final-list li::before{content:counter(li);counter-increment:li;position:absolute;left:0;top:0;color:#faad14;font-weight:700}
+.final-list{counter-reset:li}
+.final-list b{color:#fff}
+.final-list .red{color:#e94560}
+.final-list .green{color:#52c41a}
+
+.key-op-box{background:linear-gradient(135deg,rgba(250,173,20,.08),rgba(250,173,20,.02));border:1.5px solid #faad14;border-radius:6px;padding:16px 22px;margin-top:14px}
+.key-op-title{font-size:18.4px;font-weight:700;color:#faad14;margin-bottom:12px}
+.key-op-list{list-style:none;font-size:14.8px;line-height:1.95;color:#c0c0d0}
+.key-op-list li{padding-left:16px;position:relative;margin-bottom:6px}
+.key-op-list li::before{content:"●";position:absolute;left:0;top:0;color:#faad14}
+.key-op-list b{color:#fff}
+.key-op-list .red{color:#e94560}
+.key-op-list .green{color:#52c41a}
+.key-op-list .yellow{color:#faad14}
+
+/* ===== Footer ===== */
+.footer{padding:24px 18px;text-align:center;font-size:14.4px;color:#8888aa;line-height:1.85}
+.disclaimer b{color:#e94560}
+.footer-time{margin-top:8px;color:#a0a0c0}
+.footer-task{margin-top:4px;color:#e94560;font-weight:700}
+</style>
+</head>
+<body>
+<div class="report">
+
+<!-- ===== Header ===== -->
+<div class="header">
+  <div class="header-title">2026年9月15日 A股<span class="accent">最强主线</span></div>
+  <div class="header-sub">覆铜板 / PCB上游 / AI硬件材料链 — 涨价叙事逆势扛旗，<span class="accent" style="color:#e94560;font-weight:700">P3 预警 · 持有锁盈</span></div>
+  <div class="header-pill">2026年9月15日（周二）收盘 · <span class="num">三阶段框架</span> <span style="color:#e94560;font-weight:700">P3 预警</span></div>
+</div>
+
+<div style="padding:0 18px">
+
+<!-- ===== 三阶段理论框架 ===== -->
+<div class="framework" style="margin-top:20px">
+  <div class="framework-title">三阶段理论框架<span style="color:#e94560">（一性原理 = 人性的扩张与收缩）</span></div>
+  <p>板块行情的完整周期分为三个阶段：<span class="yellow">犹豫期</span> → <span class="yellow">共识期</span> → <span class="yellow">加速期</span>。</p>
+  <p><span class="yellow">P1（启动）</span>：逻辑龙头先涨；<span class="yellow">P2（二线）</span>：后排补涨，涨速反超龙头 = 人性扩张；<span class="yellow">P3（高潮）</span>：龙头涨速反超，群体狂热。</p>
+  <p><span class="yellow">配对原则</span>：选择市值可匹配、业务类似、涨幅最大的两个标的，例如光模块主升浪时 <span style="color:#fff">Pair = 中际旭创 / 新易盛</span>，PCB 主升浪时 <span style="color:#fff">Pair = 胜宏股份 / 沪电股份</span>。</p>
+  <p><span class="yellow">起涨/阶段确认</span>：板块进入全市场涨幅前三 = <span class="green">P1 预警</span>；Pair 中的标的连续两天跑赢另一个 = 阶段确认（龙头连续 2 天跑赢补涨 = <span class="green">P1 确认</span>；补涨连续 2 天跑赢龙头 = <span class="green">P2 确认</span>；龙头再连续 2 天跑赢补涨 = <span class="green">P3 确认</span>）。否则 P1 预警后，后排跑赢 1 天仅是 P2 预警，需重新计数。</p>
+  <p><span class="yellow">买卖</span>：P1 试错买入；P2 加仓补涨；上涨情绪周期可拿到 P3，退潮周期 P2 确认即陆续卖出。</p>
+</div>
+
+<!-- ===== 一、市场概况 ===== -->
+<div class="section">
+  <div class="section-title">一、市场概况</div>
+  <div class="index-grid">
+    <div class="index-card"><div class="index-name">上证指数</div><div class="index-price num">3864.28</div><div class="index-pct down num">-0.54%</div></div>
+    <div class="index-card"><div class="index-name">深证成指</div><div class="index-price num">13287.97</div><div class="index-pct down num">-0.72%</div></div>
+    <div class="index-card"><div class="index-name">创业板指</div><div class="index-price num">3247.92</div><div class="index-pct down num">-1.15%</div></div>
+    <div class="index-card"><div class="index-name">科创50</div><div class="index-price num">1551.96</div><div class="index-pct up num">+1.55%</div></div>
+    <div class="index-card"><div class="index-name">上证50</div><div class="index-price num">2846.31</div><div class="index-pct down num">-0.52%</div></div>
+    <div class="index-card"><div class="index-name">沪深300</div><div class="index-price num">4450.04</div><div class="index-pct down num">-0.67%</div></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-name">两市成交额</div><div class="stat-value num">16127 亿</div><div class="stat-sub num">缩量 165 亿（-1.0%）</div></div>
+    <div class="stat-card"><div class="stat-name">涨停 / 跌停</div><div class="stat-value num">32 / 34</div><div class="stat-sub num">跌停反超涨停，情绪低</div></div>
+    <div class="stat-card"><div class="stat-name">上涨 / 下跌 / 平</div><div class="stat-value num">1120 / 4376 / 66</div><div class="stat-sub num">上涨家数占比 20%</div></div>
+  </div>
+  <div class="judgment-line"><span class="dot"></span>大盘小绿：<span class="red">触发</span>（下跌家数占比 79%，涨停 32 &lt; 跌停 34；地量割裂，情绪冰点）</div>
+  <div class="judgment-line"><span class="dot"></span>市场情绪：<span class="yellow">退潮期中的结构性抱团</span>（指数普跌，仅科创50逆势+1.55%；涨价链+国产替代是唯二资金避风港）</div>
+  <div class="judgment-line"><span class="dot"></span>主线轮动速度：极快——前主线光通信 P3 退潮后，资金弃高就低切向<span class="red">覆铜板/PCB上游涨价链</span>与<span class="red">半导体材料/存储</span>。</div>
+  <div class="chart-row">
+    <div class="chart-card"><div class="chart-title">四大指数 · 上证50 / 沪深300 涨跌幅</div><div id="chart-index" class="chart"></div></div>
+    <div class="chart-card"><div class="chart-title">涨跌家数分布（1120 涨 / 4376 跌 / 32 涨停）</div><div id="chart-dist" class="chart"></div></div>
+  </div>
+</div>
+
+<!-- ===== 二、主线确认 ===== -->
+<div class="section">
+  <div class="section-title">二、主线确认：<span style="color:#fff">覆铜板 / PCB上游 AI硬件涨价链</span></div>
+  <div class="confirm-text">今日概念板块出现明显断层：<span class="red">覆铜板 +4.51%</span> 高居全市场第 1，领先第 2 名昨日连板 +3.35% 达 <span class="yellow">1.16pct</span>，且覆铜板产业链（<span class="red">电子布 +2.00%</span> / <span class="red">PTFE +2.41%</span> / <span class="red">电子树脂 +1.95%</span> / <span class="red">PCB +0.57%</span> / <span class="red">CCL</span>）多极共振；申万二级行业中 <span class="red">电子化学品Ⅱ +1.63%</span>、<span class="red">半导体 +1.55%</span>、<span class="red">元件 +0.46%</span> 逆势收红。综合五维判定，<span class="red">覆铜板/PCB上游 AI硬件材料链</span>为今日最强主线；<span class="yellow">半导体/存储/电子化学品</span>为次线；<span class="green">风电设备 +2.36%</span> 属消息驱动的一日脉冲。</div>
+  <div class="table-row">
+    <div>
+      <div class="chart-title">申万二级行业 Top 6</div>
+      <table class="data-table">
+        <tr><th>排名</th><th>板块</th><th>涨幅</th><th class="num">代表标的</th></tr>
+        <tr><td>1</td><td>玻璃玻纤</td><td class="up-pct num">+2.39%</td><td>宏和科技 <span class="up-pct num">+5.79%</span></td></tr>
+        <tr><td>2</td><td>风电设备</td><td class="up-pct num">+2.36%</td><td>海力风电 <span class="up-pct num">+12.84%</span></td></tr>
+        <tr><td>3</td><td>电子化学品Ⅱ</td><td class="up-pct num">+1.63%</td><td>西陇科学 <span class="up-pct num">+10.01%</span></td></tr>
+        <tr><td>4</td><td>半导体</td><td class="up-pct num">+1.55%</td><td>气派科技 <span class="up-pct num">+15.93%</span></td></tr>
+        <tr><td>5</td><td>小金属</td><td class="up-pct num">+1.47%</td><td>翔鹭钨业 <span class="up-pct num">+9.06%</span></td></tr>
+        <tr><td>6</td><td>塑料</td><td class="up-pct num">+1.17%</td><td>浙江众成 <span class="up-pct num">+10.04%</span></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="chart-title">概念板块 Top 8（剔除涨停/连板类）</div>
+      <table class="data-table">
+        <tr><th>排名</th><th>概念</th><th>涨幅</th><th>5日涨幅</th><th>代表标的</th></tr>
+        <tr><td>1</td><td>覆铜板</td><td class="up-pct num">+4.51%</td><td class="up-pct num">+13.41%</td><td>华正新材 <span class="up-pct num">+10.00%</span></td></tr>
+        <tr><td>2</td><td>昨日连板</td><td class="up-pct num">+3.35%</td><td class="up-pct num">—</td><td>双星新材 <span class="up-pct num">+10.04%</span></td></tr>
+        <tr><td>3</td><td>黄酒</td><td class="up-pct num">+3.12%</td><td class="up-pct num">+11.96%</td><td>会稽山 <span class="up-pct num">+10.00%</span></td></tr>
+        <tr><td>4</td><td>PTFE</td><td class="up-pct num">+2.41%</td><td class="up-pct num">—</td><td>华正新材 <span class="up-pct num">+10.00%</span></td></tr>
+        <tr><td>5</td><td>电子布</td><td class="up-pct num">+2.00%</td><td class="up-pct num">+9.03%</td><td>宏和科技 <span class="up-pct num">+5.79%</span></td></tr>
+        <tr><td>6</td><td>电子树脂</td><td class="up-pct num">+1.95%</td><td class="up-pct num">+18.17%</td><td>呈和科技 <span class="up-pct num">+8.48%</span></td></tr>
+        <tr><td>7</td><td>长鑫存储</td><td class="up-pct num">+1.88%</td><td class="up-pct num">—</td><td>华海清科 <span class="up-pct num">+8.64%</span></td></tr>
+        <tr><td>8</td><td>PET铜箔</td><td class="up-pct num">+1.63%</td><td class="up-pct num">+33.85%</td><td>双星新材 <span class="up-pct num">+10.04%</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-top:14px"><div class="chart-title">概念板块涨幅排行 Top 8（覆铜板涨价链共振）</div><div id="chart-sector" class="chart" style="height:316px"></div></div>
+</div>
+
+<!-- ===== 三、四重核心驱动因素 ===== -->
+<div class="section">
+  <div class="section-title">三、四重核心驱动因素</div>
+  <div class="driver-grid">
+    <div class="driver-card"><div class="driver-title">催化剂 1</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">建滔积层板年内第七份调价函，FR-4 累计涨幅破百</div><div class="driver-text">覆铜板龙头建滔积层板 9 月再发涨价函：FR-4 覆铜板全系上调 <b>10%</b>，PP（半固化片）7628 以上规格 +10%、以下规格 +20%。1.3mm 以上 FR-4 年内累计涨幅已<b>超过 100%</b>。供给端上游铜箔、玻纤布、树脂持续紧张，而 AI 服务器/高速交换机用高等级 CCL 需求放量，涨价叙事从预期进入现货兑现阶段。</div></div>
+    <div class="driver-card"><div class="driver-title">催化剂 2</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">电子布/玻纤/树脂同步提价，上游材料涨价扩散</div><div class="driver-text">中国巨石 9 月起电子布厚布上调 <b>15%</b>、薄布上调 <b>20%</b>；松下、南亚塑胶 9/1 起普通多层 CCL 及 PP 上调 <b>20%~30%</b>；日本 JSR、东京应化、信越化学 10/1 起光刻胶全球提价 <b>15%</b>（ArF 高端品 16~22%）。上游材料涨价从覆铜板向<b>电子布、PTFE、电子树脂、光刻胶</b>全链条扩散，国产材料厂迎量价齐升窗口。</div></div>
+    <div class="driver-card"><div class="driver-title">催化剂 3</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">半导体材料国产替代 + 十五五规划，资金抱团科创50</div><div class="driver-text">工信部 + 发改委《电子信息制造业"十五五"规划》提出 2030 年规模以上营收突破 <b>30 万亿元</b>，高端芯片、先进封装、半导体材料列为攻关重点。台积电 8 月营收创新高，长江存储扩产带动国产设备采购占比提升。今日半导体主力净流入超 <b>70 亿</b>，存储 +47.36 亿、先进封装 +46.53 亿，PCB/覆铜板同步大额流入。</div></div>
+    <div class="driver-card"><div class="driver-title">催化剂 4</div><div style="font-size:15.3px;font-weight:700;color:#fff;margin-bottom:8px">地量割裂环境下资金弃高就低，涨价链成唯一避风港</div><div class="driver-text">两市成交仅 <b>1.61 万亿</b>（缩量 165 亿），4300+ 个股下跌，涨停 32 家反而少于跌停 34 家。市场处于<b>退潮期</b>，前期高位题材（电池、旅游、零售、农业）大跌，资金切向有现货涨价支撑的 AI 硬件上游材料。华正新材封单 <b>2.92 亿</b>全场第一、主力净流入 <b>+8.79 亿</b>，成为短线情绪锚。</div></div>
+  </div>
+</div>
+
+<!-- ===== 四、核心龙头 ===== -->
+<div class="section">
+  <div class="section-title">四、核心龙头：<span style="color:#fff">3 只标的精选</span></div>
+  <div class="hero-grid">
+    <div class="hero-card">
+      <div class="hero-badge">情绪龙头 · P3 预警</div>
+      <div class="hero-name">华正新材</div>
+      <div class="hero-code num">603186.SH <span style="color:#8888aa">|</span> 覆铜板·电子布</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">251.57 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+10.00%（涨停）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">24.84 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">6.35%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">394.44 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+30.50%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val num">96.92</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+408.53%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>今日覆铜板行情的<span class="red">绝对情绪龙头</span>——7 天 3 板，盘中封单 2.92 亿元全场第一，主力净流入 +8.79 亿。公司 2026H1 营收 29.60 亿（+41.28%），归母净利 1.73 亿（+305.28%），12 亿定增扩产 1200 万张高等级 CCL。作为覆铜板+电子布一体化标的，直接受益建滔涨价映射与 AI 服务器高多层板需求。<span class="red">注：PE 96.92 已处高位，年初至今 +408% 严重透支，按⑭估值约束与㊺ P3 阶段锁盈纪律，只持有不加仓。</span></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-badge">产业弹性龙头 · P2 启动</div>
+      <div class="hero-name">气派科技</div>
+      <div class="hero-code num">688216.SH <span style="color:#8888aa">|</span> 半导体·存储封装</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">37.11 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+15.93%（20cm）</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">7.26 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">18.63%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">42.46 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+21.91%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val down num">-885.38</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val up num">+66.56%</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>半导体/存储方向今日弹性最佳标的，20cm 长阳反包昨日 -5.07% 阴线。存储板块主力净流入 +47.36 亿居细分第一，长鑫存储扩产 + 国产替代催化持续。小市值（42 亿）+ 高换手（18.63%）说明短线资金博弈激烈。<span class="yellow">按三-⑤逻辑龙头标定，气派 5 日涨幅与今日涨幅均列存储方向前茅；按三-②与宝丽迪组成 Pair，市值差 1.7 倍可匹配。</span><span class="red">PE 负值， purely 情绪筹码博弈，仓位须≤2%。</span></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-badge">支线脉冲 · 一日游</div>
+      <div class="hero-name">海力风电</div>
+      <div class="hero-code num">301155.SZ <span style="color:#8888aa">|</span> 风电设备·海风塔筒</div>
+      <div class="hero-stats">
+        <div class="hero-stat-row"><span class="hero-label">最新价</span><span class="hero-val num">44.20 元</span></div>
+        <div class="hero-stat-row"><span class="hero-label">涨幅</span><span class="hero-val up num">+12.84%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">成交额</span><span class="hero-val num">—</span></div>
+        <div class="hero-stat-row"><span class="hero-label">换手率</span><span class="hero-val num">—</span></div>
+        <div class="hero-stat-row"><span class="hero-label">总市值</span><span class="hero-val num">96.09 亿</span></div>
+        <div class="hero-stat-row"><span class="hero-label">5 日涨幅</span><span class="hero-val up num">+17.55%</span></div>
+        <div class="hero-stat-row"><span class="hero-label">PE(TTM)</span><span class="hero-val num">198.88</span></div>
+        <div class="hero-stat-row"><span class="hero-label">年初至今</span><span class="hero-val num">—</span></div>
+      </div>
+      <div class="hero-reason"><b>入选理由：</b>风电设备今日申万二级涨幅第 2（+2.36%），海力风电以 +12.84% 领涨。催化为欧洲海上风机售价 2020 年来涨 40-45%（Rystad）、大金重工/天顺风能等多股涨停。但风电非当前市场共识主线，且无连续资金沉淀，<span class="green">按㊼单日脉冲次日回落纪律，不列入主线持有池，仅作支线观察。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 五、飞书策略群 ===== -->
+<div class="section">
+  <div class="section-title">五、飞书策略群 · <span style="color:#fff">七大板块 Pairs + 三阶段判定</span></div>
+  <div class="strategy-intro">基于今日盘面（<span class="red">覆铜板 / 半导体 / 电子化学品 / 风电 / 玻璃玻纤 / 黄酒 / 消费退潮</span>），结合三阶段理论（<span class="yellow">犹豫 → 共识 → 加速</span>）进行综合研判。</div>
+
+  <div class="p-card p3">
+    <div class="p-card-head"><span class="p-stage p3-warn">P3 预警 · 持有锁盈</span><div class="p-title">覆铜板 / PCB上游（CCL / 电子布 / PTFE）</div><div class="p-advice hold">建议：持有锁盈，不追高</div></div>
+    <div class="p-pairs"><b>飞书 Pairs：</b>华正新材(603186) / 宏和科技(603256) P3预警</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">华正新材</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">251.57</div></div>
+      <div class="p-stock"><div class="p-stock-name">宏和科技</div><div class="p-stock-val num">+5.79%</div><div class="p-stock-price num">138.23</div></div>
+      <div class="p-stock"><div class="p-stock-name">西陇科学</div><div class="p-stock-val num">+10.01%</div><div class="p-stock-price num">8.68</div></div>
+      <div class="p-stock"><div class="p-stock-name">浙江众成</div><div class="p-stock-val num">+10.04%</div><div class="p-stock-price num">5.81</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 华正新材 <span class="red">+10.00% 涨停大幅跑赢宏和科技 +5.79%</span>，龙头反超补涨第 1 天 → <span class="red">P3 预警</span>（若明日华正再大幅跑赢则 P3 确认，须减仓）；② 覆铜板概念 +4.51% 全市场第 1，5 日 +13.41%、20 日资金双正，符合㊹真趋势；③ 但板块已连续多日加速 + 华正 7 天 3 板，按㊷/㊼需防次日兑现降档。</div>
+    <div class="p-op"><b>操作：</b>P3 预警阶段只持有、不追高、不加仓。已有仓位按㊺锁盈；未持仓者按⑭估值约束（华正 PE 96.92 / 宏和 PE 253）与㊷连续加速降档纪律，<span class="red">禁止追涨。</span></div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2 启动</span><div class="p-title">半导体（设备 / 材料 / 存储）</div><div class="p-advice hold">建议：小仓位试错 / 持有</div></div>
+    <div class="p-pairs"><b>飞书 Pairs：</b>气派科技(688216) / 宝丽迪(300905) P2启动 <span style="color:#8888aa">|</span> 权重龙头：华海清科(688120) 单列观察</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">气派科技</div><div class="p-stock-val num">+15.93%</div><div class="p-stock-price num">37.11</div></div>
+      <div class="p-stock"><div class="p-stock-name">宝丽迪</div><div class="p-stock-val num">+15.53%</div><div class="p-stock-price num">40.55</div></div>
+      <div class="p-stock"><div class="p-stock-name">华海清科</div><div class="p-stock-val num">+8.64%</div><div class="p-stock-price num">255.50</div></div>
+      <div class="p-stock"><div class="p-stock-name">西陇科学</div><div class="p-stock-val num">+10.01%</div><div class="p-stock-price num">8.68</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 半导体 +1.55% 逆势收红，主力净流入超 70 亿；② 气派 +15.93% 与宝丽迪 +15.53% 同步大涨，市值 42 亿 vs 72 亿（差 1.7 倍）符合三-②配对原则；③ 华海清科 1268 亿大市值按三-⑧单列权重龙头，+8.64% 与 +5.58% 五日涨幅验证机构资金配置；④ 存储 +47.36 亿 / 先进封装 +46.53 亿资金大幅流入。</div>
+    <div class="p-op"><b>操作：</b>P2 启动可小仓位试错，但需服从退潮期地量仓位纪律（≤2 成）。关注气派是否连续 2 天跑赢宝丽迪以确认 P2；华海清科作为权重龙头仅作底仓观察，不作为 P2 补涨触发参照。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-stage">P2 启动</span><div class="p-title">电子化学品（光刻胶 / 电子特气 / 湿电子）</div><div class="p-advice hold">建议：持有 / 小仓位试错</div></div>
+    <div class="p-pairs"><b>飞书 Pairs：</b>西陇科学(002584) / 浙江众成(002522) P2启动</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">西陇科学</div><div class="p-stock-val num">+10.01%</div><div class="p-stock-price num">8.68</div></div>
+      <div class="p-stock"><div class="p-stock-name">浙江众成</div><div class="p-stock-val num">+10.04%</div><div class="p-stock-price num">5.81</div></div>
+      <div class="p-stock"><div class="p-stock-name">呈和科技</div><div class="p-stock-val num">+8.48%</div><div class="p-stock-price num">67.26</div></div>
+      <div class="p-stock"><div class="p-stock-name">联瑞新材</div><div class="p-stock-val num">+1.99%</div><div class="p-stock-price num">179.49</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 电子化学品Ⅱ +1.63% 申万二级第 3；② 西陇科学与浙江众成双双涨停，市值 50.8 亿 vs 52.6 亿高度匹配；③ 日本光刻胶 10 月提价 15% 催化临近，国产光刻胶/电子特气替代叙事升温；④ 联瑞新材 +1.99% 相对落后，说明资金更偏好小市值弹性标的。</div>
+    <div class="p-op"><b>操作：</b>P2 启动阶段可继续持有西陇/众成，明日观察是否连续 2 天维持强势。大市值联瑞新材按三-⑧仅作权重锚观察。</div>
+  </div>
+
+  <div class="p-card p1">
+    <div class="p-card-head"><span class="p-stage p1-stage">P1 试错</span><div class="p-title">玻璃玻纤 / 电子布（覆铜板上游）</div><div class="p-advice hold">建议：观望 / 小仓位试错</div></div>
+    <div class="p-pairs"><b>飞书 Pairs：</b>宏和科技(603256) / 中国巨石(600176) P1试错</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">宏和科技</div><div class="p-stock-val num">+5.79%</div><div class="p-stock-price num">138.23</div></div>
+      <div class="p-stock"><div class="p-stock-name">中国巨石</div><div class="p-stock-val num">+3.97%</div><div class="p-stock-price num">47.09</div></div>
+      <div class="p-stock"><div class="p-stock-name">华正新材</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">251.57</div></div>
+      <div class="p-stock"><div class="p-stock-name">双星新材</div><div class="p-stock-val num">+10.04%</div><div class="p-stock-price num">12.06</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 玻璃玻纤 +2.39% 申万二级第 1，中国巨石 +3.97%；② 宏和科技 +5.79% 跑赢中国巨石，但市值差 1250 亿 vs 1885 亿（差 1.5 倍）符合三-②；③ 电子布涨价（中国巨石厚布 +15%/薄布 +20%）是覆铜板涨价的成本端延伸，逻辑上处于 P1 启动。</div>
+    <div class="p-op"><b>操作：</b>P1 试错阶段，小仓位关注宏和科技 / 中国巨石。注意宏和科技 PE 253 估值极高，按⑭仓位须轻。</div>
+  </div>
+
+  <div class="p-card p1">
+    <div class="p-card-head"><span class="p-stage p1-stage">脉冲 · 观望</span><div class="p-title">风电设备（海风 / 塔筒 / 铸锻件）</div><div class="p-advice watch">建议：观望，不追</div></div>
+    <div class="p-pairs"><b>Pairs：</b>海力风电(301155) / 大金重工(002487) 脉冲观察</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">海力风电</div><div class="p-stock-val num">+12.84%</div><div class="p-stock-price num">44.20</div></div>
+      <div class="p-stock"><div class="p-stock-name">大金重工</div><div class="p-stock-val num">+10.01%</div><div class="p-stock-price num">39.44</div></div>
+      <div class="p-stock"><div class="p-stock-name">天顺风能</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">7.81</div></div>
+      <div class="p-stock"><div class="p-stock-name">双星新材</div><div class="p-stock-val num">+10.04%</div><div class="p-stock-price num">12.06</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>① 风电设备 +2.36% 申万二级第 2，海力风电 +12.84%、大金重工/天顺风能涨停；② 催化为欧洲海风涨价 40-45%，属消息驱动；③ 但板块未进入概念涨幅前列，且大盘情绪低迷，资金跟风意愿不足。</div>
+    <div class="p-op"><b>操作：</b>按㊼单日脉冲次日回落纪律，<span class="red">不追涨、不持仓。</span>若明日海力/大金仍能连续强势再评估是否升级 P1。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-withdraw">情绪题材 · 观望</span><div class="p-title">黄酒 / 消费（防御 / 超跌）</div><div class="p-advice watch">建议：观望</div></div>
+    <div class="p-pairs"><b>Pairs：</b>会稽山(601579) / 古越龙山(600059) 情绪观察</div>
+    <div class="p-stock-grid">
+      <div class="p-stock"><div class="p-stock-name">会稽山</div><div class="p-stock-val num">+10.00%</div><div class="p-stock-price num">25.75</div></div>
+      <div class="p-stock"><div class="p-stock-name">古越龙山</div><div class="p-stock-val num">—</div><div class="p-stock-price num">—</div></div>
+      <div class="p-stock"><div class="p-stock-name">—</div><div class="p-stock-val num">—</div><div class="p-stock-price num">—</div></div>
+      <div class="p-stock"><div class="p-stock-name">—</div><div class="p-stock-val num">—</div><div class="p-stock-price num">—</div></div>
+    </div>
+    <div class="p-verify"><b>今日验证：</b>黄酒概念 +3.12% 概念第 3，会稽山涨停。但消费大盘（旅游 -4.93%、零售 -4.10%、农业 -4.65%）全面退潮，黄酒属于资金在无主线时的防御/情绪博弈，无产业催化。</div>
+    <div class="p-op"><b>操作：</b>情绪题材，不参与。按㊱情绪缩圈与㊼脉冲纪律，次日大概率回落。</div>
+  </div>
+
+  <div class="p-card p2">
+    <div class="p-card-head"><span class="p-stage p2-defense">退潮 · 回避</span><div class="p-title">旅游 / 农业 / 零售 / 电池（前期题材出清）</div><div class="p-advice sell">建议：回避 / 减仓</div></div>
+    <div class="p-pairs"><b>Pairs：</b>板块整体退潮，不配对</div>
+    <div class="p-verify"><b>今日验证：</b>① 旅游及景区 -4.93%、种植业 -4.65%、渔业 -4.52%、一般零售 -4.10%、电池 -2.91%；② 涨停 32 &lt; 跌停 34，情绪冰点，资金从旧题材全面出清；③ 这些板块 5/20 日资金多转负，无催化支撑。</div>
+    <div class="p-op"><b>操作：</b>按㊸ 20 日资金深负禁多与㊱情绪缩圈纪律，<span class="red">坚决回避。</span>持仓者趁反弹减仓。</div>
+  </div>
+</div>
+
+<!-- ===== 六、七大板块 ===== -->
+<div class="section">
+  <div class="section-title">六、七大板块前三强细分环节 + 最优 Pair 配对</div>
+
+  <div class="segment-grid">
+    <div class="segment-card">
+      <div class="segment-name">① 覆铜板 / PCB上游涨价链</div>
+      <div class="segment-text"><b>前三强：</b>① 覆铜板（华正新材 +10.00% / 生益科技大涨）② 电子布（宏和科技 +5.79% / 中国巨石 +3.97%）③ PTFE/电子树脂（呈和科技 +8.48%）</div>
+      <div class="segment-pair"><b>最优配对：</b>华正新材 (394 亿) + 宏和科技 (1250 亿) —— CCL / 电子布一体化龙头，市值差 3.2 倍（≤5 倍合规），P3 预警中。</div>
+      <div class="segment-pair-detail"><b>小盘弹性配对：</b>西陇科学 (50.8 亿) + 浙江众成 (52.6 亿) —— 电子化学品小市值双涨停，市值高度匹配。</div>
+    </div>
+    <div class="segment-card b2">
+      <div class="segment-name">② 半导体（设备 / 材料 / 存储）</div>
+      <div class="segment-text"><b>前三强：</b>① 存储器（气派科技 +15.93% / 宝丽迪 +15.53%）② 先进封装（华海清科 +8.64%）③ 半导体材料（臻宝科技 +12.34% / 西陇科学 +10.01%）</div>
+      <div class="segment-pair"><b>最优配对：</b>气派科技 (42 亿) + 宝丽迪 (72 亿) —— 存储/材料小盘弹性 Pair，P2 启动。</div>
+      <div class="segment-pair-detail"><b>权重龙头：</b>华海清科 (1268 亿) 按三-⑧单列，机构配置型标的，非 P2 触发参照。</div>
+    </div>
+    <div class="segment-card b3">
+      <div class="segment-name">③ 电子化学品（光刻胶 / 特气 / 湿电子）</div>
+      <div class="segment-text"><b>前三强：</b>① 光刻胶（西陇科学 +10.01%）② 电子树脂（呈和科技 +8.48%）③ 硅微粉/填料（联瑞新材 +1.99%）</div>
+      <div class="segment-pair"><b>最优配对：</b>西陇科学 (50.8 亿) + 浙江众成 (52.6 亿) —— 市值匹配、今日双双涨停，P2 启动。</div>
+    </div>
+    <div class="segment-card b4">
+      <div class="segment-name">④ 玻璃玻纤 / 电子布</div>
+      <div class="segment-text"><b>前三强：</b>① 电子布（宏和科技 +5.79%）② 玻纤龙头（中国巨石 +3.97%）③ 覆铜板下游（华正新材 +10.00%）</div>
+      <div class="segment-pair"><b>最优配对：</b>宏和科技 (1250 亿) + 中国巨石 (1885 亿) —— 电子布/玻纤双龙头，市值差 1.5 倍，P1 试错。</div>
+    </div>
+    <div class="segment-card b5">
+      <div class="segment-name">⑤ 风电设备（海风 / 塔筒）</div>
+      <div class="segment-text"><b>前三强：</b>① 塔筒/管桩（海力风电 +12.84%）② 海工（大金重工 +10.01%）③ 零部件（天顺风能 +10.00%）</div>
+      <div class="segment-pair"><b>最优配对：</b>海力风电 (96 亿) + 大金重工 (292 亿) —— 市值差 3 倍，海风出口双弹性。</div>
+      <div class="segment-pair-detail"><b>今日观察：</b><span class="red">消息驱动一日游特征明显，按㊼次日回落纪律不参与。</span></div>
+    </div>
+    <div class="segment-card b6">
+      <div class="segment-name">⑥ 黄酒 / 情绪消费</div>
+      <div class="segment-text"><b>前三强：</b>① 黄酒（会稽山 +10.00%）② 其他酒类跟风 ③ 无板块共振</div>
+      <div class="segment-pair"><b>最优配对：</b>会稽山 (123 亿) + 古越龙山（待观察）—— 情绪题材，不参与。</div>
+    </div>
+    <div class="segment-card b7" style="grid-column:1/-1">
+      <div class="segment-name">⑦ 旅游 / 农业 / 零售 / 电池（退潮区）</div>
+      <div class="segment-text"><b>前三强：</b>① 旅游及景区 -4.93% ② 种植业 -4.65% ③ 渔业 -4.52% / 一般零售 -4.10% / 电池 -2.91%</div>
+      <div class="segment-pair"><b>最优配对：</b>无 —— 板块 5/20 日资金多转负，情绪退潮，按㊸禁多。</div>
+      <div class="segment-pair-detail"><b>今日观察：</b><span class="red">跌停 34 &gt; 涨停 32，旧题材全面出清，回避。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 七、综合研判 ===== -->
+<div class="section">
+  <div class="section-title">七、综合研判与操作建议</div>
+  <div class="final-grid">
+    <div class="final-card">
+      <div class="final-title">盘面综合结论</div>
+      <ol class="final-list">
+        <li><b>地量冰点：</b>成交 1.61 万亿（缩量 165 亿），上涨仅 20%，跌停反超涨停——<b>情绪处于退潮期，仓位须压至≤2 成。</b></li>
+        <li><b>指数割裂：</b>沪指 -0.54%、深成 -0.72%、创业板 -1.15%，仅科创50 +1.55% 逆势。说明资金只抱团科技成长中的涨价/国产替代细分，其他方向无承接。</li>
+        <li><b>主线确认：</b>覆铜板/PCB上游涨价链为今日最强主线，半导体/电子化学品为次线；风电、黄酒为脉冲/情绪题材，不进入主线池。</li>
+        <li><b>P3 预警而非加仓：</b>覆铜板已连涨多日，华正 7 天 3 板，今日龙头反超补涨第 1 天 → P3 预警。按㊹真趋势可持有，但按㊷/㊼连续加速 + ⑭估值约束，<span class="red">只锁盈不加仓。</span></li>
+        <li><b>新方向试错：</b>半导体/电子化学品处于 P2 启动，若明日连续强势可小仓位试错；风电一日游不参与。</li>
+      </ol>
+    </div>
+    <div class="final-card">
+      <div class="final-title">风险提示</div>
+      <ol class="final-list">
+        <li><span class="red"><b>覆铜板 P3 高位风险：</b></span>华正新材年初至今 +408%、PE 96.92，宏和科技 PE 253，板块已处中后段，任何利好兑现都可能急跌。</li>
+        <li><b>地量缩圈：</b>1.61 万亿成交 + 79% 个股下跌，说明增量资金匮乏，普涨不可持续，仅有涨价催化的细分能活。</li>
+        <li><b>涨停质量差：</b>涨停 32 &lt; 跌停 34，且多只涨停股反复烂板，情绪脆弱。</li>
+        <li><b>半导体 20 日资金深负：</b>虽今日 5 日资金转正，但板块 20 日资金仍深负，事件驱动持续性待验证。</li>
+        <li><b>涨价函兑现风险：</b>建滔等涨价函已被市场充分预期，若下游 PCB 厂无法传导价格，板块可能"买预期卖事实"。</li>
+        <li><b>估值透支风险：</b>气派科技 PE -885、天顺风能 PE -81、宏和科技 PE 253——多只个股纯属情绪博弈，仓位必须极轻。</li>
+      </ol>
+    </div>
+  </div>
+  <div class="key-op-box">
+    <div class="key-op-title">关键操作建议</div>
+    <ul class="key-op-list">
+      <li><b>覆铜板 / PCB上游：</b><span class="red">P3 预警 = 持有锁盈，禁止追涨。</span>华正新材 / 宏和科技已有仓位可留，未持仓者观望；若明日华正再大幅跑赢宏和，P3 确认则减仓。</li>
+      <li><b>半导体 / 存储：</b><span class="yellow">P2 启动可小仓位试错。</span>关注气派科技 / 宝丽迪 Pair 是否连续 2 天强势；华海清科作为权重龙头仅作底仓观察。</li>
+      <li><b>电子化学品：</b>P2 启动，西陇科学 / 浙江众成双双涨停且市值匹配，可继续持有观察明日验证。</li>
+      <li><b>风电 / 黄酒：</b><span class="red">消息脉冲 / 情绪题材，不追。</span>按㊼次日回落纪律处理。</li>
+      <li><b>旅游 / 农业 / 零售 / 电池：</b><span class="red">退潮回避。</span>板块 5/20 日资金转负，持仓者趁反弹减仓。</li>
+      <li><b>仓位纪律：</b>地量冰点 + 跌停反超涨停，总仓位≤2 成；所有新开仓须满足三-②配对 + ⑭估值约束 + ㊸资金线审查。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div class="footer">
+  <div class="disclaimer">以上内容由 AI（WorkBuddy + 三阶段框架）基于公开信息自动整理生成，数据来源包括腾讯自选股 westock-mcp、东方财富妙想 mx-ds-mcp、Wind、证券时报、财联社、证券日报等。所有分析仅供参考，<b>不构成任何投资建议或个股推荐。</b></div>
+  <div>投资有风险，决策需谨慎。过往表现不代表未来收益。</div>
+  <div class="footer-time">生成时间：<span class="num">2026-09-15 19:30 CST</span> | 自动化任务：A股每日最强主线分析 | 主线结论：<span class="footer-task">覆铜板/PCB上游涨价链 P3 预警 · 半导体材料 P2 启动</span></div>
+  <div style="margin-top:10px;color:#8888aa;font-size:13.5px">【框架应用】三-① 三-② 三-③ 三-④ 三-⑤ 三-⑧ ｜ ⑭ ㉟ ㊱ ㊷ ㊸ ㊹ ㊺ ㊼ ㊽ ｜ 规则61（商品/涨价驱动）</div>
+</div>
+
+</div><!-- /padding -->
+
+</div><!-- /report -->
+
+<script>
+// 6 指数涨跌幅柱状图
+var chartIndex = echarts.init(document.getElementById('chart-index'));
+chartIndex.setOption({
+  grid: { top: 30, bottom: 30, left: 40, right: 15 },
+  xAxis: { type: 'category', data: ['上证指数','深证成指','创业板指','科创50','上证50','沪深300'], axisLabel: { color: '#9aa3c0', fontSize:13 }, axisLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize:13, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{ type: 'bar',
+    data: [
+      { value: -0.54, itemStyle: { color: '#52c41a' } },
+      { value: -0.72, itemStyle: { color: '#52c41a' } },
+      { value: -1.15, itemStyle: { color: '#52c41a' } },
+      { value: 1.55, itemStyle: { color: '#e94560' } },
+      { value: -0.52, itemStyle: { color: '#52c41a' } },
+      { value: -0.67, itemStyle: { color: '#52c41a' } }
+    ],
+    barWidth: '45%',
+    label: { show: true, position: 'top', color: '#e0e0e0', fontSize:14, formatter: function(p){ return p.value+'%'; } }
+  }]
+});
+
+// 涨跌家数饼图（1120 / 4376 / 66）
+var chartDist = echarts.init(document.getElementById('chart-dist'));
+chartDist.setOption({
+  tooltip: { trigger: 'item' },
+  legend: { bottom: 0, textStyle: { color: '#9aa3c0', fontSize:13 } },
+  series: [{
+    type: 'pie',
+    radius: ['38%', '70%'],
+    center: ['50%', '45%'],
+    label: { color: '#e0e0e0', fontSize:14 },
+    data: [
+      { value: 1120, name: '上涨家数', itemStyle: { color: '#e94560' } },
+      { value: 4376, name: '下跌家数', itemStyle: { color: '#52c41a' } },
+      { value: 66,  name: '平盘家数', itemStyle: { color: '#8888aa' } }
+    ],
+    labelLine: { lineStyle: { color: '#2c2c4a' } }
+  }]
+});
+
+// 概念板块涨幅 Top 8 横向条形图
+var chartSector = echarts.init(document.getElementById('chart-sector'));
+chartSector.setOption({
+  grid: { top: 10, bottom: 25, left: 80, right: 50 },
+  xAxis: { type: 'value', axisLabel: { color: '#9aa3c0', fontSize:13, formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2c2c4a' } } },
+  yAxis: { type: 'category',
+    data: ['PET铜箔','长鑫存储','电子树脂','电子布','PTFE','黄酒','昨日连板','覆铜板'],
+    axisLabel: { color: '#c0c0d0', fontSize:14 },
+    axisLine: { lineStyle: { color: '#2c2c4a' } } },
+  series: [{ type: 'bar',
+    data: [1.63, 1.88, 1.95, 2.00, 2.41, 3.12, 3.35, 4.51],
+    itemStyle: {
+      color: function(p){ return p.value >= 3 ? '#e94560' : (p.value >= 2 ? '#ff8fa0' : '#8888aa'); }
+    },
+    barWidth: '55%',
+    label: { show: true, position: 'right', color: '#e0e0e0', fontSize:14, formatter: '{c}%' }
+  }]
+});
+
+window.addEventListener('resize', function(){
+  chartIndex.resize(); chartDist.resize(); chartSector.resize();
+});
+</script>
+</body>
+</html>
