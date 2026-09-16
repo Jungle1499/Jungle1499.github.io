@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>主线分析_20260910 · 三阶段框架 P1 启动·预警</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --up:#d83232; --down:#16a36a; --ink:#1f2733; --sub:#5b6675; --line:#e6e9ef;
+    --bg:#f5f6f8; --card:#ffffff; --acc:#2b5cff; --warn:#c47d00; --soft:#eef2fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;line-height:1.6;font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#1f2a44,#2b3f6f);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:18px}
+  header h1{margin:0 0 6px;font-size:24px;letter-spacing:.5px}
+  header .meta{opacity:.85;font-size:13px}
+  .badge{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:6px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 3px rgba(20,30,60,.04)}
+  h2{font-size:18px;margin:0 0 14px;padding-left:11px;border-left:4px solid var(--acc);color:#1f2a44}
+  h3{font-size:15px;margin:16px 0 8px;color:#28324a}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .kpi{background:var(--soft);border-radius:10px;padding:12px 14px}
+  .kpi .t{font-size:12px;color:var(--sub)}
+  .kpi .v{font-size:20px;font-weight:700;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right}
+  th{background:#f0f3f9;color:#3a455c;font-weight:600;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  td.l,th.l{text-align:left}
+  .up{color:var(--up);font-weight:600}
+  .down{color:var(--down);font-weight:600}
+  .flat{color:var(--sub)}
+  .tag{display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:600}
+  .t-p1{background:#fff4e0;color:#b9750a}
+  .t-p2{background:#e7f0ff;color:#2156c9}
+  .t-p3{background:#ffe7e7;color:#c0392b}
+  .t-warn{background:#fff7e6;color:#a9760c}
+  .t-ret{background:#e9ecef;color:#5b6675}
+  .note{font-size:12px;color:var(--sub);margin-top:6px}
+  .src{font-size:11.5px;color:#8a93a3;margin-top:4px}
+  .chart{width:100%;height:340px}
+  .callout{background:#fff8ec;border:1px solid #f3dca0;border-left:4px solid var(--warn);border-radius:8px;padding:12px 14px;margin:10px 0;font-size:13px}
+  .lead{background:#eef4ff;border:1px solid #c9dbff;border-left:4px solid var(--acc);border-radius:8px;padding:12px 14px;margin:8px 0;font-size:13.5px}
+  .pill{display:inline-block;background:#eaf6ef;color:#1c7a4a;border:1px solid #bfe6cd;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
+  .risk{background:#fff; border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0}
+  .risk b{color:var(--up)}
+  ul.tight{margin:6px 0;padding-left:20px}
+  ul.tight li{margin:4px 0}
+  .foot{font-size:12px;color:#8a93a3;text-align:center;margin-top:18px;line-height:1.8}
+  .pair-row td:first-child{font-weight:600}
+  code{background:#eef2fb;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<!-- WKBUILD:zhuxian-20260910 -->
+<div class="wrap">
+
+<header>
+  <h1>主线分析_20260910 · 三阶段框架 P1 启动·预警</h1>
+  <div class="meta">
+    <span class="badge">交易日 2026-09-10 周四</span>
+    <span class="badge">A股收盘</span>
+    <span class="badge">覆铜板 / PCB上游材料链 · 断层领涨</span>
+    <span class="badge">大盘小绿确认（连跌2日）</span>
+  </div>
+  <div class="meta" style="margin-top:8px">数据来源：westock 实时行情接口（腾讯自选股）· 概念/行业排行 · WebSearch 公开催化（新浪财经/东方财富/腾讯财经/中国证券报/新华财经，2026-09-10）。所有行情为 2026-09-10 收盘截面。</div>
+</header>
+
+<!-- 1. 交易日判定 & 大盘全景 -->
+<section>
+  <h2>① 交易日判定与大盘全景</h2>
+  <div class="grid g4">
+    <div class="kpi"><div class="t">上证指数</div><div class="v down">3934.40</div><div class="note">-0.43%</div></div>
+    <div class="kpi"><div class="t">深证成指</div><div class="v down">13617.67</div><div class="note">-0.77%</div></div>
+    <div class="kpi"><div class="t">创业板指</div><div class="v down">3338.42</div><div class="note">-0.49%</div></div>
+    <div class="kpi"><div class="t">科创50</div><div class="v down">1569.22</div><div class="note">-0.69%</div></div>
+    <div class="kpi"><div class="t">上证50</div><div class="v down">2904.29</div><div class="note">-0.21%</div></div>
+    <div class="kpi"><div class="t">沪深300</div><div class="v down">4548.39</div><div class="note">-0.53%</div></div>
+    <div class="kpi"><div class="t">两市成交额</div><div class="v">16471亿</div><div class="note down">较上日 -2084.59亿（缩量约11.2%）</div></div>
+    <div class="kpi"><div class="t">涨跌家数</div><div class="v">955 ↑ / 4512 ↓</div><div class="note">平94 · 涨停40 / 跌停14</div></div>
+  </div>
+  <div class="callout">
+    <b>大盘小绿判定：确认（连续2日触发）。</b> 9/10 下跌家数占比 = 4512 / 5561 ≈ <b>81.1% &gt; 65%</b>；9/9 为 65.5% &gt; 65%。两日连续超阈值，叠加指数窄幅震荡（上证仅 -0.43%）但个股普跌，呈典型"权重护盘、题材退潮"的二八分化弱市。成交缩至 1.65 万亿，增量资金缺席，反弹持续性弱。
+  </div>
+  <div class="chart" id="idxChart"></div>
+  <div class="src">图1 六大指数 2026-09-10 涨跌幅（绿=跌，A股惯例）。数据源：westock quote。</div>
+</section>
+
+<!-- 2. 五维数据 -->
+<section>
+  <h2>② 五维市场数据（行业 / 概念 / 广度）</h2>
+  <h3>申万二级行业涨幅 Top 6 + 主力净流入</h3>
+  <table>
+    <thead><tr><th class="l">行业</th><th>涨跌幅</th><th>主力净流入</th><th class="l">领涨代表</th></tr></thead>
+    <tbody>
+      <tr><td class="l">航海装备Ⅱ</td><td class="up">+2.76%</td><td>+4.64亿</td><td class="l">国瑞科技 +6.92%</td></tr>
+      <tr><td class="l">城商行Ⅱ</td><td class="up">+2.39%</td><td>+3.00亿</td><td class="l">宁波银行 +3.49%</td></tr>
+      <tr><td class="l">玻璃玻纤</td><td class="up">+2.23%</td><td class="up">+22.42亿</td><td class="l">再升科技 +10.06%</td></tr>
+      <tr><td class="l">厨卫电器</td><td class="up">+1.68%</td><td>+3.43亿</td><td class="l">万和电气 +10.03%</td></tr>
+      <tr><td class="l">工程咨询服务Ⅱ</td><td class="up">+1.62%</td><td class="up">+18.39亿</td><td class="l">太极实业 +10.02%</td></tr>
+      <tr><td class="l">国有大型银行Ⅱ</td><td class="up">+1.59%</td><td>+1.10亿</td><td class="l">交通银行 +2.06%</td></tr>
+    </tbody>
+  </table>
+  <div class="note">注：行业榜第1（航海装备 +2.76%）与第2（城商行 +2.39%）仅差 0.37% &lt; 3%，<b>行业层面无断层领涨</b>；主线信号来自概念榜。</div>
+
+  <h3>概念板块涨幅 Top 8（剔除纯连板/涨停类）+ 代表标的与5日涨幅</h3>
+  <table>
+    <thead><tr><th class="l">概念</th><th>涨跌幅</th><th>主力净流入</th><th class="l">代表标的</th><th>代表5日</th></tr></thead>
+    <tbody>
+      <tr><td class="l">覆铜板</td><td class="up">+5.00%</td><td class="up">+17.82亿</td><td class="l">超声电子(000823) +10.00%</td><td class="up">+24.83%</td></tr>
+      <tr><td class="l">电子布</td><td class="up">+1.92%</td><td class="up">+13.46亿</td><td class="l">国际复材(301526) +6.79%</td><td class="up">+7.69%</td></tr>
+      <tr><td class="l">陶瓷基板</td><td class="up">+1.61%</td><td class="up">+8.36亿</td><td class="l">富乐德(301297) +8.97%</td><td>N/A</td></tr>
+      <tr><td class="l">银行概念</td><td class="up">+1.47%</td><td>+3.16亿</td><td class="l">宁波银行(002142) +3.49%</td><td class="up">+4.27%</td></tr>
+      <tr><td class="l">中船系</td><td class="up">+1.36%</td><td>+3.96亿</td><td class="l">中国船舶(600150) +3.26%</td><td class="up">+18.94%</td></tr>
+      <tr><td class="l">中国建材集团</td><td class="up">+1.13%</td><td>+3.10亿</td><td class="l">凯盛新能(600876) +10.01%</td><td>N/A</td></tr>
+      <tr><td class="l">电力改革</td><td class="up">+0.95%</td><td class="up">+7.92亿</td><td class="l">华银电力(600744) +10.06%</td><td class="up">+12.18%</td></tr>
+      <tr><td class="l">券商</td><td class="up">+0.84%</td><td class="up">+13.51亿</td><td class="l">哈投股份(600864) +5.26%</td><td>N/A</td></tr>
+    </tbody>
+  </table>
+  <div class="note">已剔除"昨日首板(+1.16%)"等纯连板类概念。概念5日涨幅以代表标的近5日涨幅代理（概念层面无直接5日涨跌幅字段，已标注 N/A 处为未单独取数）。</div>
+  <div class="chart" id="conceptChart"></div>
+  <div class="src">图2 概念板块涨跌幅（红=涨/绿=跌，A股惯例；含主线链与当日退潮方向对照）。数据源：westock sector ranking。</div>
+</section>
+
+<!-- 3. 主线确认 -->
+<section>
+  <h2>③ 主线确认（五维综合判定）</h2>
+  <div class="lead">
+    <b>断层领涨判定：概念第1（覆铜板 +5.00%）与第2（电子布 +1.92%）差 = 3.08% ≥ 3% → 覆铜板为当日单一断层龙头。</b>
+    五维共振进一步锁定：①行业涨幅——玻璃玻纤 +2.23%（#3）、元件(PCB) +0.18%（#20，为覆铜板映射行业）；②概念涨幅——覆铜板 +5.00% 居首、电子布 +1.92%、陶瓷基板 +1.61%（同链三概念共振）；③主力净流入——覆铜板 +17.82亿（概念第一）、电子布 +13.46亿、元件行业 +32.40亿（行业净流入第一）、玻璃玻纤 +22.42亿（行业净流入第二）；④代表标的——超声电子涨停、逸豪新材 +15.29%、国际复材 +6.79%、生益科技中军稳健；⑤产业链上下游联动——电子布(玻纤)→覆铜板→PCB 量价齐升，涨价自上而下传导。
+  </div>
+  <div class="callout">
+    <b>当日主线结论：覆铜板 / PCB上游材料链（AI硬件材料）</b>，断层领涨 + 五维共振双重确认。其上下游（电子布/玻纤、元件/PCB）同步活跃，构成"涨价—缺货—AI算力需求"逻辑闭环。
+  </div>
+</section>
+
+<!-- 4. 核心驱动 -->
+<section>
+  <h2>④ 四重核心驱动因素（当日及前一日催化）</h2>
+  <div class="risk"><b>1. 覆铜板涨价潮（松下/建滔/南亚全球共振）。</b> 松下 9/1 起上调覆铜板及半固化片价格，高速高频/IC封装基板高端品类最高涨 <b>30%</b>；建滔积层板年内发出<b>第七张涨价函</b>，FR-4 按复利累计涨幅超 <b>100%</b>；南亚塑胶同步上调 20%~25%。<span class="src">来源：新浪财经、东方财富，2026-09-10 收评</span></div>
+  <div class="risk"><b>2. 电子布（上游核心基材）涨价落地。</b> 中国巨石 9 月电子布调价：厚布 +15%、薄布 +20%；主流 7628 型号电子布较年初涨超 <b>70%</b>、同比涨约 <b>1.6倍</b>，现货供不应求、库存低位。<span class="src">来源：中国证券报、腾讯财经，2026-09-09/10</span></div>
+  <div class="risk"><b>3. AI算力需求结构性增量（供需缺口延续至2027）。</b> 2026 年全球 AI服务器专用高端 HVLP 铜箔需求同比 <b>+260%</b>；单台AI服务器用板量/价值量远超传统服务器；高端PCB原材料产能接近满负荷，机构测算 2026 行业供需缺口持续扩大、2027 年前新增有效产能难匹配。<span class="src">来源：腾讯财经/QQ，2026-09-10</span></div>
+  <div class="risk"><b>4. 银行/电力政策与防御配置（主线外最强承接）。</b> 财政部拟发 <b>3000亿特别国债</b>补充8家中央金融企业核心一级资本（工行/农行等）；国新办"十五五金融强国"发布会；国家电网"十五五"固定资产投资约 <b>4万亿</b>（较"十四五"+40%）；8月 CPI +0.8% / PPI +3.8% 温和通胀。银行多股创历史新高，电力/绿电逆势活跃。<span class="src">来源：新浪财经、新华财经、万隆证券，2026-09-10</span></div>
+</section>
+
+<!-- 5. 核心龙头精选 -->
+<section>
+  <h2>⑤ 核心龙头精选（3只 · 主线内）</h2>
+  <table>
+    <thead><tr><th class="l">标的/角色</th><th class="l">代码</th><th>最新价</th><th>涨幅</th><th>成交额</th><th>换手率</th><th>总市值</th><th>5日</th><th>PE(TTM)</th><th>年初至今</th><th class="l">P阶段</th></tr></thead>
+    <tbody>
+      <tr><td class="l"><b>超声电子</b><br>情绪龙头</td><td class="l">000823</td><td>18.70</td><td class="up">+10.00%</td><td>27.70亿</td><td>25.93%</td><td>111亿</td><td class="up">+24.83%</td><td>50.32</td><td>N/A</td><td><span class="tag t-warn">P1预警</span></td></tr>
+      <tr><td class="l"><b>生益科技</b><br>产业总龙头</td><td class="l">600183</td><td>146.96</td><td class="down">-0.81%</td><td>86.25亿</td><td>2.42%</td><td>3569亿</td><td class="up">+2.63%</td><td>68.72</td><td>N/A</td><td><span class="tag t-p1">P1</span></td></tr>
+      <tr><td class="l"><b>国际复材</b><br>上游材料/弹性龙</td><td class="l">301526</td><td>29.42</td><td class="up">+6.79%</td><td>60.97亿</td><td>15.01%</td><td>1109亿</td><td class="up">+7.69%</td><td>162.94</td><td>N/A</td><td><span class="tag t-warn">P1预警</span></td></tr>
+    </tbody>
+  </table>
+  <ul class="tight">
+    <li><b>超声电子（情绪龙头）：</b>覆铜板概念内唯一涨停且"4天2板"，小市值（111亿）高弹性，日内最强进攻点，是板块资金情绪温度计。今日反超华正新材仅1天，P1预警。</li>
+    <li><b>生益科技（产业总龙头）：</b>内资覆铜板"一哥"、全球市占前列，唯一通过海外 M9 材料验证；高端AI服务器基材毛利率显著高于普通FR-4，是板块中军。今日随板块分化小幅回调 -0.81%，中军稳健，P1（未加速）。</li>
+    <li><b>国际复材（上游材料/弹性龙）：</b>电子布（覆铜板上游核心基材）龙头，拟募资不超50亿投向高频高速电子纤维布（占募资54.4%）；与覆铜板形成上下游共振，弹性充足，P1预警。</li>
+  </ul>
+  <div class="note">弹性备选：逸豪新材(301176) +15.29%（玻纤/PCB弹性小票）、再升科技(603601) +10.06%（玻纤涨停）、金安国纪(002636) 涨停（覆铜板补涨）。年初至今(YTD)字段源未提供，标注 N/A，未臆造。</div>
+</section>
+
+<!-- 6. 七大板块 Pairs + 三阶段 -->
+<section>
+  <h2>⑥ 七大板块 Pairs + 三阶段判定（数据驱动）</h2>
+  <p class="note">判定规则：Pair 中标的连续两天跑赢另一个 → 阶段确认（龙头连赢2天=P1确认；补涨连赢2天=P2确认；龙头再连赢2天=P3确认）；仅跑赢1天为"预警"，需重新计数。下方 9/9↔9/10 为客观截面。</p>
+  <table class="pair-row">
+    <thead><tr><th class="l">板块 / Pair（市值匹配·业务类似·涨幅最大两标的）</th><th class="l">9/9</th><th class="l">9/10</th><th class="l">今日验证（谁跑赢·连续几天）</th><th class="l">阶段</th><th class="l">操作建议</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="l"><b>① 覆铜板（主线）</b><br>超声电子 18.70(+10%) / 华正新材 217.99(+2.8%)</td>
+        <td class="l">华正+10% &gt; 超声+2.84%</td><td class="l">超声+10% &gt; 华正+2.8%</td>
+        <td class="l">超声（情绪龙）反超华正仅 <b>1天</b>，二者交替</td>
+        <td><span class="tag t-warn">P1预警</span></td><td class="l">试错持仓，不追高，等确认</td>
+      </tr>
+      <tr>
+        <td class="l"><b>② 电子布/玻纤（上游）</b><br>国际复材 29.42(+6.79%) / 中国巨石 43.46(+1.85%)</td>
+        <td class="l">中国巨石+3.09% &gt; 国际复材+1.59%</td><td class="l">国际复材+6.79% &gt; 中国巨石+1.85%</td>
+        <td class="l">国际复材（弹性）反超中国巨石仅 <b>1天</b>，交替</td>
+        <td><span class="tag t-warn">P1预警</span></td><td class="l">持有/低吸上游，等确认</td>
+      </tr>
+      <tr>
+        <td class="l"><b>③ 银行（防御）</b><br>宁波银行 35.87(+3.49%) / 招商银行 41.57(+1.39%)</td>
+        <td class="l">招商+0.24% &gt; 宁波0%</td><td class="l">宁波+3.49% &gt; 招商+1.39%</td>
+        <td class="l">宁波（城商行弹性）反超招行（总龙）仅 <b>1天</b>，交替</td>
+        <td><span class="tag t-warn">P1预警</span></td><td class="l">防御底仓持有（多股创历史新高）</td>
+      </tr>
+      <tr>
+        <td class="l"><b>④ 中船系/航海装备（强势）</b><br>中国船舶 40.82(+3.26%) / 中船防务 29.23(+2.67%)</td>
+        <td class="l">中船防务+2.74% &gt; 中国船舶+1.15%</td><td class="l">中国船舶+3.26% &gt; 中船防务+2.67%</td>
+        <td class="l">中国船舶（总龙）反超中船防务仅 <b>1天</b>，交替</td>
+        <td><span class="tag t-warn">P1预警</span></td><td class="l">持有观察，订单景气支撑</td>
+      </tr>
+      <tr>
+        <td class="l"><b>⑤ 电力/绿电（强势）</b><br>华银电力 7.00(+10.06%) / 闽东电力 12.62(+10.03%)</td>
+        <td class="l">闽东+9.97% &gt; 华银+1.60%</td><td class="l">华银+10.06% &gt; 闽东+10.03%</td>
+        <td class="l">华银（容量龙）反超闽东仅 <b>1天</b>，基本并列</td>
+        <td><span class="tag t-warn">P1预警</span></td><td class="l">持有，十五五电网4万亿支撑</td>
+      </tr>
+      <tr>
+        <td class="l"><b>⑥ 航运（退潮）</b><br>南京港 10.26(+2.81%) / 招商轮船 20.58(-1.95%)</td>
+        <td class="l">南京港+10.03% &gt; 招商+10.01%</td><td class="l">南京港+2.81% &gt; 招商-1.95%</td>
+        <td class="l">南京港（小票情绪）<b>连续2天</b>跑赢招商轮船（大票）；但板块整体退潮</td>
+        <td><span class="tag t-ret">退潮·小票抱团</span></td><td class="l">减仓/清仓航运营运大票；南京港仅情绪博弈、不追</td>
+      </tr>
+      <tr>
+        <td class="l"><b>⑦ CPO/AI光通信（退潮）</b><br>中际旭创 890.10(-2.07%) / 新易盛 410.90(-0.94%)</td>
+        <td class="l">中际+0.72% &gt; 新易盛-0.38%</td><td class="l">新易盛-0.94% &gt; 中际-2.07%</td>
+        <td class="l">中际/新易盛交替、双双下跌；新易盛9/10相对抗跌</td>
+        <td><span class="tag t-ret">退潮派发</span></td><td class="l">清仓/回避高位光模块，等企稳</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout">阶段结论：7 个 Pair 中，仅航运 Pair 出现"连续2天跑赢"，但属<b>退潮期小票抱团</b>（大票招商轮船已转跌 -1.95%、航运港口行业 -0.71%），非新启动；其余 6 个 Pair 龙头/补涨均仅交替跑赢1天，严格按规则<b>未达连续2天确认</b>，统一判定为 P1 启动·预警。这正是"缩量弱市、主线刚点火、轮动快"的客观映射。</div>
+</section>
+
+<!-- 7. 前三强 + 最优 Pair -->
+<section>
+  <h2>⑦ 七大板块前三强 + 最优 Pair（大市值双雄 + 小盘高弹性）</h2>
+  <table>
+    <thead><tr><th class="l">板块</th><th class="l">前三强细分环节</th><th class="l">最优 Pair（双雄 / 弹性）</th></tr></thead>
+    <tbody>
+      <tr><td class="l">① 覆铜板</td><td class="l">超声电子(情绪) / 华正新材(高频高速) / 生益科技(总龙头)</td><td class="l">双雄：生益科技(3569亿)+华正新材(341亿) ｜ 弹性：超声电子(111亿)</td></tr>
+      <tr><td class="l">② 电子布/玻纤</td><td class="l">国际复材 / 中国巨石 / 再升科技(涨停)</td><td class="l">双雄：中国巨石(1739亿)+国际复材(1109亿) ｜ 弹性：再升科技(113亿,涨停)</td></tr>
+      <tr><td class="l">③ 银行</td><td class="l">宁波银行 / 招商银行 / 南京银行(创高)</td><td class="l">双雄：招商银行(10483亿)+宁波银行(2368亿) ｜ 弹性：南京银行(城商行创高)</td></tr>
+      <tr><td class="l">④ 中船系</td><td class="l">中国船舶 / 中船防务 / 国瑞科技(+6.92%)</td><td class="l">双雄：中国船舶(3071亿)+中船防务(413亿) ｜ 弹性：国瑞科技(小票)</td></tr>
+      <tr><td class="l">⑤ 电力/绿电</td><td class="l">华银电力 / 闽东电力 / 乐山电力</td><td class="l">双雄：华银电力(容量)+乐山电力 ｜ 弹性：闽东电力(57亿小票涨停)</td></tr>
+      <tr><td class="l">⑥ 航运（退潮）</td><td class="l">南京港 / 招商轮船 / 海峡股份</td><td class="l">双雄：招商轮船(1661亿)+海峡股份 ｜ 弹性：南京港(49亿)｜<span class="down">退潮减仓</span></td></tr>
+      <tr><td class="l">⑦ CPO（退潮）</td><td class="l">中际旭创 / 新易盛 / 天孚通信</td><td class="l">双雄：中际旭创(10484亿)+新易盛(5729亿) ｜ 弹性：天孚通信｜<span class="down">清仓回避</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 8. 综合研判 -->
+<section>
+  <h2>⑧ 综合研判与操作建议</h2>
+  <h3>市场状态</h3>
+  <ul class="tight">
+    <li><b>大盘小绿：确认。</b>下跌占比81.1%连续2日&gt;65%（9/9 65.5%），指数窄幅震荡、个股普跌的二八分化弱市；上证3930一线（约20日线）为短期支撑。</li>
+    <li><b>市场情绪：偏弱（恐慌区）。</b>上涨仅17%、涨停40/跌停14、成交缩量2085亿；情绪评分约29/100。资金防御性配置银行/电力/资源，高位科技（半导体-23.3亿、通信设备-45.6亿净流出）持续兑现。</li>
+    <li><b>板块轮动速度（近一周每日主线）：</b> 9/7 AI算力(CPO/PCB) → 9/8 农业链+油气 → 9/9 航运+资源小金属/煤炭+AI光通信回流 → <b>9/10 覆铜板/PCB材料(断层)+银行电力防御</b>。轮动约2~3天一切，风格由成长切向顺周期/防御。</li>
+    <li><b>主线阶段结论：</b>覆铜板为 P1 启动·预警（断层领涨确认，但 Pair 内部未连续2天确认）；上下游电子布/玻纤同步活跃未确认。退潮方向：航运、CPO（高位科技）确认退潮；农业（9/9强势）今日集体补跌。</li>
+  </ul>
+
+  <h3>风险提示（≥4条）</h3>
+  <div class="risk"><b>1. 估值透支 / 涨价预期兑现风险：</b>覆铜板板块已非底部，电子布价格处历史高位（"一月一价"），若下游备货节奏放缓或18~24月后新增产能释放，价格与股价可能同步回落；板块已有龙头封板，追高性价比变差。</div>
+  <div class="risk"><b>2. 缩量风险：</b>两市成交缩至1.65万亿（较上日-2085亿），增量资金缺席，反弹持续性弱；若成交不能重回1.8万亿+，题材难有持续性行情。</div>
+  <div class="risk"><b>3. 海外映射 / 外围波动：</b>港股科技走弱（恒生科技盘中-2%），半导体/通信设备资金大幅净流出，海外AI科技股波动压制高估值成长；中东局势表态扰动风险偏好。</div>
+  <div class="risk"><b>4. 轮动过快 / 退潮风险：</b>农业（粮食/种业/转基因-4%以上）前期涨幅大今日集体补跌，CPO/高位AI应用退潮；题材预期驱动行情易快速回调，切勿抄底博弈反弹。</div>
+  <div class="risk"><b>5. 政策兑现节奏风险：</b>电网"十五五"4万亿、金融强国发布会属中长期规划，订单释放有时间周期，短期业绩兑现有限，谨防预期透支回调。</div>
+
+  <h3>次日（9/11）早晨跟踪框架草稿</h3>
+  <ul class="tight">
+    <li><b>量能：</b>成交能否重回1.8万亿+？缩量则维持防守。</li>
+    <li><b>主线确认：</b>覆铜板 Pair 超声电子是否连续第2天跑赢华正新材（→P1确认）？国际复材是否连续跑赢中国巨石？电子布/覆铜板有无新涨价函/报价催化。</li>
+    <li><b>防御延续：</b>银行（南京/江苏/杭州等）是否延续创新高？若放量滞涨为预警；电力是否受"十五五"电网规划继续发酵。</li>
+    <li><b>退潮确认：</b>航运（招商轮船）、CPO（中际/新易盛）是否继续双杀（→清仓）；农业是否止跌（仅超跌反弹，不抄底）。</li>
+    <li><b>外围：</b>隔夜美股/港股科技、铜/玻纤/电子布商品价格、中东局势。</li>
+    <li><b>大盘支撑：</b>上证3930一线（20日线附近）是否守住；跌破则降仓。</li>
+  </ul>
+</section>
+
+<div class="foot">
+  数据来源：westock 实时行情接口（腾讯自选股）收盘截面 2026-09-10 · 行业/概念排行 · WebSearch 公开催化（新浪财经/东方财富/腾讯财经/中国证券报/新华财经，2026-09-10）。<br>
+  三阶段判定严格基于 Pair "连续两天跑赢"客观规则，未达连续2天者一律标记预警/退潮，未主观跳阶段。<br>
+  <b>投资有风险，决策需谨慎。过往表现不代表未来收益。</b>
+</div>
+
+</div>
+
+<script>
+function paint(id, title, data, colorBySign){
+  var el = document.getElementById(id);
+  if(!el || typeof echarts === 'undefined'){ return; }
+  var chart = echarts.init(el);
+  var names = data.map(function(d){ return d[0]; });
+  var vals = data.map(function(d){ return d[1]; });
+  var itemStyle = { color: function(p){ return p.value >= 0 ? '#d83232' : '#16a36a'; } };
+  var option = {
+    title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#28324a' } },
+    grid: { left: 110, right: 40, top: 44, bottom: 30 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: function(ps){ var s = ps[0].name + '<br/>'; ps.forEach(function(it){ var v = it.value; s += it.marker + (v>=0?'+':'') + v.toFixed(2) + '%'; }); return s; } },
+    xAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
+    yAxis: { type: 'category', data: names.slice().reverse(), axisLabel: { fontSize: 12 } },
+    series: [ { type: 'bar', data: vals.slice().reverse(), itemStyle: itemStyle,
+      label: { show: true, position: 'right', formatter: function(p){ return (p.value>=0?'+':'') + p.value.toFixed(2) + '%'; }, fontSize: 11 } } ]
+  };
+  chart.setOption(option);
+  window.addEventListener('resize', function(){ chart.resize(); });
+}
+paint('idxChart', '六大指数 2026-09-10 涨跌幅', [
+  ['上证50', -0.21], ['沪深300', -0.53], ['上证指数', -0.43], ['创业板指', -0.49], ['深证成指', -0.77], ['科创50', -0.69]
+]);
+paint('conceptChart', '概念板块涨跌幅（主线链 vs 退潮对照）', [
+  ['覆铜板', 5.00], ['电子布', 1.92], ['陶瓷基板', 1.61], ['银行概念', 1.47], ['中船系', 1.36],
+  ['中国建材集团', 1.13], ['电力改革', 0.95], ['券商', 0.84],
+  ['半导体', -0.48], ['通信设备', -1.03], ['贵金属', -0.89], ['种植业(前强)', -1.00], ['转基因(前强)', -4.28]
+]);
+</script>
+</body>
+</html>
