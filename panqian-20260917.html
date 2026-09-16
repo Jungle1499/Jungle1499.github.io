@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 - 2026年9月17日</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a7a;
+    --border: #e0e4e8;
+    --primary: #1a237e;
+    --primary-light: #3949ab;
+    --accent: #0d47a1;
+    --up: #c62828;
+    --up-light: #e53935;
+    --down: #2e7d32;
+    --warn: #e65100;
+    --success: #1565c0;
+    --gold: #f57c00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.25);
+  }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .header .date { font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
+  .header .song { font-size: 13px; opacity: 0.75; font-style: italic; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; margin-top: 12px; }
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 20px; }
+  .summary-box {
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--primary);
+  }
+  .summary-box h4 { font-size: 14px; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
+  .summary-box p { font-size: 13.5px; color: var(--text); line-height: 1.8; }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-up { background: rgba(198,40,40,0.12); color: var(--up); }
+  .tag-down { background: rgba(46,125,50,0.12); color: var(--down); }
+  .tag-warn { background: rgba(230,81,0,0.12); color: var(--warn); }
+  .tag-info { background: rgba(21,101,192,0.12); color: var(--success); }
+  .logic-chain { display: flex; flex-direction: column; gap: 12px; }
+  .logic-item {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+  }
+  .logic-item .step {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .logic-item .step span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }
+  .logic-item .text { font-size: 13px; color: var(--text); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: #fafbfd; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .warn-text { color: var(--warn); font-weight: 600; }
+  .sector-table { font-size: 12px; }
+  .sector-table th, .sector-table td { padding: 10px 6px; }
+  .sector-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .score {
+    display: inline-block;
+    min-width: 36px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .score-mid { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+  .score-low { background: linear-gradient(135deg, #757575, #9e9e9e); }
+  .consensus-vhigh { color: var(--up); font-weight: 700; }
+  .consensus-high { color: var(--up-light); font-weight: 600; }
+  .consensus-mid { color: var(--gold); font-weight: 600; }
+  .consensus-low { color: var(--text-secondary); }
+  .stock-bold { font-weight: 700; color: var(--text); }
+  .risk-box {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--warn);
+  }
+  .risk-box h4 { font-size: 13px; color: var(--warn); margin-bottom: 6px; }
+  .calendar-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--success);
+  }
+  .calendar-box h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
+  .discipline-box {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 4px solid #7b1fa2;
+  }
+  .discipline-box h4 { font-size: 13px; color: #7b1fa2; margin-bottom: 6px; }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 20px 0;
+  }
+  ul { padding-left: 20px; }
+  ul li { font-size: 13.5px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 标题区 -->
+<div class="header">
+  <h1>📊 每日盘前策略</h1>
+  <div class="date">2026年9月17日 · 周四 · 07:00 盘前</div>
+  <div class="song">
+    🎵 《凡是过往，皆为序章》<br>
+    <span style="opacity:0.85">— 献给在 FOMC 鹰派落地后，仍以结构胜率的交易者 —</span><br>
+    <em style="opacity:0.7">"What's past is prologue. 过去皆为序章，真正的行情在前方。"</em><br>
+    <small style="opacity:0.6">—— 莎士比亚《暴风雨》</small>
+  </div>
+</div>
+
+<!-- 📌 核心摘要 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📌</span>核心摘要</div>
+
+  <div class="summary-box">
+    <h4>承接昨日交易日志（2026-09-16 周三）</h4>
+    <p>
+      昨日<strong>放量强反弹</strong>，沪指+0.71%收3891.60（低开3842.72后走高）、深成+1.26%、创业+1.96%、<strong>科创50 +4.14%</strong>领涨；两市成交<strong>1.84万亿</strong>（10日均100.76%）；广度<strong>74.95%涨 / 89涨停 / 涨跌比3.51</strong>，情绪由前两日冰点直接修复。
+      但前日（9/15）盘前"退潮缩圈"判据被实盘证伪 → <strong>规则73 全表失真日触发</strong>（判空0% / 判多40%），今日强制重判regime、降仓5pct、方向表≤6行。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color:var(--warn)">
+    <h4 style="color:var(--warn)">两重靴子落地 · 一正一鹰（超预期档）</h4>
+    <p>
+      ① <strong>FOMC 9/17 02:00 落地：加息25bp 至 3.75%–4.00%，12:0 全票通过</strong>（非此前预期的6:6分裂），点阵图<strong>16/18 官员支持年内再加息</strong>、沃什鹰派讲话（不提供前瞻指引）→ 10月再加息概率53.1%（CME）；
+      ② <strong>光通信隔夜逆势</strong>：Lumentum +9% / Coherent +7% / 迈威尔 +3%，映射A股9/16已强的AI硬件链（光通信+4.76%双正、CPO+4.14%双正）；
+      ③ 国常会算力网政策 + MLCC/光纤涨价持续 → 硬件链产业验证未中断。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-left-color:var(--up)">
+    <h4 style="color:var(--up)">两重悬顶压制（利空档）</h4>
+    <p>
+      ① <strong>FOMC"鹰派加息"</strong>：美股尾盘跳水道指-1.21%（51461.90）、标普-0.45%、纳指-0.01%；<strong>美元指数破100</strong>（100.21，+0.57%）、<strong>10Y美债 5.008%</strong>（52周新高）→ 成长股估值分母持续承压，加息敏感型（半导体设备/医药/白酒）继续回避；
+      ② <strong>通胀交易降温</strong>：现货金跳水-0.70%报4263（盘中冲高4366后回落）、WTI -3.60%报102.02 → 贵金属/油气地缘溢价收窄，相关板块降权。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color:var(--down)">
+    <h4 style="color:#2e7d32">情绪周期定位：反弹修复期 · FOMC鹰派压制（规则73强制重判，非退潮）</h4>
+    <p>
+      9/16 广度强（74.95%涨）证明市场非退潮，但<strong>资金分化极端</strong>：AI硬件链（光通信/CPO/PCB/元件/光纤）20日资金<strong>全线双正</strong>（光通信+141.5亿/PCB+304.5亿/元件+278亿），而半导体整体-621亿、工业金属-224.7亿、电池-200亿深负。
+      规则73 失真日处置 → <strong>总仓降至15-20%</strong>，方向表收敛≤6行，结构优于仓位。短线主线只在"真趋势双正"的AI硬件链。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color:#7b1fa2">
+    <h4 style="color:#7b1fa2">今日展望（200字）</h4>
+    <p>
+      沪指支撑<strong>3840-3860</strong>（9/16最低3842+整数关）、压力<strong>3923</strong>（MA20）；<strong>期望路径</strong>：小幅低开消化FOMC鹰派→光通信/AI硬件延续强势（隔夜Lumentum映射）→银行红利压舱→成交维持≥1.7万亿→沪指试探3900；<strong>风险路径</strong>：美元破100+美债5%压制成长股→半导体整体诱多出货→沪指回踩3840。
+      <strong>总仓位15-20%</strong>（规则73降5pct），主线=AI硬件链（光通信/CPO/PCB/光纤）+材料（覆铜板/MLCC/培育钻石）+银行防御。
+    </p>
+  </div>
+
+  <div>
+    <span class="tag tag-info">承接9/16强反弹</span>
+    <span class="tag tag-warn">FOMC鹰派落地</span>
+    <span class="tag tag-up">光通信双正主线</span>
+    <span class="tag tag-down">美元破100</span>
+    <span class="tag tag-info">规则73降仓</span>
+  </div>
+</div>
+
+<!-- 🔗 决策逻辑链 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🔗</span>决策逻辑链</div>
+  <div class="logic-chain">
+
+    <div class="logic-item">
+      <div class="step"><span>①</span>数据→分析</div>
+      <div class="text">
+        <strong>9/16 广度与指数</strong>：涨4170(74.95%)/跌1189/涨停89/跌停1/涨跌比3.51，科创50 +4.14%领涨 → <strong>强反弹，非退潮</strong>；<br>
+        <strong>9/16 资金分化</strong>：AI硬件链<strong>全线双正</strong>——光通信20D+141.5亿/CPO+92.6亿/PCB+304.5亿/元件+278亿/光纤+81.9亿/通信设备(SW)20D+132.5亿；而半导体整体20D-621亿、工业金属-224.7亿、电池-200亿深负 → <strong>资金共识只在硬件链</strong>。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>②</span>数据→分析</div>
+      <div class="text">
+        <strong>FOMC 9/17 02:00 落地</strong>：加息25bp至3.75-4.00%（符合预期），<strong>12:0全票</strong>（预期为分裂，实际鹰派一致）；点阵图16/18官员年内再加息；沃什鹰派（不提供前瞻指引）→ 10月再加息概率53.1%；<br>
+        <strong>市场反应</strong>：美股尾盘跳水道指-1.21%、美元破100、10Y 5.008%；但<strong>光通信逆势</strong>Lumentum+9%/Coherent+7% → 加息对AI硬件链"利空出尽+订单免疫"。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>③</span>数据→分析</div>
+      <div class="text">
+        <strong>商品价格回落</strong>：现货金-0.70%报4263（盘中冲高4366后跳水）、WTI -3.60%报102.02 → <strong>贵金属修复窗口关闭（㊲）+ 油气地缘溢价收窄</strong>；<br>
+        <strong>背离四象限校准</strong>：半导体整体9/16价格+4.79%但20D-621亿（|20D|/|5D|≈37≥1.5触发规则51）→ <strong>涨+净流出=🟠诱多出货象限</strong>，禁多；贵金属价格+3.61%但20D-6.7亿+隔夜金价跳水 → ㊸禁多。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>④</span>判断</div>
+      <div class="text">
+        <strong>主线确立（真趋势）</strong>：<span class="up">P2·持有加仓</span>——AI硬件链（光通信/CPO/PCB/光纤）同时具备①20日资金双正（㊹真趋势豁免）②隔夜Lumentum+9%映射③国常会算力网+MLCC/光纤涨价产业验证④广度强反弹共振。<br>
+        <strong>规则73 处置</strong>：前日判据失真 → regime重判为"<strong>反弹修复·FOMC鹰派压制</strong>"（非退潮），总仓15-20%、方向表≤6行。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>⑤</span>行动</div>
+      <div class="text">
+        <strong>今日操作</strong>：
+        ① 主线持有：<strong>光模块（中际旭创/新易盛/天孚通信）+PCB（沪电股份/东山精密/生益科技）+光纤（长飞光纤/亨通光电）</strong>，回踩不破3日线持有；
+        ② 材料轻仓：<strong>覆铜板（生益科技/华正新材）+被动元件/MLCC（风华高科/中瓷电子）+培育钻石（沃尔德/力量钻石）</strong>；
+        ③ 防御底仓：<strong>银行红利（建设银行/招商银行/农业银行）</strong>2-3%压舱（美元破100银行相对受益）；
+        ④ 高位回避：半导体整体（诱多出货象限）/贵金属（FOMC金价跳水）/工业金属/电池/证券/消费电子/医药白酒（加息敏感）。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ⚡ 盘前30秒速览 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚡</span>盘前30秒速览</div>
+  <table>
+    <tr><td>📉 <strong>沪指支撑/压力</strong></td><td>支撑 <span class="down">3840-3860</span>(9/16最低3842) / 压力 <span class="up">3923</span>(MA20)</td></tr>
+    <tr><td>📊 <strong>成交警戒线</strong></td><td>反弹需维持 ≥1.7万亿（9/16为1.84万亿/10日均100.76%）</td></tr>
+    <tr><td>🔥 <strong>9/16主力资金</strong></td><td>光通信+141.5亿 / CPO+92.6亿 / PCB+304.5亿 / 元件+278亿 / 光纤+81.9亿（AI硬件链集中双正）</td></tr>
+    <tr><td>🌍 <strong>美股9/16收盘（FOMC后）</strong></td><td>道指-1.21% / 标普-0.45% / 纳指-0.01% / <span class="up">费半+0.63%</span>(Lumentum+9%/Coherent+7%)</td></tr>
+    <tr><td>💰 <strong>油价（WTI）</strong></td><td><span class="down">-3.60%</span>报102.02美元（地缘溢价降温，仍在100上方）</td></tr>
+    <tr><td>📈 <strong>美债收益率</strong></td><td><span class="warn-text">10Y 5.008%（52周新高）</span> / 美元指数<span class="warn-text">100.21 破100</span></td></tr>
+    <tr><td>🎯 <strong>加息路径</strong></td><td>9月已+25bp；<span class="warn-text">10月再加息概率53.1%</span>（CME）；年内再加息16/18官员支持</td></tr>
+    <tr><td>⚠️ <strong>本周解禁压力</strong></td><td>中性（无单只>80亿集中解禁预警，以交易所披露为准）</td></tr>
+    <tr><td>🎯 <strong>建议仓位</strong></td><td><strong>15-20%</strong>（规则73降5pct · FOMC鹰派防御）</td></tr>
+    <tr><td>📅 <strong>事件日历</strong></td><td>20:30 美国初请/二季度经常帐 / 22:30 EIA原油库存 / 关注沃什后续讲话</td></tr>
+  </table>
+</div>
+
+<!-- 🌍 隔夜外盘 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🌍</span>隔夜外盘（数据截至9/16美股收盘·FOMC落地后）</div>
+  <table>
+    <tr><th>分类</th><th>品种</th><th>收盘</th><th>涨跌</th><th>解读</th></tr>
+    <tr><td rowspan="3"><strong>美股</strong></td><td>道琼斯</td><td>51,461.90</td><td class="down">-1.21%</td><td rowspan="3">FOMC鹰派（12:0全票+点阵图16/18再加息）→ 尾盘跳水；KBW银行-2.88%。</td></tr>
+    <tr><td>标普500</td><td>7,551.81</td><td class="down">-0.45%</td><td></td></tr>
+    <tr><td>纳斯达克</td><td>25,978.42</td><td class="down">-0.01%</td><td></td></tr>
+    <tr><td><strong>半导体</strong></td><td>费城半导体（SOX）</td><td>11,246</td><td class="up">+0.63%</td><td>盘中+2%转微涨；Lumentum+9%/Coherent+7%/迈威尔+3%光通信存储逆势。</td></tr>
+    <tr><td><strong>中概股</strong></td><td>纳斯达克金龙</td><td>—</td><td class="down">-0.55%</td><td>阿里-1.89%/百度-2.04%；携程+3.01%分化。</td></tr>
+    <tr><td rowspan="3"><strong>商品</strong></td><td>WTI原油</td><td>102.02</td><td class="down">-3.60%</td><td>地缘溢价降温，仍在100上方；油气板块降权。</td></tr>
+    <tr><td>布伦特原油</td><td>105.83</td><td class="down">-2.69%</td><td>同上。</td></tr>
+    <tr><td>COMEX黄金</td><td>4,302.5</td><td class="down">-0.70%</td><td>现货金-0.70%报4263（盘中冲高4366后跳水至4235）→ 贵金属窗口关闭。</td></tr>
+    <tr><td><strong>汇率</strong></td><td>美元指数</td><td>100.21</td><td class="up">+0.57%</td><td><span class="warn-text">破100</span>，人民币/成长股估值承压。</td></tr>
+    <tr><td><strong>美债</strong></td><td>10Y美债</td><td>5.008%</td><td class="warn-text">52周新高</td><td>加息敏感型（半导体设备/医药/白酒）分母端持续受压。</td></tr>
+    <tr><td><strong>欧洲</strong></td><td>DAX/CAC40/富时</td><td>—</td><td class="up">+0.53%/+0.62%/+0.28%</td><td>欧股普涨，跟随"加息落地"消化。</td></tr>
+  </table>
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:var(--warn)"><strong>📡 关键信号解读</strong>：
+    ① FOMC"25bp符合预期+12:0全票+点阵图鹰派"= <strong>鹰派加息</strong>，"利空出尽"部分成立但分母端（美元/美债）继续施压；
+    ② <strong>结构性分化</strong>：光通信（Lumentum+9%）逆势 → A股AI硬件链获正反馈；银行（KBW-2.88%）承压但美元破100下A股大行相对受益；
+    ③ <strong>操作指引</strong>：持有AI硬件真趋势（双正+隔夜映射），回避半导体整体（诱多出货象限）/贵金属（金价跳水）/加息敏感型。
+    </p>
+  </div>
+</div>
+
+<!-- 📊 市场全景 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📊</span>市场全景（9/16收盘·强反弹）</div>
+  <h4 style="font-size:13px; color:var(--primary); margin-bottom:8px">📈 四大指数</h4>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>特征</th></tr>
+    <tr><td>上证指数</td><td>3,891.60</td><td class="up">+0.71%</td><td>低开3842后走高，守3840；成交8711亿</td></tr>
+    <tr><td>深证成指</td><td>13,454.74</td><td class="up">+1.26%</td><td>低13185后反弹</td></tr>
+    <tr><td>创业板指</td><td>3,311.47</td><td class="up">+1.96%</td><td>成长修复领涨</td></tr>
+    <tr><td>科创50</td><td>1,616.19</td><td class="up">+4.14%</td><td>强反弹（20D仍-3.08%承压）；科技情绪修复</td></tr>
+    <tr><td>沪深300</td><td>4,480.27</td><td class="up">+0.68%</td><td>大盘蓝筹跟随</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🌡 涨跌分布（成交1.84万亿 / 10日均100.76%）</h4>
+  <table>
+    <tr><th>指标</th><th>数值</th><th>含义</th></tr>
+    <tr><td>上涨家数</td><td><span class="up">4170只（74.95%）</span></td><td>强反弹（前两日冰点直接修复）</td></tr>
+    <tr><td>下跌家数</td><td>1189只（21.37%）</td><td>占比可控</td></tr>
+    <tr><td>涨停/跌停</td><td>89 / 1</td><td>涨停扩散，跌停仅1只</td></tr>
+    <tr><td>涨跌比</td><td>3.51</td><td>普涨格局</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🏆 9/16板块排行·主线轮动（口径交叉：881/SW/概念）</h4>
+  <table>
+    <tr><th>板块</th><th>涨跌幅</th><th>20日主力净流</th><th>领袖股</th></tr>
+    <tr><td>光通信（概念）</td><td class="up">+4.76%</td><td class="up">+141.5亿（双正）</td><td>致尚科技(+20%) / CPO威尔高(+20%)</td></tr>
+    <tr><td>半导体（881）</td><td class="up">+4.79%</td><td class="down">-621亿（深负）</td><td>🟠诱多出货象限：价涨资撤</td></tr>
+    <tr><td>通信设备（SW）</td><td class="up">+5.18%</td><td class="up">+132.5亿（双正）</td><td>板块资金共识</td></tr>
+    <tr><td>PCB概念（概念）</td><td class="up">+3.16%</td><td class="up">+304.5亿（双正）</td><td>瑞丰高材(+20%) / 元件双正</td></tr>
+    <tr><td>覆铜板（概念）</td><td class="up">+3.40%</td><td class="up">+140.0亿（双正）</td><td>东材科技(+10%)</td></tr>
+    <tr><td>光纤概念</td><td class="up">+3.77%</td><td class="up">+81.9亿（双正）</td><td>致尚科技(+20%)</td></tr>
+    <tr><td>贵金属（881）</td><td class="up">+3.61%</td><td class="down">-6.7亿（深负）</td><td>价格涨但资金弱+FOMC金价跳水→回避</td></tr>
+    <tr><td>培育钻石（概念）</td><td class="up">+3.03%</td><td class="up">+25.6亿（双正）</td><td>沃尔德(+9.90%)</td></tr>
+  </table>
+
+  <div style="background:#f3e5f5; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:#7b1fa2">
+      <strong>主线轮动轨迹</strong>（门禁2差异扫描：881/SW/概念三口径一致）：<br>
+      9/15 玻纤PCB材料 → 9/16 <span class="up">AI硬件链全线双正（光通信/CPO/PCB/光纤/通信设备）+培育钻石</span> → 9/17 FOMC鹰派后结构延续<br>
+      <strong>结论</strong>：资金共识只在"真趋势双正"的AI硬件链（㊹豁免），半导体整体/贵金属/工业金属为价格反弹但资金深负（禁多）。
+    </p>
+  </div>
+</div>
+
+<!-- ⭐ 板块共识度与方向表 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⭐</span>板块共识度与方向表（规则73·≤6行）</div>
+
+  <div class="sector-wrap">
+  <table class="sector-table">
+    <tr>
+      <th>板块</th>
+      <th>评分</th>
+      <th>共识度</th>
+      <th>操作判断</th>
+      <th>建议仓位</th>
+      <th>核心策略</th>
+      <th>核心个股建议</th>
+    </tr>
+
+    <tr>
+      <td><strong>AI硬件 / 光通信 CPO·PCB·光纤</strong></td>
+      <td><span class="score">92</span></td>
+      <td><span class="consensus-vhigh">极强</span></td>
+      <td><strong>P2·持有加仓</strong></td>
+      <td>6-9%</td>
+      <td>20日资金全线双正（光通信+141.5亿/CPO+92.6亿/PCB+304.5亿/元件+278亿/光纤+81.9亿）+隔夜Lumentum+9%映射+国常会算力网+MLCC/光纤涨价。回踩不破3日线坚定持有；FOMC后不追高。</td>
+      <td>
+        <span class="stock-bold">中际旭创(300308)</span>（光模块龙头·9/16光通信双正）<br>
+        <span class="stock-bold">新易盛(300502)</span>（光模块TOP2·CPO+4.14%双正）<br>
+        天孚通信(300394)（光器件）<br>
+        <span class="stock-bold">沪电股份(002463)</span>/东山精密(002384)（PCB·元件+278亿双正）<br>
+        <span class="stock-bold">长飞光纤(601869)</span>（光纤·隔夜Lumentum映射）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>通信设备</strong></td>
+      <td><span class="score">82</span></td>
+      <td><span class="consensus-vhigh">极强</span></td>
+      <td><strong>P2·持有加仓</strong></td>
+      <td>3-5%</td>
+      <td>SW 20D+132.5亿双正、881+3.42%（净149.55亿）→ 硬件链中枢，与光通信/PCB共振。</td>
+      <td>
+        <span class="stock-bold">中兴通讯(000063)</span>（设备龙头）<br>
+        烽火通信(600498)（光通信设备）<br>
+        <small style="color:var(--text-secondary)">📎 与光模块协同，FOMC后资金偏好硬件链</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>覆铜板 / 电子布 / MLCC材料</strong></td>
+      <td><span class="score score-mid">76</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>2-3%</td>
+      <td>覆铜板20D+140亿双正（㊹）+电子树脂20D+30亿双正；MLCC 20D-29亿但5D+68亿强脉冲→中性偏多。村田停产+三星涨价产业验证。</td>
+      <td>
+        <span class="stock-bold">生益科技(600183)</span>（CCL·20D双正）<br>
+        华正新材(603186)（覆铜板）<br>
+        <span class="stock-bold">风华高科(000636)</span>/中瓷电子(003031)（MLCC/被动元件·5D+81亿）<br>
+        <small style="color:var(--text-secondary)">⚠️ MLCC 20D深负，轻仓试错不追高</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>培育钻石 / 非金属材料</strong></td>
+      <td><span class="score score-mid">70</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P2·持有</strong></td>
+      <td>2-3%</td>
+      <td>培育钻石20D+25.6亿双正（㊹）、非金属材料20D+16.1亿双正、电子布龙头中材科技+3.92% → 真趋势小主线。</td>
+      <td>
+        <span class="stock-bold">沃尔德(688028)</span>（培育钻石·20D双正）<br>
+        力量钻石(301071)（培育钻石）<br>
+        <span class="stock-bold">中材科技(002080)</span>（电子布·非金属材料）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>银行红利 / 高股息防御</strong></td>
+      <td><span class="score score-mid">58</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>2-3%</td>
+      <td>FOMC美元破100下A股大行相对受益；但银行概念20D-91.2亿深负→仅轻仓压舱，非主攻。</td>
+      <td>
+        <span class="stock-bold">建设银行(601939)</span>（国有大行·压舱）<br>
+        招商银行(600036)（零售高股息）<br>
+        农业银行(601288)（红利防御）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>油气 / 油运（地缘降权）</strong></td>
+      <td><span class="score score-low">40</span></td>
+      <td><span class="consensus-low">弱</span></td>
+      <td><strong>P1·中性偏空</strong></td>
+      <td>0-2%</td>
+      <td>WTI -3.60%报102（地缘溢价降温，仍在100上）；油气20D深负（㊸禁多）→ 窗口收窄，仅事件驱动极轻仓。</td>
+      <td>
+        中国海油(600938)（海上油气）<br>
+        中国石油(601857)（一体化）<br>
+        <span style="font-size:11px; color:var(--text-secondary)">⚠️ 油价回落+资金深负，降权不参与</span>
+      </td>
+    </tr>
+
+  </table>
+  </div>
+
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:10px">
+    <p style="font-size:12.5px; color:var(--warn)">
+      <strong>⚠️ 回避板块</strong>（㊸禁多 + 背离四象限 + FOMC压制）：
+      半导体整体（价+4.79%但20D-621亿=🟠诱多出货象限·规则51）、贵金属（FOMC金价跳水4263·㊲窗口关闭）、工业金属（20D-224.7亿）、电池（20D-200亿）、光学光电子（20D-104.5亿）、小金属（20D-96.9亿）、消费电子（20D-66.2亿）、证券（20D-61.7亿）、医药/白酒（加息敏感型分母承压）
+    </p>
+  </div>
+</div>
+
+<!-- 风险点 + 催化日历 + 止盈止损纪律 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚠️</span>风险点 + 催化日历 + 止盈止损纪律</div>
+
+  <div class="risk-box">
+    <h4>🚨 风险点（按重要性排序）</h4>
+    <ul>
+      <li><strong>FOMC鹰派余波</strong>：12:0全票+点阵图16/18年内再加息+沃什鹰派 → 美元破100、10Y 5.008%，成长股估值分母持续承压；<strong>10月再加息概率53.1%</strong>是后续最大变量（铁律A/B占风险①②）。</li>
+      <li><strong>半导体整体诱多出货象限</strong>：9/16价+4.79%但20D-621亿（|20D|/|5D|≈37≥1.5触发规则51）→ 反弹非反转，追高即套；隔夜费半仅+0.63%弱势。</li>
+      <li><strong>贵金属跳水</strong>：现货金-0.70%报4263（FOMC后冲高4366回落）→ ㊲修复窗口关闭，A股贵金属9/16+3.61%为资金背离，回避。</li>
+      <li><strong>规则73失真日处置</strong>：前日"退潮"判据被强反弹证伪 → 今日降仓5pct至15-20%、方向表≤6行，不盲目加仓。</li>
+      <li><strong>油气地缘溢价降温</strong>：WTI -3.60%报102，霍尔木兹缓和预期 → 油气板块降权。</li>
+      <li><strong>解禁/减持</strong>：本周解禁规模中性（无单只>80亿预警），但高位硬件股需防获利盘兑现。</li>
+    </ul>
+  </div>
+
+  <div class="calendar-box">
+    <h4>📅 催化日历（未来3日关键节点）</h4>
+    <table>
+      <tr><th>日期</th><th>时间</th><th>事件</th><th>影响</th></tr>
+      <tr><td rowspan="3"><strong>9/17（今日）</strong></td><td>凌晨02:00</td><td><strong>FOMC利率决议已落地</strong>（+25bp至3.75-4.00%，12:0全票）</td><td>靴子落地·鹰派</td></tr>
+      <tr><td>20:30</td><td>美国当周初请失业金 / 二季度经常帐</td><td>就业+经济验证</td></tr>
+      <tr><td>22:30</td><td>EIA原油库存</td><td>油价方向</td></tr>
+      <tr><td><strong>9/18（周五）</strong></td><td>—</td><td>日本央行利率决议 / 沃什后续讲话</td><td>全球利率节奏</td></tr>
+      <tr><td><strong>9/19（周六）</strong></td><td>—</td><td>关注A股硬件链周度资金流向核验</td><td>主线延续性</td></tr>
+    </table>
+    <p style="font-size:12px; margin-top:6px"><strong>📌 本周护盘观察点</strong>：沪指能否站稳3860（9/16低3842上方）、成交维持≥1.7万亿、光通信板块能否不出现单日-3%回撤。FOMC鹰派下若沪指跌破3840 → 总仓降至10-12%仅留防御。</p>
+  </div>
+
+  <div class="discipline-box">
+    <h4>🛡 止盈止损纪律（铁律A/B+个股风控）</h4>
+    <ul>
+      <li><strong>铁律A</strong>：四大指数集体低开>1% + 4300只下跌 + 外盘冲击 = 触发<span class="warn-text">紧急降仓10pcts</span>（当前15-20%，触发后再降至5-10%）。</li>
+      <li><strong>铁律B</strong>：单日沪指跌幅>2% 或 跌停>100只 = 降仓10pcts至5-10%。</li>
+      <li><strong>个股止损锚</strong>：中际旭创止损锚-8%/新易盛-8%/沪电股份-8%/长飞光纤-9%/生益科技-8%/沃尔德-10%；半导体整体个股不持仓。</li>
+      <li><strong>锁定利润规则</strong>：AI硬件链平均浮盈>15%时分批锁定3-5%（防FOMC后回吐）；材料链（覆铜板/MLCC）在兑现3板时减半仓。</li>
+      <li><strong>港股映射校验</strong>：9:25集合竞价+10:30盘中必检（防AH联动杀A股科技链；隔夜Lumentum+9%为正向信号）。</li>
+      <li><strong>不重仓追高</strong>：所有新开仓均需"确认信号+回踩入场"，不追竞价高开>3%个股（规则73失真日更需纪律）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 数据来源/信源 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📚</span>信源引用（三大公众号+数据校验）</div>
+  <table>
+    <tr><th>类型</th><th>信源</th><th>关键引用</th></tr>
+    <tr>
+      <td><span class="tag tag-info">数据基础</span></td>
+      <td><strong>westock-data</strong></td>
+      <td>market-overview / sector ranking（881+SW+概念）/ changedist / quote（沪指3891.60/4170涨89涨停/光通信+141.5亿双正/半导体-621亿深负等核心数据）。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">外盘</span></td>
+      <td><strong>证券时报/CNBC/CME/券商中国</strong></td>
+      <td>FOMC 9/17 02:00 加息25bp至3.75-4.00%（12:0全票）/点阵图16/18再加息/沃什鹰派；道指-1.21%/美元100.21/10Y 5.008%/现货金4263(-0.70%)/WTI 102.02(-3.60%)/Lumentum+9%。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">规则库</span></td>
+      <td><strong>fupan-rules / 复盘学习积累</strong></td>
+      <td>规则73（全表失真日处置）·㊹真趋势双正豁免·㊸禁多·规则51（半导体比值≥1.5）·㊲资源修复窗口·校准③（费半+0.63%弱）·背离四象限（诱多出货）·铁律A/B。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">题材级</span></td>
+      <td><strong>盘前纪要（公众号）</strong></td>
+      <td>算力网政策延续+MLCC/光纤涨价+光通信订单排产；半导体整体"价涨资撤"风险提示。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">事件级</span></td>
+      <td><strong>纪要研报中心（公众号）</strong></td>
+      <td>① 国常会算力网（算电协同+骨干光纤）② MLCC村田停产+三星涨价30% ③ 光纤集采+90% ④ 培育钻石需求修复。</td>
+    </tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>本报告由 WorkBuddy「每日盘前策略」自动化系统生成 · 数据基准日2026-09-16收盘<br>
+  报告仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>
+  © 2026 阿Q量化研究体系 · v4.2 十节版（规则73·FOMC鹰派落地）</p>
+</div>
+
+</div>
+</body>
+</html>
