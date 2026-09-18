@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>午盘速览 2026-09-18（周五）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a6e;
+    --border: #e0e4e8;
+    --red: #d93026;
+    --green: #1e8e3e;
+    --accent: #2563eb;
+    --warning: #f59e0b;
+    --danger: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .summary-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fbbf24;
+  }
+  .summary-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.95;
+  }
+  .summary-card .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+  .section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+  }
+  .source {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: right;
+  }
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .index-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .index-card .name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .index-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .index-card .change {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .pos { color: var(--red); }
+  .neg { color: var(--green); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  td { color: var(--text); }
+  tr:hover { background: #f8f9fa; }
+  .tfoot { font-weight: 600; background: #f0f4f8; }
+  .chart-box {
+    width: 100%;
+    height: 280px;
+    margin: 12px 0;
+  }
+  .quad-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .quad-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid var(--border);
+  }
+  .quad-card.q1 { border-left-color: #22c55e; }
+  .quad-card.q2 { border-left-color: #3b82f6; }
+  .quad-card.q3 { border-left-color: #f59e0b; }
+  .quad-card.q4 { border-left-color: #ef4444; }
+  .quad-card .q-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .quad-card .q-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .alert-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .alert-box.safe {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+  }
+  .alert-box.danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+  .disclaimer {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    text-align: justify;
+    padding: 14px;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .small { font-size: 11px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>午盘速览 2026-09-18（周五）</h1>
+<p class="subtitle">数据基准：2026-09-18 11:30 午间收盘 · 生成时间 11:50 · 数据来源：westock data_minute(11:30冻结快照) + data_changedist + data_sector(申万二级+概念) + Wind(指数前收) + 同花顺概念榜(429降级)；个股主力净流入因 westock data_fund_flow 服务限频临时缺失，已按铁律标注 N/A</p>
+
+<!-- 半日小结卡 -->
+<div class="summary-card">
+  <h2>半日小结</h2>
+  <p>沪指+1.04%、深成+1.52%、创业板+2.11%、<b>科创50+3.93%领涨</b>、北证+1.33%、沪深300+1.05% —— 六指数全线收红，<b>半导体/芯片单日全面爆发</b>。结构上：半导体(SW二级)+4.87%（180/180 全涨）、概念国家大基金持股+4.94%/汽车芯片+4.10%/存储器+3.65%/半导体产业+3.37%，主力净流入芯片概念+194亿、半导体产业+151亿、存储器+123亿、汽车芯片+110亿；半日 64 涨停 / 0 跌停 / 4560 涨 811 跌（普涨率 81%）。权重与防御板块（银行-0.75%/煤炭-0.54%/白酒-0.40%/贵金属-0.62%）集体走弱 = 资金切换科技。**但半导体 20日资金线深负（SW二级 20d -436亿）**——按规则㊸禁多，本日定性为「国产替代/政策催化的超跌放量反弹」而非反转，<b>严禁追高</b>，仅分歧回踩低吸。</p>
+  <p style="margin-top:8px">
+    <span class="tag">科创50+3.93%</span>
+    <span class="tag">半导体全链爆发</span>
+    <span class="tag">64涨停0跌停</span>
+    <span class="tag">普涨81%</span>
+    <span class="tag">㊸禁多·不追高</span>
+    <span class="tag">权重让位科技</span>
+  </p>
+</div>
+
+<!-- 〇、策略衔接对照 -->
+<div class="section">
+  <h3>〇、策略衔接对照（盘前共识 → 午间实际）</h3>
+  <p class="small" style="margin-bottom:8px">注：本工作区未提供当日盘前策略/交易日志文件（Mac 实例路径③），以下以「近阶段主线共识预判」对照 11:30 真实盘面，非逐字盘前日志。</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">盘前共识方向</th>
+        <th style="width:20%">关键点位/信号</th>
+        <th style="width:18%">上午实际走势</th>
+        <th style="width:12%">兑现情况</th>
+        <th style="width:28%">午后关注点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>半导体/芯片 看多（近阶段主线）</td>
+        <td>国产替代+大基金催化</td>
+        <td>半导体SW+4.87%(180/180)/国家大基金+4.94%/汽车芯片+4.10%</td>
+        <td class="pos">兑现(但㊸禁多)</td>
+        <td>20日深负(-436亿)→反弹非反转；不追高，等分歧回踩</td>
+      </tr>
+      <tr>
+        <td>通信/光通信 修复</td>
+        <td>中际旭创站900锚</td>
+        <td>通信设备+2.79%/中际旭创+2.76%(920.76)/光迅+2.42%</td>
+        <td class="pos">部分兑现</td>
+        <td>通信20日+157亿→㊹真趋势豁免可能；能否守900锚</td>
+      </tr>
+      <tr>
+        <td>银行红利 压舱</td>
+        <td>建行/招行抗跌</td>
+        <td>国有大行-0.75%/银行概念-0.15%</td>
+        <td class="neg">证伪</td>
+        <td>权重让位科技，防御失效；不补银行</td>
+      </tr>
+      <tr>
+        <td>贵金属/黄金 持有</td>
+        <td>金价趋势</td>
+        <td>贵金属-0.62%(20d-823亿)/黄金股弱</td>
+        <td class="neg">证伪延续</td>
+        <td>黄金20日深负延续弱势，回避</td>
+      </tr>
+      <tr>
+        <td>玻纤 机构流入（9/14 规则61豁免）</td>
+        <td>中国巨石锚</td>
+        <td>玻璃玻纤-1.90%/中国巨石-4.69%</td>
+        <td class="neg">证伪(豁免失效)</td>
+        <td>玻纤转弱，规则61豁免不再成立</td>
+      </tr>
+      <tr>
+        <td>科创50 突破1550 生命线</td>
+        <td>1660 减仓线</td>
+        <td>科创50+3.93%(1669.34) 收复1550/1660</td>
+        <td class="pos">超预期兑现</td>
+        <td>能否守住1660；半导体权重占比高需防回落</td>
+      </tr>
+      <tr>
+        <td>量能 放量 ≥1.8万亿</td>
+        <td>维持修复买点</td>
+        <td>半日成交约1.32万亿（沪深，环比+743亿）</td>
+        <td class="pos">部分兑现</td>
+        <td>午后续放则全日~2.6万亿→放量普涨确认</td>
+      </tr>
+      <tr>
+        <td>铁律A（4300只下跌红线）</td>
+        <td>下跌≥4300→降仓</td>
+        <td>下跌811只 ≪ 4300 / 普涨81%</td>
+        <td class="pos">未触发·兑现</td>
+        <td>维持中性仓；半导体㊸禁多→单票不追高</td>
+      </tr>
+      <tr>
+        <td>封板结构 连板高度</td>
+        <td>高度≥5板为前提</td>
+        <td>64涨停/0跌停/托伦斯20cm/华天科技等封板</td>
+        <td class="pos">情绪高涨</td>
+        <td>连板梯队是否扩散；警惕缩量一字炸板</td>
+      </tr>
+      <tr>
+        <td>普涨率 ≥40% 环境层通过</td>
+        <td>结构修复日</td>
+        <td>普涨率81% 远超阈值</td>
+        <td class="pos">超预期兑现</td>
+        <td>广度过热→午后防分化回落</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：近阶段主线共识（路径③简化对照） + westock data_minute 11:30 冻结快照 + data_changedist + data_sector</p>
+</div>
+
+<!-- 零点五、节点卡位四象限 -->
+<div class="section">
+  <h3>零点五、节点卡位四象限（11:50 午盘视角）</h3>
+  <div class="quad-grid">
+    <div class="quad-card q1">
+      <div class="q-title">Q1 防御现金流（当前 5-10% / 建议 5-10%）</div>
+      <div class="q-body">
+        <b>银行</b>-0.75% / <b>煤炭</b>-0.54% / <b>白酒</b>-0.40% / <b>贵金属</b>-0.62%（20d-823亿）集体走弱。<br>
+        <b>半日证据：</b>权重与防御全线让位科技，无避险需求；铁律A未触发但防御无效<br>
+        <b>动作：</b>不追防御，维持低配；黄金延续弱势回避
+      </div>
+    </div>
+    <div class="quad-card q2">
+      <div class="q-title">Q2 新逻辑（当前 40-50% / 建议 45-55%）</div>
+      <div class="q-body">
+        <b>半导体/芯片</b>全面爆发（半导体+4.87%/国家大基金+4.94%/汽车芯片+4.10%/存储器+3.65%）；<b>通信</b>+2.79%（20d+157亿·㊹真趋势豁免候选）<br>
+        <b>半日证据：</b>芯片概念主力净流入+194亿/半导体产业+151亿/存储器+123亿/汽车芯片+110亿 四线齐发<br>
+        <b>动作：</b>核心加仓但不追高——半导体㊸禁多（20d-436亿）→仅分歧回踩低吸；通信可顺势
+      </div>
+    </div>
+    <div class="quad-card q3">
+      <div class="q-title">Q3 超跌反转（当前 0-5% / 建议 0-3% 观望）</div>
+      <div class="q-body">
+        <b>贵金属</b>-0.62%（20d-823亿）、<b>玻纤</b>-1.90%（中国巨石-4.69%）转弱，非反转信号。<br>
+        <b>半日证据：</b>黄金资金线深负延续；玻纤规则61豁免失效<br>
+        <b>动作：</b>继续观望，等20日资金线转正再加回
+      </div>
+    </div>
+    <div class="quad-card q4">
+      <div class="q-title">Q4 主线二波（当前 5-10% / 建议 5-10%）</div>
+      <div class="q-body">
+        <b>算电协同</b>活口（闽东电力+9.07%）；<b>黄酒</b>独立支线（会稽山+10.02%）；<b>机器人/环卫</b>福龙马+10.03%<br>
+        <b>半日证据：</b>连板高度维持，但非科技主线核心<br>
+        <b>动作：</b>持有不加仓；警惕二波活口缩量兑现
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:14px; font-size:13px">象限切换触发器</h4>
+  <ul style="font-size:12px; color:var(--text-secondary); padding-left:20px; line-height:1.8">
+    <li>Q1→Q2：若科技主线续放+科创50守1660 → 减防御加新逻辑（已部分触发）</li>
+    <li>Q2→Q4：若半导体龙头连续3日封板+主力净流入持续>100亿 → 升格二波主线（当前仅单日爆发，不升格）</li>
+    <li>Q3→Q2：若黄金/玻纤20日资金线转正 → 回流（当前未满足）</li>
+    <li>铁律A触发（4300只下跌+外盘冲击）：全面降至15-18%防御</li>
+  </ul>
+
+  <h4 style="margin-top:12px; font-size:13px">铁律A 红线复核</h4>
+  <div class="alert-box safe">
+    ✅ 铁律A <b>未触发</b> —— 当前上涨家数4560只（普涨率81%），下跌家数811只（远低于4300红线）；0跌停；外盘无系统性冲击。<br>
+    <b>仓位建议：</b>维持 50-55%（广度过热但半导体㊸禁多）→ 总仓中性偏多；<b>半导体单票严禁追高</b>，仅分歧回踩低吸；若午后下跌家数突破4300→降至15-18%仅留防御底仓
+  </div>
+</div>
+
+<!-- 一、主要指数 -->
+<div class="section">
+  <h3>一、主要指数（11:30 午间收盘）</h3>
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">上证指数</div>
+      <div class="value">3916.07</div>
+      <div class="change pos">+40.47 (+1.04%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">深证成指</div>
+      <div class="value">13613.48</div>
+      <div class="change pos">+203.57 (+1.52%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">创业板指</div>
+      <div class="value">3368.03</div>
+      <div class="change pos">+69.72 (+2.11%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">科创50</div>
+      <div class="value">1669.34</div>
+      <div class="change pos">+63.05 (+3.93%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">北证50</div>
+      <div class="value">1039.61</div>
+      <div class="change pos">+13.61 (+1.33%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">沪深300</div>
+      <div class="value">4507.02</div>
+      <div class="change pos">+46.86 (+1.05%)</div>
+    </div>
+  </div>
+  <div class="chart-box" id="indexChart"></div>
+  <p class="source">来源：westock data_minute 11:30 冻结行（逐指数实算，涨跌幅=(11:30-前收)/前收） + Wind 指数前收交叉校验</p>
+</div>
+
+<!-- 二、成交与市场广度 -->
+<div class="section">
+  <h3>二、成交与市场广度</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>指标</th>
+        <th>数值</th>
+        <th>对比/解读</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>半日成交额（沪深合计）</td>
+        <td><b>约 1.32 万亿元</b></td>
+        <td>较上一交易日同期 +743亿 放量；预测全日成交约 2.4-2.6 万亿</td>
+      </tr>
+      <tr>
+        <td>上涨家数</td>
+        <td><b class="pos">4560 只</b></td>
+        <td>占比约 81%；普涨率远超 40% 环境阈值</td>
+      </tr>
+      <tr>
+        <td>下跌家数</td>
+        <td><b class="neg">811 只</b></td>
+        <td>占比约 14%；铁律A未触发（远低于4300红线）</td>
+      </tr>
+      <tr>
+        <td>涨停家数</td>
+        <td><b class="pos">64 只</b></td>
+        <td>0 跌停；托伦斯20cm、华天科技/共进股份/国芳集团等多股封板</td>
+      </tr>
+      <tr>
+        <td>跌停家数</td>
+        <td><b class="neg">0 只</b></td>
+        <td>情绪面无恐慌，空头衰竭</td>
+      </tr>
+      <tr>
+        <td>黄白线分化</td>
+        <td>科创/创业领涨，权重走弱</td>
+        <td>科创50+3.93%/创业板+2.11% 强于沪深300+1.05%；银行/煤炭/白酒/贵金属弱 → 科技中小盘结构</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：westock data_changedist（11:30 口径） + data_minute 指数交叉</p>
+</div>
+
+<!-- 三、板块表现 -->
+<div class="section">
+  <h3>三、板块表现（领涨/领跌）</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">📈 领涨板块（申万二级 + 同花顺概念，跨体系交叉）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>驱动逻辑</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>黄酒（概念）</td>
+        <td class="pos">+6.87%</td>
+        <td>—</td>
+        <td>会稽山涨停独立支线（消费催化）</td>
+      </tr>
+      <tr>
+        <td>半导体（SW二级）</td>
+        <td class="pos">+4.87%</td>
+        <td class="pos">+174亿（SW二级）</td>
+        <td>180/180 全涨；国产替代+大基金减持担忧消化</td>
+      </tr>
+      <tr>
+        <td>国家大基金持股（概念）</td>
+        <td class="pos">+4.94%</td>
+        <td class="pos">+64亿</td>
+        <td>半导体设备/材料重估</td>
+      </tr>
+      <tr>
+        <td>模拟芯片（概念）</td>
+        <td class="pos">+4.64%</td>
+        <td>—</td>
+        <td>设计端联动</td>
+      </tr>
+      <tr>
+        <td>CPU（概念）</td>
+        <td class="pos">+4.58%</td>
+        <td class="pos">+23亿</td>
+        <td>算力芯片国产化</td>
+      </tr>
+      <tr>
+        <td>AI算力芯片（概念）</td>
+        <td class="pos">+4.50%</td>
+        <td class="pos">+59亿</td>
+        <td>AI芯片需求预期</td>
+      </tr>
+      <tr>
+        <td>汽车芯片（概念）</td>
+        <td class="pos">+4.10%</td>
+        <td class="pos">+110亿</td>
+        <td>车规半导体景气</td>
+      </tr>
+      <tr>
+        <td>存储器（概念）</td>
+        <td class="pos">+3.65%</td>
+        <td class="pos">+123亿</td>
+        <td>长鑫存储链/涨价预期</td>
+      </tr>
+      <tr>
+        <td>半导体产业（概念）</td>
+        <td class="pos">+3.37%</td>
+        <td class="pos">+151亿</td>
+        <td>全链资金共振</td>
+      </tr>
+      <tr>
+        <td>通信设备（SW二级）</td>
+        <td class="pos">+2.79%</td>
+        <td>—(5d+135.9亿/20d+157.2亿)</td>
+        <td>光通信修复；中际旭创+2.76%（㊹真趋势豁免候选）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">📉 领跌板块（行业/概念）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>下跌原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>玻璃玻纤（SW二级）</td>
+        <td class="neg">-1.90%</td>
+        <td class="neg">净流出</td>
+        <td>中国巨石-4.69%；规则61玻纤豁免失效，转弱</td>
+      </tr>
+      <tr>
+        <td>乘用车（SW二级）</td>
+        <td class="neg">-1.19%</td>
+        <td class="neg">净流出</td>
+        <td>整车权重拖累</td>
+      </tr>
+      <tr>
+        <td>商用车（SW二级）</td>
+        <td class="neg">-1.12%</td>
+        <td class="neg">净流出</td>
+        <td>同步走弱</td>
+      </tr>
+      <tr>
+        <td>国有大行（SW二级）</td>
+        <td class="neg">-0.75%</td>
+        <td class="neg">净流出</td>
+        <td>防御让位科技</td>
+      </tr>
+      <tr>
+        <td>贵金属（SW二级）</td>
+        <td class="neg">-0.62%</td>
+        <td class="neg">20d-823亿</td>
+        <td>黄金延续弱势（20日资金线深负）</td>
+      </tr>
+      <tr>
+        <td>煤炭（SW二级）</td>
+        <td class="neg">-0.54%</td>
+        <td class="neg">净流出</td>
+        <td>权重周期弱</td>
+      </tr>
+      <tr>
+        <td>白酒（SW二级）</td>
+        <td class="neg">-0.40%</td>
+        <td class="neg">净流出</td>
+        <td>消费防御失效</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="chart-box" id="sectorChart"></div>
+  <p class="source">来源：westock data_sector（申万二级 pt018xxxxx + 同花顺概念 885/886 双体系交叉） + 同花顺概念榜(429降级)</p>
+</div>
+
+<!-- 四、涨停热点与资金动向 -->
+<div class="section">
+  <h3>四、涨停热点与资金动向</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">🔥 涨停热点股（按涨幅·连板梯队，westock data_hot 11:30 实时）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>梯队</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>涨幅</th>
+        <th>板块归类</th>
+        <th>信号意义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>20CM涨停</b></td>
+        <td>托伦斯</td>
+        <td>301583</td>
+        <td class="pos">+20.00%</td>
+        <td>半导体设备/材料</td>
+        <td>创业板块材强势代表</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>华天科技</td>
+        <td>002185</td>
+        <td class="pos">+10.01%</td>
+        <td>封测</td>
+        <td>封测链爆发</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>共进股份</td>
+        <td>603118</td>
+        <td class="pos">+10.03%</td>
+        <td>通信/芯片</td>
+        <td>通信芯片联动</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>国芳集团</td>
+        <td>601086</td>
+        <td class="pos">+10.00%</td>
+        <td>零售</td>
+        <td>消费独立活口</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>三羊马</td>
+        <td>001317</td>
+        <td class="pos">+10.01%</td>
+        <td>物流</td>
+        <td>题材轮动</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>福龙马</td>
+        <td>603686</td>
+        <td class="pos">+10.03%</td>
+        <td>机器人/环卫</td>
+        <td>机器人支线</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>会稽山</td>
+        <td>601579</td>
+        <td class="pos">+10.02%</td>
+        <td>黄酒</td>
+        <td>黄酒支线龙头（概念+6.87%）</td>
+      </tr>
+      <tr>
+        <td><b>涨停</b></td>
+        <td>华软科技</td>
+        <td>002487</td>
+        <td class="pos">+10.10%</td>
+        <td>化工</td>
+        <td>题材补涨</td>
+      </tr>
+      <tr>
+        <td>≈涨停</td>
+        <td>长电科技</td>
+        <td>600584</td>
+        <td class="pos">+9.03%</td>
+        <td>封测龙头</td>
+        <td>封测权重领军</td>
+      </tr>
+      <tr>
+        <td>二波活口</td>
+        <td>闽东电力</td>
+        <td>000993</td>
+        <td class="pos">+9.07%</td>
+        <td>算电协同</td>
+        <td>老主线活口（Q4）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💰 主力资金净流入居前板块（westock data_sector 概念维度·真实）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>板块</th>
+        <th>主力净流入</th>
+        <th>涨停数</th>
+        <th>上涨数</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NO.1</td>
+        <td>芯片概念</td>
+        <td class="pos">+194亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.2</td>
+        <td>半导体产业</td>
+        <td class="pos">+151亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.3</td>
+        <td>存储器</td>
+        <td class="pos">+123亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.4</td>
+        <td>集成电路</td>
+        <td class="pos">+119亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.5</td>
+        <td>汽车芯片</td>
+        <td class="pos">+110亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.6</td>
+        <td>人工智能</td>
+        <td class="pos">+85亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.7</td>
+        <td>先进封装</td>
+        <td class="pos">+73亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+      <tr>
+        <td>NO.8</td>
+        <td>国家大基金持股</td>
+        <td class="pos">+64亿</td>
+        <td>多只</td>
+        <td>板块普涨</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💵 主力净流入居前个股 TOP15</h4>
+  <div class="alert-box danger" style="margin-top:4px">
+    ⚠️ <b>个股级主力净流入缺失（数据源临时故障）</b>：westock <code>data_fund_flow</code> 本次触发「服务限频」，Wind 无个股净额函数，依铁律「缺失一律 N/A，禁编造」——个股净额不虚构。上表（板块维度）为真实概念主力净流入，可作替代参考。下表按「强势个股（11:30 真实涨幅）」列示，个股净额统一标 N/A。
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨幅</th>
+        <th>主力净流入</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>长电科技</td><td>600584</td><td>封测</td><td class="pos">+9.03%</td><td>N/A</td></tr>
+      <tr><td>2</td><td>华天科技</td><td>002185</td><td>封测</td><td class="pos">+10.01%</td><td>N/A</td></tr>
+      <tr><td>3</td><td>共进股份</td><td>603118</td><td>通信芯片</td><td class="pos">+10.03%</td><td>N/A</td></tr>
+      <tr><td>4</td><td>通富微电</td><td>002156</td><td>封测</td><td class="pos">+6.59%</td><td>N/A</td></tr>
+      <tr><td>5</td><td>深科技</td><td>000021</td><td>存储</td><td class="pos">+5.18%</td><td>N/A</td></tr>
+      <tr><td>6</td><td>兆易创新</td><td>603986</td><td>存储/MCU</td><td class="pos">+5.10%</td><td>N/A</td></tr>
+      <tr><td>7</td><td>紫光股份</td><td>000938</td><td>算力</td><td class="pos">+4.02%</td><td>N/A</td></tr>
+      <tr><td>8</td><td>浪潮信息</td><td>000977</td><td>算力</td><td class="pos">+3.08%</td><td>N/A</td></tr>
+      <tr><td>9</td><td>长鑫科技</td><td>688825</td><td>存储</td><td class="pos">+3.87%</td><td>N/A</td></tr>
+      <tr><td>10</td><td>士兰微</td><td>600460</td><td>功率</td><td class="pos">+3.06%</td><td>N/A</td></tr>
+      <tr><td>11</td><td>华工科技</td><td>000988</td><td>光通信</td><td class="pos">+2.35%</td><td>N/A</td></tr>
+      <tr><td>12</td><td>光迅科技</td><td>002281</td><td>光模块</td><td class="pos">+2.42%</td><td>N/A</td></tr>
+      <tr><td>13</td><td>中际旭创</td><td>300308</td><td>光模块</td><td class="pos">+2.76%</td><td>N/A</td></tr>
+      <tr><td>14</td><td>京东方Ａ</td><td>000725</td><td>面板</td><td class="pos">+1.91%</td><td>N/A</td></tr>
+      <tr><td>15</td><td>有研新材</td><td>600206</td><td>半导体材料</td><td class="pos">+1.88%</td><td>N/A</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">⚠️ 主力资金净流出居前个股（警示）</h4>
+  <div class="alert-box danger" style="margin-top:4px">
+    ⚠️ 同上限频约束，个股净额 N/A；下表为 11:30 真实<strong>弱势/分歧</strong>个股（westock data_hot），供风险规避参考。
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨跌幅</th>
+        <th>主力净流出</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>中国巨石</td><td>600176</td><td>玻纤</td><td class="neg">-4.69%</td><td>N/A</td></tr>
+      <tr><td>2</td><td>长飞光纤</td><td>601869</td><td>光纤</td><td class="neg">-3.07%</td><td>N/A</td></tr>
+      <tr><td>3</td><td>众泰汽车</td><td>000980</td><td>乘用车</td><td class="neg">-3.38%</td><td>N/A</td></tr>
+      <tr><td>4</td><td>生益科技</td><td>600183</td><td>PCB</td><td class="neg">-1.34%</td><td>N/A</td></tr>
+      <tr><td>5</td><td>赛力斯</td><td>601127</td><td>乘用车</td><td class="neg">-1.27%</td><td>N/A</td></tr>
+      <tr><td>6</td><td>宇树科技-W</td><td>688836</td><td>机器人</td><td class="neg">-0.80%</td><td>N/A</td></tr>
+      <tr><td>7</td><td>通鼎互联</td><td>002491</td><td>通信</td><td class="neg">-0.68%</td><td>N/A</td></tr>
+    </tbody>
+  </table>
+  <p class="source">来源：westock data_hot（11:30 实时涨幅） + data_sector（概念净流入，真实）；个股净额因子限频缺失已 N/A 标注</p>
+</div>
+
+<!-- 五、简评与后市观察 -->
+<div class="section">
+  <h3>五、简评与后市观察</h3>
+  <div style="font-size:13px; line-height:1.8; color:var(--text)">
+    <p><b>核心判断：</b>六指数全线收红、科创50+3.93%领涨、半导体(SW二级)180/180 全涨 = <b>科技（半导体/芯片/通信）单主线放量普涨日</b>。但<b>半导体 20日资金线深负（SW二级 20d -436亿，概念半导体产业 20日亦为负）</b>，按规则㊸禁多，本日定性为「国产替代/政策催化的超跌放量反弹」<b>而非反转</b>，严禁追高，仅分歧回踩低吸。</p>
+
+    <p style="margin-top:8px"><b>结构观察：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>半导体全链爆发</b>：设计(模拟芯片+4.64%/CPU+4.58%)/制造(存储+3.65%)/封测(华天+10%)/设备材料(国家大基金+4.94%)/先进封装+3.15%，概念主力净流入芯片+194亿居首</li>
+      <li><b>通信/光通信修复</b>：通信设备+2.79%（20d+157亿 → ㊹真趋势豁免候选），中际旭创+2.76%站920锚，与9/14 CPO严重反向形成反差</li>
+      <li><b>权重与防御集体走弱</b>：银行-0.75%/煤炭-0.54%/白酒-0.40%/贵金属-0.62%（20d-823亿）→ 资金切换科技，防御失效</li>
+      <li><b>情绪高涨</b>：64涨停/0跌停/托伦斯20cm，普涨率81%过热</li>
+      <li><b>玻纤转弱</b>：玻璃玻纤-1.90%（中国巨石-4.69%），9/14规则61豁免不再成立</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>午后关注点：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>量能</b>：半日1.32万亿（环比+743亿），午后续放则全日~2.4-2.6万亿 → 放量普涨确认</li>
+      <li><b>半导体是否冲高回落</b>：20日深负（㊸禁多）→ 警惕午后获利盘兑现，严禁追高</li>
+      <li><b>科创50 守1660</b>：今日+3.93%收复，若回落破1660则科技短线转弱</li>
+      <li><b>通信延续性</b>：中际旭创能否守920锚确认㊹真趋势豁免</li>
+      <li><b>铁律A</b>：下跌811 ≪ 4300 未触发；若午后下跌家数突破4300 → 降至15-18%</li>
+    </ul>
+
+    <h4 style="margin-top:14px; font-size:13px">📊 R-Judge 双轨命中率自审</h4>
+    <p style="font-size:12px; color:var(--text-secondary)"><b>预判层</b>（盘前共识→实际）：科技多/通信修复/科创突破/量能放大/普涨/铁律A未触发 6条兑现；银行压舱/贵金属持有/玻纤机构流入 3条证伪 → <b>命中率约 67%（6/9）</b>。扣分项：防御/权重/黄金/玻纤集体走弱。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>修正层</b>（盘中监控→实际）：本工作区无独立10:00监控文件，沿用盘前共识修正——半导体"多但㊸禁多·不追高"为关键纠偏，与盘面（20日深负）一致。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>核心风险：</b>半导体单日暴涨建立在20日资金线深负之上（㊸禁多），属"反弹非反转"结构；午后若量能不济+半导体冲高回落，需果断降仓至中性偏下。</p>
+
+    <h4 style="margin-top:14px; font-size:13px">📋 规则自检五问（20:30 回测归因依据）</h4>
+    <ul style="font-size:12px; color:var(--text-secondary); padding-left:20px; line-height:1.9">
+      <li><b>规则55（regime）</b>：科技单主线放量普涨日（半导体/芯片驱动，权重让位）→ 偏多但非反转结构。</li>
+      <li><b>㊸禁多</b>：半导体 20日资金线深负（SW二级 20d -436亿）→ 不判多、禁追高、反弹非反转。</li>
+      <li><b>㊹真趋势豁免</b>：通信设备 20d +157亿 为正 → 部分豁免，可顺势看多（与半导体区分对待）。</li>
+      <li><b>规则58（管多熔断）</b>：普涨81%&gt;80%（规则57正向发现通道触发），广度过热；但半导体单方向失真 → 总仓不超55%、不追高。</li>
+      <li><b>规则60（管空熔断）</b>：下跌811 ≪ 4300 → 空方向不杀跌，无明显空头风险。</li>
+      <li><b>铁律A</b>：未触发（下跌811 ≪ 4300红线，0跌停）→ 维持中性仓50-55%。</li>
+      <li><b>规则63（三档降级）</b>：半导体 5日+230.5亿 但 20日-436亿 → 2/3 部分豁免 → 不判空·底仓≤2%但㊸禁多维持。</li>
+      <li><b>规则51</b>：硬件制造链 5日正+20日≤-50亿 但 比值0.53&lt;1.5 → 不触发"不得给多"（与㊸一致，维持禁多）。</li>
+    </ul>
+  </div>
+  <p class="source">来源：westock data_minute/data_changedist/data_sector 11:30 冻结快照（多源交叉）；WebSearch 午评因同源时效不可靠已弃用，未引用机构原话</p>
+</div>
+
+<!-- 免责声明 -->
+<div class="disclaimer">
+  <b>免责声明：</b>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。个股主力净流入因数据源临时限频缺失，相关表格以 N/A 标注，未做推断或编造。
+</div>
+
+</div>
+
+<!-- WKBUILD:20260918-1150-wupan -->
+<script>
+(function() {
+  // 三大指数涨跌幅柱状图
+  const indexChart = echarts.init(document.getElementById('indexChart'));
+  const indexData = [
+    {name: '上证指数', val: 3916.07, pct: 1.04},
+    {name: '深证成指', val: 13613.48, pct: 1.52},
+    {name: '创业板指', val: 3368.03, pct: 2.11},
+    {name: '科创50', val: 1669.34, pct: 3.93},
+    {name: '北证50', val: 1039.61, pct: 1.33},
+    {name: '沪深300', val: 4507.02, pct: 1.05}
+  ];
+  indexChart.setOption({
+    title: {text: '主要指数涨跌幅（11:30 收盘）', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}, formatter: function(p) {return p[0].name + '<br/>' + p[0].seriesName + ': ' + (p[0].value > 0 ? '+' : '') + p[0].value.toFixed(2) + '%';}},
+    grid: {left: 60, right: 30, top: 40, bottom: 30},
+    xAxis: {
+      type: 'category',
+      data: indexData.map(d => d.name),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    series: [{
+      name: '涨跌幅',
+      type: 'bar',
+      data: indexData.map(d => ({
+        value: d.pct,
+        itemStyle: {color: d.pct > 0 ? '#d93026' : '#1e8e3e'}
+      })),
+      label: {
+        show: true,
+        position: 'top',
+        formatter: function(p) {return (p.value > 0 ? '+' : '') + p.value.toFixed(2) + '%';},
+        fontSize: 10
+      }
+    }]
+  });
+
+  // 板块涨跌条形图
+  const sectorChart = echarts.init(document.getElementById('sectorChart'));
+  const upSectors = [
+    {name: '黄酒', pct: 6.87},
+    {name: '国家大基金持股', pct: 4.94},
+    {name: '半导体(SW)', pct: 4.87},
+    {name: '模拟芯片', pct: 4.64},
+    {name: 'CPU', pct: 4.58},
+    {name: 'AI算力芯片', pct: 4.50},
+    {name: '汽车芯片', pct: 4.10},
+    {name: '存储器', pct: 3.65},
+    {name: '通信设备', pct: 2.79}
+  ];
+  const downSectors = [
+    {name: '白酒', pct: -0.40},
+    {name: '煤炭', pct: -0.54},
+    {name: '贵金属', pct: -0.62},
+    {name: '国有大行', pct: -0.75},
+    {name: '商用车', pct: -1.12},
+    {name: '乘用车', pct: -1.19},
+    {name: '玻璃玻纤', pct: -1.90}
+  ];
+  sectorChart.setOption({
+    title: {text: '领涨/领跌板块涨跌幅对比', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+    legend: {data: ['领涨', '领跌'], top: 30, textStyle: {fontSize: 11}},
+    grid: {left: 90, right: 30, top: 70, bottom: 30},
+    xAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    yAxis: {
+      type: 'category',
+      data: upSectors.map(d => d.name).reverse().concat(downSectors.map(d => d.name).reverse()),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    series: [
+      {
+        name: '领涨',
+        type: 'bar',
+        data: upSectors.map(d => ({value: d.pct, itemStyle: {color: '#d93026'}})).reverse(),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      },
+      {
+        name: '领跌',
+        type: 'bar',
+        data: new Array(upSectors.length).fill(null).concat(downSectors.map(d => ({value: d.pct, itemStyle: {color: '#1e8e3e'}})).reverse()),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      }
+    ]
+  });
+
+  window.addEventListener('resize', function() {
+    indexChart.resize();
+    sectorChart.resize();
+  });
+})();
+</script>
+</body>
+</html>
