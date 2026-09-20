@@ -26,10 +26,11 @@ def sync_one(tid, meta):
         print(f"  [跳过] {tid} DB 不存在")
         con.close(); return False
     old_prompt, old_model = row
-    cur.execute("UPDATE automations SET prompt=?, model_id='hy3' WHERE id=?", (txt, tid))
+    expect_model = meta.get("model", "hy3")
+    cur.execute("UPDATE automations SET prompt=?, model_id=? WHERE id=?", (txt, expect_model, tid))
     con.commit(); con.close()
-    changed = (old_prompt != txt) or (old_model != "hy3")
-    print(f"  [{'已同步' if changed else '无变化'}] {tid} ({meta['name']}) model->hy3")
+    changed = (old_prompt != txt) or (old_model != expect_model)
+    print(f"  [{'已同步' if changed else '无变化'}] {tid} ({meta['name']}) model->{expect_model}")
     return changed
 
 def main():
