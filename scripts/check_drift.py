@@ -30,8 +30,9 @@ def main():
             issues.append(f"[缺失] REGISTRY 有但 DB 无 ACTIVE: {tid} ({meta['name']})")
             continue
         d = db[tid]
-        if d["model"] != "hy3":
-            issues.append(f"[模型] {tid} ({meta['name']}) model={d['model']} != hy3")
+        expect_model = meta.get("model", "hy3")
+        if d["model"] != expect_model:
+            issues.append(f"[模型] {tid} ({meta['name']}) model={d['model']} != 期望 {expect_model}")
         if d["status"] != "ACTIVE":
             issues.append(f"[状态] {tid} ({meta['name']}) status={d['status']} != ACTIVE")
         # prompt 文件 vs DB
