@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 - 2026年9月23日</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a7a;
+    --border: #e0e4e8;
+    --primary: #1a237e;
+    --primary-light: #3949ab;
+    --accent: #0d47a1;
+    --up: #c62828;
+    --up-light: #e53935;
+    --down: #2e7d32;
+    --warn: #e65100;
+    --success: #1565c0;
+    --gold: #f57c00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  /* 标题区 */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.25);
+  }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .header .date { font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
+  .header .song { font-size: 13px; opacity: 0.75; font-style: italic; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; margin-top: 12px; }
+  /* 卡片 */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 20px; }
+  /* 核心摘要 */
+  .summary-box {
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--primary);
+  }
+  .summary-box h4 { font-size: 14px; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
+  .summary-box p { font-size: 13.5px; color: var(--text); line-height: 1.8; }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-up { background: rgba(198,40,40,0.12); color: var(--up); }
+  .tag-down { background: rgba(46,125,50,0.12); color: var(--down); }
+  .tag-warn { background: rgba(230,81,0,0.12); color: var(--warn); }
+  .tag-info { background: rgba(21,101,192,0.12); color: var(--success); }
+  /* 决策逻辑链 */
+  .logic-chain { display: flex; flex-direction: column; gap: 12px; }
+  .logic-item {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+  }
+  .logic-item .step {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .logic-item .step span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }
+  .logic-item .text { font-size: 13px; color: var(--text); }
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: #fafbfd; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .warn-text { color: var(--warn); font-weight: 600; }
+  /* 共识度表（板块表） */
+  .sector-table { font-size: 12px; }
+  .sector-table th, .sector-table td { padding: 10px 6px; }
+  .sector-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .score {
+    display: inline-block;
+    min-width: 36px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .score-mid { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+  .score-low { background: linear-gradient(135deg, #757575, #9e9e9e); }
+  .consensus-vhigh { color: var(--up); font-weight: 700; }
+  .consensus-high { color: var(--up-light); font-weight: 600; }
+  .consensus-mid { color: var(--gold); font-weight: 600; }
+  .consensus-low { color: var(--text-secondary); }
+  .stock-bold { font-weight: 700; color: var(--text); }
+  /* 风险模块 */
+  .risk-box {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--warn);
+  }
+  .risk-box h4 { font-size: 13px; color: var(--warn); margin-bottom: 6px; }
+  .calendar-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--success);
+  }
+  .calendar-box h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
+  .discipline-box {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 4px solid #7b1fa2;
+  }
+  .discipline-box h4 { font-size: 13px; color: #7b1fa2; margin-bottom: 6px; }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 20px 0;
+  }
+  ul { padding-left: 20px; }
+  ul li { font-size: 13.5px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+<!-- WKBUILD:panqian-20260923 -->
+
+<!-- 标题区 -->
+<div class="header">
+  <h1>📊 每日盘前策略</h1>
+  <div class="date">2026年9月23日 · 周三 · 07:00 盘前</div>
+  <div class="song">
+    🎵 《山丘》<br>
+    <span style="opacity:0.85">— 献给在分化中守住结构的交易者 —</span><br>
+    <em style="opacity:0.7">"越过山丘，才发现无人等候；喏，与其误会一场，也要不负勇往。"</em><br>
+    <small style="opacity:0.6">—— 李宗盛《山丘》</small>
+  </div>
+</div>
+
+<!-- 📌 核心摘要 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📌</span>核心摘要</div>
+
+  <div class="summary-box">
+    <h4>承接昨日交易日志（2026-09-22 周二）</h4>
+    <p>
+      周二沪指<strong>3952.13（+0.06%）</strong>收于3950一带、逼近4000，两市成交<strong>2.14万亿</strong>（10日均量114.67%，放量）；但<strong>广度仅42%上涨</strong>（2374涨 / 3030跌）、涨停65 / 跌停5、涨比0.78 —— <strong>指数红、个股绿的"赚指数不赚钱"分化日</strong>。
+      ADJ 32.96 仍处冰点区间但未恶化，MACD金叉、技术面"极强"。该日属9/21强反弹（81.5%广度）后的<strong>宽度回踩分歧</strong>，非退潮。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color:var(--warn)">
+    <h4 style="color:var(--warn)">三重利好共振（科技外盘 + 政策线 + 利率边际）</h4>
+    <p>
+      ① <strong>美股科技外盘强势</strong>：9/22 纳指+0.45%<span class="up">收盘新高</span>、费半+2%（7月中以来新高）；存储链集体飙涨 闪迪+6.82% / 美光+5% / SK海力士+3.45% / 希捷+4.85% → <span class="up">光通信/CPO/PCB 外盘映射强催化</span>；<br>
+      ② <strong>政策/题材线爆发</strong>：9/22 房地产服务+3.40% / 出版+3.39% / 广告营销+3.58% 居行业前三（地产政策预期+传媒出版催化），881文化传媒+3.15%印证；<br>
+      ③ <strong>利率压制边际缓和</strong>：9/17 FOMC 已落地（降息25bp至3.75-4.00%，点阵图偏鹰），悬顶变量出清，10Y美债仍~5%但分母压力较9月前段缓解。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-left-color:var(--up)">
+    <h4 style="color:var(--up)">两重压制（分歧档）</h4>
+    <p>
+      ① <strong>反弹宽度不足（㊱缩圈风险）</strong>：9/22 仅42%个股上涨、跌3030 ≫ 涨2374，连板高度与赚钱效应集中在少数题材（地产/传媒/医药），<strong>轮动过快踩雷（㉔）风险上升</strong>；<br>
+      ② <strong>估值逼近红线 + 资源线深负</strong>：全A PE_TTM 10年分位 <strong>80.08%</strong>（⑭ 仓位上限不上调）；半导体20D -273亿 / 贵金属20D -99亿 / 工业金属20D -101.88亿（㊸禁多接飞刀）；油价数据口径差⚠️（美油-2.73%报89.85 vs 另口径-1.24%报94.59）需核对。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color:var(--down)">
+    <h4 style="color:#2e7d32">情绪周期定位：P0→P1 反弹修复延续 · 分歧加剧（非退潮非狂热）</h4>
+    <p>
+      9/21 ADJ 32.36 → 9/22 ADJ 32.96，指数收复3950但<strong>广度由81.5%骤降至42%</strong>，westock 自动标签"情绪狂热（涨停>50）"被真实广度（56%个股下跌）证伪 → 定性"<strong>普涨分化·结构性轮动</strong>"。
+      算力硬件链（元件/通信设备 20日资金 +200.98亿 / +137.38亿）<strong>双正真趋势（㊹）</strong>未破，主线仍在；分歧日宜<strong>持有核心+试错政策线</strong>，不宜全面加仓。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color:#7b1fa2">
+    <h4 style="color:#7b1fa2">今日展望（200字）</h4>
+    <p>
+      沪指支撑<strong>3930-3950</strong>（9/22收盘3952+五周线）、压力<strong>3980-4000</strong>（前高/整数关）。
+      <strong>期望路径</strong>：小幅高开→费半+存储映射下光通信/CPO/PCB领涨→地产/出版政策线延续→银行红利压舱→成交维持2万亿→沪指试探4000。
+      <strong>风险路径</strong>：广度持续<50%→题材轮动过快踩雷（㉔）→沪指回踩3930。
+      <strong>总仓位50-60%</strong>（较9/22持平，分歧日不追高），主线=光通信CPO/PCB（双正+外盘）+地产/出版政策线+医药CXO（外盘映射）+银行压舱。
+    </p>
+  </div>
+
+  <div>
+    <span class="tag tag-info">承接9/22分化日</span>
+    <span class="tag tag-up">费半+2%新高</span>
+    <span class="tag tag-up">存储飙涨</span>
+    <span class="tag tag-warn">广度42%分歧</span>
+    <span class="tag tag-info">地产出版政策线</span>
+    <span class="tag tag-down">资源深负回避</span>
+  </div>
+</div>
+
+<!-- 🔗 决策逻辑链 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🔗</span>决策逻辑链</div>
+  <div class="logic-chain">
+
+    <div class="logic-item">
+      <div class="step"><span>①</span>数据→分析</div>
+      <div class="text">
+        <strong>9/22资金结构</strong>：元件行业 20日主力<strong>+200.98亿</strong>、通信设备 20日<strong>+137.38亿</strong>——<strong>双正真趋势（㊹）</strong>成立；当日虽净流出-7.33亿/-63.58亿，但属<strong>获利回吐非出货象限</strong>（背离四象限：跌+净流出=🟠诱多减仓，仅轻仓不追）；<br>
+        <strong>881交叉</strong>：元件+1.28%（但-56.26亿单日）/半导体+0.71%（-45.47亿）/保险+0.99%（5/0全红）—— 科技硬件内部分化、保险防御全红。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>②</span>数据→分析</div>
+      <div class="text">
+        <strong>外盘科技映射（9/22）</strong>：纳指+0.45%<span class="up">收盘新高</span> / 费半<strong>+2%（7月中以来新高）</strong> / 存储链 闪迪+6.82%·美光+5%·SK海力士+3.45%·希捷+4.85%——<br>
+        <strong>AI硬件链外盘强催化确认</strong>，校准③触发（费半反弹→CPO/通信中性偏多，且本就20日双正判P2）；中际旭创/新易盛 20日 +9.66% / +13.5% 资金共识延续。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>③</span>数据→分析</div>
+      <div class="text">
+        <strong>政策/题材线（9/22 TOP3）</strong>：房地产服务<strong>+3.40%</strong> / 出版<strong>+3.39%</strong> / 广告营销<strong>+3.58%</strong>；881文化传媒+3.15%、生物制品+1.92%、汽车整车+0.39%（江淮+10.01%）；<br>
+        <strong>外盘医药映射</strong>：Moderna+5.56% / 安进+4.34% → A股CXO/生物制品正向映射；地产政策预期+出版传媒催化构成"非科技"第二主线。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>④</span>判断</div>
+      <div class="text">
+        <strong>主线确立（分歧日 stage-aware）</strong>：<span class="up">光通信CPO / PCB覆铜板（双正+外盘催化）= P2·持有加仓</span>；地产/出版政策线= P2/P1 试错；医药CXO（外盘映射）= P2/P1；银行红利= P1 压舱。<br>
+        <strong>回避（㊸禁多）</strong>：半导体（20D -273亿）/ 贵金属（20D -99亿）/ 工业金属（20D -101.88亿）/ 消费电子 / 电池 / 白酒 / 证券。估值80%分位→仓位天花板50-60%。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>⑤</span>行动</div>
+      <div class="text">
+        <strong>今日操作</strong>：
+        ① 主线持有：<strong>光模块（中际旭创/新易盛/天孚通信）+ PCB覆铜板（沪电股份/东山精密/生益科技/深南电路）</strong>，回调不破3日线坚定持有；
+        ② 政策线试错：<strong>地产（我爱我家/新华联）+ 出版传媒（新华文轩/智度股份）+ 医药CXO（百花医药/药明康德）</strong>，轻仓不追连板；
+        ③ 防御底仓：<strong>银行红利（建设银行/招商银行/宁波银行）</strong>5-8%压舱；
+        ④ 高位回避：半导体设备/存储/贵金属/工业金属/消费电子/白酒。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ⚡ 盘前30秒速览 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚡</span>盘前30秒速览</div>
+  <table>
+    <tr><td>📉 <strong>沪指支撑/压力</strong></td><td>支撑 <span class="down">3930</span>(9/22收盘3952-20) / 压力 <span class="up">3980-4000</span>(前高·整数关)</td></tr>
+    <tr><td>📊 <strong>成交警戒线</strong></td><td>需维持 ≥2万亿（9/22为2.14万亿 / 10日均114.67%）</td></tr>
+    <tr><td>🔥 <strong>9/22主力资金（20日）</strong></td><td>元件<strong>+200.98亿</strong> / 通信设备<strong>+137.38亿</strong>（双正·真趋势）；中际+9.66%·新易盛+13.5%</td></tr>
+    <tr><td>🌍 <strong>美股9/22收盘</strong></td><td>道指-0.36% / <span class="up">纳指+0.45%新高</span> / 标普平；<span class="up">费半+2%</span>（7月中新高）</td></tr>
+    <tr><td>💾 <strong>存储链</strong></td><td>闪迪<span class="up">+6.82%</span> / 美光<span class="up">+5%</span> / SK海力士+3.45% / 希捷+4.85%</td></tr>
+    <tr><td>💰 <strong>油价（⚠️口径差）</strong></td><td>美油-2.73%报89.85（另口径-1.24%报94.59）/ 布油-1.53%报94.77（另口径-1.09%报99.25）</td></tr>
+    <tr><td>📈 <strong>贵金属/美元</strong></td><td>现货金+0.38%报4359.95 / 银+1.59%；美元100.54（+0.12%）</td></tr>
+    <tr><td>🎯 <strong>估值分位</strong></td><td>全A PE_TTM 10年分位 <span class="warn-text">80.08%</span>（逼近红线·仓位不上调）</td></tr>
+    <tr><td>🎯 <strong>建议仓位</strong></td><td><strong>50-60%</strong>（分歧日·较9/22持平不追高）</td></tr>
+    <tr><td>📅 <strong>事件日历</strong></td><td>今日 国新办多部委发布会 / 各产业数据；美伊纽约会晤谈霍尔木兹重开条件</td></tr>
+  </table>
+</div>
+
+<!-- 🌍 隔夜外盘 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🌍</span>隔夜外盘（数据截至9/22美股收盘）</div>
+  <table>
+    <tr><th>分类</th><th>品种</th><th>收盘</th><th>涨跌</th><th>解读</th></tr>
+    <tr><td rowspan="3"><strong>美股</strong></td><td>道琼斯</td><td>—</td><td class="down">-0.36%</td><td rowspan="3">纳指收盘新高，标普平收；市场已消化FOMC降息25bp鹰派点阵图，分母压力边际缓和。</td></tr>
+    <tr><td>标普500</td><td>—</td><td>平收</td><td></td></tr>
+    <tr><td>纳斯达克</td><td>—</td><td class="up">+0.45%（新高）</td><td></td></tr>
+    <tr><td><strong>半导体</strong></td><td>费城半导体（SOX）</td><td>—</td><td class="up">+2%</td><td>7月中以来新高；存储链集体飙涨 闪迪+6.82%/美光+5%/SK海力士+3.45%/希捷+4.85%；英伟达+0.66%/微软-0.72%/谷歌-1.07%。</td></tr>
+    <tr><td rowspan="2"><strong>中概/医药</strong></td><td>纳斯达克金龙</td><td>—</td><td class="up">+0.32%</td><td rowspan="2">Moderna+5.56% / 安进+4.34% → A股CXO/生物制品正向映射。</td></tr>
+    <tr><td>生物科技XBI</td><td>—</td><td class="up">偏强</td><td></td></tr>
+    <tr><td rowspan="3"><strong>商品</strong></td><td>WTI原油</td><td>89.85</td><td class="down">-2.73%⚠️</td><td>口径差：另口径-1.24%报94.59；美伊纽约会晤谈霍尔木兹重开，地缘溢价边际回落。</td></tr>
+    <tr><td>布伦特原油</td><td>94.77</td><td class="down">-1.53%⚠️</td><td>口径差：另口径-1.09%报99.25。</td></tr>
+    <tr><td>现货黄金/银</td><td>4359.95 / —</td><td class="up">+0.38% / +1.59%</td><td>金价高位震荡，白银弹性更强。</td></tr>
+    <tr><td><strong>汇率</strong></td><td>美元指数</td><td>100.54</td><td class="up">+0.12%</td><td>降息落地后美元仍稳于100上方。</td></tr>
+    <tr><td><strong>港股(9/22)</strong></td><td>恒生主连</td><td>25,133</td><td class="up">+0.31%</td><td>跟随A股结构轮动，关注AH联动。</td></tr>
+  </table>
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:var(--warn)"><strong>📡 关键信号解读</strong>：
+    ① "纳指新高+费半+2%+存储飙涨"的组合 → <strong>AI硬件链外盘强催化</strong>，对应A股光通信/CPO/PCB开盘有正映射；
+    ② 油价回落（地缘边际缓和）→ 通胀交易降温，<strong>资源/油气线（20D深负）继续回避</strong>；
+    ③ <strong>建议操作</strong>：算力硬件主线持有不追高、地产/出版政策线轻仓试错、医药CXO受外盘映射可低吸、银行红利压舱。
+    </p>
+  </div>
+</div>
+
+<!-- 📊 市场全景 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📊</span>市场全景（9/22收盘）</div>
+  <h4 style="font-size:13px; color:var(--primary); margin-bottom:8px">📈 四大指数</h4>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>特征</th></tr>
+    <tr><td>上证指数</td><td>3,952.13</td><td class="up">+0.06%</td><td>收3950一带逼近4000；成交9582亿放量</td></tr>
+    <tr><td>深证成指</td><td>13,723.74</td><td class="down">-0.05%</td><td>基本平收</td></tr>
+    <tr><td>创业板指</td><td>3,399.93</td><td class="up">+0.01%</td><td>平收，技术面MACD金叉"极强"</td></tr>
+    <tr><td>科创50</td><td>1,665.04</td><td class="up">+0.46%</td><td>相对强势</td></tr>
+    <tr><td>沪深300</td><td>4,544.59</td><td class="up">+0.11%</td><td>大盘蓝筹抗跌</td></tr>
+    <tr><td>北证50</td><td>1,046.80</td><td class="down">-1.08%</td><td>小盘分歧最大</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🌡 涨跌分布（成交2.14万亿 / 10日均114.67%）</h4>
+  <table>
+    <tr><th>指标</th><th>数值</th><th>含义</th></tr>
+    <tr><td>上涨家数</td><td>2,374只（42%）</td><td>广度骤降（9/21为81.5%），分歧日</td></tr>
+    <tr><td>下跌家数</td><td><span class="down">3,030只</span></td><td>跌多涨少，赚指数不赚钱</td></tr>
+    <tr><td>涨停/跌停</td><td>65 / 5</td><td>涨停活跃但集中于少数题材</td></tr>
+    <tr><td>涨跌比 / ADJ</td><td>0.78 / 32.96</td><td>冰点区间未恶化，结构性轮动</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🏆 9/22板块排行·主线轮动</h4>
+  <table>
+    <tr><th>板块</th><th>涨跌幅</th><th>主力净流入</th><th>领袖股</th></tr>
+    <tr><td>广告营销</td><td class="up">+3.58%</td><td>+19.37亿</td><td>智度股份(+10.04%) / 引力传媒</td></tr>
+    <tr><td>房地产服务</td><td class="up">+3.40%</td><td>+2.60亿(20D+11.80亿)</td><td>我爱我家(+10.03%) / 新华联</td></tr>
+    <tr><td>出版</td><td class="up">+3.39%</td><td>+3.81亿(20D+9.96亿)</td><td>新华文轩(+10.01%) / 中南传媒</td></tr>
+    <tr><td>商用车</td><td class="up">+2.83%</td><td>—</td><td>江淮汽车(+10.01%)</td></tr>
+    <tr><td>数字媒体</td><td class="up">+1.71%</td><td>+1.55亿(20D+16.26亿)</td><td>芒果超媒 / 华策影视</td></tr>
+    <tr><td>通信服务</td><td class="up">+1.41%</td><td>+8.88亿</td><td>中国卫通 / 中兴通讯</td></tr>
+    <tr><td>生物制品</td><td class="up">+1.35%</td><td>—</td><td>百花医药(+10.04%) / 智飞生物</td></tr>
+    <tr><td>元件（PCB）</td><td class="down">-0.13%</td><td class="down">-7.33亿（20D+200.98亿双正）</td><td>沪电股份(-0.68%) / 生益科技(-1.93%) 回吐</td></tr>
+    <tr><td>通信设备</td><td class="down">-0.99%</td><td class="down">-63.58亿（20D+137.38亿双正）</td><td>中际旭创(-1.41%) / 新易盛(-0.38%) 回吐</td></tr>
+    <tr><td>半导体</td><td class="up">+0.54%</td><td class="down">净流出（20D-273亿）</td><td>㊸禁多·20D深负</td></tr>
+    <tr><td>贵金属</td><td class="down">-1.39%</td><td class="down">-16.96亿（20D-99.12亿）</td><td>㊸禁多·窗口关闭</td></tr>
+    <tr><td>航运港口</td><td class="down">-2.64%</td><td>—</td><td>地缘溢价回落</td></tr>
+  </table>
+
+  <div style="background:#f3e5f5; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:#7b1fa2">
+      <strong>主线轮动轨迹</strong>：<br>
+      9/21 强反弹（81.5%广度·光通信/玻纤/PCB/地产/医药/CXO/汽零） → 9/22 <span class="up">分化轮动</span>（指数红个股绿·广度42%）→ 9/23 费半+存储外盘催化下光通信/PCB回流 + 地产/出版政策线延续<br>
+      <strong>结论</strong>：算力硬件链（元件/通信设备 20日双正 +200.98亿/+137.38亿）资金共识未破，分歧日<strong>持有核心+试错政策线</strong>，不构成退潮。
+    </p>
+  </div>
+</div>
+
+<!-- ⭐ 板块共识度与方向表 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⭐</span>板块共识度与方向表</div>
+
+  <div class="sector-wrap">
+  <table class="sector-table">
+    <tr>
+      <th>板块</th>
+      <th>评分</th>
+      <th>共识度</th>
+      <th>操作判断</th>
+      <th>建议仓位</th>
+      <th>核心策略</th>
+      <th>核心个股建议</th>
+    </tr>
+
+    <tr>
+      <td><strong>光通信 / CPO</strong></td>
+      <td><span class="score">95</span></td>
+      <td><span class="consensus-vhigh">极强</span></td>
+      <td><strong>P2·持有加仓</strong></td>
+      <td>9-12%</td>
+      <td>费半+2%新高+存储飙涨外盘映射（校准③触发）+ 通信设备20D+137.38亿双正（㊹）+ 中际/新易盛20D+9.66%/+13.5%；当日回吐-0.99%属获利非出货，回调不破3日线坚定持有。</td>
+      <td>
+        <span class="stock-bold">中际旭创(300308)</span>（927.72·-1.41%·20D+9.66%）<br>
+        <span class="stock-bold">新易盛(300502)</span>（455.00·-0.38%·20D+13.5%）<br>
+        天孚通信(300394)（光器件）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>PCB / 覆铜板</strong></td>
+      <td><span class="score">85</span></td>
+      <td><span class="consensus-vhigh">极强</span></td>
+      <td><strong>P2·持有加仓</strong></td>
+      <td>6-9%</td>
+      <td>元件行业20D+200.98亿双正（㊹真趋势豁免），沪电/生益20D+9.49%/+11.2%；AI服务器PCB订单可见度强，当日-0.13%回吐不破趋势。</td>
+      <td>
+        <span class="stock-bold">沪电股份(002463)</span>（125.14·-0.68%·20D+9.49%）<br>
+        <span class="stock-bold">生益科技(600183)</span>（143.45·-1.93%·20D+11.2%）<br>
+        东山精密(002384) / 深南电路(002916)
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>玻纤 / 电子布</strong></td>
+      <td><span class="score">88</span></td>
+      <td><span class="consensus-vhigh">极强</span></td>
+      <td><strong>P2·持有加仓</strong></td>
+      <td>5-8%</td>
+      <td>电子布/玻纤 20日资金双正（㊹真趋势豁免），延续9/21-9/22强势；商品涨价（电子布供需紧张）支撑，分歧日持有。</td>
+      <td>
+        <span class="stock-bold">宏和科技(603256)</span>（电子布龙头）<br>
+        中材科技(002080)（玻纤+叶片）<br>
+        中国巨石(600176)（玻纤全球份额）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>地产 / 房地产服务</strong></td>
+      <td><span class="score">82</span></td>
+      <td><span class="consensus-high">强</span></td>
+      <td><strong>P2 / P1·试错</strong></td>
+      <td>3-5%</td>
+      <td>9/22 房地产服务+3.40%（行业前三）+ 20D+11.80亿；地产政策预期升温，我爱我家+10.03%领涨。轻仓试错，不追连板。</td>
+      <td>
+        <span class="stock-bold">我爱我家(000560)</span>（3.51·+10.03%·20D+46.86%）<br>
+        新华联(000620)（地产+文旅）<br>
+        城建发展(600266)（北京国资）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>医药 CXO / 生物制品</strong></td>
+      <td><span class="score">78</span></td>
+      <td><span class="consensus-high">强</span></td>
+      <td><strong>P2 / P1·试错</strong></td>
+      <td>3-5%</td>
+      <td>9/22 生物制品+1.35%（881+1.92%）；外盘 Moderna+5.56%/安进+4.34% 正向映射（US-④）；百花医药+10.04%题材活跃。轻仓低吸，不追高。</td>
+      <td>
+        <span class="stock-bold">百花医药(600721)</span>（14.47·+10.04%·20D-3.28%）<br>
+        药明康德(603259)（CXO龙头·外盘映射）<br>
+        智飞生物(300122)（生物制品）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>汽车零部件</strong></td>
+      <td><span class="score score-mid">64</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>2-4%</td>
+      <td>9/22 商用车+2.83%、汽车整车+0.39%（江淮+10.01%）；智驾/零部件政策线（十五五智能网联规划）支撑，分歧日轻仓。</td>
+      <td>
+        <span class="stock-bold">江淮汽车(600418)</span>（+10.01%·华为智选）<br>
+        拓普集团(601689)（零部件龙头）<br>
+        德赛西威(002920)（智驾域控）
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>银行红利 / 高股息</strong></td>
+      <td><span class="score score-mid">60</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·压舱</strong></td>
+      <td>5-8%</td>
+      <td>分歧日防御底仓；881保险+0.99%（5/0全红）、银行-0.08%韧性；建设银行-0.09%横盘压舱，股息率3.56%提供安全边际。</td>
+      <td>
+        <span class="stock-bold">建设银行(601939)</span>（10.92·-0.09%·20D+2.44%）<br>
+        招商银行(600036)（零售红利）<br>
+        宁波银行(002142)（城商成长）
+      </td>
+    </tr>
+
+  </table>
+  </div>
+
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:10px">
+    <p style="font-size:12.5px; color:var(--warn)">
+      <strong>⚠️ 回避板块</strong>（㊸ 20D深负禁多 + 估值红线）：
+      半导体(20D -273亿)、贵金属(20D -99亿)、工业金属(20D -101.88亿)、小金属、消费电子（存量博弈）、电池、白酒/家电（内需修复缓慢）、证券（量能未持续放大）。
+    </p>
+  </div>
+</div>
+
+<!-- 风险点 + 催化日历 + 止盈止损纪律 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚠️</span>风险点 + 催化日历 + 止盈止损纪律</div>
+
+  <div class="risk-box">
+    <h4>🚨 风险点（按重要性排序）</h4>
+    <ul>
+      <li><strong>反弹宽度不足（㊱缩圈）</strong>：9/22 仅42%个股上涨、跌3030 ≫ 涨2374，连板集中在地产/传媒/医药 → <strong>轮动过快踩雷（㉔）风险上升</strong>，不宜全面加仓。</li>
+      <li><strong>估值逼近红线（⑭）</strong>：全A PE_TTM 10年分位 80.08% → 仓位上限不上调，总仓锁50-60%。</li>
+      <li><strong>半导体/资源20D深负（㊸）</strong>：半导体-273亿 / 贵金属-99亿 / 工业金属-101.88亿 → 禁多接飞刀，仅光通信PCB（双正）豁免。</li>
+      <li><strong>油价数据口径差⚠️</strong>：美油-2.73%报89.85 vs 另口径-1.24%报94.59；布油-1.53%报94.77 vs 另口径-1.09%报99.25 → 油气判断以井口价为准，资源线因20D深负仍回避。</li>
+      <li><strong>地缘反复</strong>：美伊纽约会晤谈霍尔木兹重开，特朗普称中期选举后或达成协议 → 窗口边际缓和但波动，谈崩则油价再上（跷跷板）。</li>
+      <li><strong>高位连板回吐（校准①）</strong>：我爱我家/智度/新华文轩/百花医药 9/22集体涨停（20D +46.86%/+10.7%/+39.24%/-3.28%）→ 追高回吐前置，不追竞价高开>3%。</li>
+      <li><strong>利率压制未消</strong>：9/17 FOMC 降息25bp但点阵图偏鹰，10Y美债仍~5%、美元100.54 → 成长股估值分母承压，仓位天花板受限。</li>
+    </ul>
+  </div>
+
+  <div class="calendar-box">
+    <h4>📅 催化日历（未来3日关键节点）</h4>
+    <table>
+      <tr><th>日期</th><th>时间</th><th>事件</th><th>影响</th></tr>
+      <tr><td rowspan="2"><strong>9/23（今日）</strong></td><td>待定</td><td>国新办多部委新闻发布会</td><td>政策信号强度跟踪（地产/消费/产业）</td></tr>
+      <tr><td>盘中</td><td>各产业数据/招标公告</td><td>光通信/PCB订单验证</td></tr>
+      <tr><td><strong>9/24（周四）</strong></td><td>—</td><td>华为/算力链产业动态（Atlas 950等）</td><td>AI算力硬件情绪催化</td></tr>
+      <tr><td><strong>9/25（周五）</strong></td><td>—</td><td>周度资金流/北向复盘</td><td>20D资金线趋势复核</td></tr>
+      <tr><td><strong>本周末</strong></td><td>—</td><td>周末行业新闻简报（通信算力/半导体存储/机器人/贵金属/有色）</td><td>为下周一盘前策略提供校验输入</td></tr>
+    </table>
+    <p style="font-size:12px; margin-top:6px"><strong>📌 本周复盘（9/23-9/25）：</strong>护盘点=沪指能否站稳3930、成交维持2万亿以上、光模块板块能否不出现单日-3%。若沪指放量站上4000 → 主线仓位可上探60%上限；若广度再降至<35% → 降至40-45%仅留核心+防御。</p>
+  </div>
+
+  <div class="discipline-box">
+    <h4>🛡 止盈止损纪律（铁律A/B+个股风控）</h4>
+    <ul>
+      <li><strong>铁律A</strong>：四大指数集体低开>1% + 4300只下跌 + 外盘冲击 = 触发<span class="warn-text">紧急降仓10pcts</span>（当前50-60% → 40-50%）。</li>
+      <li><strong>铁律B</strong>：单日沪指跌幅>2% 或 跌停>100只 = 降仓10pcts至40-50%。</li>
+      <li><strong>个股止损锚</strong>：中际旭创 870（-6%）/ 新易盛 390（-8%）/ 沪电股份 115（-8%）/ 生益科技 130（-9%）/ 我爱我家 3.15（-10%破板即出）/ 百花医药 13（-10%）/ 建设银行 10.4（-5%）。</li>
+      <li><strong>锁定利润规则</strong>：光通信/PCB板块平均浮盈>15%时，分批锁定3-5%（防外盘利好兑现后回吐）；地产/出版连板股在3板时减半仓。</li>
+      <li><strong>港股映射校验</strong>：9:25集合竞价 + 10:30盘中必检（防AH联动杀A股科技链；重点看中际/新易盛/沪电港股通动向）。</li>
+      <li><strong>不重仓追高</strong>：所有新开仓均需"确认信号+回踩入场"，连板股（我爱我家/智度/新华文轩/百花）不追竞价高开>3%（校准①回吐前置）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 数据来源/信源 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📚</span>信源引用（三大公众号+数据校验）</div>
+  <table>
+    <tr><th>类型</th><th>信源</th><th>关键引用</th></tr>
+    <tr>
+      <td><span class="tag tag-info">数据基础</span></td>
+      <td><strong>westock-data</strong></td>
+      <td>market-overview / sector ranking / changedist / quote（沪指3952.13/2374涨3030跌/元件20D+200.98亿/通信设备20D+137.38亿/半导体20D-273亿等核心数据）。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">题材级</span></td>
+      <td><strong>盘前纪要（公众号）</strong></td>
+      <td>地产政策预期升温+传媒出版催化+算力硬件资金共识延续；主力席位动向+连板股封单一览。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">事件级</span></td>
+      <td><strong>纪要研报中心（公众号）</strong></td>
+      <td>① 费半+2%新高/存储闪迪+6.82%映射AI硬件链<br>② 华为Atlas 950算力催化<br>③ 房地产政策预期/出版传媒产业动向。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">个股级</span></td>
+      <td><strong>调研纪要（公众号/雪球）</strong></td>
+      <td>① <strong>中际旭创/新易盛</strong> 1.6T订单Q3-Q4加速、20D资金+9.66%/+13.5%<br>② <strong>沪电/生益</strong> PCB/CCL供需紧张、AI服务器订单可见度强<br>③ <strong>我爱我家/新华文轩</strong> 政策线题材活跃（9/22涨停）。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">外盘</span></td>
+      <td><strong>证券时报/CNBC/CME</strong></td>
+      <td>9/22 纳指+0.45%新高/费半+2%/存储链飙涨；现货金4359.95(+0.38%)；美油89.85(-2.73%⚠️口径差)；美元100.54；美伊纽约会晤谈霍尔木兹重开。</td>
+    </tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>本报告由 WorkBuddy「每日盘前策略」自动化系统生成 · 数据基准日2026-09-22收盘<br>
+  报告仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>
+  © 2026 阿Q量化研究体系 · v4.2 八模块精简版</p>
+</div>
+
+</div>
+</body>
+</html>
