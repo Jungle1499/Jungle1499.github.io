@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 - 2026年9月25日</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a7a;
+    --border: #e0e4e8;
+    --primary: #1a237e;
+    --primary-light: #3949ab;
+    --accent: #0d47a1;
+    --up: #c62828;
+    --up-light: #e53935;
+    --down: #2e7d32;
+    --warn: #e65100;
+    --success: #1565c0;
+    --gold: #f57c00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  /* 标题区 */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.25);
+  }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .header .date { font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
+  .header .song { font-size: 13px; opacity: 0.75; font-style: italic; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; margin-top: 12px; }
+  /* 卡片 */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 20px; }
+  /* 核心摘要 */
+  .summary-box {
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--primary);
+  }
+  .summary-box h4 { font-size: 14px; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
+  .summary-box p { font-size: 13.5px; color: var(--text); line-height: 1.8; }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-up { background: rgba(198,40,40,0.12); color: var(--up); }
+  .tag-down { background: rgba(46,125,50,0.12); color: var(--down); }
+  .tag-warn { background: rgba(230,81,0,0.12); color: var(--warn); }
+  .tag-info { background: rgba(21,101,192,0.12); color: var(--success); }
+  /* 决策逻辑链 */
+  .logic-chain { display: flex; flex-direction: column; gap: 12px; }
+  .logic-item {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+  }
+  .logic-item .step {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .logic-item .step span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }
+  .logic-item .text { font-size:13px; color: var(--text); }
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: #fafbfd; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .warn-text { color: var(--warn); font-weight: 600; }
+  /* 共识度表（板块表） */
+  .sector-table { font-size: 12px; }
+  .sector-table th, .sector-table td { padding: 10px 6px; }
+  .sector-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .score {
+    display: inline-block;
+    min-width: 36px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .score-mid { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+  .score-low { background: linear-gradient(135deg, #757575, #9e9e9e); }
+  .consensus-vhigh { color: var(--up); font-weight: 700; }
+  .consensus-high { color: var(--up-light); font-weight: 600; }
+  .consensus-mid { color: var(--gold); font-weight: 600; }
+  .consensus-low { color: var(--text-secondary); }
+  .stock-bold { font-weight: 700; color: var(--text); }
+  /* 风险模块 */
+  .risk-box {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--warn);
+  }
+  .risk-box h4 { font-size: 13px; color: var(--warn); margin-bottom: 6px; }
+  .calendar-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--success);
+  }
+  .calendar-box h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
+  .discipline-box {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 4px solid #7b1fa2;
+  }
+  .discipline-box h4 { font-size: 13px; color: #7b1fa2; margin-bottom: 6px; }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 20px 0;
+  }
+  ul { padding-left: 20px; }
+  ul li { font-size: 13.5px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+<!-- WKBUILD:panqian-20260925 -->
+
+<!-- 标题区 -->
+<div class="header">
+  <h1>📊 每日盘前策略</h1>
+  <div class="date">2026年9月25日 · 周五 · 07:00 盘前</div>
+  <div class="song">
+    🎵 《退潮时才知道谁在裸泳》<br>
+    <span style="opacity:0.85">— 献给在退潮期守住底仓、拒绝抄底的纪律 —</span><br>
+    <em style="opacity:0.7">"只有当潮水退去的时候，才知道是谁在裸泳。"</em><br>
+    <small style="opacity:0.6">—— 沃伦·巴菲特</small>
+  </div>
+</div>
+
+<!-- 📌 核心摘要 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📌</span>核心摘要</div>
+
+  <div class="summary-box">
+    <h4>承接昨日交易日志（9/24 周四 · 退潮确认）</h4>
+    <p>
+      昨日（9/24）盘前误判为"分歧日 P0→P1"，实际走成 <strong>退潮</strong>：沪指 <strong>3888.37（-1.22%）</strong>、深成 13316.97（-2.34%）、创业板 3288.95（-2.68%）、科创50 1621.87（-2.35%）、沪深300 4439.14（-1.73%）、北证50 1055.74（-1.70%）；两市成交 <strong>1.65万亿</strong>（缩量至10日均量89%），<strong>1120涨/4306跌</strong>（占比20%）、涨停53/跌停16、ADJ <strong>19.86 冰点</strong>。前期"真趋势双正"的AI硬件链全线破位（元件-4.48%/通信设备-3.11%/玻璃玻纤-4.36%/半导体-2.59%），20日资金全线深负 → ㊹豁免失效、㊸禁多恢复。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color:var(--warn)">
+    <h4 style="color:var(--warn)">盘中少数韧性板块（防御/商品驱动档）</h4>
+    <p>
+      ① <strong>煤炭/焦炭逆势</strong>：焦炭Ⅱ +1.48%（云煤能源涨停）、煤炭开采 +0.57%（辽宁能源+3.7%），焦炭 5日+3.80亿/20日+7.68亿 <span class="up">双正真趋势</span>；② <strong>银行红利压舱</strong>：国有大行 +0.64%（建设银行+1.39%）、城商行 +0.81%；③ <strong>出版/教育</strong>：出版 +0.49%（新华传媒涨停，5日+1.44亿/20日+10.40亿双正）。其余板块近乎全绿，符合退潮特征。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-left-color:var(--up)">
+    <h4 style="color:var(--up)">两重悬顶压制（利空档）</h4>
+    <p>
+      ① <strong>美联储加息预期飙升</strong>：CME 显示10月议息会议加息25bp概率 <strong>&gt;70%</strong>（前一日55%），10Y美债收益率 <strong>5.13%</strong>（破5.1%）、2Y <strong>4.91%</strong>，美债遭砸盘 → 全球成长股估值分母持续承压；② <strong>AI硬件链破位 + 美股齐跌</strong>：隔夜（北京时间9/24凌晨）道指-0.68%/纳指-1.13%/标普-0.75%/费半-1.23%（Coherent-3%+/博通-2.62%/闪迪-3.73%），OpenAI与Anthropic两巨头CEO呼吁放缓AI前沿 → 科技情绪受挫；中概金龙-1.43%（阿里-4.75%）；<strong>国际金价大跌</strong> → 贵金属窗口关闭。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color:var(--down)">
+    <h4 style="color:#2e7d32">情绪周期定位：退潮延续（P3退潮 · 非反转 · 非冰点修复）</h4>
+    <p>
+      规则55 regime = <strong>退潮日</strong>（9/24 跌家4306 &gt; 2×涨家1120，且涨停53 &lt; 60，板块宽度"上涨板块&lt;20%"）。<strong>规则58 单向失真熔断连续成立</strong>（多方向上限砍半≤3、总仓下调5pcts）。前期主线（光通信/PCB/玻纤）已破位，㊹真趋势豁免失效。<strong>今日属退潮第二日，方向表整体降权，多≤3板块，总仓25-30%防御</strong>，等企稳信号（竞价广度&gt;50%且指数高开）再加仓。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color:#7b1fa2">
+    <h4 style="color:#7b1fa2">今日展望（200字）</h4>
+    <p>
+      沪指支撑 <strong>3858（布林下轨）</strong> / 压力 <strong>3926（MA20）</strong>。期望路径：小幅低开→退潮延续缩量磨底→煤炭/银行防御压舱、双正小板块（出版/焦炭）试错→成交维持1.65万亿以下→沪指考验3858支撑。风险路径：竞价集体低开&gt;1%且4300+下跌→铁律A触发紧急降仓10pcts；加息预期+美债破5.1%压制成长。总仓位 <strong>25-30%</strong>（退潮防御，较昨日50-60%预判大幅下调），主线=煤炭/银行防御 + 出版/焦炭双正小板块试错；AI硬件链/资源/医药/白酒全面回避。
+    </p>
+  </div>
+
+  <div>
+    <span class="tag tag-down">退潮确认</span>
+    <span class="tag tag-warn">加息预期&gt;70%</span>
+    <span class="tag tag-warn">美债破5.1%</span>
+    <span class="tag tag-up">煤炭/出版双正</span>
+    <span class="tag tag-info">规则58熔断</span>
+  </div>
+</div>
+
+<!-- 🔗 决策逻辑链 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🔗</span>决策逻辑链</div>
+  <div class="logic-chain">
+
+    <div class="logic-item">
+      <div class="step"><span>①</span>数据→分析</div>
+      <div class="text">
+        <strong>9/24 全市场普跌</strong>：1120涨/4306跌（占比20%）、涨停53/跌停16、ADJ 19.86冰点；<strong>前期主线AI硬件链破位</strong>——元件 -4.48%（20日主力 -348亿）、通信设备 -3.11%（20日 -1128亿）、玻璃玻纤 -4.36%（20日 -141亿）、半导体 -2.59%（20日 -5795亿）、消费电子 -2.84%（20日 -1505亿）。<br>
+        → <strong>㊹真趋势豁免失效、㊸禁多恢复</strong>：所有"双正"已转为深负，退潮确认（非分歧日）。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>②</span>数据→分析</div>
+      <div class="text">
+        <strong>隔夜美股齐跌</strong>（北京时间9/24凌晨）：道指-0.68%/纳指-1.13%/标普-0.75%，费半 -1.23%（Coherent-3%+/博通-2.62%/闪迪-3.73%，光通信 Coherent/康宁-3%+）；<br>
+        <strong>美债收益率飙升</strong>：10Y +15.8bp 至 <strong>5.13%</strong>、2Y +13.1bp 至 4.91%；CME 10月加息25bp概率 <strong>&gt;70%</strong>（前一日55%）；<strong>国际金价大跌</strong>。<br>
+        → 校准③ <strong>不触发</strong>（费半未反弹）、㊲贵金属修复窗口关闭、加息敏感型（半导体/医药/白酒）回避。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>③</span>数据→分析</div>
+      <div class="text">
+        <strong>逆势韧性板块扫描</strong>（门禁1/2/3 三分类交叉）：申万 + 同花顺881 + 概念三套口径一致显示<strong>近乎全绿</strong>，唯一红盘集中在防御/商品链——焦炭Ⅱ（申万+1.48%/同花顺未单列但资金双正）、煤炭开采（同花顺+0.61%/申万+0.57%）、银行（申万国有大行+0.64%）、出版（申万+0.49%/同花顺文化传媒-0.56%口径差，但出版881细分双正）。<br>
+        → <strong>焦炭 5D+3.80亿/20D+7.68亿 双正</strong>（㊹真趋势豁免，退潮降档）；其余深负（㊸）。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>④</span>判断</div>
+      <div class="text">
+        <strong>退潮延续，多≤3（规则58熔断）</strong>：前期主线已破位，今日仅防御（煤炭/银行）+ 双正小板块（出版/焦炭）可给"中性偏多/试错"；AI硬件链、资源（贵金属/工业金属）、医药、白酒、证券一律<strong>回避</strong>。<br>
+        <strong>仓位天花板25-30%</strong>：较昨日预判50-60%大幅下调，等企稳信号（竞价广度&gt;50% + 指数高开）再加仓。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>⑤</span>行动</div>
+      <div class="text">
+        <strong>今日操作</strong>：
+        ① 防御底仓：<strong>煤炭/焦炭（云煤能源/辽宁能源/中国神华）+ 银行红利（建设银行/重庆银行/农业银行）</strong>，合计≤8-10%压舱；
+        ② 小板块试错：<strong>出版（新华传媒/凤凰传媒/科德教育）</strong>≤2%，仅回踩低吸；
+        ③ 高位回避（禁多）：半导体/通信设备CPO/元件PCB/玻璃玻纤/消费电子/贵金属/工业金属/光伏/电池/医药/白酒/证券；
+        ④ 9:25竞价复核<strong>铁律A</strong>（集体低开&gt;1%+4300下跌→紧急降仓10pcts）。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ⚡ 盘前30秒速览 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚡</span>盘前30秒速览</div>
+  <table>
+    <tr><td>📉 <strong>沪指支撑/压力</strong></td><td>支撑 <span class="down">3858</span>(布林下轨) / 压力 <span class="up">3926</span>(MA20)</td></tr>
+    <tr><td>📊 <strong>成交警戒线</strong></td><td>反弹需维持 ≥1.8万亿；9/24仅 <span class="warn-text">1.65万亿</span>（缩量至10日均量89%）</td></tr>
+    <tr><td>🔥 <strong>9/24 主力资金</strong></td><td>净流出居前：元件 -89.5亿 / 通信设备 -96.5亿 / 半导体 -94.8亿 / 玻璃玻纤 -22.6亿；防御流入：焦炭 +4.70亿 / 国有大行 +3.96亿</td></tr>
+    <tr><td>🌍 <strong>美股（9/24收盘）</strong></td><td>道指-0.68% / 纳指-1.13% / 标普-0.75% / <span class="down">费半-1.23%</span></td></tr>
+    <tr><td>💰 <strong>油价（布油）</strong></td><td><span class="up">+3%反弹</span>（能源冲击+地缘），WTI同步反弹</td></tr>
+    <tr><td>📈 <strong>美债收益率</strong></td><td><span class="warn-text">10Y 5.13%（破5.1%新高）</span> / 2Y 4.91%（+13bp）</td></tr>
+    <tr><td>🎯 <strong>10月加息概率</strong></td><td><span class="warn-text">&gt;70%</span>（CME，前一日55%）— 加息预期升温</td></tr>
+    <tr><td>⚠️ <strong>退潮信号</strong></td><td>跌停16（&gt;10退潮加速）/ ADJ 19.86冰点 / 上涨板块&lt;20%</td></tr>
+    <tr><td>🎯 <strong>建议仓位</strong></td><td><strong>25-30%</strong>（退潮防御，较昨日预判大幅下调）</td></tr>
+    <tr><td>📅 <strong>事件日历</strong></td><td>国庆长假前避险窗口 / 美联储10月议息（加息预期&gt;70%）/ 9月PMI月底公布</td></tr>
+  </table>
+</div>
+
+<!-- 🌍 隔夜外盘 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🌍</span>隔夜外盘（数据截至9/24美股收盘·北京时间9/24凌晨）</div>
+  <table>
+    <tr><th>分类</th><th>品种</th><th>收盘</th><th>涨跌</th><th>解读</th></tr>
+    <tr><td rowspan="3"><strong>美股</strong></td><td>道琼斯</td><td>51,511.59</td><td class="down">-0.68%</td><td rowspan="3">三大指数齐跌，纳指止步四连涨；麦当劳-4.79%/谷歌-3.80%领跌蓝筹。</td></tr>
+    <tr><td>标普500</td><td>7,706.03</td><td class="down">-0.75%</td><td></td></tr>
+    <tr><td>纳斯达克</td><td>26,936.04</td><td class="down">-1.13%</td><td></td></tr>
+    <tr><td><strong>半导体</strong></td><td>费城半导体（SOX）</td><td>—</td><td class="down">-1.23%</td><td>Coherent-3%+/博通-2.62%/闪迪-3.73%/美光-2.22%；"大空头"贝里加码做空美光警告周期逆转。</td></tr>
+    <tr><td rowspan="2"><strong>中概股</strong></td><td>纳斯达克金龙</td><td>—</td><td class="down">-1.43%</td><td rowspan="2">阿里-4.75%/百度-2.87%/网易-1.47%；万得中概科技龙头-3.21%。</td></tr>
+    <tr><td>阿里/百度ADR</td><td>—</td><td class="down">-4.75% / -2.87%</td><td></td></tr>
+    <tr><td rowspan="3"><strong>商品</strong></td><td>布伦特原油</td><td>—</td><td class="up">+3%反弹</td><td>能源冲击（中东/供给）+ 美债收益率上行共振；WTI同步反弹。</td></tr>
+    <tr><td>WTI原油</td><td>—</td><td class="up">反弹</td><td>地缘溢价支撑，利好煤炭/油气商品链防御。</td></tr>
+    <tr><td>COMEX黄金</td><td>—</td><td class="down">大跌</td><td>9/23国际贵金属价格大跌（金银齐跌）→ ㊲贵金属修复窗口关闭，回避。</td></tr>
+    <tr><td><strong>美债</strong></td><td>10Y/2Y收益率</td><td>5.13% / 4.91%</td><td class="warn-text">+15.8bp / +13.1bp</td><td>美债遭砸盘，5年期国债拍卖需求疲软（投标倍数2.21）；加息预期升温核心驱动。</td></tr>
+    <tr><td><strong>汇率</strong></td><td>美元指数</td><td>走强</td><td>—</td><td>美联储理事巴尔"通胀风险上升、大概率继续加息"表态 → 美元走强压制风险资产。</td></tr>
+  </table>
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:var(--warn)"><strong>📡 关键信号解读</strong>：
+    ① "美股齐跌 + 美债破5.1% + 加息概率&gt;70%"的组合 → <strong>全球risk-off</strong>，对应A股的板块跷跷板：防御/商品↑ 高估成长↓；
+    ② 费半-1.23%（Coherent/康宁-3%+）映射<strong>负面</strong>，A股AI硬件链（通信/CPO/元件/玻纤）继续承压，校准③不触发、不享中性偏多；
+    ③ <strong>建议操作</strong>：退潮期守住煤炭/银行防御底仓，双正小板块（出版/焦炭）试错≤2-3%；AI硬件链/资源/医药/白酒/证券一律回避，等企稳信号。
+    </p>
+  </div>
+</div>
+
+<!-- 📊 市场全景 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📊</span>市场全景（9/24收盘·退潮确认）</div>
+  <h4 style="font-size:13px; color:var(--primary); margin-bottom:8px">📈 四大指数</h4>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>特征</th></tr>
+    <tr><td>上证指数</td><td>3,888.37</td><td class="down">-1.22%</td><td>失守3900，成交9582亿缩量；布林下轨3858为关键支撑</td></tr>
+    <tr><td>深证成指</td><td>13,316.97</td><td class="down">-2.34%</td><td>跌幅居前，成长板块集体杀跌</td></tr>
+    <tr><td>创业板指</td><td>3,288.95</td><td class="down">-2.68%</td><td>全天最弱，科技成长重灾区</td></tr>
+    <tr><td>科创50</td><td>1,621.87</td><td class="down">-2.35%</td><td>破1650，半导体权重拖累</td></tr>
+    <tr><td>沪深300</td><td>4,439.14</td><td class="down">-1.73%</td><td>大盘蓝筹相对抗跌但仍跌</td></tr>
+    <tr><td>北证50</td><td>1,055.74</td><td class="down">-1.70%</td><td>延续弱势</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🌡 涨跌分布（成交1.65万亿 · 缩量至10日均量89%）</h4>
+  <table>
+    <tr><th>指标</th><th>数值</th><th>含义</th></tr>
+    <tr><td>上涨家数</td><td>1120只（20%）</td><td>冰点阈值以下（历史26%交易日）</td></tr>
+    <tr><td>下跌家数</td><td><span class="down">4,306只</span></td><td>远超2×涨家数（退潮日判据成立）</td></tr>
+    <tr><td>涨停/跌停</td><td>53 / 16</td><td>跌停扩散（退潮加速期，&gt;10）</td></tr>
+    <tr><td>5%~7%跌幅</td><td>179只</td><td>中位杀跌主力</td></tr>
+    <tr><td>调整评分 ADJ</td><td>19.86</td><td>冰点（&lt;35），westock自动"情绪狂热"标签被广度证伪</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🏆 9/24 板块排行·主线轮动（申万+同花顺881双口径交叉）</h4>
+  <table>
+    <tr><th>板块</th><th>涨跌幅</th><th>主力净流入</th><th>领袖股</th></tr>
+    <tr><td>风电设备</td><td class="up">+1.25%</td><td>-6.34亿(5D) / -1.78亿(20D)</td><td>洛轴股份(+19.99%) / 但资金未跟进</td></tr>
+    <tr><td>纺织制造</td><td class="up">+1.54%</td><td>+0.60亿 / -5.56亿</td><td>华茂股份(+10.11%)</td></tr>
+    <tr><td>焦炭Ⅱ</td><td class="up">+1.48%</td><td class="up">+3.80亿(5D) / +7.68亿(20D) 双正</td><td>云煤能源(+10.04%) / <span class="up">㊹真趋势豁免</span></td></tr>
+    <tr><td>国有大型银行</td><td class="up">+0.64%</td><td class="down">-12.77亿(5D) / -29.11亿(20D)</td><td>建设银行(+1.39%) 防御吸金</td></tr>
+    <tr><td>出版</td><td class="up">+0.49%</td><td class="up">+1.44亿(5D) / +10.40亿(20D) 双正</td><td>新华传媒(+10.06%)</td></tr>
+    <tr><td>半导体</td><td class="down">-2.59%</td><td class="down">-94.8亿 / -5795亿(20D)</td><td>净流出居首！㊸禁多·退潮加速</td></tr>
+    <tr><td>通信设备</td><td class="down">-3.11%</td><td class="down">-144亿(5D) / -1128亿(20D)</td><td>㊸禁多·前期主线破位</td></tr>
+    <tr><td>元件PCB</td><td class="down">-4.48%</td><td class="down">-113亿(5D) / -348亿(20D)</td><td>㊹失效·前期主线破位</td></tr>
+    <tr><td>玻璃玻纤</td><td class="down">-4.36%</td><td class="down">-45.7亿(5D) / -141亿(20D)</td><td>电子布价格链退潮</td></tr>
+    <tr><td>贵金属</td><td class="down">-5.03%</td><td class="down">-37.7亿(5D) / -995亿(20D)</td><td>金价大跌·㊲窗口关闭</td></tr>
+  </table>
+
+  <div style="background:#f3e5f5; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:#7b1fa2">
+      <strong>主线轮动轨迹</strong>：<br>
+      9/21-9/23 光通信CPO/PCB/玻纤（㊹双正·P2）→ <strong>9/24 全线破位（退潮）</strong>：元件-4.48%/通信-3.11%/玻纤-4.36%/半导体-2.59%，20日资金深负 → ㊹豁免失效、㊸禁多恢复。<br>
+      <strong>结论</strong>：前期主线已瓦解，今日无新主线接棒，仅有防御（煤炭/银行）+ 双正小板块（出版/焦炭）逆势；等企稳信号（竞价广度&gt;50% + 指数高开）才考虑回补科技。
+    </p>
+  </div>
+</div>
+
+<!-- ⭐ 板块共识度与方向表 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⭐</span>板块共识度与方向表</div>
+
+  <div class="sector-wrap">
+  <table class="sector-table">
+    <tr>
+      <th>板块</th>
+      <th>评分</th>
+      <th>共识度</th>
+      <th>操作判断</th>
+      <th>建议仓位</th>
+      <th>核心策略</th>
+      <th>核心个股建议</th>
+    </tr>
+
+    <tr>
+      <td><strong>煤炭 / 焦炭（商品+能源驱动）</strong></td>
+      <td><span class="score">62</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>3-5%</td>
+      <td>焦炭 5日+3.80亿/20日+7.68亿 <span class="up">㊹真趋势双正</span>（退潮降档为中性偏多）；布油+3%反弹+能源冲击支撑商品链；退潮期不追高，等回踩。</td>
+      <td>
+        <span class="stock-bold">云煤能源(600792)</span>（焦炭·9/24涨停·双正龙头）<br>
+        <span class="stock-bold">辽宁能源(600758)</span>（煤炭开采·+3.7%）<br>
+        中国神华(601088)（煤炭防御压舱）<br>
+        <small style="color:var(--text-secondary)">📒 规则61/㊹：商品驱动+双正，退潮降档轻仓≤3-5%</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>银行红利 / 高股息防御</strong></td>
+      <td><span class="score score-mid">58</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>5-8%</td>
+      <td>退潮期高股息压舱；国有大行+城商行逆势红盘，但20日资金深负（㊸）→ <span class="warn-text">中性偏多·底仓·不追多</span>；建设银行9/24+1.39%。</td>
+      <td>
+        <span class="stock-bold">建设银行(601939)</span>（国有大行·+1.39%）<br>
+        <span class="stock-bold">重庆银行(601963)</span>（城商行·+2.04%）<br>
+        农业银行(601288)（大行防御）<br>
+        <small style="color:var(--text-secondary)">📎 保险备选：中国人保(601319)</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>出版 / 教育（双正小板块）</strong></td>
+      <td><span class="score score-mid">56</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>≤2%</td>
+      <td>出版 5日+1.44亿/20日+10.40亿 <span class="up">㊹双正</span>（退潮降档）；新华传媒涨停，但板块小、流动性有限 → 仅回踩低吸试错，禁追高。</td>
+      <td>
+        <span class="stock-bold">新华传媒(600825)</span>（出版·9/24涨停·双正）<br>
+        凤凰传媒(601928)（出版防御）<br>
+        科德教育(300192)（教育·+10.28%）<br>
+        <small style="color:var(--text-secondary)">⚠️ 小板块，仓位≤2%，仅试错</small>
+      </td>
+    </tr>
+
+  </table>
+  </div>
+
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:10px">
+    <p style="font-size:12.5px; color:var(--warn)">
+      <strong>⚠️ 回避板块</strong>（退潮·㊸深负 / ㊹失效 / 加息敏感）：
+      半导体（20日-5795亿🔴·㊸退潮加速）/ 通信设备CPO（20日-1128亿）/ 元件PCB（20日-348亿）/ 玻璃玻纤电子布（20日-141亿）/ 消费电子（20日-1505亿）/ 贵金属（20日-995亿+金价大跌·㊲关闭）/ 工业金属（20日-1976亿）/ 光伏（20日-882亿）/ 电池（20日-2033亿）/ 医药生物（化学制药20日-1441亿）/ 白酒（20日-413亿）/ 证券（20日-1481亿）/ 风电（5日&20日双负·㊸）/ 油气油运（20日负·中性偏空·不追空）。
+    </p>
+  </div>
+</div>
+
+<!-- 风险点 + 催化日历 + 止盈止损纪律 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚠️</span>风险点 + 催化日历 + 止盈止损纪律</div>
+
+  <div class="risk-box">
+    <h4>🚨 风险点（按重要性排序）</h4>
+    <ul>
+      <li><strong>美联储加息预期飙升</strong>：CME 10月加息25bp概率&gt;70%（前一日55%），10Y美债破5.13%、2Y 4.91% → 全球成长股估值分母持续承压，<strong>这是本周最大变量</strong>。</li>
+      <li><strong>退潮延续 + 铁律A冰点</strong>：9/24 ADJ 19.86冰点、4306跌、跌停16（&gt;10退潮加速）；若9/25竞价集体低开&gt;1%+4300下跌 → 触发铁律A紧急降仓10pcts。</li>
+      <li><strong>AI硬件链破位</strong>：费半隔夜-1.23%（Coherent/康宁-3%+），OpenAI/Anthropic CEO呼吁放缓AI前沿 → 科技情绪受挫，前期主线（光通信/PCB/玻纤）20日资金深负，㊹豁免失效。</li>
+      <li><strong>国际金价大跌</strong>：9/23贵金属价格大跌 → 贵金属㊲修复窗口关闭，持有黄金股需止损。</li>
+      <li><strong>缩量磨底</strong>：9/24成交1.65万亿（10日均量89%），若继续缩量至1.5万亿以下且无新主线 → 退潮延长。</li>
+      <li><strong>国庆长假前避险</strong>：临近长假，资金倾向降仓持币，节前最后一周波动可能加大。</li>
+    </ul>
+  </div>
+
+  <div class="calendar-box">
+    <h4>📅 催化日历（未来2周关键节点）</h4>
+    <table>
+      <tr><th>日期</th><th>事件</th><th>影响</th></tr>
+      <tr><td rowspan="2"><strong>9/25（今日）</strong></td><td>09:25 竞价广度 / 铁律A复核</td><td>若集体低开&gt;1%+4300下跌→紧急降仓10pcts</td></tr>
+      <tr><td>国庆长假前避险窗口开启</td><td>资金倾向降仓，节前波动加大</td></tr>
+      <tr><td><strong>9/30 附近</strong></td><td>9月制造业PMI公布</td><td>内需修复成色验证</td></tr>
+      <tr><td><strong>10月议息会议</strong></td><td>美联储利率决议（加息25bp概率&gt;70%）</td><td>本周最大变量，分母压力</td></tr>
+      <tr><td><strong>10月首周</strong></td><td>美国9月非农 / 通胀（PCE/CPI）</td><td>加息路径再校准</td></tr>
+    </table>
+    <p style="font-size:12px; margin-top:6px"><strong>📌 本周复盘（9/25-9/30）：</strong>护盘观察点=沪指能否守住3858（布林下轨）、量能能否放大至1.8万亿以上、跌停是否收敛至&lt;10只。竞价广度&gt;50% + 指数高开 → 可试探性回补防御；否则维持25-30%防御底仓。</p>
+  </div>
+
+  <div class="discipline-box">
+    <h4>🛡 止盈止损纪律（铁律A/B+个股风控）</h4>
+    <ul>
+      <li><strong>铁律A</strong>：四大指数集体低开&gt;1% + 4300只下跌 + 外盘冲击 = 触发<span class="warn-text">[紧急降仓10pcts]</span>（当前25-30%，触发后再降至15-20%）。9:25竞价必检。</li>
+      <li><strong>铁律B</strong>：单日沪指跌幅&gt;2% 或 跌停&gt;100只 = 降仓10pcts至15-20%。</li>
+      <li><strong>个股止损锚</strong>：云煤能源止损锚 5.2元（-10%）/ 辽宁能源 3.4元（-8%）/ 建设银行 8.8元（-5%）/ 新华传媒 7.0元（-10%破板即出）。</li>
+      <li><strong>不抄底纪律</strong>：退潮期所有前期主线（光通信/PCB/玻纤/半导体）破位，<strong>严禁接飞刀</strong>，等20日资金线转正 + 指数企稳信号。</li>
+      <li><strong>港股映射校验</strong>：9:25集合竞价 + 10:30盘中必检（防AH联动杀A股科技链）。</li>
+      <li><strong>不重仓追高</strong>：所有新开仓均需"确认信号+回踩入场"，不追竞价高开&gt;3%个股。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 数据来源/信源 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📚</span>信源引用（三大公众号+数据校验）</div>
+  <table>
+    <tr><th>类型</th><th>信源</th><th>关键引用</th></tr>
+    <tr>
+      <td><span class="tag tag-info">数据基础</span></td>
+      <td><strong>westock-data</strong></td>
+      <td>market-overview / changedist / sector ranking（申万二级·9/24全量） / quote（四大指数+科创50+沪深300+北证50）。双源交叉：同花顺881 WebFetch 二级行业榜。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">外盘</span></td>
+      <td><strong>证券时报/CNBC/CME</strong></td>
+      <td>9/24美股齐跌道-0.68%/纳-1.13%/标普-0.75%/费半-1.23%；10Y美债5.13%破5.1%；CME 10月加息概率&gt;70%；国际金价大跌。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">板块口径</span></td>
+      <td><strong>同花顺881（WebFetch）</strong></td>
+      <td>二级行业涨幅榜（风电+2.65%/煤炭+0.61%/银行+0.30%/出版文化传媒-0.56%）→ 门禁1/2/3 三分类交叉，确认退潮全绿、防御/双正小板块逆势。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">规则库</span></td>
+      <td><strong>fupan-rules · 规则55/58/㊸/㊹/㊲/规则61/64/66/73</strong></td>
+      <td>退潮日判定、单向失真熔断（多≤3/总仓-5pcts）、20日资金门控、真趋势豁免失效、贵金属窗口关闭、商品驱动豁免（焦炭双正）。</td>
+    </tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>本报告由 WorkBuddy「每日盘前策略」自动化系统生成 · 数据基准日2026-09-24收盘<br>
+  报告仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>
+  © 2026 阿Q量化研究体系 · v4.3 退潮防御版</p>
+</div>
+
+</div>
+</body>
+</html>
