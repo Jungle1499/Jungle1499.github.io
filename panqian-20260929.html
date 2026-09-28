@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 - 2026年9月29日</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a7a;
+    --border: #e0e4e8;
+    --primary: #1a237e;
+    --primary-light: #3949ab;
+    --accent: #0d47a1;
+    --up: #c62828;
+    --up-light: #e53935;
+    --down: #2e7d32;
+    --warn: #e65100;
+    --success: #1565c0;
+    --gold: #f57c00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  /* 标题区 */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.25);
+  }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .header .date { font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
+  .header .song { font-size: 13px; opacity: 0.75; font-style: italic; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; margin-top: 12px; }
+  /* 卡片 */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 20px; }
+  /* 核心摘要 */
+  .summary-box {
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--primary);
+  }
+  .summary-box h4 { font-size: 14px; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
+  .summary-box p { font-size: 13.5px; color: var(--text); line-height: 1.8; }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-up { background: rgba(198,40,40,0.12); color: var(--up); }
+  .tag-down { background: rgba(46,125,50,0.12); color: var(--down); }
+  .tag-warn { background: rgba(230,81,0,0.12); color: var(--warn); }
+  .tag-info { background: rgba(21,101,192,0.12); color: var(--success); }
+  /* 决策逻辑链 */
+  .logic-chain { display: flex; flex-direction: column; gap: 12px; }
+  .logic-item {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+  }
+  .logic-item .step {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .logic-item .step span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }
+  .logic-item .text { font-size: 13px; color: var(--text); }
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: #fafbfd; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .warn-text { color: var(--warn); font-weight: 600; }
+  /* 共识度表（板块表） */
+  .sector-table { font-size: 12px; }
+  .sector-table th, .sector-table td { padding: 10px 6px; }
+  .sector-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .score {
+    display: inline-block;
+    min-width: 36px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .score-mid { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+  .score-low { background: linear-gradient(135deg, #757575, #9e9e9e); }
+  .consensus-vhigh { color: var(--up); font-weight: 700; }
+  .consensus-high { color: var(--up-light); font-weight: 600; }
+  .consensus-mid { color: var(--gold); font-weight: 600; }
+  .consensus-low { color: var(--text-secondary); }
+  .stock-bold { font-weight: 700; color: var(--text); }
+  /* 风险模块 */
+  .risk-box {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--warn);
+  }
+  .risk-box h4 { font-size: 13px; color: var(--warn); margin-bottom: 6px; }
+  .calendar-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--success);
+  }
+  .calendar-box h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
+  .discipline-box {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 4px solid #7b1fa2;
+  }
+  .discipline-box h4 { font-size: 13px; color: #7b1fa2; margin-bottom: 6px; }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 20px 0;
+  }
+  ul { padding-left: 20px; }
+  ul li { font-size: 13.5px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+<!-- WKBUILD:panqian-20260929 -->
+
+<!-- 标题区 -->
+<div class="header">
+  <h1>📊 每日盘前策略</h1>
+  <div class="date">2026年9月29日 · 周二 · 07:00 盘前</div>
+  <div class="song">
+    🎵 投资箴言 — 杰西·利弗莫尔《股票作手回忆录》<br>
+    <span style="opacity:0.85">— 献给退潮期守住本金的交易者 —</span><br>
+    <em style="opacity:0.7">"在股市里，保住本金永远是第一位的；利润会自己照顾自己，但本金不会。"</em><br>
+    <small style="opacity:0.6">—— 杰西·利弗莫尔（Edwin Lefèvre 著）</small>
+  </div>
+</div>
+
+<!-- 📌 核心摘要 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📌</span>核心摘要</div>
+
+  <div class="summary-box">
+    <h4>承接昨日交易日志（2026-09-28 周一）</h4>
+    <p>
+      节后首日即<strong>系统性退潮·加速出清</strong>：沪指<span class="down">-1.67%</span>收3823.62，深证<span class="down">-3.44%</span>，创业板<span class="down">-4.53%</span>，科创50<span class="down">-4.06%</span>，沪深300<span class="down">-2.22%</span>；两市成交<strong>1.70万亿</strong>（缩量至10日均93%）。
+      <strong>898涨 / 4554跌</strong>（上涨占比仅16%）、涨停35 / <strong>跌停60</strong>、涨跌比0.20、ADJ_SCORE <strong>10.48（极冰点）</strong>、上涨板块&lt;20%。
+      前主线全面破位：通信设备<span class="down">-8.21%</span>／元件-6.80%／玻璃玻纤-6.93%／半导体-4.58%／贵金属-6.12%。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color:var(--warn)">
+    <h4 style="color:var(--warn)">节前边际亮点（防御视角·非反转信号）</h4>
+    <p>
+      ① <strong>逆势活口浮现</strong>：商用车+3.34%（江淮汽车涨停）、养殖业+2.03%、非白酒+1.73%、小家电+1.15%、银行+0.13%、煤炭+0.12%、电力+0.18% —— 资金在防御/消费/事件板块抱团；<br>
+      ② <strong>估值未破红线</strong>：中证全指PE_TTM分位79%（&lt;90%，规则⑭未触发）→ 仓位上限不被强制压制，但退潮下仍主动降；<br>
+      ③ <strong>隔夜中概金龙逆势</strong>：网易+5%／小马智行+4%／理想+2%，AH联动局部偏正。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-left-color:var(--up)">
+    <h4 style="color:var(--up)">两重悬顶压制（利空档）</h4>
+    <p>
+      ① <strong>全球risk-off共振</strong>：9/28美股道指-0.67%／标普-0.77%／纳指-0.92%／<span class="up">费半-2.67%</span>（ARM-8%、高通/英特尔-6%）；现货金<span class="down">-3.82%</span>、现货银-5%；<strong>10Y美债5.274%（2007年来最高）</strong>、30Y 5.583%（2004最高）→ 分母+避险双压；<br>
+      ② <strong>国庆长假外盘/地缘不确定性</strong>：10/1-10/7休市7天，期间美联储表态、伊朗霍尔木兹谈判、9月非农(10/3)均不可控 → 节前避险+主力降仓过节。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color:var(--down)">
+    <h4 style="color:#2e7d32">情绪周期定位：退潮期（P3退潮·加速出清）</h4>
+    <p>
+      ADJ 10.48极冰点 + 跌停60 + 上涨板块&lt;20% + 前主线（通信/元件/玻纤/半导体/贵金属）资金线与价格双破位 → <strong>非冰点修复、非反转，纯退潮</strong>。
+      <strong>规则58单向失真熔断连续成立</strong>（9/25 + 9/28 连续两交易日「空≥80% ∧ 多≤30%」）→ 多方向砍半、降仓5pct；叠加国庆长假 → 节前控仓。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color:#7b1fa2">
+    <h4 style="color:#7b1fa2">今日展望（200字）</h4>
+    <p>
+      沪指支撑<strong>3800</strong>（整数关+布林下轨3838附近，9/28最低3806.67）／压力<strong>3878</strong>（9/28开盘缺口）。
+      <strong>期望路径</strong>：低开惯性下探→3800整数关争夺→逆势防御板块（商用车/银行/煤炭/消费）局部活跃→成交&lt;1.7万亿缩量磨底。
+      <strong>风险路径</strong>：铁律A触发（集体低开&gt;1%+外盘冲击）→紧急降仓；若破3800→考验3750（52周低3741）。
+      <strong>总仓位20-25%</strong>（节前控仓·铁律A待9:25复核），主线=退潮防御（商用车P1活口+银行/煤炭压舱+消费避险），前主线一律回避。
+    </p>
+  </div>
+
+  <div>
+    <span class="tag tag-down">退潮期·加速出清</span>
+    <span class="tag tag-warn">国庆前避险</span>
+    <span class="tag tag-down">全球risk-off</span>
+    <span class="tag tag-info">防御压舱</span>
+    <span class="tag tag-info">多≤3·总仓20-25%</span>
+  </div>
+</div>
+
+<!-- 🔗 决策逻辑链 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🔗</span>决策逻辑链</div>
+  <div class="logic-chain">
+
+    <div class="logic-item">
+      <div class="step"><span>①</span>数据→分析</div>
+      <div class="text">
+        <strong>9/28宽度</strong>：898涨/4554跌（占比16%）/涨跌比0.20/涨停35/跌停60/ADJ 10.48（极冰点）/上涨板块&lt;20%；<br>
+        <strong>技术</strong>：MACD死叉向下发散、RSI6=25.2（超卖）、布林下轨3838、均线空头排列 → <strong>退潮加速出清确认，非分歧日、非冰点修复</strong>。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>②</span>数据→分析</div>
+      <div class="text">
+        <strong>板块资金20日线</strong>：半导体-609.8亿/通信-219.7亿/元件-103.6亿/贵金属-108.8亿/工业金属-220.6亿/电池-221.3亿/证券-163.4亿 → 前主线全面资金出逃，<strong>规则㊸门控禁多</strong>；<br>
+        <strong>仅双正活口</strong>：商用车（5D+21.7亿/20D+18.1亿）、非白酒（5D+2.1亿/20D+10.9亿）、饮料乳品（5D+4.3亿/20D+4.1亿）→ 真趋势豁免（㊹）仅限防御/消费。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>③</span>数据→分析</div>
+      <div class="text">
+        <strong>隔夜（9/28美股）</strong>：道指-0.67%/标普-0.77%/纳指-0.92%/<span class="up">费半-2.67%</span>（ARM-8%、高通/英特尔-6%）；现货金<span class="down">-3.82%</span>、现货银-5%；<strong>10Y美债5.274%（2007最高）</strong>、布油105.28（地缘）；<br>
+        <strong>国庆长假</strong>：10/1-10/7休市7天 → 分母压力+长假避险，节前降仓过节。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>④</span>判断</div>
+      <div class="text">
+        <strong>主线=退潮防御</strong>：仅商用车（P1逆势活口）/银行红利+煤炭（防御压舱）/非白酒饮料（消费避险）可轻仓；通信/元件/玻纤/半导体/贵金属/电池<strong>全面回避</strong>。<br>
+        <strong>规则58熔断</strong>（9/25+9/28连续空≥80%）→ 多≤3、降仓5pct；叠加节前 → <strong>总仓20-25%</strong>。三阶段v3.0第一层：涨幅前三=商用车/养殖/非白酒 → P1候选。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>⑤</span>行动</div>
+      <div class="text">
+        <strong>今日操作</strong>：
+        ① 节前控仓<strong>20-25%</strong>；② 逆势活口（江淮汽车/会稽山）<strong>仅回踩低吸不追高</strong>；③ 银行红利（交通/招商）压舱5-8%、煤炭（郑州煤电/神华）3-5%；④ 高位题材（通信/半导体/贵金属/玻纤）<strong>一律不接飞刀</strong>；⑤ 铁律A触发（9:25集体低开&gt;1%）即再降仓10pct。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ⚡ 盘前30秒速览 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚡</span>盘前30秒速览</div>
+  <table>
+    <tr><td>📉 <strong>沪指支撑/压力</strong></td><td>支撑 <span class="down">3800</span>(整数关+布林下轨3838·9/28最低3806) / 压力 <span class="up">3878</span>(9/28开盘缺口)</td></tr>
+    <tr><td>📊 <strong>成交警戒线</strong></td><td>缩量&lt;1.7万亿（9/28为1.70万亿/93%均量）；放量&gt;1.8万亿方确认止跌</td></tr>
+    <tr><td>🔥 <strong>9/28主力资金</strong></td><td>逆势净流入：商用车+6.44亿/电力+6.14亿/非白酒+4.43亿；<span class="down">出逃居首：通信-166亿/半导体-152.8亿/元件-93.2亿</span></td></tr>
+    <tr><td>🌍 <strong>美股（9/28收盘）</strong></td><td>道指-0.67% / 标普-0.77% / 纳指-0.92% / <span class="up">费半-2.67%</span></td></tr>
+    <tr><td>💰 <strong>油价（9/28）</strong></td><td>WTI 92.60(+0.21%) / 布油105.28(<span class="up">+0.92%</span>) 地缘高位（霍尔木兹谈判反复）</td></tr>
+    <tr><td>📈 <strong>美债收益率</strong></td><td><span class="warn-text">10Y 5.274%（2007最高）</span> / 30Y 5.583%（2004最高）→ 降息预期推后·分母承压</td></tr>
+    <tr><td>🥇 <strong>贵金属</strong></td><td>现货金<span class="down">-3.82%</span>报4121（隔夜）/ 现货银-5% → <span class="warn-text">㊲修复窗口关闭·贵金属确认空</span></td></tr>
+    <tr><td>🎯 <strong>利率/加息预期</strong></td><td>美债飙升→年内再加息预期升温（CME）；FOMC 9/17已+25bp，点阵图偏鹰</td></tr>
+    <tr><td>⚠️ <strong>本周解禁压力</strong></td><td>节前(9/29-30)解禁规模有限（长假前一般放缓·具体以交易所披露为准）</td></tr>
+    <tr><td>🎯 <strong>建议仓位</strong></td><td><strong>20-25%</strong>（节前控仓·铁律A待9:25复核）</td></tr>
+    <tr><td>📅 <strong>事件日历</strong></td><td>今日节前倒数第2交易日 / 9/30最后交易日 / 10/1-7国庆休市 / 10/8节后首日</td></tr>
+  </table>
+</div>
+
+<!-- 🌍 隔夜外盘 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🌍</span>隔夜外盘（数据截至9/28美股收盘）</div>
+  <table>
+    <tr><th>分类</th><th>品种</th><th>收盘</th><th>涨跌</th><th>解读</th></tr>
+    <tr><td rowspan="3"><strong>美股</strong></td><td>道琼斯</td><td>51,481.51</td><td class="down">-0.67%</td><td rowspan="3">特朗普拒绝伊朗"7日霍尔木兹计划"，避险情绪升温；标普十一大板块八跌三涨。</td></tr>
+    <tr><td>标普500</td><td>7,683.69</td><td class="down">-0.77%</td><td></td></tr>
+    <tr><td>纳斯达克</td><td>26,820.38</td><td class="down">-0.92%</td><td></td></tr>
+    <tr><td><strong>半导体</strong></td><td>费城半导体（SOX）</td><td>—</td><td class="down">-2.67%</td><td>ARM-8%/高通-6%/英特尔-6%/SK海力士-5%/美光-2.61%/闪迪-3.65%；英伟达+1.68%(回购1500亿)/TSMC+0.50%独撑。</td></tr>
+    <tr><td><strong>中概</strong></td><td>纳斯达克金龙</td><td>—</td><td class="up">逆势涨</td><td>网易+5%/小马智行+4%/理想+2%/哔哩哔哩+2%；阿里/百度/小米/比亚迪下跌。</td></tr>
+    <tr><td rowspan="2"><strong>商品</strong></td><td>WTI原油</td><td>92.60</td><td class="up">+0.21%</td><td>地缘（霍尔木兹）支撑，谈判反复油价高位震荡。</td></tr>
+    <tr><td>布伦特原油</td><td>105.28</td><td class="up">+0.92%</td><td>重返105上方，通胀链未消。</td></tr>
+    <tr><td><strong>贵金属</strong></td><td>现货黄金</td><td>4,121.42</td><td class="down">-3.82%</td><td>现货银-5%；避险属性失效，获利了结+美元强。</td></tr>
+    <tr><td><strong>美债</strong></td><td>10Y / 30Y</td><td>5.274% / 5.583%</td><td class="warn-text">2007/2004最高</td><td>通胀担忧+抛售美债，全球成长股分母承压。</td></tr>
+  </table>
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:var(--warn)"><strong>📡 关键信号解读</strong>：
+    ① "美股跌+费半-2.67%+金银大跌+美债5.27%"组合 → <strong>A股9/29分母+避险双压，开盘承压</strong>；
+    ② <strong>贵金属修复窗口彻底关闭</strong>（㊲）：隔夜金-3.82% → 贵金属确认空，前主线贵金属退潮延续；
+    ③ <strong>校准③不触发</strong>：费半-2.67%未反弹 → CPO/半导体继续空（㊸门控）；
+    ④ 地缘油价高位（布油105）但<strong>节前不宜追油气</strong>；中概金龙逆势（网易+5%）局部AH偏正但有限；
+    ⑤ <strong>节前最后2交易日+长假外盘不确定性 → 控仓过节，不博弈方向</strong>。
+    </p>
+  </div>
+</div>
+
+<!-- 📊 市场全景 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📊</span>市场全景（9/28收盘·退潮加速出清）</div>
+  <h4 style="font-size:13px; color:var(--primary); margin-bottom:8px">📈 四大指数 + 沪深300/北证50</h4>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>特征</th></tr>
+    <tr><td>上证指数</td><td>3,823.62</td><td class="down">-1.67%</td><td>失守3850，最低3806.67；成交9582亿</td></tr>
+    <tr><td>深证成指</td><td>12,858.75</td><td class="down">-3.44%</td><td>跌幅居前，最低12801</td></tr>
+    <tr><td>创业板指</td><td>3,139.82</td><td class="down">-4.53%</td><td>领跌，5日新低3868只</td></tr>
+    <tr><td>科创50</td><td>1,555.98</td><td class="down">-4.06%</td><td>破位1550，20日-6.39%</td></tr>
+    <tr><td>沪深300</td><td>4,340.76</td><td class="down">-2.22%</td><td>大盘蓝筹同步杀，跌幅&gt;2%</td></tr>
+    <tr><td>北证50</td><td>1,026.57</td><td class="down">-2.76%</td><td>小盘流动性收缩</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🌡 涨跌分布（成交1.70万亿 + 缩量7%）</h4>
+  <table>
+    <tr><th>指标</th><th>数值</th><th>含义</th></tr>
+    <tr><td>上涨家数</td><td>898只（16%）</td><td>极冰点阈值以下</td></tr>
+    <tr><td>下跌家数</td><td><span class="down">4,554只</span></td><td>占比81.77%，远超4300铁律A红线</td></tr>
+    <tr><td>涨停/跌停</td><td>35 / <span class="down">60</span></td><td>跌停扩散（非百股系统性崩，但退潮明确）</td></tr>
+    <tr><td>5日/20日新低</td><td>3,868 / 1,777只</td><td>中位杀跌主力，破位扩散</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🏆 9/28板块排行·主线轮动（逆势 vs 重挫）</h4>
+  <table>
+    <tr><th>板块</th><th>涨跌幅</th><th>主力净流入</th><th>领袖股</th></tr>
+    <tr><td>商用车</td><td class="up">+3.34%</td><td>+6.44亿</td><td>江淮汽车(+9.99%) / 宇通客车</td></tr>
+    <tr><td>养殖业</td><td class="up">+2.03%</td><td>+5.16亿</td><td>东瑞股份(+10.03%)</td></tr>
+    <tr><td>非白酒</td><td class="up">+1.73%</td><td>+4.43亿</td><td>会稽山(+9.99%)</td></tr>
+    <tr><td>小家电</td><td class="up">+1.15%</td><td>+1.51亿</td><td>九阳股份(+10.01%)</td></tr>
+    <tr><td>银行</td><td class="up">+0.13%</td><td>-3.08亿</td><td>交通银行(+0.4%) 防御吸金</td></tr>
+    <tr><td>煤炭开采</td><td class="up">+0.12%</td><td>+1.99亿</td><td>郑州煤电(+4.08%)</td></tr>
+    <tr><td>通信设备</td><td class="down">-8.21%</td><td class="down">-166.0亿</td><td>资金出逃居首！规避</td></tr>
+    <tr><td>非金属材料</td><td class="down">-8.34%</td><td class="down">-4.39亿</td><td>前强补跌</td></tr>
+    <tr><td>玻璃玻纤</td><td class="down">-6.93%</td><td class="down">-25.5亿</td><td>前主线破位</td></tr>
+    <tr><td>元件（PCB）</td><td class="down">-6.80%</td><td class="down">-93.2亿</td><td>AI硬件链集体出货</td></tr>
+    <tr><td>贵金属</td><td class="down">-6.12%</td><td class="down">-13.2亿</td><td>隔夜金-3.82%→确认空</td></tr>
+    <tr><td>半导体</td><td class="down">-4.58%</td><td class="down">-152.8亿</td><td>20日-609.8亿，不接飞刀</td></tr>
+  </table>
+
+  <div style="background:#f3e5f5; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:#7b1fa2">
+      <strong>主线轮动轨迹</strong>：<br>
+      9/21-9/23 光通信CPO/玻纤/PCB主线（P2持有）→ 9/24-9/25 <span class="down">退潮（煤炭/银行防御）</span> → 9/28 <strong>加速出清</strong>（前主线全线崩·仅商用车/消费/防御逆势）→ 9/29 退潮延续+国庆前控仓<br>
+      <strong>结论</strong>：AI硬件链（通信/元件/玻纤/半导体）资金线20日深负，退潮未止；节前仅防御+逆势活口可轻仓，方向表整体降权（多≤3）。
+    </p>
+  </div>
+</div>
+
+<!-- ⭐ 板块共识度与方向表 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⭐</span>板块共识度与方向表</div>
+
+  <div class="sector-wrap">
+  <table class="sector-table">
+    <tr>
+      <th>板块</th>
+      <th>评分</th>
+      <th>共识度</th>
+      <th>操作判断</th>
+      <th>建议仓位</th>
+      <th>核心策略</th>
+      <th>核心个股建议</th>
+    </tr>
+
+    <tr>
+      <td><strong>商用车</strong></td>
+      <td><span class="score score-mid">66</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错买入</strong></td>
+      <td>2-4%</td>
+      <td>自动驾驶+华为汽车股权合作催化（富勒烯/华为汽车股权合作概念领涨），江淮汽车涨停活口；双正资金逆势。回踩5日线低吸不追高。</td>
+      <td>
+        <span class="stock-bold">江淮汽车(600418)</span>（商用车龙头·9/28涨停+9.99%·双正）<br>
+        宇通客车(600066)（客车龙头·防御属性）<br>
+        安凯客车(000868)（补涨·事件驱动）<br>
+        <small style="color:var(--text-secondary)">📒 催化：华为汽车股权合作+自动驾驶政策预期</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>银行红利 / 高股息</strong></td>
+      <td><span class="score score-mid">60</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·压舱</strong></td>
+      <td>5-8%</td>
+      <td>退潮期防御压舱，国有大行逆势抗跌（交通银行+0.4%）；不追高，作底仓配置。股息率2.68%（沪深300）。</td>
+      <td>
+        <span class="stock-bold">交通银行(601328)</span>（国有大行·逆势+0.4%）<br>
+        招商银行(600036)（零售之王·高股息）<br>
+        建设银行(601939)（国有大行·压舱）<br>
+        <small style="color:var(--text-secondary)">📎 保险备选：中国平安(601318)</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>煤炭</strong></td>
+      <td><span class="score score-mid">58</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1·试错</strong></td>
+      <td>3-5%</td>
+      <td>能源防御+地缘支撑（布油105），5日资金双正（+6.63亿）；节前轻仓，不追高。</td>
+      <td>
+        <span class="stock-bold">郑州煤电(600121)</span>（煤炭领涨·9/28+4.08%）<br>
+        中国神华(601088)（动力煤龙头·高股息压舱）<br>
+        陕西煤业(601225)（高分红·防御）<br>
+        <small style="color:var(--text-secondary)">⚠️ 20日资金-14.3亿，反弹=减仓非反转</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>非白酒·黄酒·饮料乳品（消费防御）</strong></td>
+      <td><span class="score score-low">54</span></td>
+      <td><span class="consensus-low">弱</span></td>
+      <td><strong>中性偏多</strong></td>
+      <td>2-3%</td>
+      <td>黄酒概念+4.15%领涨（会稽山涨停），非白酒/饮料乳品5+20日双正；消费避险属性，节前防御。</td>
+      <td>
+        <span class="stock-bold">会稽山(601579)</span>（黄酒龙头·9/28涨停+9.99%·双正）<br>
+        九阳股份(002242)（小家电·9/28涨停+10.01%）<br>
+        宝立食品(603170)（食品加工·9/28+6.25%）<br>
+        <small style="color:var(--text-secondary)">📎 饮料乳品：三元股份/燕塘乳业</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>电力（防御）</strong></td>
+      <td><span class="score score-low">52</span></td>
+      <td><span class="consensus-low">弱</span></td>
+      <td><strong>中性偏多</strong></td>
+      <td>2-3%</td>
+      <td>浙江新能涨停，防御属性；但20日资金-20.8亿，仅作低位配置不追。</td>
+      <td>
+        <span class="stock-bold">浙江新能(600032)</span>（电力·9/28涨停+10.07%）<br>
+        长江电力(600900)（水电防御·高股息）<br>
+        华能水电(600025)（水电·压舱）<br>
+        <small style="color:var(--text-secondary)">⚠️ 20日资金负，等回踩</small>
+      </td>
+    </tr>
+
+  </table>
+  </div>
+
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:10px">
+    <p style="font-size:12.5px; color:var(--warn)">
+      <strong>⚠️ 回避板块</strong>（退潮+㊸资金门控+㊲关闭+校准③不触发）：
+      通信设备(-8.21%/20D-219.7亿)、元件(-6.80%/20D-103.6亿)、玻璃玻纤(-6.93%/20D-40.6亿)、半导体(-4.58%/20D-609.8亿)、贵金属(-6.12%/20D-108.8亿·隔夜金-3.82%)、消费电子(-4.65%)、小金属(-4.66%)、工业金属(-2.78%/20D-220.6亿)、电池(-2.29%/20D-221.3亿)、证券(-1.89%/20D-163.4亿)、化学制药(-0.5%/20D-137.5亿)、软件开发(-2.12%/20D-118.9亿)、种植业(-3.96%)、光伏(-2.60%)、橡胶(-5.38%)、油气油运(地缘高位但节前不追)。
+    </p>
+  </div>
+</div>
+
+<!-- 风险点 + 催化日历 + 止盈止损纪律 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚠️</span>风险点 + 催化日历 + 止盈止损纪律</div>
+
+  <div class="risk-box">
+    <h4>🚨 风险点（按重要性排序）</h4>
+    <ul>
+      <li><strong>铁律A临界</strong>：9/28收盘4554跌≥4300 + 隔夜全球risk-off（美股跌/费半-2.67%/金-3.82%）→ 若9/29开盘<strong>集体低开&gt;1%</strong>即触发<span class="warn-text">[紧急降仓10pcts]</span>（当前20-25%→10-15%，待9:25复核）。</li>
+      <li><strong>铁律B临界</strong>：沪深300-2.22%/创业板-4.53%/科创50-4.06%跌幅&gt;2%（沪指-1.67%未破2%），跌停60&lt;100；若9/29沪指跌&gt;2%或跌停&gt;100→降仓10pcts。</li>
+      <li><strong>国庆长假外盘/地缘风险</strong>：10/1-10/7休市7天，期间美联储表态、伊朗霍尔木兹谈判、9月非农(10/3)不可控 → 节前避险，主力降仓过节。</li>
+      <li><strong>美债收益率飙升</strong>：10Y 5.274%（2007最高）/30Y 5.583%（2004最高）→ 全球成长股分母承压，高位题材估值再定价。</li>
+      <li><strong>前主线资金出逃</strong>：半导体/通信/元件/贵金属/工业金属/电池20日净流出均超百亿 → 反弹=减仓非反转（㊸+㉓）。</li>
+      <li><strong>节前流动性收紧</strong>：最后2交易日融资盘趋谨慎，量能&lt;1.7万亿缩量，承接力弱。</li>
+      <li><strong>高位题材补跌</strong>：通信/玻纤/半导体前强板块破位，不接飞刀（㊹真趋势豁免已失效）。</li>
+    </ul>
+  </div>
+
+  <div class="calendar-box">
+    <h4>📅 催化日历（节前+假期关键节点）</h4>
+    <table>
+      <tr><th>日期</th><th>事件</th><th>影响</th></tr>
+      <tr><td rowspan="2"><strong>9/29（今日）</strong></td><td>节前倒数第2交易日</td><td>资金面偏紧，控仓过节</td></tr>
+      <tr><td>9:25 集合竞价</td><td>铁律A/铁律B开盘复核点</td></tr>
+      <tr><td><strong>9/30（周三）</strong></td><td>节前最后交易日</td><td>最后一波降仓/调仓窗口</td></tr>
+      <tr><td><strong>10/1-10/7</strong></td><td>国庆休市（7天）</td><td>外盘/地缘事件不可控，假期避险</td></tr>
+      <tr><td><strong>10/3</strong></td><td>美国9月非农</td><td>假期公布，节后首日消化</td></tr>
+      <tr><td><strong>10/8（周四）</strong></td><td>节后首个交易日</td><td>假期外盘/地缘累积效应一次性定价</td></tr>
+      <tr><td><strong>10月中</strong></td><td>三季报预告</td><td>业绩验证窗口（防御/消费/商用车催化）</td></tr>
+    </table>
+    <p style="font-size:12px; margin-top:6px"><strong>📌 节前策略</strong>：9/29-30 控仓至20-25%，防御+逆势活口为主；10/8 节后视假期外盘与铁律状态再定加仓。</p>
+  </div>
+
+  <div class="discipline-box">
+    <h4>🛡 止盈止损纪律（铁律A/B+个股风控）</h4>
+    <ul>
+      <li><strong>铁律A</strong>：9:25 四大指数集体低开&gt;1% + 4300只下跌 + 外盘冲击 = 触发<span class="warn-text">[紧急降仓10pcts]</span>（当前20-25%→10-15%）。</li>
+      <li><strong>铁律B</strong>：单日沪指跌幅&gt;2% 或 跌停&gt;100只 = 降仓10pcts至10-15%。</li>
+      <li><strong>个股止损锚</strong>：江淮汽车 21元（-8%）/ 会稽山 35元（-10%）/ 交通银行 7.0元（-6%）/ 郑州煤电 4.3元（-8%）/ 浙江新能 6.5元（-8%）/ 九阳股份 11元（-9%）。</li>
+      <li><strong>锁定利润规则</strong>：逆势活口浮盈&gt;8%即减半，节前不赌连续性。</li>
+      <li><strong>不重仓追高</strong>：所有新开仓均"回踩入场"，不追竞价高开&gt;3%个股（退潮期追高=接飞刀）。</li>
+      <li><strong>港股映射校验</strong>：9:25集合竞价 + 10:30盘中必检（防AH联动杀A股科技链）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 数据来源/信源 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📚</span>信源引用（数据基础+交叉校验）</div>
+  <table>
+    <tr><th>类型</th><th>信源</th><th>关键引用</th></tr>
+    <tr>
+      <td><span class="tag tag-info">数据基础</span></td>
+      <td><strong>westock-data</strong></td>
+      <td>market-overview（9/28：沪指3823.62/-1.67%、898涨4554跌、ADJ 10.48）/ sector ranking（申万120+概念802）/ changedist / quote（沪深300 4340.76/-2.22%、科创50 1555.98/-4.06%、北证50 1026.57/-2.76%）。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">第三分类</span></td>
+      <td><strong>同花顺行业指数881（WebFetch）</strong></td>
+      <td>汽车整车+1.72%/小家电+1.20%/风电+0.84%/养殖+0.20%/银行-0.21%/煤炭-0.55%；通信类缺失（881无独立通信设备指数，已并入概念层交叉）。门禁1通道B已走。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">概念级</span></td>
+      <td><strong>同花顺概念（westock）</strong></td>
+      <td>黄酒概念+4.15%（会稽山涨停）/ 富勒烯+2.46%（江淮汽车龙头）/ 华为汽车股权合作+1.48% / 猪肉+0.87% —— 逆势活口集中在消费+事件。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">外盘</span></td>
+      <td><strong>新华社/第一财经/新浪/Seoul Economic Daily</strong></td>
+      <td>9/28美股道指-0.67%/标普-0.77%/纳指-0.92%/费半-2.67%（ARM-8%）；现货金-3.82%；10Y美债5.274%（2007最高）；特朗普拒绝伊朗霍尔木兹7日计划。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">框架</span></td>
+      <td><strong>复盘学习积累（规则库）</strong></td>
+      <td>规则⑭(估值79%未触发) / ㊸(20日资金门控禁多) / ㊹(双正真趋势豁免) / ㊲(贵金属窗口关闭) / 校准③(费半未反弹) / 规则55(退潮降权) / 规则58(单向失真熔断) / 三-①(v3.0两层)。</td>
+    </tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>本报告由 WorkBuddy「每日盘前策略」自动化系统生成 · 数据基准日2026-09-28收盘<br>
+  报告仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>
+  © 2026 阿Q量化研究体系 · v4.2 十节标准版 · pinned-2026-09-20</p>
+</div>
+
+</div>
+</body>
+</html>
