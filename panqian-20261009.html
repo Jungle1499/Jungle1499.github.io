@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 - 2026年10月9日</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a7a;
+    --border: #e0e4e8;
+    --primary: #1a237e;
+    --primary-light: #3949ab;
+    --accent: #0d47a1;
+    --up: #c62828;
+    --up-light: #e53935;
+    --down: #2e7d32;
+    --warn: #e65100;
+    --success: #1565c0;
+    --gold: #f57c00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  /* 标题区 */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.25);
+  }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .header .date { font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
+  .header .song { font-size: 13px; opacity: 0.75; font-style: italic; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; margin-top: 12px; }
+  /* 卡片 */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 20px; }
+  /* 核心摘要 */
+  .summary-box {
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--primary);
+  }
+  .summary-box h4 { font-size: 14px; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
+  .summary-box p { font-size: 13.5px; color: var(--text); line-height: 1.8; }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-up { background: rgba(198,40,40,0.12); color: var(--up); }
+  .tag-down { background: rgba(46,125,50,0.12); color: var(--down); }
+  .tag-warn { background: rgba(230,81,0,0.12); color: var(--warn); }
+  .tag-info { background: rgba(21,101,192,0.12); color: var(--success); }
+  /* 决策逻辑链 */
+  .logic-chain { display: flex; flex-direction: column; gap: 12px; }
+  .logic-item {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+  }
+  .logic-item .step {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .logic-item .step span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }
+  .logic-item .text { font-size: 13px; color: var(--text); }
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: #fafbfd; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .warn-text { color: var(--warn); font-weight: 600; }
+  /* 共识度表（板块表） */
+  .sector-table { font-size: 12px; }
+  .sector-table th, .sector-table td { padding: 10px 6px; }
+  .sector-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .score {
+    display: inline-block;
+    min-width: 36px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .score-mid { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+  .score-low { background: linear-gradient(135deg, #757575, #9e9e9e); }
+  .consensus-vhigh { color: var(--up); font-weight: 700; }
+  .consensus-high { color: var(--up-light); font-weight: 600; }
+  .consensus-mid { color: var(--gold); font-weight: 600; }
+  .consensus-low { color: var(--text-secondary); }
+  .stock-bold { font-weight: 700; color: var(--text); }
+  /* 风险模块 */
+  .risk-box {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--warn);
+  }
+  .risk-box h4 { font-size: 13px; color: var(--warn); margin-bottom: 6px; }
+  .calendar-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--success);
+  }
+  .calendar-box h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
+  .discipline-box {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 4px solid #7b1fa2;
+  }
+  .discipline-box h4 { font-size: 13px; color: #7b1fa2; margin-bottom: 6px; }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 20px 0;
+  }
+  ul { padding-left: 20px; }
+  ul li { font-size: 13.5px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<!-- 模板提示：「核心个股建议」列与决策逻辑链①须填当日实扫主线 leader，禁止照抄中际旭创等写死示例股；该列与飞书《核心看好标的追踪表》必须同源、与报告标题主线一致。 -->
+<div class="container">
+
+<!-- 标题区 -->
+<div class="header">
+  <h1>📊 每日盘前策略</h1>
+  <div class="date">2026年10月9日 · 周五 · 07:00 盘前</div>
+  <div class="song">
+    🎵 《在波动中受益》<br>
+    <span style="opacity:0.85">— 献给在不确定性中保持结构的资源与防御轮动 —</span><br>
+    <em style="opacity:0.7">"脆弱的反面不是坚强，而是反脆弱：在波动中不是存活，而是受益。"</em><br>
+    <small style="opacity:0.6">—— N.N.塔勒布《反脆弱》</small>
+  </div>
+</div>
+
+<!-- 📌 核心摘要 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📌</span>核心摘要</div>
+
+  <div class="summary-box">
+    <h4>承接昨日交易日志（2026-10-08 收盘）</h4>
+    <p>
+      周四（10/8）节后首日<strong>放量普跌、科技链重挫</strong>：沪指-0.79%收3811.90，深成-2.07%，<strong>创业板-3.15%，科创50-4.82%</strong>；
+      两市成交<strong>1.68万亿</strong>（为10日均的94.94%，缩量）；<strong>1698涨/3748跌</strong>（占比仅30%），涨停45/跌停16，RSI_6=27.32已入超卖。
+      半导体-5.13%、通信设备-4.48%、电子化学品-5.09%领跌，资金大幅出逃——<strong>退潮期确认延续</strong>，本报告以此为起点。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-left-color:var(--up)">
+    <h4 style="color:var(--up)">两重压制（利空档）</h4>
+    <p>
+      ① <strong>科技链集体破位</strong>：科创50-4.82%、半导体-5.13%、通信设备-4.48%，申万口径下<strong>半导体/通信设备20日主力净流深负</strong>，反弹即减仓窗口而非加仓信号；
+      ② <strong>外部风险偏好走弱</strong>：10/8 纳指-1.25%、恒指-1.43%，美股分化（道指微涨+0.10%）无正向催化，与A股退潮共振。
+      <strong>注</strong>：原油/黄金/美债/美元四项因授权数据源未取到（WebSearch返回2024年陈旧数据且冲突），按"缺失标N/A·禁编造"铁律<strong>不臆测</strong>，仓位偏保守。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color:var(--warn)">
+    <h4 style="color:var(--warn)">少数亮点·资源/防御轮动（非新主线）</h4>
+    <p>
+      全市场仅<strong>资源+防御</strong>逆势：航运港口+3.78%（中远海能+10.02%）、焦炭Ⅱ+2.79%（安泰集团+9.9%·5日/20日资金<strong>双正</strong>，真趋势候选）、
+      油服工程+2.76%（博迈科+8.23%）、燃气Ⅱ+2.5%（国新能源+10%）、航天装备Ⅱ+1.85%。
+      属退潮期资金<strong>抱团避险的跷跷板</strong>，而非新主线启动，参与须严格试错+止损。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color:var(--down)">
+    <h4 style="color:#2e7d32">V4 九态定位：退潮期（WAIT/中段）</h4>
+    <p>
+      <strong>第一层·板块筛</strong>：涨幅前三=航运港口/焦炭Ⅱ/油服工程 → 列为<strong>P1候选（仅筛选不定级）</strong>；
+      <strong>第二层·Pair定级</strong>：中远海能+10.02%/安泰集团+9.9%/博迈科+8.23% 单日≥5%触发D0条件，列为P1候选。
+      <strong>诚实标注</strong>：受限于仅T-1（10/8）单日快照，完整"3日观察窗九态"（WAIT/P1预警/P1确认/P2…）需T-2/T-3序列补全，暂定"<strong>P1候选·试错</strong>"，不越级给P2。
+      20日资金：仅焦炭Ⅱ双正，其余资源板块20日仍为负（事件驱动属性）。
+    </p>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color:#7b1fa2">
+    <h4 style="color:#7b1fa2">今日展望（200字）</h4>
+    <p>
+      沪指支撑<strong>3780-3800</strong>（10/8收盘3811.90·已逼近）、压力<strong>3850-3880</strong>（10/8开盘附近）。
+      <strong>期望路径</strong>：缩量磨底→资源/防御轮动延续→科技链超卖反抽但力度弱→成交维持1.6-1.7万亿→沪指围绕3800震荡。
+      <strong>风险路径</strong>：科创50继续破位→融资盘止损外溢→二次探底击穿3780。
+      <strong>总仓位20-25%</strong>（防御为主），主线=<strong>资源轮动（航运/焦炭/油服/燃气）试错 + 银行红利压舱</strong>，科技链仅超卖反抽、不追高。
+    </p>
+  </div>
+
+  <div>
+    <span class="tag tag-info">承接10/8交易日志</span>
+    <span class="tag tag-down">退潮期确认</span>
+    <span class="tag tag-up">资源防御轮动</span>
+    <span class="tag tag-warn">科技链重挫</span>
+    <span class="tag tag-info">RSI超卖</span>
+  </div>
+</div>
+
+<!-- 🔗 决策逻辑链 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🔗</span>决策逻辑链</div>
+  <div class="logic-chain">
+
+    <div class="logic-item">
+      <div class="step"><span>①</span>数据→分析</div>
+      <div class="text">
+        <strong>10/8广度</strong>：1698涨/3748跌（涨跌比0.45，仅30%个股上涨）、涨停45/跌停16、<strong>科创50-4.82%</strong>；
+        <strong>10/8板块资金</strong>：半导体-5.13%/通信设备-4.48% 20日主力净流<strong>深负</strong>，科技链资金出逃确认。
+        → <strong>退潮期判定成立</strong>（跌家>2×涨家且科技领跌，铁律A临界）。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>②</span>数据→分析</div>
+      <div class="text">
+        <strong>V4第一层·板块筛（涨幅前三）</strong>：航运港口+3.78% / 焦炭Ⅱ+2.79% / 油服工程+2.76%（均为资源类）；
+        <strong>全市场<20%板块上涨</strong> → 仅资源/防御逆势，非新主线启动，属退潮期避险跷跷板。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>③</span>数据→分析</div>
+      <div class="text">
+        <strong>焦炭Ⅱ 5日净流+47432 / 20日净流+70518（双正）</strong>，为申万口径下少数20日资金为正板块，安泰集团+9.9% → <strong>V4真趋势候选</strong>；
+        但航运港口/油服工程20日资金仍为负，属运价/地缘<strong>事件驱动</strong>，持续性弱于焦炭。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>④</span>判断</div>
+      <div class="text">
+        <strong>V4第二层·Pair定级</strong>：中远海能+10.02% / 安泰集团+9.9% / 博迈科+8.23% 单日≥5%触发D0，列为<strong>P1候选</strong>；
+        <strong>退潮期门控（三-⑥）</strong> → 仅"试错买入"不"持有加仓"，<strong>方向表整体降权（多≤3-4板块）</strong>，仓位天花板20-25%。
+      </div>
+    </div>
+
+    <div class="logic-item">
+      <div class="step"><span>⑤</span>行动</div>
+      <div class="text">
+        <strong>今日操作</strong>：
+        ① 资源轮动试错：<strong>中远海能(600026) / 安泰集团(600408) / 博迈科(603727) / 国新能源(600617)</strong>，单只≤2-3%，严格止损-6%；
+        ② 防御底仓：<strong>银行红利（建设银行601939 / 招商银行600036）</strong>3-5%压舱；
+        ③ 超卖反抽观察：科技链（半导体/通信设备）仅反抽不追，等V4九态明确再定；
+        ④ 高位回避：半导体设备/存储/消费电子/化学制药/AI应用（退潮期不接飞刀）。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ⚡ 盘前30秒速览 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚡</span>盘前30秒速览</div>
+  <table>
+    <tr><td>📉 <strong>沪指支撑/压力</strong></td><td>支撑 <span class="down">3780-3800</span>(10/8收盘3811·逼近) / 压力 <span class="up">3850-3880</span>(10/8开盘)</td></tr>
+    <tr><td>📊 <strong>成交警戒线</strong></td><td>反弹需维持 ≥1.6万亿（10/8为1.68万亿，缩量至10日均94.94%）</td></tr>
+    <tr><td>🔥 <strong>10/8主力资金</strong></td><td>半导体/通信设备20日<strong>深负</strong>；焦炭Ⅱ+7.05亿(20日)为少数正亮点</td></tr>
+    <tr><td>🌍 <strong>美股10/8收盘</strong></td><td>道指<span class="up">+0.10%</span> / 纳指<span class="down">-1.25%</span> / 恒指<span class="down">-1.43%</span>（风险偏好走弱）</td></tr>
+    <tr><td>💰 <strong>原油/黄金/美债/美元</strong></td><td><span class="warn-text">数据缺失(N/A)</span>：授权源未取到，WebSearch返回2024陈旧数据冲突，按铁律不采用</td></tr>
+    <tr><td>📈 <strong>涨跌家数</strong></td><td>1698涨 / <span class="down">3748跌</span>(30%) · 涨停45 / 跌停16</td></tr>
+    <tr><td>📉 <strong>RSI_6</strong></td><td><span class="warn-text">27.32（超卖区）</span> · MACD=-21.76 · KDJ_K=22.92</td></tr>
+    <tr><td>🎯 <strong>建议仓位</strong></td><td><strong>20-25%</strong>（退潮防御，不追高）</td></tr>
+    <tr><td>📅 <strong>事件日历</strong></td><td>10月中旬常规窗口：中国9月CPI/PPI·社融·Q3GDP；美国9月CPI·零售销售（具体日期以官方为准）</td></tr>
+  </table>
+</div>
+
+<!-- 🌍 隔夜外盘 -->
+<div class="card">
+  <div class="card-title"><span class="icon">🌍</span>隔夜外盘（数据截至10/8美股收盘·westock授权源）</div>
+  <table>
+    <tr><th>分类</th><th>品种</th><th>收盘</th><th>涨跌</th><th>解读</th></tr>
+    <tr><td rowspan="2"><strong>美股</strong></td><td>道琼斯</td><td>51,231.64</td><td class="up">+0.10%</td><td rowspan="2">分化：道指微涨、纳指下跌，科技承压；标普500授权源未取到(N/A)。</td></tr>
+    <tr><td>纳斯达克</td><td>27,193.34</td><td class="down">-1.25%</td><td></td></tr>
+    <tr><td><strong>中概/港股</strong></td><td>恒生指数</td><td>23,785.79</td><td class="down">-1.43%</td><td>港股走弱，与A股退潮期共振，AH联动偏空。</td></tr>
+    <tr><td><strong>商品/利率</strong></td><td>原油/黄金/美债/美元</td><td>—</td><td class="warn-text">N/A</td><td>授权数据源未取到；WebSearch返回2024年陈旧数据且冲突，按"缺失标N/A·禁编造"铁律不采用，不臆测通胀/利率传导。</td></tr>
+  </table>
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:var(--warn)"><strong>📡 关键信号解读</strong>：
+    ① "道指微涨+纳指跌+恒指-1.43%"的组合 → <strong>外部无正向催化</strong>，风险偏好回落，与A股退潮期同频；
+    ② 资源/防御在A股逆势，部分受地缘+运价支撑，但属避险轮动非趋势；
+    ③ <strong>建议操作</strong>：防守为主，资源轮动仅试错，科技链不抄底，原油/黄金变量缺失下仓位偏保守。
+    </p>
+  </div>
+</div>
+
+<!-- 📊 市场全景 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📊</span>市场全景（10/8收盘·节后首日）</div>
+  <h4 style="font-size:13px; color:var(--primary); margin-bottom:8px">📈 六大指数</h4>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>特征</th></tr>
+    <tr><td>上证指数</td><td>3,811.90</td><td class="down">-0.79%</td><td>逼近3780-3800支撑区，成交缩量</td></tr>
+    <tr><td>深证成指</td><td>12,620.90</td><td class="down">-2.07%</td><td>跌幅居中</td></tr>
+    <tr><td>创业板指</td><td>3,036.66</td><td class="down">-3.15%</td><td>成长承压明显</td></tr>
+    <tr><td>科创50</td><td>1,456.32</td><td class="down">-4.82%</td><td>破位最重，科技重灾区</td></tr>
+    <tr><td>沪深300</td><td>4,310.28</td><td class="down">-1.09%</td><td>大盘蓝筹相对抗跌</td></tr>
+    <tr><td>北证50</td><td>1,012.10</td><td class="down">-2.65%</td><td>同步回落</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🌡 涨跌分布（成交1.68万亿 · 10日均94.94%）</h4>
+  <table>
+    <tr><th>指标</th><th>数值</th><th>含义</th></tr>
+    <tr><td>上涨家数</td><td>1698只（30%）</td><td>冰点阈值附近（铁律A临界）</td></tr>
+    <tr><td>下跌家数</td><td><span class="down">3,748只</span></td><td>≈2.2×涨家，退潮确认</td></tr>
+    <tr><td>涨停/跌停</td><td>45 / 16</td><td>涨停偏少、跌停扩散</td></tr>
+    <tr><td>RSI_6</td><td>27.32</td><td>超卖区（技术反抽条件具备但力度弱）</td></tr>
+  </table>
+
+  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🏆 10/8板块排行·退潮轮动</h4>
+  <table>
+    <tr><th>板块</th><th>涨跌幅</th><th>主力净流入</th><th>领袖股</th></tr>
+    <tr><td>航运港口</td><td class="up">+3.78%</td><td>-12225(5d)</td><td>中远海能(+10.02%) / 板块领涨</td></tr>
+    <tr><td>焦炭Ⅱ</td><td class="up">+2.79%</td><td class="up">+70518(20d双正)</td><td>安泰集团(+9.9%) / 真趋势候选</td></tr>
+    <tr><td>油服工程</td><td class="up">+2.76%</td><td>+21334(5d)</td><td>博迈科(+8.23%) / 地缘窗口</td></tr>
+    <tr><td>炼化及贸易</td><td class="up">+2.50%</td><td>—</td><td>资源链联动</td></tr>
+    <tr><td>燃气Ⅱ</td><td class="up">+2.50%</td><td>—</td><td>国新能源(+10%) / 防御资源</td></tr>
+    <tr><td>航天装备Ⅱ</td><td class="up">+1.85%</td><td>—</td><td>防御属性</td></tr>
+    <tr><td>半导体</td><td class="down">-5.13%</td><td class="down">20d深负</td><td>净流出居前！规避</td></tr>
+    <tr><td>电子化学品Ⅱ</td><td class="down">-5.09%</td><td class="down">—</td><td>科技链重挫</td></tr>
+    <tr><td>通信设备</td><td class="down">-4.48%</td><td class="down">20d深负</td><td>信科移动+6.72%逆势(个股异动)</td></tr>
+    <tr><td>自动化设备</td><td class="down">-4.12%</td><td class="down">—</td><td>成长承压</td></tr>
+  </table>
+
+  <div style="background:#f3e5f5; padding:10px 14px; border-radius:8px; margin-top:8px">
+    <p style="font-size:12.5px; color:#7b1fa2">
+      <strong>主线轮动轨迹</strong>：<br>
+      节前科技主线（光通信/半导体/AI硬件）→ 10/8 <span class="up">集体重挫（科创50-4.82%/半导体-5.13%）</span> → 资金切换<strong>资源+防御轮动</strong>（航运/焦炭/油服/燃气/银行）<br>
+      <strong>结论</strong>：退潮期确认，旧主线资金出逃，新领涨为避险跷跷板，<strong>不构成V4 P2主线</strong>，按试错+止损参与。
+    </p>
+  </div>
+</div>
+
+<!-- ⭐ 板块共识度与方向表 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⭐</span>板块共识度与方向表</div>
+
+  <div class="sector-wrap">
+  <table class="sector-table">
+    <tr>
+      <th>板块</th>
+      <th>评分</th>
+      <th>共识度</th>
+      <th>操作判断</th>
+      <th>建议仓位</th>
+      <th>核心策略</th>
+      <th>核心个股建议</th>
+    </tr>
+
+    <tr>
+      <td><strong>航运港口（资源/地缘）</strong></td>
+      <td><span class="score">70</span></td>
+      <td><span class="consensus-high">强</span></td>
+      <td><strong>P1候选·试错</strong></td>
+      <td>2-3%</td>
+      <td>板块+3.78%居首，中远海能涨停触发D0；运价+地缘支撑，但20日资金仍负，事件驱动属性，3日为窗口严格止损。</td>
+      <td>
+        <span class="stock-bold">中远海能(600026)</span>（航运龙头·10/8+10.02%·板块领涨）<br>
+        <small style="color:var(--text-secondary)">⚠️ 20日资金为负，纯事件驱动，不追高、止损-6%</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>焦炭Ⅱ（资源）</strong></td>
+      <td><span class="score">68</span></td>
+      <td><span class="consensus-high">强</span></td>
+      <td><strong>P1候选·试错</strong></td>
+      <td>2-3%</td>
+      <td>5日+47432/20日+70518<strong>双正</strong>（申万少数20日为正），安泰集团+9.9%；V4真趋势候选，相对其余资源更具持续性。</td>
+      <td>
+        <span class="stock-bold">安泰集团(600408)</span>（焦炭龙头·10/8+9.9%·资金双正）<br>
+        <small style="color:var(--text-secondary)">📎 焦炭Ⅱ为退潮期唯一20日资金双正板块</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>油服工程/油气（地缘）</strong></td>
+      <td><span class="score score-mid">66</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1候选·试错</strong></td>
+      <td>2-3%</td>
+      <td>油服+2.76%/炼化+2.5%/燃气+2.5%联动；博迈科+8.23%、国新能源+10%；地缘窗口，持续性弱于焦炭。</td>
+      <td>
+        <span class="stock-bold">博迈科(603727)</span>（油服·10/8+8.23%）<br>
+        <span class="stock-bold">国新能源(600617)</span>（燃气·10/8+10%）<br>
+        <small style="color:var(--text-secondary)">⚠️ 地缘谈判反复风险，纯短线</small>
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>银行红利（防御）</strong></td>
+      <td><span class="score score-mid">60</span></td>
+      <td><span class="consensus-mid">中</span></td>
+      <td><strong>P1确认·防御压舱</strong></td>
+      <td>3-5%</td>
+      <td>退潮期高股息避险，沪深300-1.09%相对抗跌；建设银行/招商银行压舱，不追高、作底仓。</td>
+      <td>
+        <span class="stock-bold">建设银行(601939)</span>（国有大行·防御）<br>
+        招商银行(600036)（零售高股息）<br>
+        <small style="color:var(--text-secondary)">📎 退潮期压舱首选，不构成进攻主线</small>
+      </td>
+    </tr>
+
+  </table>
+  </div>
+
+  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:10px">
+    <p style="font-size:12.5px; color:var(--warn)">
+      <strong>⚠️ 回避板块</strong>（退潮期·科技链资金深负）：
+      半导体(-5.13%/20d深负)、电子化学品(-5.09%)、通信设备(-4.48%/20d深负)、自动化设备(-4.12%)、光学光电子(-3.62%)、消费电子(-3.51%)、化学制药(-2.72%)、元件(-2.24%)、IT服务(-2.31%)。
+      <strong>不接飞刀、不抄底，等V4九态明确再定。</strong>
+    </p>
+  </div>
+</div>
+
+<!-- 风险点 + 催化日历 + 止盈止损纪律 -->
+<div class="card">
+  <div class="card-title"><span class="icon">⚠️</span>风险点 + 催化日历 + 止盈止损纪律</div>
+
+  <div class="risk-box">
+    <h4>🚨 风险点（按重要性排序）</h4>
+    <ul>
+      <li><strong>退潮加速</strong>：科创50-4.82%、跌家3748>>涨家1698（≈2.2×），若融资盘止损外溢可能引发二次探底击穿3780。</li>
+      <li><strong>科技链资金深负</strong>：半导体/通信设备20日主力净流深负，反弹即减仓窗口，不可视为加仓信号。</li>
+      <li><strong>外部风险偏好走弱</strong>：纳指-1.25%/恒指-1.43%，无正向催化，AH联动偏空。</li>
+      <li><strong>数据缺口</strong>：原油/黄金/美债/美元授权源未取到，无法评估通胀/利率传导，仓位偏保守（20-25%）。</li>
+      <li><strong>节后获利盘+两融压力</strong>：节前科技主线获利盘待消化，两融余额若降可能引发连锁。</li>
+    </ul>
+  </div>
+
+  <div class="calendar-box">
+    <h4>📅 催化日历（未来2周常规窗口）</h4>
+    <table>
+      <tr><th>窗口</th><th>事件</th><th>影响</th></tr>
+      <tr><td><strong>10月中旬</strong></td><td>中国9月CPI/PPI、社融、Q3GDP（常规披露窗口）</td><td>内需修复成色验证；具体日期以统计局官宣为准</td></tr>
+      <tr><td><strong>10月中旬</strong></td><td>美国9月CPI、零售销售（常规披露窗口）</td><td>影响美债利率与全球成长股估值分母</td></tr>
+      <tr><td><strong>10/9 盘中</strong></td><td>关注节后政策面有无新催化 / 地缘（运价/油气）</td><td>资源轮动持续性观察点</td></tr>
+      <tr><td><strong>持续</strong></td><td>航运运价指数、焦炭现货、油气地缘</td><td>资源轮动龙头的试错止损锚</td></tr>
+    </table>
+    <p style="font-size:12px; margin-top:6px"><strong>📌 复盘观察点</strong>：沪指能否守住3780-3800、量能是否回落至1.6万亿以下、航运/焦炭能否不出现单日-3%回落。若跌破3780 → 仓位降至15%仅留防御底仓；若资源轮动延续且成交回稳 → 维持20-25%。</p>
+  </div>
+
+  <div class="discipline-box">
+    <h4>🛡 止盈止损纪律（铁律A/B+个股风控）</h4>
+    <ul>
+      <li><strong>铁律A</strong>：四大指数集体低开>1% + 4300只下跌 + 外盘冲击 = 触发<span class="warn-text">紧急降仓10pcts</span>（当前20-25%，触发后降至10-15%）。</li>
+      <li><strong>铁律B</strong>：单日沪指跌幅>2% 或 跌停>100只 = 降仓10pcts至10-15%。</li>
+      <li><strong>个股止损锚（试错性质）</strong>：资源轮动标的统一<strong>-6%离场</strong>；不追竞价高开>3%个股。</li>
+      <li><strong>锁定利润规则</strong>：资源轮动浮盈>8%时分批锁定1/3，避免退潮期回吐。</li>
+      <li><strong>港股映射校验</strong>：9:25集合竞价 + 10:30盘中必检（防AH联动杀A股科技链）。</li>
+      <li><strong>不重仓追高</strong>：所有新开仓均需"确认信号+回踩入场"，退潮期禁止满仓/重仓单一资源标的。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 数据来源/信源 -->
+<div class="card">
+  <div class="card-title"><span class="icon">📚</span>信源引用（数据校验）</div>
+  <table>
+    <tr><th>类型</th><th>信源</th><th>关键引用</th></tr>
+    <tr>
+      <td><span class="tag tag-info">数据基础</span></td>
+      <td><strong>westock-data</strong></td>
+      <td>market-overview / sector ranking / changedist / quote（上证3811.90/3748跌/半导体-5.13%/科创50-4.82%/焦炭Ⅱ20d+70518等核心数据）。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">外部</span></td>
+      <td><strong>westock usDJI/usIXIC/hkHSI</strong></td>
+      <td>10/8 道指51231.64(+0.10%) / 纳指27193.34(-1.25%) / 恒指23785.79(-1.43%)（授权源真实取得）。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-warn">缺失声明</span></td>
+      <td><strong>标普500/原油/黄金/美债/美元</strong></td>
+      <td>授权数据源未取到；WebSearch返回2024年陈旧数据且与授权源冲突，按"缺失标N/A·禁编造"铁律<strong>不采用、不臆测</strong>。</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-info">板块口径</span></td>
+      <td><strong>申万一级/二级</strong></td>
+      <td>板块排行与20日资金采用申万口径；V4第一层板块筛取涨幅前三。</td>
+    </tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>本报告由 WorkBuddy「每日盘前策略」自动化系统生成 · 数据基准日2026-10-08收盘<br>
+  报告仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>
+  © 2026 阿Q量化研究体系 · 三阶段理论 V4 口径</p>
+</div>
+
+</div>
+</body>
+</html>
