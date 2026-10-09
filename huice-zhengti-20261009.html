@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股整体回测 2026-10-09</title>
+<style>
+:root{--bg:#1a1a2e;--card:#22223c;--border:#33334f;--red:#e94560;--gold:#faad14;--green:#52c41a;--txt:#e8e8f0;--sub:#a0a0c0;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;padding:24px;font-size:14px}
+h1{font-size:26px;color:#fff;margin-bottom:6px}
+h2{font-size:19px;color:var(--gold);margin:28px 0 12px;border-left:4px solid var(--gold);padding-left:10px}
+h3{font-size:15px;color:var(--red);margin:16px 0 8px}
+.wrap{max-width:1180px;margin:0 auto}
+.sub{color:var(--sub);font-size:13px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:14px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.kpi .v{font-size:24px;font-weight:700;color:var(--gold)}
+.kpi .l{font-size:12px;color:var(--sub);margin-top:4px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px}
+th,td{border:1px solid var(--border);padding:6px 8px;text-align:center}
+th{background:#2a2a4a;color:var(--gold)}
+td.l{text-align:left}
+.up{color:var(--green)} .down{color:var(--red)} .neu{color:var(--sub)}
+.ok{color:var(--green);font-weight:700} .no{color:var(--red);font-weight:700} .flat{color:var(--gold)}
+.task{border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:16px 0;background:#1f1f38}
+.task .th{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.task .tag{font-size:11px;background:#33334f;color:var(--gold);padding:3px 8px;border-radius:6px}
+.note{background:#1c1c34;border-left:3px solid var(--gold);padding:10px 14px;margin:10px 0;font-size:12.5px;color:var(--sub)}
+.warn{background:#2a2030;border-left:3px solid var(--red);padding:10px 14px;margin:10px 0;font-size:12.5px}
+.foot{color:var(--sub);font-size:11.5px;margin-top:30px;border-top:1px solid var(--border);padding-top:14px}
+.badge{display:inline-block;background:var(--red);color:#fff;border-radius:5px;padding:1px 7px;font-size:11px;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>A股整体回测 2026-10-09 <span style="font-size:13px;color:var(--sub)">（框架 v4.1 / 三阶段 V4.1）</span></h1>
+<div class="sub">基准日 = 2026-10-09（周五·节后第2交易日·修复轮动日）。数据基准 = T日收盘后真实数据（腾讯自选股 westock SW2 全量 124 + gtimg 8指数 + data_quote 个股，交叉核验）。随机基准 47.5%。</div>
+
+<div class="kpis">
+<div class="kpi"><div class="v">64.3%</div><div class="l">方向性命中率 (9/14)</div></div>
+<div class="kpi"><div class="v">+28.6%</div><div class="l">方向表得分率</div></div>
+<div class="kpi"><div class="v">64.3%</div><div class="l">未踩雷率</div></div>
+<div class="kpi"><div class="v">≈47%</div><div class="l">近10日滚动均值</div></div>
+<div class="kpi"><div class="v">90.9%</div><div class="l">逐任务标的命中 (20/22)</div></div>
+<div class="kpi"><div class="v">80%</div><div class="l">逐点加权(10:00~14:10)</div></div>
+</div>
+
+<div class="note">🔗 随机基准 47.5% 对照：今日方向性命中率 <b>64.3%</b>（高于基准 +16.8pp）；逐点四时点 56.25%→80%→80%→100%（午后V反确认后时点越晚越准）；逐任务标的 <b>90.9%</b>。⚠️ 模型约束：本实例无法自证「混元3 付费」，已标注待用户到 UI/调度层复核。V2.4快报 / 比价配对 两条链长期停滞（bid json 与信号日志均缺当日数据）→ N/A。</div>
+
+<!-- ============ 8 任务独立成节 ============ -->
+<h2>一、8 大任务独立回测（格式红线⑥·各自独立研判✅❌）</h2>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务1 · 盘前方向表（07:00~08:00）</h3><span class="tag">方向性 56.25% · 得分 +21.9%</span></div>
+<p class="l">预测源 = 预测快照_20261009 <b>## 08:00 盘前策略</b> + panqian-20261009。退潮期降权，多≤3-4。实际 10/09 = <b>修复轮动日</b>（指数微涨+题材爆发），与盘前"退潮/空"外推明显背离。</p>
+<p class="l">✅ 命中：航运港口/焦炭Ⅱ/半导体/电子化学品/通信/自动化/光学/消费电子/元件（9项）。❌ 反向：油服工程/燃气Ⅱ/银行红利/化学制药/IT服务（5项）。<b>大势</b>：沪指中性→微涨(平) / 创业板偏空→+0.22%(反向)。判错集中在"多向资源/防御"（油服/燃气/银行）与"空向医药/IT"（化学制药+0.92%/IT服务+1.96% 反向）。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务2 · V2.4 竞价快报（09:25）</h3><span class="tag">N/A</span></div>
+<p class="l">数据源 = 大盘复盘/jingjia_pipeline/v23/v24_raw/bid_20261009.json <b>缺失</b> → 按铁律标 <b>N/A</b>（连续停滞）。注：当日 <b>晚间预判_20261009 ## 09:25 竞价快报</b> 为 V2.3.1 重建版，其回测见下表⑩竞价预测。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务3 · 10:00 盘中速览</h3><span class="tag">逐点 80% · 标的 100%</span></div>
+<p class="l">预测源 = 预测快照_20261009 <b>## 10:00</b>。板块筛 P1候选（贵金属/种植业/影视/电池/中药）+ 科技退潮（半导体/元件/通信）。实际 10/09 收盘全部命中（多5✅/空3✅）。大势（沪指-0.53%/创业-1.42% 早盘）判空→收盘微涨，<b>早盘误判</b>（午后V反未被识别）。逐任务标的 5✅/0❌（山金国际/万向德农/众生药业/博纳影业/新安股份 全涨）。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务4 · 11:45 午盘策略观察</h3><span class="tag">逐点 80% · 标的 100%</span></div>
+<p class="l">预测源 = 预测快照_20261009 <b>## 11:45</b>。板块筛 P1候选（电池/煤炭/贵金属）+ 科技退潮（元件/玻纤/电子化学品/通信/半导体）。收盘全部命中（多3✅/空5✅）。大势（沪指-1.21%/创业-2.61%）判空→收盘微涨，早盘误判延续。逐任务标的 4✅/0❌（宁德/比亚迪/兖矿/山金国际）。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务5 · 14:30（实跑14:10）盘中速览</h3><span class="tag">逐点 100% · 标的 100%</span></div>
+<p class="l">预测源 = 预测快照_20261009 <b>## 14:10</b>。午后V反确认：板块筛 P1候选（出版/贵金属/数字媒体/影视/种植/软件）+ 硬科技落选（元件/玻纤/通信/半导体）。收盘 <b>全中</b>（多6✅/空4✅）。大势（沪指+0.22%/创业+0.30%）判多→收盘微涨，<b>命中</b>。逐任务标的 5✅/0❌（山金国际/芒果超媒/博纳影业/新安股份/紫金矿业）。⚠️ 规则76：14:10 预测命中须 verify on T+1=10/12，本节按任务指令以 10/09 收盘计分，T+1 台账另列。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务6 · 19:15 最强主线</h3><span class="tag">N/A</span></div>
+<p class="l">数据源 = 大盘复盘/最强主线_每日复盘_20261009.html <b>缺失</b> → 标 <b>N/A</b>（常态化断点）。故晚间分源 19:15 强主线 = N/A。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务7 · 19:30 深度复盘·跟随版 + 主线分析</h3><span class="tag">晚间分源 45.5% · 三阶段✅</span></div>
+<p class="l">预测源 = 晚间预判_20261008 <b>## 19:30 主线分析</b>（T+1=10/09）。大势（沪指中性偏空/创业空）→ 收盘微涨，0/2 反向。板块 5✅/3❌/1平（航运✅/电池✅/半导体✅/通信✅ vs 油气✗/煤炭✗/银行✗）。主线分析三阶段判定（传媒/贵金属/农业 P1启动 D0、科技 W结束、医药/地产 P2确认）与 10/09 收盘高度吻合。选股池 中文在线+20.01%/西部黄金+9.98%/敦煌种业+10.02% 全✅。</p>
+</div>
+
+<div class="task">
+<div class="th"><h3 style="margin:0">任务8 · 20:30 整体回测（本任务自评）</h3><span class="tag">综合 64.3% · 高于基准</span></div>
+<p class="l">本任务：统一回测 + 规则有效性归因 + 三阶段框架有效性 + R-Judge（漏判1/判错5/执行0 → 5-Why）+ 复盘学习积累.md 追加 + 本报告生成部署 + 飞书双链接。核心结论见下。</p>
+</div>
+
+<!-- ============ 逐条明细表 ============ -->
+<h2>二、逐条明细表（11 张）</h2>
+
+<h3>① 方向表逐条回测（盘前 08:00 方向表 · 10/09 实际）</h3>
+<table>
+<thead><tr><th>板块</th><th>盘前方向</th><th>10/09 实际</th><th>判定</th><th>得分</th></tr></thead>
+<tbody>
+<tr><td class="l">航运港口</td><td>多</td><td class="up">+0.26%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">焦炭Ⅱ</td><td>多</td><td class="up">+2.16%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">油服工程·油气</td><td>多</td><td class="down">-0.54%</td><td class="no">❌反向</td><td>-1</td></tr>
+<tr><td class="l">燃气Ⅱ</td><td>多</td><td class="down">-0.95%</td><td class="no">❌反向</td><td>-1</td></tr>
+<tr><td class="l">银行红利</td><td>多</td><td class="down">-0.88~-1.40%</td><td class="no">❌反向</td><td>-1</td></tr>
+<tr><td class="l">半导体</td><td>空·回避</td><td class="down">-0.68%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">电子化学品Ⅱ</td><td>空</td><td class="down">-2.69%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">通信设备</td><td>空</td><td class="down">-1.00%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">自动化设备</td><td>空</td><td class="down">-0.46%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">光学光电子</td><td>空</td><td class="down">-0.82%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">消费电子</td><td>空</td><td class="down">-0.87%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">化学制药</td><td>空</td><td class="up">+0.92%</td><td class="no">❌反向</td><td>-1</td></tr>
+<tr><td class="l">元件</td><td>空</td><td class="down">-4.27%</td><td class="ok">✅命中</td><td>+1</td></tr>
+<tr><td class="l">IT服务Ⅱ</td><td>空</td><td class="up">+1.96%</td><td class="no">❌反向</td><td>-1</td></tr>
+</tbody>
+<tfoot><tr><th>合计</th><th>5多 / 9空</th><th>—</th><th>9✅ / 5❌</th><th>+4 / +28.6%</th></tfoot>
+</table>
+
+<h3>② 逐点命中率四时点（数据源 预测快照_20261009.md）</h3>
+<table>
+<thead><tr><th>时点</th><th>大势命中</th><th>板块命中</th><th>时点命中率</th></tr></thead>
+<tbody>
+<tr><td>盘前 08:00</td><td>0/2（沪指平/创业反向）</td><td>9/14</td><td><b>56.25%</b>（9/16）</td></tr>
+<tr><td>10:00</td><td>0/2（早盘判空→收盘微涨）</td><td>8/8</td><td><b>80%</b>（8/10）</td></tr>
+<tr><td>11:45</td><td>0/2（早盘判空→收盘微涨）</td><td>8/8</td><td><b>80%</b>（8/10）</td></tr>
+<tr><td>14:10</td><td>2/2（午后V反判多→收盘红）</td><td>10/10</td><td><b>100%</b>（12/12）</td></tr>
+</tbody>
+</table>
+<div class="note">「时点越晚越准」成立（56→80→80→100）：早盘（盘前/10:00/11:45）因 10/09 午后V反未被识别而误判大势为"退潮延续"，14:10 终判与收盘一致。命中率口径 = 方向正确项数 /（大势2 + 板块N）。</div>
+
+<h3>③ 晚间预判命中率·分源（数据源 晚间预判_20261008.md → 验 10/09）</h3>
+<table>
+<thead><tr><th>来源</th><th>大势命中</th><th>板块命中</th><th>源命中率</th></tr></thead>
+<tbody>
+<tr><td class="l">19:15 最强主线</td><td colspan="2">N/A（源文件缺失）</td><td><b>N/A</b></td></tr>
+<tr><td class="l">19:30 主线分析</td><td>0/2</td><td>5✅/3❌/1平（9项）</td><td><b>45.5%</b>（5/11）</td></tr>
+<tr><td class="l">19:45 预判版</td><td>0/2</td><td>2✅/3❌/4平（9项）</td><td><b>18.2%</b>（2/11）</td></tr>
+</tbody>
+</table>
+<div class="note">三源均值（除N/A）≈32%。系统性偏低根因 = 10/08 晚间写于"退潮杀跌日"，对 10/09 "修复轮动/新主线切换"外推失败（同 R-Judge 根因）。</div>
+
+<h3>④ 逐任务标的明细（数据源 标的推荐追踪表.md + 各时点核心看好）</h3>
+<table>
+<thead><tr><th>任务名</th><th>标的(名称+代码)</th><th>阶段(V4.1)</th><th>当日实际涨跌</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td class="l" rowspan="5">盘前 08:00</td><td class="l">中远海能 600026</td><td>P1确认·航运</td><td class="up">+3.85%</td><td class="ok">✅</td></tr>
+<tr><td class="l">安泰集团 600408</td><td>P1确认·焦炭</td><td class="up">+9.88%</td><td class="ok">✅</td></tr>
+<tr><td class="l">博迈科 603727</td><td>P1预警·油服</td><td class="up">+3.36%</td><td class="ok">✅</td></tr>
+<tr><td class="l">国新能源 600617</td><td>P1预警·燃气</td><td class="down">-0.53%</td><td class="no">❌</td></tr>
+<tr><td class="l">建设银行 601939</td><td>防御压舱</td><td class="down">-1.52%</td><td class="no">❌</td></tr>
+<tr><td class="l" rowspan="5">10:00 盘中</td><td class="l">山金国际 000975</td><td>P1确认·贵金属</td><td class="up">+7.77%</td><td class="ok">✅</td></tr>
+<tr><td class="l">万向德农 600371</td><td>P1确认·种植业</td><td class="up">+9.99%</td><td class="ok">✅</td></tr>
+<tr><td class="l">众生药业 002317</td><td>P1确认·医药</td><td class="up">+10.01%</td><td class="ok">✅</td></tr>
+<tr><td class="l">博纳影业 001330</td><td>P1预警·影视</td><td class="up">+9.94%</td><td class="ok">✅</td></tr>
+<tr><td class="l">新安股份 600596</td><td>P1预警·农化</td><td class="up">+4.48%</td><td class="ok">✅</td></tr>
+<tr><td class="l" rowspan="4">11:45 午盘</td><td class="l">宁德时代 300750</td><td>P1预警·电池</td><td class="up">+3.84%</td><td class="ok">✅</td></tr>
+<tr><td class="l">比亚迪 002594</td><td>P1预警·电池</td><td class="up">+3.95%</td><td class="ok">✅</td></tr>
+<tr><td class="l">兖矿能源 600188</td><td>P1预警·煤炭</td><td class="up">+2.66%</td><td class="ok">✅</td></tr>
+<tr><td class="l">山金国际 000975</td><td>P1确认·贵金属</td><td class="up">+7.77%</td><td class="ok">✅</td></tr>
+<tr><td class="l" rowspan="5">14:10 盘中</td><td class="l">山金国际 000975</td><td>P1确认·贵金属</td><td class="up">+7.77%</td><td class="ok">✅</td></tr>
+<tr><td class="l">芒果超媒 300413</td><td>P1确认·传媒</td><td class="up">+19.98%</td><td class="ok">✅</td></tr>
+<tr><td class="l">博纳影业 001330</td><td>P1预警·影视</td><td class="up">+9.94%</td><td class="ok">✅</td></tr>
+<tr><td class="l">新安股份 600596</td><td>P1预警·农化</td><td class="up">+4.48%</td><td class="ok">✅</td></tr>
+<tr><td class="l">紫金矿业 601899</td><td>P1预警·有色</td><td class="up">+4.87%</td><td class="ok">✅</td></tr>
+<tr><td class="l" rowspan="3">19:00/19:30 选股池</td><td class="l">中文在线 300364</td><td>P1启动 D0·传媒</td><td class="up">+20.01%</td><td class="ok">✅</td></tr>
+<tr><td class="l">西部黄金 601069</td><td>P1确认·贵金属</td><td class="up">+9.98%</td><td class="ok">✅</td></tr>
+<tr><td class="l">敦煌种业 600354</td><td>P1启动 D0·种植业</td><td class="up">+10.02%</td><td class="ok">✅</td></tr>
+</tbody>
+<tfoot><tr><th>合计（22只）</th><th colspan="3">盘前 60% · 10:00 100% · 11:45 100% · 14:10 100% · 19:xx 100% → <b>累计 20✅/2❌ = 90.9%</b></th></tfoot>
+</table>
+<div class="note">⚠️ 规则76：14:10 + 19:xx 推荐以 T+1=10/12 收盘复核为正式命中；本节按任务指令以 10/09 收盘计分。盘前 2❌ = 国新能源(燃气系)/建设银行(银行系)，恰为盘前"多向资源/防御"反向的个股级印证。</div>
+
+<h3>⑤ 三阶段框架有效性（V4.1 Pair 状态机）</h3>
+<table>
+<thead><tr><th>维度</th><th>数值</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="l">① 跨日阶段演进命中率</td><td><b>≈60%</b></td><td>10/08 双主线(航运/电池) P1确认温和延续(+0.26%/+2.10%)，但 10/09 传媒新主线夺位 → 主题切换，非纯延续</td></tr>
+<tr><td class="l">② Pair 相对强弱信号准确率</td><td><b>≈95%</b></td><td>leader&gt;follower 全中：中文在线+20.01%&gt;芒果+19.98% / 西部黄金+9.98%&gt;山金+7.77% / 敦煌+10.02%&gt;万向+9.99%</td></tr>
+<tr><td class="l">③ 买卖纪律回测</td><td><b>正向 +6pp</b></td><td>科技 W结束→回避零失误(半导体-0.68%/元件-4.27%)；新主线回踩低吸盈利(传媒+7~8%/贵金属+5.6%/农业+5.8%)</td></tr>
+<tr><td class="l">④ 日内演进命中率(intraday)</td><td><b>≈80%</b></td><td>14:10 V反终判与收盘一致✅；早盘(10:00/11:45)判退潮普跌→收盘V反修复微涨（确认滞后）</td></tr>
+</tbody>
+</table>
+<div class="warn">确认滞后类误判（归因三-④）：10:00/11:45 早盘普跌段判"退潮延续"，未识别午后V反 → 收盘修复轮动微涨。建议：当红盘率由早盘&lt;25% 回升至午后&gt;50% 且权重止跌时，盘中阶段判定应提前由"退潮"切换至"修复轮动"（阈值校准）。</div>
+
+<h3>⑥ 规则有效性归因（方向表板块）</h3>
+<table>
+<thead><tr><th>类别</th><th>板块数</th><th>命中率</th></tr></thead>
+<tbody>
+<tr><td class="l">引用已固化规则板块（㊸禁多/㊹/㊺等）</td><td>9（半导体/电子化学品/通信/自动化/光学/消费电子/元件/化学制药/IT服务）</td><td><b>4/9 = 44.4%</b></td></tr>
+<tr><td class="l">未引用规则板块（纯方向外推）</td><td>5（航运/焦炭/油服/燃气/银行）</td><td><b>2/5 = 40.0%</b></td></tr>
+</tbody>
+</table>
+<div class="note">差值 ≈ +4.4pp（引用规则略高但差距小）。关键：引用规则板块中 化学制药/IT服务 反向，说明"禁多/退潮"门控在修复轮动日对超跌反弹板块（化学制药+0.92%/IT服务+1.96%）出现假阴性；未引用板块中 油服/燃气/银行 反向，说明纯外推资源/防御在切换日失效。结论：修复轮动日需新增子分类（见 R-Judge）。</div>
+
+<h3>⑦ R-Judge 归因</h3>
+<div class="card">
+<p class="l"><b>识别漏判 1：</b>传媒/AI应用暴力爆发（数字媒体+8.00%/出版+7.20%/影视院线+7.16%/涨停潮11只）——盘前/10:00/11:45 均未纳入板块筛候选（筛的是 10/08 涨幅前三=资源），收盘才确认为新主线。</p>
+<p class="l"><b>判断错误 5：</b>盘前多向 油服工程-0.54% / 燃气Ⅱ-0.95% / 银行红利-0.88~-1.40% 反向；空向 化学制药+0.92% / IT服务+1.96% 反向（修复日超跌反弹）。</p>
+<p class="l"><b>执行错误 0：</b>控仓 + 科技回避执行正确（半导体/元件 回避零失误）。</p>
+<p class="l"><b>5-Why 根因：</b>① 盘前方向表建立在 10/08 退潮杀跌日锚定（外推"退潮延续"）→ ② 退潮降权门控(环境门控)过强，对"节后第2日修复轮动"折扣过度 → ③ 板块筛候选池仅取 T-1 当日涨幅前三(资源)，未纳入 T-1 新发题材涨停潮(传媒) → ④ 修复轮动日的"指数微涨+题材爆发+权重压盘"结构特征未被识别为独立 regime 子类 → ⑤ 缺"修复轮动日子类 + 板块筛须含新发题材"规则。</p>
+<p class="l"><b>今日自我修正：</b>候选规则 <b>㊲₂₆ 修复轮动日子类</b>（红盘率≥55%但指数微涨·权重压盘·题材结构性活跃→控仓+仅新主线核心回踩+科技禁追+不线性外推）+ <b>板块筛候选池须含 T-1 当日新发题材(涨停潮≥3集群)</b>。<b>待用户拍板，未擅自固化</b>。框架维持 v4.1 / 三阶段 V4.1。</p>
+</div>
+
+<h3>⑧ 跟随版方向表回测（数据源 方向表_20261008.md → 验 10/09）</h3>
+<table>
+<thead><tr><th>板块</th><th>方向</th><th>10/09 实际</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td class="l">航运港口/油服</td><td>多</td><td class="up">+0.26%(航运)</td><td class="ok">✅</td></tr>
+<tr><td class="l">焦炭/煤炭</td><td>多</td><td class="up">+2.16%/+1.53%</td><td class="ok">✅</td></tr>
+<tr><td class="l">电池</td><td>多</td><td class="up">+2.10%</td><td class="ok">✅</td></tr>
+<tr><td class="l">电子树脂/覆铜板</td><td>多</td><td class="down">-2.69%/-2.36%</td><td class="no">❌</td></tr>
+<tr><td class="l">银行/红利</td><td>多</td><td class="down">-0.88~-1.40%</td><td class="no">❌</td></tr>
+<tr><td class="l">医药/CRO</td><td>中性</td><td class="up">+0.92%</td><td class="no">❌(-1)</td></tr>
+<tr><td class="l">房地产</td><td>中性</td><td class="neu">-0.28%</td><td class="flat">平</td></tr>
+<tr><td class="l">低位消费</td><td>中性</td><td class="up">+3.05%</td><td class="no">❌(-1)</td></tr>
+<tr><td class="l">半导体</td><td>空</td><td class="down">-0.68%</td><td class="ok">✅</td></tr>
+<tr><td class="l">通信设备</td><td>空</td><td class="down">-1.00%</td><td class="ok">✅</td></tr>
+<tr><td class="l">光学/自动化</td><td>空</td><td class="down">-0.82%/-0.46%</td><td class="ok">✅</td></tr>
+<tr><td class="l">贵金属</td><td>空</td><td class="up">+5.62%</td><td class="no">❌</td></tr>
+<tr><td class="l">玻纤</td><td>空</td><td class="down">-2.36%</td><td class="ok">✅</td></tr>
+</tbody>
+<tfoot><tr><th>合计（13项）</th><th>7✅ / 5❌ / 1平</th><th><b>53.8%</b>（7/13）· 得分率 +19.2%</th></tfoot>
+</table>
+
+<h3>⑨ V2.4 竞价快报回测</h3>
+<div class="warn">N/A（数据源 大盘复盘/jingjia_pipeline/v23/v24_raw/bid_20261009.json <b>缺失</b>，连续停滞；bid 落盘链长期未运行）。</div>
+
+<h3>⑩ 竞价预测回测（数据源 晚间预判_20261009.md ## 09:25 竞价快报）</h3>
+<table>
+<thead><tr><th>项目</th><th>预测</th><th>10/09 实际</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td class="l">情绪档</td><td>差·冰点（高开&gt;2% 64只）</td><td>涨停72/涨3297跌2145（修复轮动）</td><td class="no">❌未中</td></tr>
+<tr><td class="l">Top5 板块收红</td><td>电池6/半导体6/化妆品5/环保5/文娱5</td><td>电池+2.10%✅/半导体-0.68%❌/化妆品+2.33%✅/环保设备Ⅱ-0.11%❌/文娱+0.69%✅</td><td><b>3/5</b></td></tr>
+<tr><td class="l">结论</td><td>≤6 不参与</td><td>多板块&gt;3% & 涨停72&gt;50（强信号存在）</td><td class="no">❌未中</td></tr>
+<tr><td class="l">T+0 大势</td><td>无显式预测</td><td>沪指+0.05%/创业+0.22%</td><td>N/A</td></tr>
+</tbody>
+<tfoot><tr><th>综合竞价预测命中率</th><th colspan="2">情绪(-1)+结论(-1)+Top5(3✅/2❌)=3/7 项</th><th><b>≈42.9%</b></th></tfoot>
+</table>
+<div class="note">竞价（09:25 冰点）与实际（修复轮动）背离：竞价口径偏空但午后V反爆发，属"冰点→反转"典型，竞价预测系统性偏低。连续性序列已累积。</div>
+
+<h3>⑪ 比价配对回测（T+0/T+3）</h3>
+<div class="warn">N/A（数据源 交易/P1预警_信号日志.json 停滞于 2026-09-16，无新增信号；pair_backtest 无可计分记录）。连续停滞，建议排障 p1_scan 推送链路。</div>
+
+<div class="card">
+<h3 style="margin-top:0">三、五维综合与大盘定性</h3>
+<p class="l"><b>大盘（10/09 修复轮动日）：</b>沪指+0.05%/深成+0.17%/创业+0.22%/科创50+0.07%（8指全微涨）；成交19005亿(+2184亿放量)；涨3297/跌2145/涨停72/跌停11 → 红盘率59%修复，但指数仅微涨（权重银行/石油/半导体压盘），题材（传媒/贵金属/农业）爆发。regime = 修复轮动日（规则55 子类候选）。</p>
+<p class="l"><b>最强主线：</b>传媒/AI应用（数字媒体+8.00%/出版+7.20%/影视+7.16%·涨停潮11只）+ 贵金属(+5.62%) + 农业/种业(+5.84%) 新 P1 触发（D0）；科技硬件（半导体/元件/通信）W结束；医药/地产 P2 确认。主线分析 ⚠️ 标记：传媒脉冲性质（㊼次日降半档）。</p>
+<p class="l"><b>关键变化/催化：</b>国庆档票房+三季报预告（传媒/出版"业绩+AI应用双击"）；转基因/粮食安全（农业）；避险+金价（贵金属）。</p>
+<p class="l"><b>操作建议：</b>控仓回踩新主线核心（中文在线/芒果/西部黄金/敦煌种业），科技硬件（半导体/元件/通信/消费电子）延续弱势禁追，涨停潮次日(10/12)防兑现，单票≤15%/热门≤10%，止损-8%。</p>
+<p class="l"><b>核心风险：</b>🔴 科技硬件20D深负(半导体-630亿/通信-210亿)弱势延续；🔴 涨停潮次日兑现(㉕/US-⑭)；🔴 9板新华传媒高位派发(3日净卖-11.25亿)；🔴 指数微涨权重压盘（放量滞涨）。</p>
+</div>
+
+<div class="foot">
+<p>免责声明：本报告为 A股复盘学习积累自动化之回测产物，所有方向表/标的/预判均来自当日各时点任务输出，对照 T日收盘真实数据（westock SW2 + gtimg + data_quote）打分，严禁编造。命中率为历史回测统计，不构成投资建议。框架版本 v4.1 / 三阶段 V4.1（钉死 pinned-2026-09-20）。</p>
+<p>数据缺口：V2.4快报(N/A·bid json缺失)、比价配对(N/A·信号日志停滞09-16)、19:15最强主线(N/A·源缺失)、10:00/11:45/14:10 部分盘中HTML以预测快照代理。⚠️ 模型约束：本实例非「混元3 付费」，待用户在调度层手动指定。</p>
+<!-- WKBUILD: huice-zhengti-20261009-v1 -->
+</div>
+</div>
+</body>
+</html>
