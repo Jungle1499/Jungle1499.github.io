@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>节点理论 · 完整说明 v2.1</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1a1a1a;--ink2:#444;--mut:#666;--up:#e0392b;--down:#1a9850;--bd:#e6e8eb;--acc:#2563eb;--warn:#b45309;--bad:#b91c1c;--okc:#16a34a;}
+*{box-sizing:border-box}
+body{font-family:-apple-system,Segoe UI,Roboto,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:24px;line-height:1.75}
+.wrap{max-width:1040px;margin:0 auto}
+h1{font-size:26px;margin:0 0 6px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:18px}
+h2{font-size:19px;margin:26px 0 10px;border-left:4px solid var(--acc);padding-left:10px}
+h3{font-size:15px;margin:16px 0 8px;color:var(--ink2)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--mut);font-weight:600;background:#fafbfc}
+.ok{background:#ecfdf5;border-left:3px solid var(--okc);padding:10px 14px;border-radius:6px;font-size:13.5px;margin:10px 0}
+.bad{background:#fef2f2;border-left:3px solid var(--bad);padding:10px 14px;border-radius:6px;font-size:13.5px;margin:10px 0}
+.note{background:#fffbeb;border-left:3px solid var(--warn);padding:10px 14px;border-radius:6px;font-size:13.5px;margin:10px 0}
+.fix{background:#eff6ff;border-left:3px solid var(--acc);padding:10px 14px;border-radius:6px;font-size:13.5px;margin:10px 0}
+code{background:#f1f3f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
+.step{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:1px 9px;font-size:13px;font-weight:700;margin-right:6px}
+.tag{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;margin-left:6px}
+.t-real{background:#dcfce7;color:#166534}.t-inf{background:#fee2e2;color:#991b1b}.t-todo{background:#fef9c3;color:#854d0e}
+.formula{background:#0f172a;color:#e2e8f0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;padding:12px 14px;border-radius:8px;overflow-x:auto;margin:10px 0;line-height:1.7}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0;font-size:13px}
+.flow span{background:#eff6ff;border:1px solid #c7dcfc;border-radius:8px;padding:7px 11px}
+.flow i{color:var(--mut);font-style:normal}
+.up{color:var(--up)}.down{color:var(--down)}
+.toc a{color:var(--acc);text-decoration:none;margin-right:13px;font-size:13px}
+footer{color:var(--mut);font-size:12px;text-align:center;margin:26px 0 6px}
+.ver{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;border-radius:8px;padding:8px 12px;font-size:12.5px;margin:0 0 16px;display:inline-block}
+</style></head><body><div class="wrap">
+
+<h1>节点理论 · 完整说明 v2.1</h1>
+<div class="sub">什么是节点理论、它怎么跑、边界在哪 ｜ 基于 08:30 盘前链路逆向重建 + 15 交易日（9/14~10/09）westock 实证 ｜ 整理 2026-10-12</div>
+<div class="ver">版本 v2.1 · 更新 2026-10-12 07:05 ｜ 本版：完整六步说明 + 诚实边界（⑦集成铁律已删，仅保留引擎本体）</div>
+
+<div class="card toc">
+<b>目录：</b>
+<a href="#s0">概述</a><a href="#s1">① 输入</a><a href="#s2">② ADJ 闸门</a><a href="#s3">③ 题材源</a><a href="#s4">④ 情绪×指数</a><a href="#s5">⑤ 输出形态</a><a href="#s6">⑥ M1~M6 与赔率</a><a href="#src">数据来源</a><a href="#lim">诚实边界</a>
+</div>
+
+<div class="card" id="s0">
+<h2>概述：它到底解决什么问题</h2>
+<div class="ok">
+<b>一句话</b>：节点理论是一套建立在 <code>westock data_market_overview</code> 市场总评分序列上的<b>「今天有没有资格出手」准入开关</b>。<br><br>
+它<b>不预测涨跌</b>，只回答三个问题（交易三问）：
+<b>① 今天什么节点</b>（能不能打）→ <b>② 打什么模式</b>（M1~M6）→ <b>③ 赔率多少</b>（值不值得下手）。
+</div>
+<div class="fix">
+<b>与 V4.1 的关系：平行互补，不是替代。</b><br>
+· <b>V4.1</b> 自下而上，回答「板块 / 个股在第几态（P1~P3九态）」，但对「今天该不该空仓」没有答案；<br>
+· <b>节点理论</b>自上而下，回答「今天有没有资格出手」，补的是三级框架（大盘 gate + 行业 stage + 个股 alpha）里缺的<b>顶层 risk gate</b>。
+</div>
+<div class="note">
+<b>它管什么、不管什么</b>：节点只管<b>买点</b>（能不能买、买什么形态、给多少仓位）。它是一个<b>买点框架</b>——所以四种情绪位置里<b>没有「高潮」档</b>（那是该减仓 / 该卖的窗口，不在它的作用域）；它<b>不处理卖点</b>。
+</div>
+<div class="flow">
+<span><b>① 输入</b> westock 15 维</span><i>→</i>
+<span><b>② ADJ 闸门</b> 状态机</span><i>→</i>
+<span><b>③ 题材源</b> 三件套+聚类</span><i>→</i>
+<span><b>④ 情绪×指数</b> 查表</span><i>→</i>
+<span><b>⑤ 输出</b> 节点+仓位</span><i>→</i>
+<span><b>⑥ 动作</b> M1~M6+赔率</span>
+</div>
+</div>
+
+<div class="card" id="s1">
+<h2><span class="step">①</span>输入：一次调用拿到的 15 个维度 <span class="tag t-real">实锤</span></h2>
+<div class="ok">
+<b>核心事实</b>：不是"1 个主输入 + 11 个另取"。单次 <code>data_market_overview(date=T-1, type=summary)</code> 调用，<b>一次返回 15 个 <code>_SCORE</code> + 15 个 <code>_STATUS</code></b>，全来自同一数据源。<br>
+状态机<b>只吃 <code>ADJ_SCORE</code> 这一维</b>跑判定；其余 14 维在原始报告里是<b>旁证文字</b>，没写进公式。
+</div>
+<table>
+<tr><th>类别</th><th>字段</th><th>含义</th></tr>
+<tr><td rowspan="2">总评</td><td><code>ADJ_SCORE</code></td><td><b>状态机唯一主输入</b>，调整总评分（0~100 连续）</td></tr>
+<tr><td><code>RAW_SCORE</code></td><td>原始评分（0~100 连续）</td></tr>
+<tr><td rowspan="3">情绪 / 广度</td><td><code>SENTIMENT</code></td><td>情绪（含"涨停&gt;50只"定性），1~5 级</td></tr>
+<tr><td><code>SECTOR_WIDTH</code></td><td>板块宽度（1=全面下跌&lt;20%，2=防御为主…）</td></tr>
+<tr><td><code>STOCK_WIDTH</code></td><td>个股宽度（普涨 / 普跌）</td></tr>
+<tr><td rowspan="4">技术 / 趋势</td><td><code>TECHNICAL</code></td><td>技术面 1~5</td></tr>
+<tr><td><code>TREND_LONG_DIRECTION / STRENGTH</code></td><td>中长期趋势方向 / 强度</td></tr>
+<tr><td><code>TREND_SHORT_DIRECTION / STRENGTH</code></td><td>短期趋势方向 / 强度（＝④步的指数输入）</td></tr>
+<tr><td><code>VALUATION</code></td><td>估值 1~5</td></tr>
+<tr><td>量价</td><td><code>VOLUME_ENERGE</code></td><td>量能 1~5</td></tr>
+<tr><td rowspan="3">轮动</td><td><code>CAP_ROTATION</code></td><td>大小盘轮动 1~5</td></tr>
+<tr><td><code>SECTOR_ROTATION</code></td><td>行业轮动 1~5</td></tr>
+<tr><td><code>STYLE_ROTATION</code></td><td>风格轮动 1~5</td></tr>
+</table>
+<div class="note">
+<b>两层打分，必须说老实话</b>：<br>
+· <b>第一层是 westock 黑箱</b>——15 个分都是腾讯后端模型算好返回的，<b>权重 / 公式 / 样本全未知</b>。这是节点理论最大的脆弱点：westock 改算法或缺字段，整套判定全瞎。<br>
+· <b>第二层才是节点理论自己的判定</b>——它只在 <code>ADJ_SCORE</code> 一维上做分档（Δ二阶导 + 滞回 ±5 + ≤11 冰点阈值）。
+</div>
+<div class="bad">
+<b>summary 包真给不了的 3 项</b>（落地必须另取）：① 精确涨停 / 跌停家数 → <code>data_changedist</code>；② 最高连板高度 → 无直接工具，需自算；③ 是否破关键位 → <code>data_index</code> 取点位自比。
+</div>
+</div>
+
+<div class="card" id="s2">
+<h2><span class="step">②</span>心脏：ADJ 闸门状态机 <span class="tag t-real">实锤 5/5 复现</span></h2>
+<div class="ok">
+这套引擎的核心是一个<b>带滞回（±5）的状态机</b>。它看的是<b>方向（二阶导）</b>而不是水位高低——9/24 拿 19.86 判冰点、9/29 拿 18.96 判可攻，<b>相差不到 1 分，结论完全相反</b>。
+</div>
+<div class="formula">Δ = ADJ_t − ADJ_(t-1)
+
+IF  ADJ ≤ 11              → 冰点 / 退潮        # 深水区，不看方向，直接判
+ELIF Δ ≤ −5               → 冰点 / 退潮        # 显著恶化，跌回冰点
+ELIF Δ ≥ +5 且 题材成立    → 新核心题材节点（可攻）
+ELIF Δ ≥ +5 但 题材不成立  → 仅修复，不放行进攻
+ELSE (−5 &lt; Δ &lt; +5)       → 维持前一日判定     # 滞回区，防抖动</div>
+<table>
+<tr><th>日期</th><th>ADJ</th><th>Δ</th><th>节点判定</th><th>说明</th></tr>
+<tr><td>9/23</td><td>23.68</td><td class="down">−9.28</td><td>冰点 / 退潮</td><td>Δ≤−5 触发</td></tr>
+<tr><td>9/24</td><td>19.86</td><td class="down">−3.82</td><td>冰点 / 退潮</td><td>进入滞回区，维持前值</td></tr>
+<tr><td>9/28</td><td>10.48</td><td>—</td><td>冰点 / 退潮</td><td>ADJ≤11 深水区</td></tr>
+<tr><td>9/29</td><td class="up">18.96</td><td class="up">+8.48</td><td>新核心题材节点</td><td>Δ≥+5 触发</td></tr>
+<tr><td>9/30</td><td>16.97</td><td class="down">−1.99</td><td>新核心题材节点</td><td>滞回维持（未跌破 ±5）</td></tr>
+<tr><td>10/8</td><td>9.48</td><td class="down">−7.49</td><td>冰点 / 退潮</td><td>真跌回冰点</td></tr>
+<tr><td>10/9</td><td class="up">18.66</td><td class="up">+9.18</td><td>新核心题材节点</td><td>Δ≥+5 触发</td></tr>
+</table>
+<div class="note">
+<b>滞回是关键设计</b>：9/30 从 18.96 掉到 16.97（−1.99）时<b>仍维持"题材节点"</b>，直到 10/8 掉到 9.48（−7.49）才真正跌回冰点——避免在临界值附近来回抖动。
+</div>
+</div>
+
+<div class="card" id="s3">
+<h2><span class="step">③</span>题材从哪来：三件套过滤 + 动态聚类 <span class="tag t-real">实证 9/29 对账 4/4</span></h2>
+<div class="ok">
+<b>定论</b>：题材池 ＝ <b>概念排名快照</b> ＋ <b>三件套过滤</b> ＋ <b>动态聚类</b>。<br>
+关键是分清：<b>三件套是过滤器（守门员），不是题材的生产者</b>。题材清单是"喂进来"的，不是状态机生成的。
+</div>
+<h3>三件套 → 可执行过滤规则</h3>
+<table>
+<tr><th>维度</th><th>对应快照字段</th><th>落地阈值</th></tr>
+<tr><td>成建制梯队</td><td><code>upCount</code>（涨/总数）</td><td>涨/总 ≥ 0.55 且 成分数 ≥ 5</td></tr>
+<tr><td>龙头可确认</td><td><code>leader.changePct</code></td><td>≥ +9%（涨停级）</td></tr>
+<tr><td>价正向（补 gate）</td><td><code>changePct</code></td><td>≥ 当日 P60（随行情自适应）</td></tr>
+<tr><td>硬催化（外部）</td><td>快照无此字段</td><td>需外接新闻 / 政策；用 <code>mainInflow&gt;0</code> 作"市场已投票"代理</td></tr>
+</table>
+<h3>动态聚类：题材数不写死</h3>
+<p>过滤后按<b>锚词归大主题</b>（如"房地产开发 / 房屋租赁 / 租售同权 / 物业管理"→ 地产链），未匹配的按核心词自动成簇；再<b>成建制提炼</b>（≥3 个概念，或代表涨幅 ≥8% 的单概念，才算"今日题材"）。15 日实测题材数随行情浮动：</p>
+<table>
+<tr><th>行情强度</th><th>日期</th><th>题材数</th></tr>
+<tr><td>真冰点</td><td>9/24、9/25、9/28</td><td><b>0</b></td></tr>
+<tr><td>弱</td><td>9/15、9/23</td><td>1</td></tr>
+<tr><td>中弱</td><td>9/17、9/22</td><td>2</td></tr>
+<tr><td>修复</td><td>9/14、9/21、9/29、9/30</td><td>4 / 4 / 4 / 3</td></tr>
+<tr><td>强</td><td>9/16、9/18、10/09</td><td>8 / 6 / 7</td></tr>
+</table>
+<div class="bad">
+<b>⚠️ 最重要的边界：题材是同步描述器，不是前瞻触发器</b>。<br>
+三件套告诉你的是「今天哪些板块成建制在涨」，<b>不是</b>「明天哪些会涨」。9/29 筛出的 4 个题材：9/30、10/8 连两日基本全死，仅 AI应用 在 T+3（10/9）才爆发 +3.46%；且题材隔日保留率极低（9/29→9/30 保留 0/4，10/8→10/9 保留 1/7），近乎一日游。<b>按每日策略的评价窗口算，9/29 的题材策略在自身窗口是失败的</b>，T+3 那次命中属于幸存者偏差。<br>
+→ <b>题材只用来"圈范围"，不用来做前瞻；择时交回 V4.1。</b>
+</div>
+</div>
+
+<div class="card" id="s4">
+<h2><span class="step">④</span>情绪 × 指数错位：查表，不是算时间差 <span class="tag t-real">机制实锤</span> <span class="tag t-todo">情绪源待补</span></h2>
+<div class="ok">
+<b>机制</b>：把「情绪状态」和「指数状态」两个<b>离散状态</b>并列<b>查表</b>，得到"等 / 抢 / 预备"的动作。<br>
+常说的"情绪领先指数 0.5~1 天"，是<b>判定出"情绪已拐、指数没拐"之后的定性说法</b>，不是先算出一个时间差数字再决策——<b>"时间差大小"不是输入</b>。
+</div>
+<table>
+<tr><th>情绪状态</th><th>指数状态</th><th>判读</th><th>动作</th></tr>
+<tr><td>已前置触底（领先）</td><td>仍在跌</td><td>情绪领先，大资金提前拿先手</td><td>预备性窗口 → 提前买最高身位</td></tr>
+<tr><td>在杀</td><td>在杀</td><td>同步双杀，主跌中继</td><td><b>不抢反弹</b></td></tr>
+<tr><td>已释放完</td><td>在跌</td><td>双杀末端，易寻底</td><td>等冰点确认再进</td></tr>
+<tr><td>在上行</td><td>横盘</td><td>情绪跑在前面，方向未选</td><td>预留预备仓，等 9:25 竞价</td></tr>
+</table>
+<h3>两个输入分别取什么（都有过纠错）</h3>
+<table>
+<tr><th>输入</th><th>口径</th></tr>
+<tr><td><b>指数</b></td><td><code>TREND_SHORT_DIRECTION</code>（或真指数当日涨跌）。9/29、9/30 均"弱势下跌"，与报告判词一致 <span class="tag t-real">基本确定</span></td></tr>
+<tr><td><b>情绪</b><br>（三层必须分开）</td><td><b>① <code>SENTIMENT</code>（15 维内）</b>＝ 广度情绪，判据"涨停&gt;50只 / 涨股比&gt;70% / 两融周增&gt;2%"。<b class="up">实测证伪·不可用</b>：9/29、9/30、10/09 <b>恒为 5 分"情绪狂热"</b>，对"9/29 不抢 vs 9/30 预备窗口"这对相反判词<b>零区分度</b>。<span class="tag t-real">实锤证伪</span><br><b>② <code>ADJ_SCORE</code></b> ＝ 综合调整分，<b class="up">已证伪</b>：用它顶替情绪会导致 9/29 / 9/30 判词自相矛盾。<span class="tag t-real">实锤证伪</span><br><b>③ 连板 / 接力情绪</b>（连板高度、封板率、高位股断板）＝ <b>真正驱动"在杀 / 前置触底"两态的那个</b>，<b>不在 15 维包内，必须另取</b>：涨停家数可用 <code>data_changedist</code>，连板梯队需个股层面（<code>tool_filter</code> / 问财"连板"自算高度）<span class="tag t-todo">待补源</span></td></tr>
+</table>
+<div class="note">
+<b>实测对照（9/29 vs 9/30，指数同为弱势下跌）</b>：<br>
+· 9/29 ＝ 指数弱跌 ＋ <b>接力情绪在杀</b> → 同步双杀 → 不抢反弹<br>
+· 9/30 ＝ 指数弱跌 ＋ <b>接力情绪已触底</b> → 情绪领先 → 预备性窗口<br>
+这两天判词相反，但 <code>SENTIMENT</code>、指数<b>都一样</b>——差别全在"接力情绪"上，这正是它必须另取的原因。
+</div>
+</div>
+
+<div class="card" id="s5">
+<h2><span class="step">⑤</span>输出什么：3 个标签，2 个仓位桶 <span class="tag t-real">实锤</span></h2>
+<div class="ok">
+原始输出是 <b>3 个节点类型标签</b>，但落到仓位只有 <b>2 个桶</b>：<br>
+· <b>冰点 / 退潮</b> → 仓位 <b>0-3%</b>（单笔 ≤1.5-2%）<br>
+· <b>新核心题材节点（中）</b> → 仓位 <b>20-30%</b>（单笔 ≤3%）<br>
+· <b>新核心题材节点（强）</b> → <b>同属 20-30% 桶</b>，「强」只是置信度更高、可取桶上限 30%，<b>不是第三个仓位档</b>。
+</div>
+<table>
+<tr><th>字段</th><th>内容</th></tr>
+<tr><td>节点类型</td><td>冰点/退潮 ｜ 新核心题材节点（中）｜ 新核心题材节点（强）</td></tr>
+<tr><td>中 / 强 判定</td><td><b>中</b> ＝ Δ≥+5 且题材成立（单题材满足三件套）；<b>强</b> ＝ Δ≥+5 且 <b>≥2 个题材同时成立</b>（多题材共振）或板块广度显著抬升 <span class="tag t-inf">推断（原始未落盘判定线）</span></td></tr>
+<tr><td>情绪位置 emo_stage</td><td>冰点 / 分歧 / 启动 / 退潮（节点内四个标签，<b>不是 1/2/3 细分档</b>）</td></tr>
+<tr><td>指数方向 idx_trend</td><td>TREND_SHORT 方向</td></tr>
+<tr><td>周期错配预警</td><td>等 / 抢（来自④的查表结果）</td></tr>
+<tr><td>推荐模式</td><td>M1~M6（见⑥）</td></tr>
+<tr><td>赔率 / 仓位</td><td>≈2 / ≈2-3 / 无；<b>仓位仅 2 桶</b>：0-3% 或 20-30%</td></tr>
+</table>
+<div class="fix">
+<b>「日历乘数」是什么</b>：它不是 ×0.5 那种真乘法，而是<b>节前 / 事件的降仓覆盖阀</b>——遇到假期窗口，直接把基础仓位压到更低的上限：<br>
+· 节前最后交易日 → 仓位收敛至 <b>10-15%</b>　· 长假前 → 过节仓 <b>≤5%</b><br>
+所以「冰点 0-3% 遇长假 → ≤5%」「题材节点 20-30% 遇节前最后日 → 10-15%」。
+</div>
+</div>
+
+<div class="card" id="s6">
+<h2><span class="step">⑥</span>买点形态与赔率：M1~M6 + 死赔率</h2>
+<div class="ok">
+<b>分工</b>：节点解决"能不能下手"，M1~M6 解决"下什么手"。它们按<b>个股身位</b>分类（涨到几板、在梯队什么位置），本质是<b>买点形态 / 动作分类框架</b>——<b>不负责筛选具体标的</b>，具体买哪只由上游题材池喂入。
+</div>
+<table>
+<tr><th>模式</th><th>名称</th><th>触发条件</th><th>赔率</th></tr>
+<tr><td>M1</td><td>2进3 加强确认</td><td>主线高标封死，剩 2进3，高开带量即买点</td><td>≈2-3</td></tr>
+<tr><td>M2</td><td>弱转强</td><td>需高开 &gt;3% 带量表态</td><td>≈2-3</td></tr>
+<tr><td>M3</td><td>换手龙容量中军</td><td>主线中军位置，需双确认</td><td>≈2</td></tr>
+<tr><td>M4</td><td>补涨</td><td>主线高位后，同题材低位首板</td><td>≈2</td></tr>
+<tr><td>M5</td><td>双头 / 二波</td><td>大题材缩量回调（换手&lt;10%、地量企稳、不破10日线）→ 放量反包</td><td>≈2-3（限大题材）</td></tr>
+<tr><td>M6</td><td colspan="3">5 天样本内未出现，暂无实例支撑</td></tr>
+</table>
+<div class="note">
+<b>⚠️「赔率」到底是什么：是盈亏比，不是胜率</b>。<br>
+<b>赔率 ＝ 盈亏比（reward:risk）</b>，≈2 即约 2:1（赚 2 块、亏 1 块），≈2-3 即约 2:1~3:1。它<b>不是概率、不是胜率</b>——两者是独立维度：<br>
+· 盈亏比 2:1，打平只需胜率 ≈<b>33%</b>；3:1 只需 ≈<b>25%</b>。所以 2~3 的盈亏比意味着<b>"经常亏、偶尔大赚"的高波动玩法</b>，正是 M1 / M2 / M5 追板类动作的本来面目。<br>
+· 原始框架<b>只给了盈亏比、没给胜率</b>，所以"值不值得"其实缺一半（期望 ＝ 胜率×平均赚 − 败率×平均亏）。<br>
+· 「死赔率」的"死"＝ <b>写死的常量</b>（今天 M1 是 ≈2-3，下个月还是），目的是同模式动作一致，不是每天重算。
+</div>
+<div class="fix">
+<b>和「严禁追高」铁律的关系（已闭环）</b>：<br>
+M1 / M2 / M5 的触发（高开带量即买、高开&gt;3% 表态、放量反包）本质是<b>买强度、买启动</b>，字面上撞「严禁追高」。解法不是删铁律，而是<b>把禁忌精确重定义</b>：<br>
+· 「严禁追高」＝ 禁止<b>无框架逻辑支撑的追涨</b>（见谁强追谁 / FOMO late-chase）；<br>
+· <b>≠</b> 禁止 <b>V4.1 / 节点确认后的启动买点</b>（首板、2进3、回踩不破的启动时介入）。<br>
+<b>层级上</b>：风控元层（止损 / 仓位 / 严禁追高）<b>&gt;</b> 框架层（V4.1）。V4.1 的"最高"是指<b>框架判据层内</b>最高——它管「能不能买」，严禁追高管「怎么买」，<b>资金安全高于框架信号</b>，这本来就不冲突。
+</div>
+<div class="bad">
+<b>⚠️ 但这个豁免不能当免死金牌</b>：「节点 / V4.1 确认的买不算追高」，安全性<b>完全取决于判得准不准</b>。判错的时候，"买 2进3"<b>恰好就是普通追高</b>（买在失败前的强）。所以豁免必须叠加三重约束：<br>
+① 必须经 <b>V4.1 Pair 复核</b>，与 V4.1 冲突一律按 V4.1 禁买　② 单笔 ≤3%　③ 影子运行 ≥10 交易日 + ≥20 样本后再正式采纳。
+</div>
+</div>
+
+<div class="card" id="src">
+<h2>数据来源与口径</h2>
+<table>
+<tr><th>用途</th><th>来源</th><th>口径</th></tr>
+<tr><td>市场总评分 15 维</td><td><code>westock data_market_overview</code>（type=summary）</td><td>单次调用返回 15 个 <code>_SCORE</code> + 15 个 <code>_STATUS</code>；腾讯后端黑箱打分，公式未知</td></tr>
+<tr><td>涨跌停家数</td><td><code>updown</code> 的 <code>CNT_REACH_UPLIMIT</code></td><td>带 <code>date</code> 参数可回溯，<b>建议固定用它</b></td></tr>
+<tr><td>涨跌分布</td><td><code>data_changedist</code></td><td>无日期参数，只能取当日；<b>与 updown 口径不一致</b>（同日 72 vs 62）</td></tr>
+<tr><td>题材池（概念）</td><td>概念排名快照 <code>*.json</code> → <code>data.rows</code></td><td><b>概念总数随日变动</b>（实测 803→804），<b>严禁写死数字</b>，脚本用 <code>len(rows)</code></td></tr>
+<tr><td>连板梯队</td><td>暂无直接源</td><td>需 <code>tool_filter</code> 或问财"连板"自算高度 <span class="tag t-todo">待补</span></td></tr>
+</table>
+</div>
+
+<div class="card" id="lim">
+<h2>诚实边界：这套东西还没被证明"稳"</h2>
+<div class="bad">
+<b>1. 样本太短，稳定性未证明</b>：带交易三问 + M1~M6 的结构化版本，在 08:30 链路里<b>只从 9/23 才插入，到 10/09 仅 7 个交易日</b>，且全在 9/22 高点后的<b>下杀腿</b>里，<b>从未见过 ADJ 40+ 的单边上扬市</b>。按"跑得久才算稳"的标准，稳定性<b>没有证明</b>。
+</div>
+<div class="bad">
+<b>2. 阈值都是反推的，需要校准</b>：<code>ADJ≤11</code> 冰点、<code>滞回 ±5</code>、三件套阈值、题材聚类锚词，全部是 7 个样本反推出来的，<b>需 ≥20 交易日滚动校准</b>才能算数。
+</div>
+<div class="bad">
+<b>3. 已经证伪、不能用的东西</b>：① <code>SENTIMENT</code>（广度情绪）对相反判词零区分度，<b>不能当错位判定的情绪输入</b>；② <code>ADJ</code> 顶替情绪会导致判词矛盾，<b>不能用</b>；③ 题材是<b>同步描述器</b>，<b>没有前瞻价值</b>，只圈范围不择时。
+</div>
+<div class="bad">
+<b>4. 模式体系本身证据很薄</b>：<b>M6 无实例</b>、<b>M2 / M3 只在"条件预案"里出现过、没实盘启用过</b>；赔率数字（≈2 / ≈2-3）原始报告直接给、没说怎么来的，而且<b>只给盈亏比、没给胜率</b>。
+</div>
+<div class="note">
+<b>结论该怎么用</b>：这套框架的价值在于<b>提供"今天有没有资格出手"的顶层 risk gate</b>——它补的是 V4.1 管不到的"该不该空仓"。但它<b>目前只能当gate用</b>，题材只圈范围、择时与确认交回 V4.1 Pair 相对强弱，<b>在攒够 ≥20 样本、走完影子运行之前，不要把它当独立的选股依据</b>。
+</div>
+</div>
+
+<footer>节点理论 v2.1 · 由 08:30 盘前链路逆向重建 · 实证窗口 2026-09-14 ~ 2026-10-09 · 整理 2026-10-12</footer>
+<!-- WKBUILD:node-theory-20261012-v2.1 -->
+
+</div></body></html>
