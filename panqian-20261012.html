@@ -1,600 +1,174 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>每日盘前策略 - 2026年10月12日</title>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>每日盘前策略 · 2026-10-12</title>
 <style>
-  :root {
-    --bg: #f5f7fa;
-    --card-bg: #ffffff;
-    --text: #1a1a2e;
-    --text-secondary: #5a5a7a;
-    --border: #e0e4e8;
-    --primary: #1a237e;
-    --primary-light: #3949ab;
-    --accent: #0d47a1;
-    --up: #c62828;
-    --up-light: #e53935;
-    --down: #2e7d32;
-    --warn: #e65100;
-    --success: #1565c0;
-    --gold: #f57c00;
+  :root{
+    --up:#e0392b; --down:#1a9850; --flat:#888;
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1c2430; --muted:#6b7686;
+    --line:#e5e9f0; --accent:#2f5fd0; --accent2:#7b3fd1; --warn:#c8761a;
+    --chip:#eef2fb;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    padding: 20px;
-  }
-  .container { max-width: 680px; margin: 0 auto; }
-  .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    color: white;
-    padding: 32px 24px;
-    border-radius: 16px;
-    margin-bottom: 20px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(26,35,126,0.25);
-  }
-  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
-  .header .date { font-size: 15px; opacity: 0.9; margin-bottom: 16px; }
-  .header .song { font-size: 13px; opacity: 0.75; font-style: italic; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; margin-top: 12px; }
-  .card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    border: 1px solid var(--border);
-  }
-  .card-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-title .icon { font-size: 20px; }
-  .summary-box {
-    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 14px;
-    border-left: 4px solid var(--primary);
-  }
-  .summary-box h4 { font-size: 14px; color: var(--primary); margin-bottom: 8px; font-weight: 600; }
-  .summary-box p { font-size: 13.5px; color: var(--text); line-height: 1.8; }
-  .tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-right: 6px;
-    margin-bottom: 6px;
-  }
-  .tag-up { background: rgba(198,40,40,0.12); color: var(--up); }
-  .tag-down { background: rgba(46,125,50,0.12); color: var(--down); }
-  .tag-warn { background: rgba(230,81,0,0.12); color: var(--warn); }
-  .tag-info { background: rgba(21,101,192,0.12); color: var(--success); }
-  .logic-chain { display: flex; flex-direction: column; gap: 12px; }
-  .logic-item {
-    background: #f8f9fc;
-    border-radius: 8px;
-    padding: 14px 16px;
-    border-left: 3px solid var(--accent);
-  }
-  .logic-item .step {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--primary);
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-  }
-  .logic-item .step span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }
-  .logic-item .text { font-size: 13px; color: var(--text); }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-  th {
-    background: var(--primary);
-    color: white;
-    padding: 10px 8px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 12px;
-  }
-  td {
-    padding: 10px 8px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  tr:hover td { background: #fafbfd; }
-  .up { color: var(--up); font-weight: 600; }
-  .down { color: var(--down); font-weight: 600; }
-  .warn-text { color: var(--warn); font-weight: 600; }
-  .sector-table { font-size: 12px; }
-  .sector-table th, .sector-table td { padding: 10px 6px; }
-  .sector-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .score {
-    display: inline-block;
-    min-width: 36px;
-    padding: 4px 8px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
-  }
-  .score-mid { background: linear-gradient(135deg, #1976d2, #42a5f5); }
-  .score-low { background: linear-gradient(135deg, #757575, #9e9e9e); }
-  .consensus-vhigh { color: var(--up); font-weight: 700; }
-  .consensus-high { color: var(--up-light); font-weight: 600; }
-  .consensus-mid { color: var(--gold); font-weight: 600; }
-  .consensus-low { color: var(--text-secondary); }
-  .stock-bold { font-weight: 700; color: var(--text); }
-  .risk-box {
-    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 12px;
-    border-left: 4px solid var(--warn);
-  }
-  .risk-box h4 { font-size: 13px; color: var(--warn); margin-bottom: 6px; }
-  .calendar-box {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 12px;
-    border-left: 4px solid var(--success);
-  }
-  .calendar-box h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
-  .discipline-box {
-    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 12px;
-    border-left: 4px solid #7b1fa2;
-  }
-  .discipline-box h4 { font-size: 13px; color: #7b1fa2; margin-bottom: 6px; }
-  .footer {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-secondary);
-    padding: 20px 0;
-  }
-  ul { padding-left: 20px; }
-  ul li { font-size: 13.5px; margin-bottom: 4px; }
-</style>
-</head>
-<body>
-<!-- WKBUILD:panqian-20261012 -->
-<!-- 模板提示：「核心个股建议」列与决策逻辑链①须填当日实扫主线 leader，禁止照抄中际旭创等写死示例股；该列与飞书《核心看好标的追踪表》必须同源、与报告标题主线一致。 -->
-<div class="container">
-
-<!-- 标题区 -->
-<div class="header">
-  <h1>📊 每日盘前策略</h1>
-  <div class="date">2026年10月12日 · 周一 · 07:00 盘前</div>
-  <div class="song">
-    🎵 《风格切换》<br>
-    <span style="opacity:0.85">— 献给在轮动中守住结构的 AI应用 / 农业 新主线 —</span><br>
-    <em style="opacity:0.7">"市场不会告诉你方向，它只会奖励那些顺应潮流、又不追在山顶上的人。"</em><br>
-    <small style="opacity:0.6">—— 乔治·索罗斯《金融炼金术》</small>
-  </div>
-</div>
-
-<!-- 📌 核心摘要 -->
-<div class="card">
-  <div class="card-title"><span class="icon">📌</span>核心摘要</div>
-
-  <div class="summary-box">
-    <h4>承接上一交易日（2026-10-09 周五收盘）</h4>
-    <p>
-      节后第二周首日，A股走出<strong>结构性轮动 / 风格切换</strong>：沪指 3813.79 <strong>+0.05%</strong>、深成 12641.86 <strong>+0.17%</strong>、创业板 3043.33 <strong>+0.22%</strong>，两市成交 <strong>1.90 万亿</strong>（5日均量 116.85%，温和放量）；涨跌分布 <strong>3297 涨 / 2145 跌 / 62 涨停 / 2 跌停</strong>，涨股比 59.16%。
-      盘面核心特征：<strong>旧主线（算力硬件 / CPO / PCB）集体补跌、新主线（AI应用·传媒 / 农业 / 贵金属）全面爆发</strong>。这是退潮末段的一次风格切换，而非新升势确立——上证仍<strong>低于 MA5(3824) 与所有中短期均线</strong>，MACD 死叉、RSI_6=28.38 仍处恐慌区。
-    </p>
-  </div>
-
-  <div class="summary-box" style="background:linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color:var(--warn)">
-    <h4 style="color:var(--warn)">新主线集中爆发（超预期档）</h4>
-    <p>
-      ① <strong>AI应用 / 传媒集群</strong>：数字媒体 +8.0% / 出版 +7.2% / 影视院线 +7.16% / 广告营销 +5.5% / 游戏 +3.62% / 软件开发 +3.93%；概念侧 爱奇艺概念 +8.35% / 电子签名 +7.74% / AI营销 +5.45% / 短剧 +5.38% / Sora +5.34% / 影视传媒 +5.09% / 文化传媒 +3.92%——<span class="up">多概念同步爆发，中文在线 / 芒果超媒 双双 20cm 涨停</span>；
-      ② <strong>农业共振</strong>：种植业 +5.84% / 转基因 +5.1% / 玉米 +4.71% / 农产品加工 +3.45% / 渔业 +3.02%，神农种业 +10.4% 领涨；
-      ③ <strong>贵金属修复</strong>：贵金属 +5.62%，西部黄金 +9.98%，叠加外部金价自两月低位反弹。
-    </p>
-  </div>
-
-  <div class="summary-box" style="background:linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-left-color:var(--up)">
-    <h4 style="color:var(--up)">悬顶压制（利空档）</h4>
-    <p>
-      ① <strong>旧主线补跌未止</strong>：半导体 -0.68%（20日主力 -630 亿）、通信设备 -1.0%、元件 -4.27%（20日 -69 亿）、消费电子 -0.87%、玻璃玻纤 -2.36%、风电 -3.01%、航海装备 -3.57%（均 20日深负）；科创50 前日重挫后 10/9 仅弱修复，5日全指成长仍 -4.27%；
-      ② <strong>外部滞胀组合</strong>：中东局势推升 WTI 91.49 美元(+3.64%)、布油 104.28 美元(+4.07%) 破 100；10Y 美债 5.223% 高位；美元指数 102.1——分母端与通胀交易仍压制高估值成长。
-    </p>
-  </div>
-
-  <div class="summary-box" style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color:var(--down)">
-    <h4 style="color:#2e7d32">V4 九态定位：退潮末段 · 结构轮动（WAIT→P1 过渡）</h4>
-    <p>
-      按<strong>三阶段理论 V4.1 两层结构</strong>：第一层板块筛——全市场涨幅前三 = 数字媒体 / 出版 / 影视院线，均属传媒·AI应用，定为 <strong>P1 候选（仅筛选不定级）</strong>；第二层 Pair 定级——传媒 Pair（中文在线 +20.01% vs 芒果超媒 +19.98%）单日 ≥5% 触发 D0，定为 <strong>P1确认·试错</strong>；农业 Pair（神农种业 +10.4%）近期反复活跃，定为 <strong>P2确认·持有</strong>；贵金属 Pair（西部黄金 +9.98%）20日深负，按 <strong>㊲ 修复窗口</strong> 定为 <strong>P1确认·试错（轻仓≤5%）</strong>。
-      <strong>旧主线（半导体 / 通信 / 元件 / 消费电子）20日资金深负 → ㊸ 禁多 → 回避</strong>。全局 = 非退潮（涨跌比 59%）、非狂热（技术偏弱、仅涨停数触发标签）→ 结构轮动。
-    </p>
-  </div>
-
-  <div class="summary-box" style="background:linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color:#7b1fa2">
-    <h4 style="color:#7b1fa2">今日展望（200字）</h4>
-    <p>
-      沪指支撑 <strong>3795</strong>（布林下轨）/ 压力 <strong>3824</strong>（MA5）→ 3876（MA10）。<strong>期望路径</strong>：新主线（AI应用 / 农业）惯性高开后分化，真龙头（中文在线 / 芒果超媒 / 神农种业）回踩 5日线低吸不追高；贵金属 / 资源轻仓修复；科技硬件继续回避。<strong>风险路径</strong>：若竞价沪指低开破 3795（布林下轨）且 4300+ 下跌 → 铁律A 触发降仓。<strong>总仓位 40-50%</strong>（退潮末段结构轮动，选择性做多新主线、防御性回避旧主线）。
-    </p>
-  </div>
-
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
+  header{background:linear-gradient(135deg,#1f2d52,#2f5fd0);color:#fff;border-radius:16px;
+         padding:26px 28px;box-shadow:0 8px 28px rgba(47,95,208,.25)}
+  header h1{margin:0 0 6px;font-size:25px;letter-spacing:.5px}
+  header .sub{opacity:.92;font-size:14px}
+  header .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+         padding:3px 11px;border-radius:20px;font-size:13px;margin-top:10px;margin-right:8px}
+  .kpis{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 6px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;flex:1 1 160px}
+  .kpi .l{font-size:12px;color:var(--muted)}
+  .kpi .v{font-size:21px;font-weight:700;margin-top:3px}
+  .sec{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-top:20px;
+       box-shadow:0 2px 10px rgba(20,30,60,.04)}
+  .sec h2{margin:0 0 14px;font-size:19px;border-left:5px solid var(--accent);padding-left:12px}
+  .sec h3{font-size:16px;margin:18px 0 8px;color:#243049}
+  .note{font-size:13px;color:var(--muted);background:var(--chip);border-radius:8px;padding:9px 12px;margin:10px 0}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+  th{background:#f0f3fb;color:#34405a;font-weight:600}
+  td.l,th.l{text-align:left}
+  .up{color:var(--up);font-weight:600}
+  .down{color:var(--down);font-weight:600}
+  .flatc{color:var(--flat)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:12px;font-size:12px;font-weight:600}
+  .p1{background:#fdeae8;color:#c0392b}
+  .p2{background:#fff3df;color:#c8761a}
+  .p3{background:#e7f6ee;color:#1a9850}
+  .warn{background:#fff3df;color:#c8761a}
+  .ok{background:#e7f6ee;color:#1a9850}
+  .bad{background:#fdeae8;color:#c0392b}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .chart{width:100%;height:300px}
+  .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.card-grid{grid-template-columns:1fr}}
+  .lcard{border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .lcard .role{font-size:12px;color:var(--accent2);font-weight:700}
+  .lcard .nm{font-size:18px;font-weight:700;margin:3px 0}
+  .lcard .meta{font-size:12.5px;color:var(--muted)}
+  .lcard .why{font-size:13px;margin-top:8px}
+  ul{margin:8px 0;padding-left:20px}
+  li{margin:5px 0}
+  .src{font-size:12px;color:var(--muted);margin-top:6px}
+  .footer{margin-top:26px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.8}
+  .disc{background:#fff8f0;border:1px dashed #e0a;color:#9a3b2e;border-radius:10px;padding:12px 16px;margin-top:16px;font-size:13px}
+</style></head><body><div class="wrap">
+<header>
+  <h1>每日盘前策略 · 2026-10-12（周一）</h1>
+  <div class="sub">盘前 07:00 · 承 2026-10-09（周五）收盘实扫 · 框架：三阶段理论 V4.1（铁律零·唯一阶段框架）· 与用户 gold 范本（主线分析_20260918）同构</div>
   <div>
-    <span class="tag tag-info">承接10/09风格切换</span>
-    <span class="tag tag-up">AI应用/传媒爆发</span>
-    <span class="tag tag-up">农业共振</span>
-    <span class="tag tag-down">旧主线补跌</span>
-    <span class="tag tag-warn">油价破100·美债高位</span>
-    <span class="tag tag-info">V4.1 两层定级</span>
+    <span class="tag">V4.1 九态</span><span class="tag">Pair 状态机</span><span class="tag">退潮末段·结构轮动</span><span class="tag">AI应用·传媒 / 农业 / 贵金属 新主线</span>
+  </div>
+</header>
+<div class="kpis"><div class="kpi"><div class="l">上证指数</div><div class="v up">3813.79</div><div class="l">+0.05%</div></div>
+<div class="kpi"><div class="l">深证成指</div><div class="v up">12641.86</div><div class="l">+0.17%</div></div>
+<div class="kpi"><div class="l">创业板指</div><div class="v up">3043.33</div><div class="l">+0.22%</div></div>
+<div class="kpi"><div class="l">两市成交</div><div class="v">1.90万亿</div><div class="l">5日均量116.85%</div></div>
+<div class="kpi"><div class="l">涨跌停</div><div class="v">62 / 2</div><div class="l">涨3297·跌2145</div></div>
+<div class="kpi"><div class="l">涨股比</div><div class="v">59.16%</div><div class="l">防御为主</div></div>
+<div class="kpi"><div class="l">创业5日</div><div class="v">-7.47%</div><div class="l">下行趋势</div></div></div>
+
+<div class="sec">
+  <h2>① 大盘全景（2026-10-09 收盘 + 今日盘前视角）</h2>
+  <div class="grid2">
+    <div><h3>主要指数涨跌幅（2026-10-09 收盘·已核实）</h3>
+<table><tr><th class="l">指数</th><th>收盘</th><th>涨跌幅</th></tr><tr><td class="l">上证指数</td><td>3813.79</td><td class="up">+0.05%</td></tr><tr><td class="l">深证成指</td><td>12641.86</td><td class="up">+0.17%</td></tr><tr><td class="l">创业板指</td><td>3043.33</td><td class="up">+0.22%</td></tr><tr><td class="l">沪深300</td><td>N/A</td><td class="flatc">N/A</td></tr><tr><td class="l">科创50</td><td>N/A</td><td class="flatc">N/A</td></tr><tr><td class="l">北证50</td><td>N/A</td><td class="flatc">N/A</td></tr></table>
+<div class="note">沪深300/科创50/北证50 当日实时源未回取，标 N/A（缺失禁编造）；其余为 westock 优先级核实值。</div></div>
+    <div><h3>市场宽度与量能</h3>
+<table><tr><th class="l">维度</th><th class="l">数值</th></tr><tr><td class="l">两市成交</td><td class="l">1.90 万亿（5日均量 116.85%，温和放量）</td></tr><tr><td class="l">涨跌分布</td><td class="l">3297 涨 / 2145 跌 / 62 涨停 / 2 跌停</td></tr><tr><td class="l">涨股比</td><td class="l">59.16%（防御为主，非普涨）</td></tr><tr><td class="l">创业板(5/10/20日)</td><td class="l">-7.47% / -7.73% / -8.13%（下行趋势）</td></tr><tr><td class="l">技术位</td><td class="l">沪指低于 MA5(3824) 与全部中短期均线；MACD 死叉；RSI_6=28.38 恐慌区</td></tr></table></div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div><div class="chart" id="idxChart"></div></div>
+    <div><div class="chart" id="conceptChart"></div></div>
   </div>
 </div>
 
-<!-- 🔗 决策逻辑链 -->
-<div class="card">
-  <div class="card-title"><span class="icon">🔗</span>决策逻辑链</div>
-  <div class="logic-chain">
-
-    <div class="logic-item">
-      <div class="step"><span>①</span>数据→分析</div>
-      <div class="text">
-        <strong>10/09 板块 ranking（申万二级 + 同花顺概念双源）</strong>：涨幅前三 = 数字媒体 +8.0% / 出版 +7.2% / 影视院线 +7.16%；概念侧 爱奇艺概念 +8.35% / 电子签名 +7.74% / AI营销 +5.45% / 短剧 +5.38% / Sora +5.34% / 影视传媒 +5.09% / 文化传媒 +3.92%——<strong>AI应用·传媒集群 11+ 概念同步爆发</strong>；
-        农业侧 转基因 +5.1% / 玉米 +4.71% / 粮食 +3.48%；贵金属 +5.62%。<br>
-        <strong>涨跌分布</strong>：3297 涨 / 2145 跌 / 62 涨停 / 2 跌停 / 涨股比 59.16%——广度健康但<strong>非普涨</strong>（上涨板块 20~40%，westock 板块宽度判定"防御为主"）。
-      </div>
-    </div>
-
-    <div class="logic-item">
-      <div class="step"><span>②</span>数据→分析</div>
-      <div class="text">
-        <strong>旧主线资金面（㊸ 门控）</strong>：半导体 20日主力 <span class="down">-630 亿</span> / 通信设备 20日深负 / 元件 20日 -69 亿 / 消费电子 20日 -215 亿 / 工业金属 20日深负 / 贵金属 20日 -68.6 亿——<strong>算力硬件链 + 资源旧主线 20日资金全线深负</strong>，触发"禁多"门控；
-        <strong>新主线 20日资金</strong>：传媒 / AI应用概念 20日亦深负（AI营销 -33.6亿 / 短剧 -52.9亿 / 文化传媒 -71.9亿），说明<strong>新主线是单日事件驱动爆发，非长线资金趋势</strong> → 定位 P1试错，非 P2持有。
-      </div>
-    </div>
-
-    <div class="logic-item">
-      <div class="step"><span>③</span>数据→分析</div>
-      <div class="text">
-        <strong>外部（双源交叉·westock 优先）</strong>：10/9 美股 道指 +0.83% / 标普 +0.59% / 纳指 +0.64%（westock 真实收盘）；但 10/8 隔夜（→10/9早）纳指 -1.25% / 费半 -3.3% / WTI +3.64% 报 91.49 / 布油 +4.07% 报 104.28（破100）/ COMEX金 +0.43% 报 4158 / 10Y美债 5.223% / 美元 102.1——<strong>A股 10/9 已对科技硬件冲击脱敏并切换至传媒/农业/贵金属</strong>；
-        <strong>恒指 10/9 +1.79%</strong> 同步反弹。
-      </div>
-    </div>
-
-    <div class="logic-item">
-      <div class="step"><span>④</span>判断</div>
-      <div class="text">
-        <strong>主线确立（V4.1 两层）</strong>：第一层 = 传媒 / AI应用、农业、贵金属 进 P1 候选；第二层 Pair 定级：
-        <span class="up">传媒（中文在线 vs 芒果超媒，D0 触发）→ P1确认·试错</span>；
-        <span class="up">农业（神农种业 领涨，反复活跃）→ P2确认·持有</span>；
-        <span class="up">贵金属（西部黄金，㊲ 修复窗口）→ P1确认·试错·轻仓</span>。
-        <strong>旧主线（半导体/通信/元件/消费电子）20日深负 → ㊸ 禁多 → 回避</strong>。规则引用：三-①（V4两层）/ ㊸（资金门控禁多）/ ㊹（真趋势豁免·仅防御/农业可双正）/ ㊲（资源修复窗口）/ 规则55（regime=结构轮动）/ 规则58（旧主线单向失真·对该方向砍半）/ 规则63·64（㊸失效三档豁免）。
-      </div>
-    </div>
-
-    <div class="logic-item">
-      <div class="step"><span>⑤</span>行动</div>
-      <div class="text">
-        <strong>今日操作</strong>：
-        ① 新主线持有：<strong>中文在线(300364) / 芒果超媒(300413) / 神农种业(300189) / 西部黄金(601069)</strong>，回调不破 5日线不卖，<strong>但单日爆发 +20cm 不追高</strong>（防 ㊷ 脉冲 / ㊼ 回落）；
-        ② 轻仓试错：<strong>一般零售（茂业商业）/ 证券IT（大智慧）/ 乘用车（比亚迪）</strong> 2-4%；
-        ③ 防御底仓：<strong>银行红利（仅作压舱，10/9 国有大行 -0.88% 防御弱化，仓位压最低）</strong>；
-        ④ 高位回避：半导体 / 通信设备 / 元件PCB / 消费电子 / 玻璃玻纤 / 风电 / 航海装备 / 电子化学品（㊸ 禁多 + 前日补跌未止）。
-      </div>
-    </div>
-
-  </div>
+<div class="sec">
+  <h2>② 五维共振 · 主线确认（V4.1 第一层板块筛）</h2>
+  <div class="note"><b>五维共振结论 → 今日主线：AI应用·传媒 / 种植业·农业 / 贵金属</b><br>
+  第一层（板块筛）：板块进全市场涨幅前三 = P1 候选（<b>只筛选、不定级</b>）。T-1 申万二级涨幅前三 = 数字媒体+8.0% / 出版+7.2% / 影视院线+7.16% → 传媒/AI应用集群；种植业+5.84% → 农业；贵金属+5.62% → 贵金属。三集群即第一层 P1 候选。</div>
+  <h3>申万二级行业涨幅 Top 10（含龙头·T-1 真实扫描）</h3>
+<table><tr><th class="l">行业</th><th>涨幅</th><th class="l">领涨股</th></tr><tr><td class="l">数字媒体</td><td class="up">+8.0%</td><td class="l">中文在线 +20.01%</td></tr><tr><td class="l">出版</td><td class="up">+7.2%</td><td class="l">—</td></tr><tr><td class="l">影视院线</td><td class="up">+7.16%</td><td class="l">—</td></tr><tr><td class="l">种植业</td><td class="up">+5.84%</td><td class="l">神农种业 +10.40%</td></tr><tr><td class="l">贵金属</td><td class="up">+5.62%</td><td class="l">西部黄金 +9.98%</td></tr><tr><td class="l">广告营销</td><td class="up">+5.5%</td><td class="l">三人行 +10.01%</td></tr><tr><td class="l">软件开发</td><td class="up">+3.93%</td><td class="l">绿盟科技 +20.02%</td></tr><tr><td class="l">游戏</td><td class="up">+3.62%</td><td class="l">—</td></tr><tr><td class="l">一般零售</td><td class="up">+3.05%</td><td class="l">茂业商业 +6.03%</td></tr><tr><td class="l">证券</td><td class="up">+2.23%</td><td class="l">大智慧 +9.95%</td></tr><tr><td class="l">元件</td><td class="down">-4.27%</td><td class="l">旧主线/弱势</td></tr><tr><td class="l">航海装备</td><td class="down">-3.57%</td><td class="l">旧主线/弱势</td></tr><tr><td class="l">风电</td><td class="down">-3.01%</td><td class="l">旧主线/弱势</td></tr><tr><td class="l">玻璃玻纤</td><td class="down">-2.36%</td><td class="l">旧主线/弱势</td></tr><tr><td class="l">消费电子</td><td class="down">-0.87%</td><td class="l">旧主线/弱势</td></tr><tr><td class="l">半导体</td><td class="down">-0.68%</td><td class="l">旧主线/弱势</td></tr><tr><td class="l">通信</td><td class="down">-1.0%</td><td class="l">旧主线/弱势</td></tr></table>
+  <h3>概念板块涨幅 Top 10（同花顺·T-1 真实扫描）</h3>
+<table><tr><th class="l">概念</th><th>涨幅</th></tr><tr><td class="l">爱奇艺概念</td><td class="up">+8.35%</td></tr><tr><td class="l">电子签名</td><td class="up">+7.74%</td></tr><tr><td class="l">AI营销</td><td class="up">+5.45%</td></tr><tr><td class="l">Kimi</td><td class="up">+5.4%</td></tr><tr><td class="l">短剧</td><td class="up">+5.38%</td></tr><tr><td class="l">Sora</td><td class="up">+5.34%</td></tr><tr><td class="l">转基因</td><td class="up">+5.1%</td></tr><tr><td class="l">影视传媒</td><td class="up">+5.09%</td></tr><tr><td class="l">玉米</td><td class="up">+4.71%</td></tr><tr><td class="l">文化传媒</td><td class="up">+3.92%</td></tr></table>
+<div class="note">概念端「传媒/AI应用」集群最密（爱奇艺+8.35%/AI营销+5.45%/Kimi+5.4%/短剧+5.38%/Sora+5.34%），与申万二级相互印证 → 第一层 P1 候选。</div>
 </div>
 
-<!-- ⚡ 盘前30秒速览 -->
-<div class="card">
-  <div class="card-title"><span class="icon">⚡</span>盘前30秒速览</div>
-  <table>
-    <tr><td>📉 <strong>沪指支撑/压力</strong></td><td>支撑 <span class="down">3795</span>(布林下轨) / 压力 <span class="up">3824</span>(MA5) → <span class="up">3876</span>(MA10)</td></tr>
-    <tr><td>📊 <strong>成交警戒线</strong></td><td>反弹需维持 ≥1.8 万亿（10/09 为 1.90 万亿，5日均量 116.85%）</td></tr>
-    <tr><td>🔥 <strong>10/09 主力资金</strong></td><td>传媒/AI应用集中爆发（中文在线/芒果超媒 20cm）；农业神农种业 +10.4%；贵金属西部黄金 +9.98%</td></tr>
-    <tr><td>🌍 <strong>美股 10/9 收盘</strong></td><td>道指 <span class="up">+0.83%</span> / 标普 <span class="up">+0.59%</span> / 纳指 <span class="up">+0.64%</span>（westock 真实）；此前 10/8 纳指 -1.25%/费半 -3.3% 已被 A股脱敏</td></tr>
-    <tr><td>💰 <strong>油价（WTI/布油）</strong></td><td>WTI 91.49 <span class="up">+3.64%</span> / 布油 104.28 <span class="up">+4.07%（破100）</span>（中东局势）</td></tr>
-    <tr><td>📈 <strong>美债收益率</strong></td><td><span class="warn-text">10Y 5.223%（高位）</span> / 2Y 4.749%</td></tr>
-    <tr><td>🥇 <strong>黄金（COMEX）</strong></td><td>4158 <span class="up">+0.43%</span>（自两月低位反弹）</td></tr>
-    <tr><td>💵 <strong>美元指数</strong></td><td>102.1（窄幅）</td></tr>
-    <tr><td>🎯 <strong>建议仓位</strong></td><td><strong>40-50%</strong>（退潮末段结构轮动·选择性做多新主线）</td></tr>
-    <tr><td>📅 <strong>事件日历</strong></td><td>09:25 竞价（铁律A 复核 3795 支撑）/ 10:00 后关注盘前产业催化 / 节后首周资金回流节奏</td></tr>
-  </table>
+<div class="sec">
+  <h2>③ 四重核心驱动因素（催化）</h2>
+  <ul>
+    <li><b>政策/产业</b>：转基因/虫害防治催化种植业；AI应用（影视/IP/短剧）业绩兑现驱动传媒集群；贵金属受地缘避险+金价自两月低位反弹。</li>
+    <li><b>资金</b>：新主线（传媒/农业/贵金属）单日主力净流入为正；旧主线（半导体/通信/元件/消费电子）20日主力净流出深负（半导体20日-630亿）→ ㊸禁多。</li>
+    <li><b>外盘</b>：10/9 道指+0.83%/标普+0.59%/纳指+0.64%/恒指+1.79%；布油破100(+4.07%)；COMEX金+0.43%报4158；10Y美债5.223%/美元102.1（滞胀压制风险偏好）。</li>
+    <li><b>情绪/节点</b>：节点理论 gate（ADJ 10/9=18.66, Δ=+9.18）→「新核心题材节点·可攻」；但沪指仍低于 MA5、MACD 死叉、RSI_6=28.38 恐慌区 → 退潮末段·结构轮动，非新升势确立。</li>
+  </ul>
 </div>
 
-<!-- 🌍 隔夜外盘 -->
-<div class="card">
-  <div class="card-title"><span class="icon">🌍</span>隔夜外盘（数据截至 10/9 美股收盘 + 10/8 隔夜商品）</div>
-  <table>
-    <tr><th>分类</th><th>品种</th><th>收盘</th><th>涨跌</th><th>解读</th></tr>
-    <tr><td rowspan="3"><strong>美股(10/9)</strong></td><td>道琼斯</td><td>51,654.95</td><td class="up">+0.83%</td><td rowspan="3">westock 真实收盘（10/9 周五 session）；此前 10/8 纳指 -1.25%/费半 -3.3% 已被 A股 10/9 风格切换消化。</td></tr>
-    <tr><td>标普500</td><td>7,811.54</td><td class="up">+0.59%</td><td></td></tr>
-    <tr><td>纳斯达克</td><td>27,366.17</td><td class="up">+0.64%</td><td></td></tr>
-    <tr><td><strong>半导体</strong></td><td>费城半导体（SOX）</td><td>—</td><td class="down">交叉源不一致·N/A</td><td>10/8 费半 -3.3%（OpenAI 利空重挫芯片股）；10/9 单一源方向冲突，按"缺失标 N/A·禁编造"铁律不采用具体值。</td></tr>
-    <tr><td><strong>港股(10/9)</strong></td><td>恒生指数</td><td>24,211.35</td><td class="up">+1.79%</td><td>同步反弹，恒科修复；关注 AH 联动。</td></tr>
-    <tr><td rowspan="3"><strong>商品</strong></td><td>WTI原油</td><td>91.49 美元</td><td class="up">+3.64%</td><td>中东局势 + 墨西哥湾飓风推升供给担忧，破 90。</td></tr>
-    <tr><td>布伦特原油</td><td>104.28 美元</td><td class="up">+4.07%</td><td><span class="warn-text">破 100 美元心理关口</span>，通胀交易回归。</td></tr>
-    <tr><td>COMEX黄金</td><td>4,158 美元</td><td class="up">+0.43%</td><td>自两月低位反弹，避险 + 央行增持支撑。</td></tr>
-    <tr><td><strong>汇率/利率</strong></td><td>美元指数 / 10Y美债</td><td>102.1 / 5.223%</td><td>—</td><td>10Y 美债高位（5.22%+），分母端持续压制高估值成长。</td></tr>
-  </table>
-  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:8px">
-    <p style="font-size:12.5px; color:var(--warn)"><strong>📡 关键信号解读</strong>：
-    ① "油价破100 + 美债 5.22% + 金价反弹"组合 = <strong>滞胀/通胀交易回归</strong>，对应 A股跷跷板：贵金属/资源/农业(通胀受益+内需)↑，高估值科技硬件↓；
-    ② 费半方向：10/8 纳指 -1.25%/费半 -3.3% 冲击已被 A股 10/9 科技补跌消化（半导体/元件/通信 10/9 继续跌）→ <strong>科技硬件回避</strong>；
-    ③ <strong>建议操作</strong>：新主线（传媒AI应用/农业）低吸不追高、贵金属/资源轻仓修复、科技硬件空仓。
-    </p>
-  </div>
+<h2>④ 核心龙头精选（3只 · 主线内 · V4.1 定级）</h2>
+<div class="card-grid"><div class="lcard"><div class="role">主线 leader</div><div class="nm">中文在线 <span class="meta">300364</span></div>
+        <div class="meta">传媒/AI应用 · P1确认·leader</div><div class="why">数字媒体+8.0% 主线领涨核心；IP/语料壁垒；D0=+20.01% 触发，回踩5日线低吸</div></div><div class="lcard"><div class="role">主线 leader</div><div class="nm">神农种业 <span class="meta">300189</span></div>
+        <div class="meta">种植业 · P2确认·leader</div><div class="why">种植业+5.84% 领涨；虫害/转基因政策催化；反复活跃→持有</div></div><div class="lcard"><div class="role">主线 leader</div><div class="nm">西部黄金 <span class="meta">601069</span></div>
+        <div class="meta">贵金属 · P1确认·leader</div><div class="why">贵金属+5.62% 领涨；避险+金价反弹；㊲修复窗口→轻仓≤5%</div></div></div>
+
+<h2>⑤ 七大板块 Pairs + 三阶段判定（V4.1 Pair 状态机）</h2>
+<div class="note"><b>V4.1 唯一判据 = Pair 状态机</b>：D0 任一只单日≥5% 触发 → D0/D1/D2 三天观察窗四路径 → leader 定死不换 → 回溯前两日 2-of-3 推进 P2/P3 → 龙头单日跌≥6% 中断（仅 P1/P2）。九态：WAIT/P1预警/P1确认/P2预警/P2确认/P3预警/P3确认/W结束/中断。</div>
+<table><tr><th class="l">板块</th><th class="l">Pair</th><th class="l">触发</th><th>V4.1 定级</th><th class="l">动作</th></tr><tr><td class="l"><b>传媒/AI应用</b></td><td class="l">中文在线(300364) vs 芒果超媒(300413)</td><td class="l">D0=10-09 双龙 ≥5%（中文在线+20.01% / 芒果超媒+19.98%）触发</td>
+        <td><span class="pill p1">P1确认·试错</span></td>
+        <td class="l">leader 定死=中文在线；D0/D1/D2 观察窗，双龙齐飞，等回踩5日线低吸</td></tr><tr><td class="l"><b>种植业/农业</b></td><td class="l">神农种业(300189) vs 万向德农(600371)</td><td class="l">神农种业 10-09 +10.40% 触发；回溯前两日 2-of-3 推进</td>
+        <td><span class="pill p2">P2确认·持有</span></td>
+        <td class="l">虫害/转基因政策催化，反复活跃，持有不追</td></tr><tr><td class="l"><b>贵金属</b></td><td class="l">西部黄金(601069) vs 山金国际(000975)</td><td class="l">西部黄金 10-09 +9.98% 触发；㊲修复窗口（金价自两月低位反弹）</td>
+        <td><span class="pill p1">P1确认·轻仓≤5%</span></td>
+        <td class="l">避险+金价反弹，仅轻仓，龙头单日跌≥6%即中断</td></tr><tr><td class="l"><b>旧主线(半导体/通信/元件/消费电子)</b></td><td class="l">—（㊸禁多，不进 Pair）</td><td class="l">20日主力净流出深负（半导体20日-630亿）</td>
+        <td><span class="pill p3">WAIT·回避</span></td>
+        <td class="l">㊸资金门控禁多；不配对、不定级、不进推荐</td></tr></table>
+
+<h2>⑥ 七大板块前三强 + 最优 Pair</h2>
+<table><tr><th class="l">板块</th><th class="l">第一强</th><th class="l">第二强</th><th class="l">最优 Pair</th></tr><tr><td class="l">传媒/AI应用</td><td class="l">中文在线(300364)</td><td class="l">芒果超媒(300413)</td><td class="l">最优Pair=中文在线↔芒果超媒（P1确认·双龙）</td></tr><tr><td class="l">种植业/农业</td><td class="l">神农种业(300189)</td><td class="l">万向德农(600371)</td><td class="l">最优Pair=神农种业↔万向德农（P2确认·持有）</td></tr><tr><td class="l">贵金属</td><td class="l">西部黄金(601069)</td><td class="l">山金国际(000975)</td><td class="l">最优Pair=西部黄金↔山金国际（P1确认·轻仓）</td></tr><tr><td class="l">一般零售</td><td class="l">茂业商业(600828)</td><td class="l">—</td><td class="l">单龙，未成 Pair（P1确认·观察）</td></tr><tr><td class="l">证券/证券IT</td><td class="l">大智慧(601519)</td><td class="l">—</td><td class="l">单龙，未成 Pair（P1确认·观察）</td></tr><tr><td class="l">乘用车</td><td class="l">比亚迪(002594)</td><td class="l">—</td><td class="l">单龙，未成 Pair（P1确认·观察）</td></tr><tr><td class="l">工业金属</td><td class="l">—</td><td class="l">—</td><td class="l">中性（不进候选）</td></tr></table>
+
+<div class="sec">
+  <h2>⑦ 综合研判与操作建议</h2>
+  <div class="note"><b>仓位</b>：40-50%（偏谨慎上限）。节点 gate 虽判「可攻」，但指数仍处退潮末段结构轮动，等分歧回踩 5 日线低吸，严禁市价追高。<br>
+  <b>纪律</b>：单票≤15%(热门≤10%)；止损-8%或破20日线；P3确认一律不进推荐；旧主线(半导体/通信/元件/消费电子)㊸禁多回避。</div>
+  <h3>风险提示（≥4）</h3>
+  <ul>
+    <li><b>外部滞胀</b>：油价破100/美债5.22%/美元102，压制全球风险偏好。</li>
+    <li><b>新主线事件驱动陷阱</b>：多数新主线板块 20日资金深负，属事件驱动非趋势，警惕一日游（节点理论证伪：题材隔日保留率极低）。</li>
+    <li><b>规则58 单向失真</b>：若连续2日「空≥80% ∧ 多≤30%」，多方向砍半+降仓5pcts。</li>
+    <li><b>估值</b>：全A PE_TTM 19.56（10年68.77%分位），不便宜。</li>
+    <li><b>退潮未确认结束</b>：MACD 死叉、RSI_6 恐慌区，旧主线补跌未止。</li>
+  </ul>
 </div>
 
-<!-- 📊 市场全景 -->
-<div class="card">
-  <div class="card-title"><span class="icon">📊</span>市场全景（10/09 收盘 · 节后第二周首日）</div>
-  <h4 style="font-size:13px; color:var(--primary); margin-bottom:8px">📈 四大指数</h4>
-  <table>
-    <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>特征</th></tr>
-    <tr><td>上证指数</td><td>3,813.79</td><td class="up">+0.05%</td><td>低于 MA5(3824)/MA10(3876)，近布林下轨 3795.7；成交 9582 亿放量</td></tr>
-    <tr><td>深证成指</td><td>12,641.86</td><td class="up">+0.17%</td><td>5日 -5.07%，仍承压</td></tr>
-    <tr><td>创业板指</td><td>3,043.33</td><td class="up">+0.22%</td><td>5日 -7.47%，成长端最弱</td></tr>
-    <tr><td>科创50</td><td>前收重挫后弱修复</td><td class="down">前日 -4.82%→10/9 跌幅收窄</td><td>5日全指成长 -4.27%，科技硬件仍承压</td></tr>
-    <tr><td>沪深300</td><td>价值相对抗跌</td><td class="down">5日 -2.75%</td><td>全指价值 5日 +1.54%（风格切换至价值）</td></tr>
-  </table>
-
-  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🌡 涨跌分布（成交 1.90 万亿 +1770 亿）</h4>
-  <table>
-    <tr><th>指标</th><th>数值</th><th>含义</th></tr>
-    <tr><td>上涨家数</td><td>3297 只（59.16%）</td><td>广度健康，但非普涨</td></tr>
-    <tr><td>下跌家数</td><td>2145 只（38.49%）</td><td>结构分化明显</td></tr>
-    <tr><td>涨停 / 跌停</td><td>62 / 2</td><td>涨停集中在新主线，跌停极少</td></tr>
-    <tr><td>涨跌比</td><td>1.54</td><td>温和偏多</td></tr>
-  </table>
-
-  <h4 style="font-size:13px; color:var(--primary); margin:14px 0 8px">🏆 10/09 板块排行 · 主线轮动</h4>
-  <table>
-    <tr><th>板块</th><th>涨跌幅</th><th>领涨股</th><th>备注</th></tr>
-    <tr><td>数字媒体</td><td class="up">+8.0%</td><td>中文在线(+20.01%) / 芒果超媒(+19.98%)</td><td>AI应用·传媒 新主线</td></tr>
-    <tr><td>出版</td><td class="up">+7.2%</td><td>中文在线(+20.01%)</td><td>AI语料 / 版权</td></tr>
-    <tr><td>影视院线</td><td class="up">+7.16%</td><td>捷成股份(+10.98%)</td><td>短剧 / 互动游戏</td></tr>
-    <tr><td>种植业</td><td class="up">+5.84%</td><td>神农种业(+10.4%)</td><td>农业共振·P2持有</td></tr>
-    <tr><td>贵金属</td><td class="up">+5.62%</td><td>西部黄金(+9.98%)</td><td>㊲ 修复窗口·轻仓</td></tr>
-    <tr><td>广告营销</td><td class="up">+5.5%</td><td>三人行(+10.01%)</td><td>AI营销概念</td></tr>
-    <tr><td>软件开发</td><td class="up">+3.93%</td><td>绿盟科技(+20.02%)</td><td>AI智能体 / MLOps</td></tr>
-    <tr><td>一般零售</td><td class="up">+3.05%</td><td>茂业商业(+6.03%)</td><td>消费修复</td></tr>
-    <tr><td>半导体</td><td class="down">-0.68%</td><td>20日主力 -630 亿</td><td class="down">㊸ 禁多·回避</td></tr>
-    <tr><td>元件</td><td class="down">-4.27%</td><td>20日主力 -69 亿</td><td class="down">旧主线补跌·回避</td></tr>
-    <tr><td>航海装备</td><td class="down">-3.57%</td><td>—</td><td class="down">回避</td></tr>
-    <tr><td>风电设备</td><td class="down">-3.01%</td><td>—</td><td class="down">回避</td></tr>
-  </table>
-
-  <div style="background:#f3e5f5; padding:10px 14px; border-radius:8px; margin-top:8px">
-    <p style="font-size:12.5px; color:#7b1fa2">
-      <strong>主线轮动轨迹</strong>：<br>
-      9/30 政策修复 → 10/08 节后首日<strong>科技硬件补跌（科创50 -4.82%）</strong> → 10/09 <span class="up">风格切换：AI应用·传媒 +7~8% / 农业 +5% / 贵金属 +5.6% 全面爆发，旧主线（算力/CPO/PCB）集体补跌</span><br>
-      <strong>结论</strong>：旧主线（算力硬件）进入 W/中断 观察（㊸ 20日深负），<strong>新主线 = AI应用·传媒 + 农业 + 贵金属修复</strong>，本日按 V4.1 两层定级后选择性做多。
-    </p>
-  </div>
+<div class="sec">
+  <h2>⑧ 今日核心推荐标的（V4.1 定级 · 共 5 只）</h2>
+<div class="note">本段与飞书《核心看好标的追踪表》<b>同源</b>。V4.1 为唯一阶段框架（铁律零）；涨停股（中文在线/芒果超媒）已封板，仅列示不追。总仓 40-50% 偏谨慎上限、单票≤15%(热门≤10%)、止损-8%或破20日线。</div>
+<table><tr><th class="l">标的</th><th>V4.1 定级</th><th class="l">推荐逻辑</th></tr><tr><td class="l"><b>中文在线</b> (300364)</td><td><span class="pill p1">P1确认·leader（传媒/AI应用）</span></td><td class="l">数字媒体+8.0%主线领涨·IP/语料核心·D0=10-09(+20.01%)→回踩5日线低吸</td></tr><tr><td class="l"><b>芒果超媒</b> (300413)</td><td><span class="pill p1">P1确认·leader（传媒/AI应用）</span></td><td class="l">数字媒体龙头·AI应用业绩兑现·D0=10-09(+19.98%)→回踩低吸（已涨停仅列示不追）</td></tr><tr><td class="l"><b>神农种业</b> (300189)</td><td><span class="pill p1">P2确认·leader（种植业）</span></td><td class="l">种植业+5.84%领涨·虫害/转基因政策·反复活跃→持有</td></tr><tr><td class="l"><b>西部黄金</b> (601069)</td><td><span class="pill p1">P1确认·leader（贵金属）</span></td><td class="l">贵金属+5.62%·避险+金价反弹·㊲修复窗口→轻仓≤5%</td></tr><tr><td class="l"><b>大智慧</b> (601519)</td><td><span class="pill p1">P1确认（证券/证券IT）</span></td><td class="l">证券+2.23%·互金修复·大智慧+9.95%→回踩低吸</td></tr></table>
 </div>
 
-<!-- ⭐ 板块共识度与方向表 -->
-<div class="card">
-  <div class="card-title"><span class="icon">⭐</span>板块共识度与方向表</div>
+<div class="disc">本文阶段判定唯一依据为三阶段理论 V4.1（九态 + Pair 状态机），任何 20/60日涨幅、52周高、背离四象限、自创阶段标签均已按铁律零废除。数据缺失一律标 N/A，禁编造。报告样式完全对齐用户 gold 范本（主线分析_20260918）。</div>
 
-  <div class="sector-wrap">
-  <table class="sector-table">
-    <tr>
-      <th>板块</th>
-      <th>评分</th>
-      <th>共识度</th>
-      <th>操作判断</th>
-      <th>建议仓位</th>
-      <th>核心策略</th>
-      <th>核心个股建议</th>
-    </tr>
-
-    <tr>
-      <td><strong>传媒 / AI应用</strong><br><small style="color:var(--text-secondary)">数字媒体/出版/影视/广告/游戏/软件/短剧/Sora/Kimi/AI营销</small></td>
-      <td><span class="score">92</span></td>
-      <td><span class="consensus-vhigh">极强</span></td>
-      <td><strong>P1确认·试错</strong></td>
-      <td>6-9%</td>
-      <td>新主线·单日爆发（中文在线/芒果超媒 20cm）；等回踩 5日线低吸<strong>不追高</strong>（防 ㊷ 脉冲回落）。</td>
-      <td>
-        <span class="stock-bold">中文在线(300364)</span>（领头·+20.01%·AI语料/短剧）<br>
-        <span class="stock-bold">芒果超媒(300413)</span>（+19.98%·AI营销/影视）<br>
-        捷成股份(300182)（+10.98%）/ 华策影视(300133)（+10.85%）<br>
-        <small style="color:var(--text-secondary)">📒 20日资金深负→事件驱动，非长线趋势，轻仓试错。</small>
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>农业（种植/转基因）</strong><br><small style="color:var(--text-secondary)">种植业/转基因/玉米/农产品加工/渔业</small></td>
-      <td><span class="score">82</span></td>
-      <td><span class="consensus-vhigh">极强</span></td>
-      <td><strong>P2确认·持有</strong></td>
-      <td>5-7%</td>
-      <td>反复活跃强趋势（神农种业连日领涨），转基因/粮食安全政策催化；回踩 5日线持有。</td>
-      <td>
-        <span class="stock-bold">神农种业(300189)</span>（+10.4%·种植龙头）<br>
-        <span class="stock-bold">万向德农(600371)</span> / 隆平高科(000998)<br>
-        亚盛集团(600108)（农产品加工）<br>
-        <small style="color:var(--text-secondary)">📎 渔业：中水渔业(000798) 跟涨。</small>
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>贵金属 / 黄金</strong></td>
-      <td><span class="score score-mid">70</span></td>
-      <td><span class="consensus-high">强</span></td>
-      <td><strong>P1确认·试错</strong><br><small style="color:var(--text-secondary)">㊲ 修复窗口</small></td>
-      <td>3-5%</td>
-      <td>外部金价自两月低位反弹 + 板块单日 +5.62% 修复；但 20日资金深负(-68.6亿)→<strong>轻仓≤5%</strong>，破 5日线减半。</td>
-      <td>
-        <span class="stock-bold">西部黄金(601069)</span>（+9.98%·领涨）<br>
-        山东黄金(600547) / 紫金矿业(601899)（+4.87%）<br>
-        <small style="color:var(--text-secondary)">⚠️ 修复性质，防次日回落；严格止损 -6%。</small>
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>一般零售 / 消费</strong></td>
-      <td><span class="score score-mid">64</span></td>
-      <td><span class="consensus-mid">中</span></td>
-      <td><strong>P1确认·试错</strong></td>
-      <td>2-4%</td>
-      <td>国庆后消费修复 + 一般零售 +3.05% / 渔业 +3.02%；结构性，非全面复苏。</td>
-      <td>
-        <span class="stock-bold">茂业商业(600828)</span>（+6.03%·零售活口）<br>
-        南宁百货(600712) / 国芳集团(601086)<br>
-        <small style="color:var(--text-secondary)">📎 偏事件驱动，仓位压最低。</small>
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>证券 / 券商</strong></td>
-      <td><span class="score score-mid">60</span></td>
-      <td><span class="consensus-mid">中</span></td>
-      <td><strong>P1确认·试错</strong></td>
-      <td>2-4%</td>
-      <td>成交 1.90 万亿放量 + 人气修复；证券 +2.23% / 证券IT概念 +4.57%（大智慧 +9.95%）。</td>
-      <td>
-        <span class="stock-bold">大智慧(601519)</span>（+9.95%·证券IT龙头）<br>
-        东方财富(300059) / 中信证券(600030)<br>
-        <small style="color:var(--text-secondary)">⚠️ 券商人气依赖成交延续，防一日游。</small>
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>乘用车 / 汽车</strong></td>
-      <td><span class="score score-mid">58</span></td>
-      <td><span class="consensus-mid">中</span></td>
-      <td><strong>P1确认·试错</strong></td>
-      <td>2-3%</td>
-      <td>乘用车 +2.19% / 比亚迪 +3.95%；政策预期 + 以旧换新延续。</td>
-      <td>
-        <span class="stock-bold">比亚迪(002594)</span>（+3.95%）<br>
-        江淮汽车(600418)（华为汽车链）<br>
-        <small style="color:var(--text-secondary)">📎 单只仓位≤2%。</small>
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>工业金属 / 资源</strong></td>
-      <td><span class="score score-low">55</span></td>
-      <td><span class="consensus-mid">中</span></td>
-      <td><strong>中性偏多·试错</strong><br><small style="color:var(--text-secondary)">修复</small></td>
-      <td>2-3%</td>
-      <td>10/09 修复反弹（紫金 +4.87% / 领湃科技 +20.02%）；但 20日深负 → 轻仓修复，非趋势。</td>
-      <td>
-        紫金矿业(601899)（+4.87%）<br>
-        洛阳钼业(603993) / 领湃科技(300530)（+20.02%）<br>
-        <small style="color:var(--text-secondary)">⚠️ 资源受油价/美债双扰，轻仓。</small>
-      </td>
-    </tr>
-
-  </table>
-  </div>
-
-  <div style="background:#fff3e0; padding:10px 14px; border-radius:8px; margin-top:10px">
-    <p style="font-size:12.5px; color:var(--warn)">
-      <strong>⚠️ 回避板块</strong>（㊸ 20日资金门控禁多 + 前日补跌未止）：
-      半导体(20日 -630亿) / 通信设备(-1%) / 元件PCB(-4.27%) / 消费电子(-0.87%) / 玻璃玻纤(-2.36%) / 风电设备(-3.01%) / 航海装备(-3.57%) / 电子化学品(-2.69%) / 国有大行(-0.88%·防御弱化) / 光伏。<strong>旧主线（算力硬件）进入 W/中断 观察，等 20日资金转正再议。</strong>
-    </p>
-  </div>
-</div>
-
-<!-- 风险点 + 催化日历 + 止盈止损纪律 -->
-<div class="card">
-  <div class="card-title"><span class="icon">⚠️</span>风险点 + 催化日历 + 止盈止损纪律</div>
-
-  <div class="risk-box">
-    <h4>🚨 风险点（按重要性排序）</h4>
-    <ul>
-      <li><strong>铁律A（9:25 复核）</strong>：沪指 3813 已低于 MA5(3824) 且贴近布林下轨 3795；若竞价集体低开 >1% 且 4300+ 下跌 → 触发<strong>紧急降仓 10pcts</strong>（当前 40-50% → 降至 30-40%）。</li>
-      <li><strong>铁律B</strong>：单日沪指跌幅 >2% 或 跌停 >100 只 = 降仓 10pcts（10/09 跌停仅 2 只，未触发）。</li>
-      <li><strong>外部滞胀组合</strong>：布油破 100 + 10Y美债 5.223% 高位 + 美元 102.1 → 通胀/利率压制高估值成长，分母端风险未消。</li>
-      <li><strong>新主线"单日爆发"陷阱</strong>：传媒/AI应用 20日资金深负（文化传媒 -71.9亿/短剧 -52.9亿）→ 事件驱动性质，防 ㊷ 脉冲 / ㊼ 次日回落；20cm 不追高。</li>
-      <li><strong>旧主线补跌延续</strong>：规则58 单向失真——科技硬件（半导体/通信/元件）空≥80% 延续，对该方向砍半 + 降仓 5pcts（但不波及新主线）。</li>
-      <li><strong>估值</strong>：中证全指 PE_TTM 19.56 / 10年百分位 68.77%（<80% 未触发红线，仓位不上调）。</li>
-    </ul>
-  </div>
-
-  <div class="calendar-box">
-    <h4>📅 催化日历（未来3日关键节点）</h4>
-    <table>
-      <tr><th>日期</th><th>时间</th><th>事件</th><th>影响</th></tr>
-      <tr><td rowspan="3"><strong>10/12（今日）</strong></td><td>09:25</td><td>集合竞价（铁律A 复核 3795 支撑）</td><td>定当日仓位基调</td></tr>
-      <tr><td>盘前</td><td>节后首周资金回流节奏观察</td><td>成交能否维持 1.8 万亿+</td></tr>
-      <tr><td>盘中</td><td>新主线（传媒/农业）分歧回踩低吸窗口</td><td>检验 P1确认 成色</td></tr>
-      <tr><td><strong>10/13（周二）</strong></td><td>全天</td><td>新主线第二日延续性验证</td><td>能否从 P1 向 P2 推进</td></tr>
-      <tr><td><strong>10/14（周三）</strong></td><td>关注</td><td>产业催化 / 三季报预告密集期</td><td>业绩线扰动</td></tr>
-    </table>
-    <p style="font-size:12px; margin-top:6px"><strong>📌 本周复盘（10/12-10/14）：</strong>护盘观察点 = 沪指能否站回 MA5(3824)、成交维持 1.8 万亿以上、传媒/农业龙头不出现单日 -3% 崩。若沪指跌破 3795（布林下轨）→ 降至 30-40% 仅留防御底仓。</p>
-  </div>
-
-  <div class="discipline-box">
-    <h4>🛡 止盈止损纪律（铁律A/B + 个股风控）</h4>
-    <ul>
-      <li><strong>铁律A</strong>：沪指竞价低开 >1% + 4300 下跌 = 紧急降仓 10pcts（40-50% → 30-40%）。</li>
-      <li><strong>铁律B</strong>：沪指单日跌 >2% 或 跌停 >100 只 = 降仓 10pcts。</li>
-      <li><strong>个股止损锚</strong>：中文在线 止损 -6% / 芒果超媒 -6% / 神农种业 -8% / 西部黄金 -6% / 大智慧 -8% / 比亚迪 -8%（均按 -6%~-8% 硬止损，破 20日线即出）。</li>
-      <li><strong>锁定利润规则</strong>：新主线单日 +20cm 不追，等回踩 5日线低吸；浮盈 >15% 分批锁定 3-5%。</li>
-      <li><strong>不重仓追高</strong>：所有新开仓均需"确认信号 + 回踩入场"，不追竞价高开 >3% 个股（防 10/09 式单日脉冲次日回落）。</li>
-      <li><strong>港股映射校验</strong>：10:30 盘中必检恒指 + 传媒/农业 AH 联动，防外部冲击。</li>
-    </ul>
-  </div>
-</div>
-
-<!-- 数据来源/信源 -->
-<div class="card">
-  <div class="card-title"><span class="icon">📚</span>信源引用（多源交叉认证）</div>
-  <table>
-    <tr><th>类型</th><th>信源</th><th>关键引用</th></tr>
-    <tr>
-      <td><span class="tag tag-info">数据基础</span></td>
-      <td><strong>westock-data</strong></td>
-      <td>market-overview / sector ranking(申万二级+同花顺概念双源) / quote / changedist（沪指3813.79/+0.05% / 3297涨2145跌 / 62涨停 / 传媒+8% / 农业+5.84% / 贵金属+5.62% / 半导体-0.68%等核心数据）。</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-info">外部</span></td>
-      <td><strong>westock quote + 华尔街见闻/新浪/网易 早餐(10/9)</strong></td>
-      <td>10/9 美股 道指+0.83%/标普+0.59%/纳指+0.64%（westock）；10/8 隔夜 纳指-1.25%/费半-3.3%/WTI+3.64%报91.49/布油+4.07%报104.28/COMEX金+0.43%报4158/10Y美债5.223%/美元102.1（三源一致）。</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-info">框架</span></td>
-      <td><strong>三阶段理论 V4.1 + fupan-rules</strong></td>
-      <td>两层定级（三-①）：传媒 P1确认·试错 / 农业 P2确认·持有 / 贵金属 P1确认(㊲修复窗口)；㊸ 资金门控禁多（旧主线）；㊹ 真趋势豁免（仅农业/防御双正）；规则55(regime=结构轮动) / 规则58(旧主线单向失真) / 规则63·64(㊸失效三档豁免)。</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-info">板块覆盖</span></td>
-      <td><strong>sector-coverage-crosscheck 三道门禁</strong></td>
-      <td>①双分类取数（申万二级 + 同花顺概念 802 条，均 10/09 口径）②差异扫描（传媒/农业/贵金属方向一致，无 ≥1.5pp 反向）③涨停反向聚合（62 只集中于传媒/农业/贵金属/证券IT）。</td>
-    </tr>
-  </table>
-</div>
-
-<div class="footer">
-  <p>本报告由 WorkBuddy「每日盘前策略」自动化系统生成 · 数据基准日 2026-10-09 收盘<br>
-  报告仅供参考，不构成投资建议 · 投资有风险，决策需谨慎<br>
-  © 2026 阿Q量化研究体系 · v4.2 十节版 · 三阶段理论 V4.1</p>
-</div>
-
-</div>
-</body>
-</html>
+<footer>每日盘前策略 · 2026-10-12（周一）· 框架 v4.2 十节gold · 三阶段理论 V4.1（唯一阶段框架）｜ 数据：westock 优先 + 多源交叉认证</footer>
+<!-- WKBUILD:panqian-20261012 -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+var ind=[["数字媒体",8.0],["出版",7.2],["影视院线",7.16],["种植业",5.84],["贵金属",5.62],["广告营销",5.5],["软件开发",3.93],["游戏",3.62],["一般零售",3.05],["证券",2.23]];
+var indAll=ind.concat([["元件",-4.27],["航海装备",-3.57],["风电",-3.01],["玻璃玻纤",-2.36],["消费电子",-0.87],["半导体",-0.68],["通信",-1.0]]);
+var con=[["爱奇艺概念",8.35],["电子签名",7.74],["AI营销",5.45],["Kimi",5.4],["短剧",5.38],["Sora",5.34],["转基因",5.1],["影视传媒",5.09],["玉米",4.71],["文化传媒",3.92]];
+function bar(id,data,title){
+  var c=echarts.init(document.getElementById(id));
+  c.setOption({tooltip:{},title:{text:title,left:'center',textStyle:{fontSize:14}},
+    grid:{left:90,right:30,top:38,bottom:20},
+    xAxis:{type:'value',axisLabel:{formatter:'{value}%'}},
+    yAxis:{type:'category',data:data.map(function(d){return d[0]}).reverse()},
+    series:[{type:'bar',data:data.map(function(d){return {value:d[1],itemStyle:{color:d[1]>=0?'#e0392b':'#1a9850'}}}).reverse(),
+      label:{show:true,position:'right',formatter:'{c}%',fontSize:11}}]});
+  return c;
+}
+var c1=bar('idxChart',indAll,'申万二级行业涨幅 %');
+var c2=bar('conceptChart',con,'概念板块涨幅 %');
+window.addEventListener('resize',function(){c1.resize();c2.resize();});
+</script>
+</div></body></html>
