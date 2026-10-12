@@ -1,613 +1,182 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-
 <meta charset="UTF-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>每日盘前策略 2026-10-12</title>
 <style>
-:root {
-  --c-red: #c62828;
-  --c-green: #2e7d32;
-  --c-blue: #0d47a1;
-  --c-blue-dark: #1a237e;
-  --c-orange: #e65100;
-  --c-bg: #f5f7fa;
-  --c-card: #ffffff;
-  --c-text: #1a1a1a;
-  --c-muted: #666666;
-  --c-border: #e0e4e8;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0; padding: 0;
-  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-  background: var(--c-bg);
-  color: var(--c-text);
-  line-height: 1.6;
-}
-.container {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 0 12px 24px;
-}
-.header {
-  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 55%, #42a5f5 100%);
-  color: white;
-  padding: 28px 20px;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 4px 16px rgba(13,71,161,0.25);
-  margin: 0 -12px 16px;
-}
-.header h1 {
-  margin: 0 0 6px;
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-.header .date {
-  font-size: 14px;
-  opacity: 0.92;
-  margin-bottom: 12px;
-}
-.header .song {
-  font-size: 13px;
-  opacity: 0.88;
-  border-left: 3px solid rgba(255,255,255,0.6);
-  padding-left: 12px;
-  margin-top: 10px;
-  line-height: 1.5;
-}
-.block-panel, .block-white, .block-dark {
-  background: var(--c-card);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-.block-dark {
-  background: linear-gradient(145deg, #1a237e 0%, #283593 100%);
-  color: white;
-}
-.block-dark h2 {
-  color: white;
-  border-left-color: #ffca28;
-}
-.block-dark .muted { color: rgba(255,255,255,0.75); }
-.block-dark table th { background: rgba(255,255,255,0.12); color: white; }
-.block-dark table td { color: white; border-color: rgba(255,255,255,0.1); }
-
-h2 {
-  font-size: 17px;
-  margin: 0 0 12px;
-  padding-left: 10px;
-  border-left: 4px solid var(--c-blue);
-  color: var(--c-blue-dark);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-h2 .tag {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 7px;
-  border-radius: 10px;
-  background: var(--c-orange);
-  color: white;
-  border-left: none;
-}
-.tag-red { background: var(--c-red); }
-.tag-green { background: var(--c-green); }
-.tag-orange { background: var(--c-orange); }
-.tag-blue { background: var(--c-blue); }
-
-p { margin: 0 0 10px; font-size: 14px; }
-.muted { color: var(--c-muted); font-size: 13px; }
-strong { color: var(--c-blue-dark); }
-
-.logic-chain {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.logic-item {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 12px;
-  border-left: 3px solid var(--c-blue);
-}
-.logic-num {
-  min-width: 24px; height: 24px;
-  background: var(--c-blue);
-  color: white;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
-}
-.logic-text { font-size: 13.5px; }
-.logic-text b { color: var(--c-blue-dark); }
-
-.snapshot-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.snapshot-item {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 12px;
-  text-align: center;
-}
-.snapshot-item .label {
-  font-size: 12px;
-  color: var(--c-muted);
-  margin-bottom: 4px;
-}
-.snapshot-item .value {
-  font-size: 18px;
-  font-weight: 700;
-}
-.snapshot-item .sub {
-  font-size: 12px;
-  margin-top: 2px;
-}
-.up { color: var(--c-red); }
-.down { color: var(--c-green); }
-
-.node-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.node-cell {
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 12px;
-}
-.node-cell .label {
-  font-size: 12px;
-  opacity: 0.75;
-  margin-bottom: 4px;
-}
-.node-cell .value {
-  font-size: 16px;
-  font-weight: 700;
-}
-.warning-box {
-  background: rgba(230,81,0,0.15);
-  border-left: 3px solid #ff9800;
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin: 10px 0;
-  font-size: 13px;
-}
-.warning-box ul { margin: 4px 0 0; padding-left: 18px; }
-
-.table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  border-radius: 10px;
-  border: 1px solid var(--c-border);
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  min-width: 760px;
-}
-th {
-  background: var(--c-blue-dark);
-  color: white;
-  padding: 10px 8px;
-  text-align: center;
-  font-weight: 600;
-  white-space: nowrap;
-}
-td {
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--c-border);
-  text-align: center;
-  vertical-align: middle;
-}
-tr:nth-child(even) td { background: #f8fafc; }
-td:first-child { font-weight: 600; text-align: left; }
-
-.score-circle {
-  display: inline-block;
-  width: 30px; height: 30px;
-  line-height: 30px;
-  border-radius: 50%;
-  background: var(--c-blue);
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.risk-list, .calendar-list, .discipline-list {
-  margin: 0; padding-left: 18px;
-  font-size: 13.5px;
-}
-.risk-list li, .calendar-list li, .discipline-list li {
-  margin-bottom: 7px;
-}
-.calendar-list .date {
-  display: inline-block;
-  min-width: 70px;
-  color: var(--c-blue);
-  font-weight: 600;
-}
-
-.footer {
-  text-align: center;
-  font-size: 12px;
-  color: var(--c-muted);
-  padding: 16px 0 8px;
-}
-
-@media (max-width: 420px) {
-  .snapshot-grid, .node-grid { grid-template-columns: 1fr; }
-  .header h1 { font-size: 20px; }
-}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#eef2f7;margin:0;padding:12px;color:#263238;}
+.wrap{max-width:680px;margin:0 auto;}
+.header{background:linear-gradient(135deg,#0d47a1,#1a237e 60%,#283593);color:#fff;border-radius:12px;padding:20px 18px;margin-bottom:12px;}
+.header h1{margin:0 0 4px;font-size:22px;}
+.header .date{font-size:13px;opacity:.85;}
+.header .song{margin-top:10px;font-size:12px;opacity:.9;border-left:3px solid rgba(255,255,255,.5);padding-left:8px;}
+.panel{background:#fff;border-radius:12px;padding:16px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.panel h2{font-size:16px;margin:0 0 10px;color:#0d47a1;border-left:4px solid #0d47a1;padding-left:8px;}
+.panel.dark{background:#1a237e;color:#e8eaf6;}
+.panel.dark h2{color:#9fa8da;border-left-color:#9fa8da;}
+.tag{display:inline-block;background:#e3f2fd;color:#0d47a1;border-radius:4px;padding:1px 6px;font-size:11px;margin-right:4px;}
+.up{color:#c62828;font-weight:600;}
+.down{color:#2e7d32;font-weight:600;}
+.warn{color:#e65100;font-weight:600;}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0;}
+th{background:#1a237e;color:#fff;padding:6px 4px;font-weight:600;}
+td{border-bottom:1px solid #e8eaf6;padding:6px 4px;text-align:center;}
+.tscroll{overflow-x:auto;}
+.chains{list-style:none;padding:0;margin:0;}
+.chains li{background:#f5f7fa;border-left:3px solid #1565c0;padding:8px 10px;margin-bottom:8px;font-size:13px;border-radius:0 6px 6px 0;}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.quick .q{background:#f5f7fa;border-radius:8px;padding:8px 10px;font-size:12px;}
+.quick .q b{display:block;font-size:15px;margin-top:2px;}
+.nodebox{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;}
+.nodebox b.t{color:#9fa8da;}
+.foot{font-size:11px;color:#78909c;text-align:center;padding:6px 0 18px;}
+.note{font-size:11px;color:#90a4ae;margin-top:6px;}
+b.stock{color:#0d47a1;}
+.score{font-weight:700;color:#0d47a1;}
+.pos{color:#e65100;font-weight:600;}
+.v41{color:#ffd54f;font-weight:600;}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
-  <!-- 标题区 -->
-  <div class="header">
-    <h1>每日盘前策略</h1>
-    <div class="date">2026年10月12日 星期一 · 数据基准：2026-10-09收盘</div>
-    <div class="song">
-      <div style="font-weight:700; margin-bottom:3px">🎵 真心英雄 — 李宗盛</div>
-      <div>「不经历风雨，怎么见彩虹，没有人能随随便便成功」</div>
-    </div>
-  </div>
+<div class="header">
+<h1>每日盘前策略 · 精简版</h1>
+<div class="date">2026年10月12日 星期一（数据基准：10/9收盘）</div>
+<div class="song">🎵 《海阔天空》——"原谅我这一生不羁放纵爱自由，也会怕有一天会跌倒。"</div>
+</div>
 
-  <!-- 核心摘要 -->
-  <div class="block-white">
-    <h2>📌 核心摘要</h2>
-    <p><strong>今日定位：</strong>退潮末段·结构轮动 / 风格切换——旧主线（算力硬件/CPO/PCB）集体补跌，新主线（AI应用·传媒 / 农业 / 贵金属）全面爆发。属退潮末段的一次风格切换，<strong>非新升势确立</strong>。节点理论定位为「退潮末段·结构轮动」节点，V4.1 九态判定：整体处于 <strong>WAIT→P1 过渡</strong> 区间。</p>
-    <p><strong>承接昨日交易日志：</strong>10/9 盘面出现明显的"旧主线出清 + 新主线点火"：半导体/通信/元件/消费电子 20日资金深负（半导体-630亿、元件-69亿）继续补跌；传媒/AI应用集群涨停潮（数字媒体+8.0%、中文在线/芒果超媒双双+20%附近），种植业+5.84%（神农种业+10.4%）、贵金属+5.62%（西部黄金+9.98%）。资金从科技链大迁徙至事件驱动型题材。</p>
-    <p><strong>核心信号：</strong>① 四大指数小幅收红（沪指+0.05%/深成+0.17%/创业+0.22%），但创业板 5日仍-7.47%、20日-8.13%，中期下行未改；② 涨跌家数 3297:2145，涨停62家仅2跌停，短线情绪修复；③ 沪指仍低于 MA5(3824)，MACD死叉、RSI_6=28.38 仍处恐慌区；④ 外部美股利空出尽（10/9 纳指+0.64%反弹），油价布伦特重上100美元。</p>
-    <p><strong>今日展望：</strong>指数下行中枢中，3800为关键支撑；新主线事件驱动非趋势，涨停股（中文在线/芒果超媒）已封板，只回踩5日线低吸不追。总仓位 <strong>40-50%（偏谨慎上限）</strong>，单票≤15%（热门≤10%），等分歧回踩，严禁市价追高。</p>
-  </div>
+<!-- 2 核心摘要 -->
+<div class="panel">
+<h2>📌 核心摘要</h2>
+<p style="font-size:13px; line-height:1.7; margin:0 0 8px">上周五（10/9）恐慌宣泄后V型修复：沪指盘中失守3800（最低3754.14）后放量下影阳线收3813.79（+0.05%），成交1.90万亿放量2184亿，涨停72家/跌停11家情绪修复确认；北向净买入127.27亿创三个月新高。<b>承接昨日交易日志</b>：盘前"防守空仓"兑现，午盘"电池链新主线+AI应用传媒20cm涨停潮"如期成立，16:30复盘综合65分、修正兑现率75%。</p>
+<p style="font-size:13px; line-height:1.7; margin:0"><b>核心信号</b>：周末政策五重利好——①中共中央国务院《关于发展新质生产力的意见》19项举措（AI+行动/具身智能/脑机接口/量子/6G写入国家战略）；②证监会吴清座谈会（"研究储备增量政策工具"）；③财政部5500亿地方债结存限额聚焦"六张网"；④固态电池免税政策；⑤汽车产品创新设计新规。隔夜美股三连涨（纳指+0.64%），光通信大涨（Lumentum+5.22%/Ciena+5.58%），金龙+2.69%。<b>今日展望</b>：节点引擎判定"新核心题材节点（高）·可进攻等共振"，但20日均线仍空头+三锚位全破+FCC 10/13生效倒计时，定性为<b>政策利好下的修复反击日</b>——高开不追、分歧低吸，等9:25竞价确认共振再上仓位，总仓位8-12%（确认前≤5%）。</p>
+</div>
 
-  <!-- 决策逻辑链 -->
-  <div class="block-white">
-    <h2>🔗 决策逻辑链</h2>
-    <div class="logic-chain">
-      <div class="logic-item">
-        <div class="logic-num">1</div>
-        <div class="logic-text"><b>数据：</b>沪指3813.79(+0.05%)/深成12641.86(+0.17%)/创业板3043.33(+0.22%)；成交1.90万亿（5日均量116.85%）；3297涨/2145跌/62涨停/2跌停。<br><b>分析→判断（V4.1）：</b>指数微红但中期均线下行，属退潮末段结构轮动，非新升势；板块宽度由防御转向题材。<br><b>行动：</b>不追高，等回踩5日线低吸新主线 leader。</div>
-      </div>
-      <div class="logic-item">
-        <div class="logic-num">2</div>
-        <div class="logic-text"><b>数据：</b>传媒/AI应用集群爆发（数字媒体+8.0%、中文在线+20.01%、芒果超媒+19.98%）；种植业+5.84%（神农种业+10.4%）；贵金属+5.62%（西部黄金+9.98%）。<br><b>分析→判断（节点理论定位·第一层板块筛 + V4.1 第二层 Pair 定级）：</b>三大板块进全市场涨幅前三 → 新主线启动节点（P1候选）；Pair定级：中文在线vs芒果超媒 D0(10-09)单日≥5%触发 → <strong>P1确认·试错</strong>；神农种业反复活跃 → <strong>P2确认·持有</strong>；西部黄金 ㊲修复窗口 → <strong>P1确认·轻仓</strong>。<br><b>行动：</b>新主线按 V4.1 九态定位介入，回踩低吸。</div>
-      </div>
-      <div class="logic-item">
-        <div class="logic-num">3</div>
-        <div class="logic-text"><b>数据：</b>半导体-0.68%但20日-630亿、通信-1%、元件-4.27%(20日-69亿)、消费电子-0.87%——旧主线资金深负补跌。<br><b>分析→判断（V4.1 + ㊸资金门控）：</b>旧主线 Pair 龙头单日跌且20日资金深负 → ㊸禁多，无 V4.1 介入资格。<br><b>行动：</b>半导体/通信/元件/消费电子 一律回避，不抄底、不博弈反弹。</div>
-      </div>
-      <div class="logic-item">
-        <div class="logic-num">4</div>
-        <div class="logic-text"><b>数据：</b>隔夜（美东10/9）道指+0.83%/标普+0.59%/纳指+0.64%反弹；恒指+1.79%；布伦特原油重上100美元(+4%附近)；COMEX金~4158美元(+0.43%)；10Y美债5.223%。<br><b>分析→判断（V4.1）：</b>外部利空暂歇利好风险偏好修复，但油价/美债高位仍压制分母端；贵金属避险逻辑续存。<br><b>行动：</b>新主线可试错，贵金属轻仓；旧科技链不碰。</div>
-      </div>
-      <div class="logic-item">
-        <div class="logic-num">5</div>
-        <div class="logic-text"><b>数据：</b>节点理论定位 = 退潮末段结构轮动节点，V4.1 九态整体 = 退潮末段·结构轮动（WAIT→P1）；新主线 P1确认/P2确认，旧主线回避。<br><b>分析→判断：</b>总开关允许轻仓试错新主线，但禁止重仓追连板。<br><b>行动：</b>总仓位40-50%（偏谨慎上限），单票≤15%(热门≤10%)，止损-8%或破20日线。</div>
-      </div>
-    </div>
-  </div>
+<!-- 3 决策逻辑链 -->
+<div class="panel">
+<h2>🔗 决策逻辑链</h2>
+<ul class="chains">
+<li><b>①</b> 涨停72家+情绪修复+双新主线（电池链/AI传媒）确立 → 节点引擎：新核心题材节点（高） → 行动：解禁"不接力"限制，恢复M1/M4/M5三个进攻模式，仓位由防守0-3%升至8-12%。</li>
+<li><b>②</b> 周末《新质生产力意见》将AI+/具身智能/脑机接口写入国务院文件（级别≈国家级规划催化） → 政策对冲情景升级（复盘新规则㊼） → 行动：AI应用/算力板块评分上调，电池链+固态电池维持主攻第一。</li>
+<li><b>③</b> 隔夜光通信大涨（Lumentum+5.22%）但A股三锚位全破（中际775/北华594/深南347） → 映射=分歧低吸而非追高 → 行动：CPO只做低吸不开追价仓，FCC 10/13生效前仓位受限。</li>
+<li><b>④</b> 20cm涨停潮次日分化率&gt;70%（复盘新规则50）→ AI传媒高开必分化 → 行动：只做前排分歧低吸，不追20cm加速、不接高位补涨首板。</li>
+<li><b>⑤</b> 上周五放量下影阳线+北向127亿 vs 20日均线仍空头 → "反抽 vs 反转"未定 → 行动：3850/3864压力区不追，站稳+量能1.8万亿以上才升仓位上限。</li>
+</ul>
+</div>
 
-  <!-- 盘前30秒速览 -->
-  <div class="block-white">
-    <h2>⚡ 盘前30秒速览</h2>
-    <div class="snapshot-grid">
-      <div class="snapshot-item">
-        <div class="label">沪指</div>
-        <div class="value">3813.79</div>
-        <div class="sub up">+0.05%</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">深成指</div>
-        <div class="value">12641.86</div>
-        <div class="sub up">+0.17%</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">创业板指</div>
-        <div class="value">3043.33</div>
-        <div class="sub up">+0.22%</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">成交额</div>
-        <div class="value">1.90万亿</div>
-        <div class="sub">5日均量116.85%</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">涨跌比</div>
-        <div class="value">3297:2145</div>
-        <div class="sub">上涨占比59%</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">涨停/跌停</div>
-        <div class="value">62 / 2</div>
-        <div class="sub">短线情绪修复</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">最高连板</div>
-        <div class="value">8板</div>
-        <div class="sub">连板高度维持</div>
-      </div>
-      <div class="snapshot-item">
-        <div class="label">隔夜纳指</div>
-        <div class="value up">+0.64%</div>
-        <div class="sub">美东10/9反弹</div>
-      </div>
-    </div>
-  </div>
+<!-- 4 盘前30秒 -->
+<div class="panel">
+<h2>⚡ 盘前30秒速览</h2>
+<div class="quick">
+<div class="q">沪指10/9收盘<b class="up">3813.79 +0.05%</b></div>
+<div class="q">成交额<b>1.90万亿 +2184亿</b></div>
+<div class="q">涨/跌/涨停/跌停<b><span class="up">3297</span>/<span class="down">2145</span>/72/11</b></div>
+<div class="q">westock评分<b>18.82/18.66（冰点修复）</b></div>
+<div class="q">隔夜纳指<b class="up">+0.64%（27366）</b></div>
+<div class="q">隔夜费半<span class="down">约-0.6%（结构分化）</span></div>
+<div class="q">金龙指数<b class="up">+2.69%</b></div>
+<div class="q">COMEX金<b class="up">4220.3 +1.52%</b></div>
+</div>
+<p class="note">周末：新质生产力19项意见/证监会座谈会/5500亿六张网/固态电池免税/长鑫4F² DRAM进展（DDR5年底新品）。利空：337调查立讯/富士康、陕西能源230亿解禁、美债10Y约5.24%。</p>
+</div>
 
-  <!-- 节点狩猎定位（节点理论本体 + V4.1 九态解释层） -->
-  <div class="block-dark">
-    <h2>🎯 节点狩猎·盘前定位</h2>
-    <p class="muted" style="font-size:12px; margin:-4px 0 8px">节点理论（节点→模式→赔率）先框定今日猎场，V4.1 九态状态机对每一节点做阶段解释与定级——两者叠加得到「标的方向」与「个股标的」。</p>
-    <div class="node-grid">
-      <div class="node-cell">
-        <div class="label">节点类型 / 置信（V4.1九态）</div>
-        <div class="value">退潮末段·结构轮动（WAIT→P1）</div>
-      </div>
-      <div class="node-cell">
-        <div class="label">情绪位置 / 指数方向</div>
-        <div class="value">恐慌修复 · 震荡（V4.1：WAIT→P1）</div>
-      </div>
-      <div class="node-cell">
-        <div class="label">最高连板 / 涨停数</div>
-        <div class="value">8板 / 62家</div>
-      </div>
-      <div class="node-cell">
-        <div class="label">新核心题材（节点筛选·V4.1第一层P1候选）</div>
-        <div class="value">传媒/AI应用·农业·贵金属（强）</div>
-      </div>
-    </div>
-    <div class="warning-box">
-      <b>周期错配/仓位错配预警（节点理论 + V4.1 视角）</b>
-      <ul>
-        <li>旧主线（半导体/通信/元件/消费电子）20日资金深负 → ㊸禁多，任何多单介入资格取消（V4.1：无定级资格）</li>
-        <li>新主线（传媒/AI应用）属事件驱动非趋势，涨停股（中文在线/芒果超媒）已封板——只回踩5日线低吸，禁止市价追高</li>
-        <li>Pair 龙头单日跌≥6% 触发<strong>中断</strong>（仅 P1/P2 适用），破位即撤；龙头开跌或双双跌 → W结束</li>
-      </ul>
-    </div>
-    <p style="font-size:13.5px; margin:10px 0 6px"><strong>推荐模式（节点理论适配模式 M1-M6 + V4.1 两层结构）：</strong><br><span class="muted">节点理论先做「节点筛选」：传媒/农业/贵金属进全市场涨幅前三 → 新主线启动节点（P1候选）；V4.1 第二层 Pair 定级（唯一阶段依据）给九态：中文在线vs芒果超媒→P1确认·试错（M2回踩低吸）；神农种业→P2确认·持有（M4趋势持有）；西部黄金→P1确认·轻仓（㊲修复窗口）。旧主线节点禁用 M1-M6 进攻模式。</span></p>
-    <p style="font-size:13.5px; margin:6px 0"><strong>仓位规则：</strong>40-50%（偏谨慎上限），单票≤15%（热门≤10%），止损-8%或破20日线</p>
-    <p style="font-size:13.5px; margin:6px 0"><strong>交易三问（节点理论 + V4.1）：</strong><br>Q1 什么节点？退潮末段结构轮动·新主线启动节点（V4.1：WAIT→P1）<br>Q2 什么模式？新主线 Pair 回踩低吸（M2/M4），旧主线禁用进攻模式<br>Q3 赔率多少？按九态上行预期定盈亏比（P1确认试错≈1.5-2，P2确认持有≈1.8）</p>
-    <p class="muted" style="font-size:12px; margin-top:10px; border-top:1px solid rgba(255,255,255,0.15); padding-top:8px">提示：本模块为盘前预案，9:25竞价与10:30盘中复核为准（节点狩猎体系 · 三阶段理论 V4.1 九态状态机）。</p>
-  </div>
+<!-- 5 节点狩猎（节点理论为体 + V4.1 九态为解释层） -->
+<div class="panel dark">
+<h2>🎯 节点狩猎 · 盘前定位（节点→模式→赔率）</h2>
+<div class="nodebox"><b class="t">节点类型</b>：<b>新核心题材节点</b> / 置信：<b>高（机油共振，可穿越）</b> <span class="v41">｜V4.1九态：P1确认·情绪启动（可进攻，非趋势反转）</span></div>
+<div class="nodebox"><b class="t">情绪位置</b>：启动（涨停72/最高9板/连板指数约+3.5%）　<b class="t">指数方向</b>：sideways（V型修复未破局，20日均线下方，备注：放量下影阳线收复3800+北向127亿+周末五重利好，但均线仍空头） <span class="v41">｜V4.1九态：P1确认</span></div>
+<div class="nodebox"><b class="t">周期错配预警</b>：<span style="color:#ffb74d">情绪前置0.5-1天（大资金提前拿先手）→ 预备性交易窗口，提前买最高身位</span> <span class="v41">（V4.1：情绪启动期典型特征）</span></div>
+<div class="nodebox"><b class="t">推荐模式</b>：<br>· M5 双头/二波 —— 大题材缩量回调（换手&lt;10%、地量企稳不破10日线）→ 放量反包当日｜赔率 2-3（仅大题材）<br>· M4 补涨 —— 主线高位后同题材低位首板补涨｜赔率 ≈2<br>· M1 2进3加强确认 —— 主线高标封死，剩2进3高开带量即买点（竞价确认）｜赔率 2-3</div>
+<div class="nodebox"><b class="t">仓位规则</b>：<b>可进攻（机油共振，等共振再上仓位）</b>——叠加本报告约束：9:25竞价确认前≤5%，确认后8-12%，单笔≤3%。 <span class="v41">（V4.1：P1确认期仓位上限，非P2确认持有档）</span></div>
+<div class="nodebox"><b class="t">交易三问</b>：Q1 什么节点？新核心题材节点（高） <span class="v41">（V4.1：P1确认）</span>｜Q2 什么模式？M5二波 / M4补涨 / M1 2进3｜Q3 赔率多少？按模式回撤/上行定盈亏比（熟练三问减少乱买）</div>
+<p class="note">⚠️ 本模块为盘前预案，以9:25竞价与10:30盘中复核为准（见"节点盘中实时复核"自动化）。频率提示：一年出手30-35次，约一半时间空仓或极轻仓。</p>
+</div>
 
-  <!-- 隔夜外盘 -->
-  <div class="block-white">
-    <h2>🌍 隔夜外盘（美东10月9日收盘）</h2>
-    <div class="table-wrap">
-      <table>
-        <tr><th>市场/商品</th><th>收盘/现价</th><th>涨跌</th><th>信号解读</th></tr>
-        <tr><td>道琼斯</td><td>—</td><td class="up">+0.83%</td><td>传统蓝筹抗跌反弹</td></tr>
-        <tr><td>标普500</td><td>—</td><td class="up">+0.59%</td><td>利空出尽修复</td></tr>
-        <tr><td>纳斯达克</td><td>—</td><td class="up">+0.64%</td><td>科技股止跌</td></tr>
-        <tr><td>费城半导体SOX</td><td>—</td><td class="muted">N/A</td><td>数据缺失·禁编造，不列单一值</td></tr>
-        <tr><td>恒生指数</td><td>—</td><td class="up">+1.79%</td><td>中概风险偏好回暖</td></tr>
-        <tr><td>10Y美债收益率</td><td>5.223%</td><td class="down">-5.48bp</td><td>避险买盘推升债价，绝对值仍高</td></tr>
-        <tr><td>WTI原油</td><td>~91-92美元</td><td class="up">+3.6%附近</td><td>中东局势+霍尔木兹风险溢价延续</td></tr>
-        <tr><td>布伦特原油</td><td>~104美元</td><td class="up">重上100</td><td>供给担忧支撑能源链</td></tr>
-        <tr><td>COMEX黄金</td><td>~4158美元</td><td class="up">+0.43%</td><td>避险小幅反弹</td></tr>
-      </table>
-    </div>
-    <p class="muted" style="margin-top:8px; font-size:12px">数据来源：westock-data、公开网络检索（华尔街见闻/新浪/网易 三源一致）、恒生交易所；美东10/9收盘口径。</p>
-  </div>
+<!-- 6 隔夜外盘 -->
+<div class="panel">
+<h2>🌍 隔夜外盘（美东10/9收盘）</h2>
+<table>
+<tr><th>市场</th><th>收盘</th><th>涨跌</th></tr>
+<tr><td>道琼斯</td><td>51654.95</td><td class="up">+0.83%</td></tr>
+<tr><td>标普500</td><td>7811.54</td><td class="up">+0.59%</td></tr>
+<tr><td>纳斯达克</td><td>27366.17</td><td class="up">+0.64%</td></tr>
+<tr><td>费城半导体SOX</td><td>—</td><td class="down">小跌（ARM-3.27%/英特尔-2.22%）</td></tr>
+<tr><td>光通信</td><td>Ciena/Lumentum/Coherent</td><td class="up">+5.58%/+5.22%/+3.40%</td></tr>
+<tr><td>中国金龙</td><td>—</td><td class="up">+2.69%（阿里/理想/蔚来+5%）</td></tr>
+<tr><td>欧洲三大</td><td>英/法/德</td><td class="up">+1.06%/+0.95%/+1.13%</td></tr>
+<tr><td>10Y美债</td><td>约5.24%</td><td class="warn">高位压制</td></tr>
+<tr><td>WTI原油</td><td>91.85美元</td><td class="up">+0.39%</td></tr>
+<tr><td>COMEX金</td><td>4220.3</td><td class="up">+1.52%</td></tr>
+<tr><td>港股10/9</td><td>恒指</td><td class="up">+1.79%（恒科约+3%）</td></tr>
+</table>
+<p style="font-size:12px; line-height:1.6; margin:6px 0 0"><b>信号解读</b>：三大指数收涨+光通信领涨+中概大涨 → 对A股科技/中概映射正向；但费半结构偏弱+10Y美债5.24%高位 → AI硬件链反弹高度受限，"修复"而非"反转"。黄金+1.52% → 贵金属防御/避险逻辑延续。今日美国债市休市（哥伦布日），美股正常，利率扰动暂停一日。</p>
+</div>
 
-  <!-- 市场全景 -->
-  <div class="block-white">
-    <h2>📊 市场全景（2026-10-09收盘）</h2>
-    <div class="table-wrap">
-      <table>
-        <tr><th>指数</th><th>收盘</th><th>涨跌</th><th>振幅</th><th>成交额</th></tr>
-        <tr><td>上证指数</td><td>3813.79</td><td class="up">+0.05%</td><td>—</td><td>—</td></tr>
-        <tr><td>深证成指</td><td>12641.86</td><td class="up">+0.17%</td><td>—</td><td>—</td></tr>
-        <tr><td>创业板指</td><td>3043.33</td><td class="up">+0.22%</td><td>—</td><td>—</td></tr>
-        <tr><td>科创50</td><td>—</td><td class="muted">N/A</td><td>—</td><td>—</td></tr>
-      </table>
-    </div>
-    <p style="margin-top:10px; font-size:13px"><strong>涨跌分布：</strong>上涨3297家（59%）/ 下跌2145家（39%）/ 平盘若干；涨停62家（含ST），跌停2家，炸板率低位。</p>
-    <p style="font-size:13px"><strong>量能：</strong>两市成交1.90万亿，为5日均量116.85%，放量主要由新主线点火与旧主线出清双向贡献；创业板5日-7.47%、10日-7.73%、20日-8.13%，中期下行未改。</p>
-    <p style="font-size:13px"><strong>领涨板块：</strong>数字媒体+8.0%（中文在线+20.01%）/ 出版+7.2% / 影视院线+7.16% / 种植业+5.84%（神农种业+10.4%）/ 贵金属+5.62%（西部黄金+9.98%）/ 广告营销+5.5%（三人行+10.01%）/ 软件开发+3.93%（绿盟科技+20.02%）/ 游戏+3.62% / 一般零售+3.05%（茂业商业+6.03%）/ 证券+2.23% / 乘用车+2.19%（比亚迪+3.95%）。</p>
-    <p style="font-size:13px"><strong>领跌板块：</strong>半导体-0.68%（20日-630亿）/ 通信-1.00% / 元件-4.27%（20日-69亿）/ 消费电子-0.87% / 玻璃玻纤-2.36% / 风电-3.01% / 航海装备-3.57%——旧主线资金深负补跌。</p>
-  </div>
+<!-- 7 市场全景 -->
+<div class="panel">
+<h2>📊 市场全景（10/9收盘）</h2>
+<table>
+<tr><th>指数</th><th>收盘</th><th>涨跌</th><th>要点</th></tr>
+<tr><td>上证指数</td><td>3813.79</td><td class="up">+0.05%</td><td>3754→3824 V型，收复3800</td></tr>
+<tr><td>深证成指</td><td>12641.86</td><td class="up">+0.17%</td><td>20日-7.22%</td></tr>
+<tr><td>创业板指</td><td>3043.33</td><td class="up">+0.22%</td><td>盘中失守3000后收复</td></tr>
+<tr><td>科创50</td><td>1457.27</td><td class="up">+0.07%</td><td>仅微红，科技链背离未解除</td></tr>
+</table>
+<p style="font-size:12px; margin:6px 0"><b>涨跌分布</b>：上涨3297（59%）/下跌2145/涨停72/跌停11；两市成交19005亿（+2184亿）。<b>评分</b>：原始18.82/调整18.66（冰点修复初期）。</p>
+<table>
+<tr><th>领涨板块</th><th>涨幅</th><th>主力净流入</th><th>领跌板块</th><th>跌幅</th></tr>
+<tr><td>数字媒体/出版/影视</td><td class="up">+8.0%/+7.2%/+7.16%</td><td class="up">4.6/9.5/8.0亿</td><td>元件</td><td class="down">-4.27%（-56.4亿）</td></tr>
+<tr><td>种植业/贵金属</td><td class="up">+5.84%/+5.62%</td><td class="up">10.8/14.9亿</td><td>半导体</td><td class="down">-0.68%（-41.9亿）</td></tr>
+<tr><td>软件开发/电池</td><td class="up">+3.93%/+2.10%</td><td class="up">14.5/<b>50.4亿#1</b></td><td>通信设备</td><td class="down">-1.00%（-39.0亿）</td></tr>
+</table>
+<p style="font-size:12px; margin:6px 0"><b>主线轮动轨迹（近3日）</b>：10/7 AI硬件退潮 → 10/8 冰点（油气/银行/固态电池孤火）→ 10/9 <b>电池链+AI应用传媒双新主线确立</b>，资金"久期缩短"→"新主线抱团"切换。<b>焦点个股</b>：宁德时代+3.84%（+20.4亿吸筹）/领湃科技20cm/中文在线·芒果超媒20cm/紫金矿业+4.87%/赣锋+2.85%。</p>
+</div>
 
-  <!-- 板块共识度与方向表（节点门控版） -->
-  <div class="block-white">
-    <h2>⭐ 板块共识度与方向表（节点门控版）</h2>
-    <p class="muted" style="font-size:12px; margin:-6px 0 10px">「节点门控」= 节点理论先筛节点、V4.1 九态对每节点定级。当前节点=退潮末段·结构轮动（V4.1：WAIT→P1）；总仓位规则：<strong>40-50%偏谨慎上限</strong>；本表列示新主线试错 + 防御方向，旧主线一律回避（㊸禁多）。</p>
-    <div class="table-wrap">
-      <table>
-        <tr>
-          <th>板块</th><th>评分</th><th>共识度</th><th>适配节点<br><span style="font-weight:400;font-size:11px">（V4.1九态）</span></th><th>适配模式</th><th>赔率</th><th>操作判断</th><th>建议仓位</th><th>核心策略</th><th>核心个股建议</th>
-        </tr>
-        <tr>
-          <td>传媒/AI应用</td>
-          <td><span class="score-circle">92</span></td>
-          <td>强</td>
-          <td>新主线启动·P1确认</td>
-          <td>回踩低吸</td>
-          <td>≈2.0</td>
-          <td>试错·低吸</td>
-          <td>≤10%</td>
-          <td>事件驱动非趋势·等回踩5日线</td>
-          <td><b>中文在线</b>(300364)<br>芒果超媒(300413)<br>华策影视(300133)</td>
-        </tr>
-        <tr>
-          <td>种植业/农业</td>
-          <td><span class="score-circle">82</span></td>
-          <td>中强</td>
-          <td>趋势延续·P2确认</td>
-          <td>持有</td>
-          <td>≈1.8</td>
-          <td>持有</td>
-          <td>≤10%</td>
-          <td>转基因政策+虫害催化·反复活跃</td>
-          <td><b>神农种业</b>(300189)<br>万向德农(600371)<br>敦煌种业(600354)</td>
-        </tr>
-        <tr>
-          <td>贵金属</td>
-          <td><span class="score-circle">70</span></td>
-          <td>中</td>
-          <td>修复窗口·P1确认</td>
-          <td>轻仓试错</td>
-          <td>≈1.5</td>
-          <td>轻仓·≤5%</td>
-          <td>≤5%</td>
-          <td>㊲修复窗口·避险+金价反弹</td>
-          <td><b>西部黄金</b>(601069)<br>山金国际(000975)<br>湖南黄金(002155)</td>
-        </tr>
-        <tr>
-          <td>一般零售</td>
-          <td><span class="score-circle">64</span></td>
-          <td>中</td>
-          <td>试错观察·P1确认</td>
-          <td>观察</td>
-          <td>≈1.5</td>
-          <td>观察</td>
-          <td>0-3%</td>
-          <td>茂业商业+6.03%·消费修复</td>
-          <td><b>茂业商业</b>(600828)<br>重庆百货(600729)<br>三江购物(601116)</td>
-        </tr>
-        <tr>
-          <td>证券/证券IT</td>
-          <td><span class="score-circle">60</span></td>
-          <td>中</td>
-          <td>修复低吸·P1确认</td>
-          <td>回踩低吸</td>
-          <td>≈1.5</td>
-          <td>低吸</td>
-          <td>≤5%</td>
-          <td>互金修复·大智慧+9.95%</td>
-          <td><b>大智慧</b>(601519)<br>指南针(300803)<br>东方财富(300059)</td>
-        </tr>
-        <tr>
-          <td>乘用车</td>
-          <td><span class="score-circle">58</span></td>
-          <td>中</td>
-          <td>试错观察·P1确认</td>
-          <td>观察</td>
-          <td>≈1.5</td>
-          <td>观察</td>
-          <td>0-3%</td>
-          <td>比亚迪+3.95%·以旧换新政策</td>
-          <td><b>比亚迪</b>(002594)<br>赛力斯(601127)<br>江淮汽车(600418)</td>
-        </tr>
-        <tr>
-          <td>半导体/CPO/消费电子</td>
-          <td><span class="score-circle">30</span></td>
-          <td>极弱</td>
-          <td>退潮回避·—</td>
-          <td>无</td>
-          <td>—</td>
-          <td>回避·㊸禁多</td>
-          <td>0%</td>
-          <td>20日深负(半导体-630亿)·退潮补跌</td>
-          <td>中际旭创(300308)<br>兆易创新(603986)<br>沪电股份(002463)</td>
-        </tr>
-        <tr>
-          <td>通信/元件</td>
-          <td><span class="score-circle">33</span></td>
-          <td>弱</td>
-          <td>退潮回避·—</td>
-          <td>无</td>
-          <td>—</td>
-          <td>回避·㊸禁多</td>
-          <td>0%</td>
-          <td>元件20日-69亿·㊸禁多</td>
-          <td>新易盛(300502)<br>天孚通信(300394)<br>东山精密(002384)</td>
-        </tr>
-      </table>
-    </div>
-  </div>
+<!-- 8 板块共识度表（节点门控版，适配节点列叠加 V4.1 九态） -->
+<div class="panel dark">
+<h2>⭐ 板块共识度与方向表（节点门控版）</h2>
+<p style="font-size:11px; color:#9fa8da; margin:0 0 6px">节点=新核心题材节点（高）｜仓位规则=可进攻等共振（确认前≤5%，确认后8-12%）｜适配节点列：节点理论定位 · V4.1九态定级</p>
+<div class="tscroll">
+<table>
+<tr><th>板块</th><th>评分</th><th>共识度</th><th>适配节点</th><th>模式</th><th>赔率</th><th>操作判断</th><th>仓位</th><th>核心策略</th><th>核心个股建议</th></tr>
+<tr><td>电池链/固态电池</td><td class="score">92</td><td>极强</td><td>新核心题材·P1确认</td><td>M1、M5</td><td>2-3</td><td>主攻·持有低吸</td><td class="pos">4-6%</td><td>十五五电池规划+免税+排产超预期，回调低吸龙头不追高标</td><td><b class="stock">宁德时代</b>（Q3排产王+20亿吸筹）<br>赣锋锂业（锂价弹性）<br>恩捷股份（隔膜+4.38%）</td></tr>
+<tr><td>AI应用传媒</td><td class="score">90</td><td>极强</td><td>新核心题材·P1确认</td><td>M4、M1</td><td>2-3</td><td>分化日·前排低吸</td><td class="pos">3-5%</td><td>20cm高潮次日分化率&gt;70%：只做分歧低吸，不追加速板</td><td><b class="stock">中文在线</b>（字节PineDrama映射）<br>芒果超媒（AI内容龙头）<br>省广集团（营销补涨）</td></tr>
+<tr><td>三季报PCB/CCL</td><td class="score">85</td><td>强</td><td>新核心题材·P1确认</td><td>M5、M4</td><td>2-3</td><td>业绩驱动·低吸</td><td class="pos">2-3%</td><td>景旺Q3预增205-265%定锚，业绩兑现窗口优选</td><td><b class="stock">景旺电子</b>（Q3预增205-265%）<br>广合科技（预增）<br>中国巨石（预增）</td></tr>
+<tr><td>光通信/CPO</td><td class="score">78</td><td>中</td><td>新核心题材·P1预警</td><td>M5</td><td>≈2</td><td>修复低吸·不追高</td><td class="pos">2-3%</td><td>隔夜光通信大涨vs三锚位全破+FCC 10/13，反弹=兑现窗口</td><td><b class="stock">中际旭创</b>（775距885锚-12%）<br>天孚通信（低吸位）<br>剑桥科技（600万产能）</td></tr>
+<tr><td>贵金属/工业金属</td><td class="score">75</td><td>强</td><td>新核心题材·P1确认</td><td>M4、M5</td><td>≈2</td><td>持有·回调加</td><td class="pos">1-2%</td><td>COMEX金+1.52%+紫金吸筹，避险+量价共振</td><td><b class="stock">紫金矿业</b>（+4.87%净流18.6亿）<br>西部黄金（领涨9.98%）</td></tr>
+<tr><td>券商/大金融</td><td class="score">70</td><td>中</td><td>新核心题材·P1预警</td><td>M4</td><td>≈2</td><td>观察·轻仓</td><td class="pos">0-2%</td><td>北向127亿+公募新规+座谈会，指数修复受益但缺主升逻辑</td><td><b class="stock">东方财富</b>（+3.88%）<br>华鑫股份（领涨10.03%）</td></tr>
+<tr><td>种植业/稀土</td><td class="score">68</td><td>中</td><td>新核心题材·P1预警</td><td>M4</td><td>≈2</td><td>观察·不追</td><td class="pos">0-1%</td><td>稀土精矿Q4环比涨价+农业净流入10.8亿，二线补涨属性</td><td><b class="stock">北方稀土</b>（Q4涨价）<br>神农种业（领涨10.40%）</td></tr>
+<tr><td>银行红利/油气</td><td class="score">60</td><td>中</td><td>混沌(防守)·WAIT</td><td>防御底仓</td><td>≈1.5</td><td>防御·底仓</td><td class="pos">0-2%</td><td>WTI 91.85+利率高位，纯防守配置</td><td><b class="stock">中国海油</b>（WTI弹性）<br>工商银行（红利）</td></tr>
+</table>
+</div>
+<p class="note" style="color:#9fa8da">回避：高位固态梯队（时代万恒6板/紫竹高科5板/新华传媒9板）不接力；半导体/消费电子零仓位至锚位修复；337调查涉立讯/富士康（果链利空）；陕西能源230亿解禁回避。</p>
+</div>
 
-  <!-- 今日核心推荐标的（节点理论 + V4.1） -->
-  <div class="block-white">
-    <h2>🏆 今日核心推荐标的（节点理论定位 + V4.1 定级 · 共5只）</h2>
-    <p class="muted" style="font-size:12px; margin:-6px 0 10px">与飞书《核心看好标的追踪表》同源。选股方法：<b>节点理论</b>先框定猎场节点（新主线启动 / 趋势延续 / 修复窗口）→ <b>V4.1 九态</b>对 Pair 定级确认阶段 → 取 leader。涨停股（中文在线/芒果超媒）已封板仅列示不追，回踩5日线低吸；旧主线一律不列入。</p>
-    <div class="table-wrap">
-      <table>
-        <tr><th>标的</th><th>代码</th><th>节点/阶段</th><th>核心逻辑（节点→V4.1）</th><th>操作纪律</th></tr>
-        <tr>
-          <td>中文在线</td><td>300364</td><td>新主线启动·P1确认·leader</td>
-          <td>节点=AI应用主线启动；数字媒体+8.0%领涨·IP/语料核心·D0=10-09(+20.01%)触发→V4.1 P1确认</td>
-          <td>回踩5日线低吸·不追板·单票≤10%</td>
-        </tr>
-        <tr>
-          <td>芒果超媒</td><td>300413</td><td>新主线启动·P1确认·leader</td>
-          <td>节点=AI应用主线启动；数字媒体龙头·AI应用业绩兑现·D0=10-09(+19.98%)→V4.1 P1确认</td>
-          <td>已涨停仅列示不追·回踩低吸</td>
-        </tr>
-        <tr>
-          <td>神农种业</td><td>300189</td><td>趋势延续·P2确认·leader</td>
-          <td>节点=农业趋势延续；种植业+5.84%领涨·虫害/转基因政策催化·反复活跃→V4.1 P2确认</td>
-          <td>持有·不破20日线不止盈</td>
-        </tr>
-        <tr>
-          <td>西部黄金</td><td>601069</td><td>修复窗口·P1确认·leader</td>
-          <td>节点=贵金属修复窗口；贵金属+5.62%·避险+金价自低位反弹·㊲修复窗口→V4.1 P1确认</td>
-          <td>轻仓≤5%·破位即撤</td>
-        </tr>
-        <tr>
-          <td>大智慧</td><td>601519</td><td>修复低吸·P1确认</td>
-          <td>节点=互金修复；证券+2.23%·大智慧+9.95%→V4.1 P1确认</td>
-          <td>回踩低吸·单票≤5%</td>
-        </tr>
-      </table>
-    </div>
-  </div>
+<!-- 🏆 今日核心推荐标的（用户指定新增 · V4.1 定级 · 与飞书追踪表同源） -->
+<div class="panel">
+<h2>🏆 今日核心推荐标的（共 5 只 · V4.1 定级 · 与飞书《核心看好标的追踪表》同源）</h2>
+<p class="note">本节为用户指定新增，不计入与模板的格式差异。以下按「节点理论定位 → V4.1 九态定级 → 取 leader」对 Pair 定级；涨停股（中文在线/芒果超媒）已封板仅列示不追，回踩5日线低吸；旧主线（半导体/消费电子）不列入。</p>
+<table>
+<tr><th>标的</th><th>代码</th><th>V4.1阶段</th><th>核心逻辑（节点理论定位→V4.1定级）</th><th>操作纪律</th></tr>
+<tr><td>宁德时代</td><td>300750</td><td>P1确认·leader</td><td>电池链主攻第一（节点理论=新核心题材节点·高）；D0=10/9(+3.84%)触发→V4.1 P1确认；+20.4亿吸筹居全市场#1，回调低吸龙头不追高标</td><td>回踩5日线低吸·单票≤4-6%·破20日线撤</td></tr>
+<tr><td>中文在线</td><td>300364</td><td>P1确认·leader</td><td>AI应用传媒龙头（节点理论=新核心题材节点·高）；D0=10/9(+20cm)触发→V4.1 P1确认；字节PineDrama映射</td><td>已涨停仅列示不追·次日分化只做分歧低吸</td></tr>
+<tr><td>芒果超媒</td><td>300413</td><td>P1确认·leader</td><td>AI内容龙头（节点理论=新核心题材节点·高）；D0=10/9(+20cm)→V4.1 P1确认；与中文在线同Pair领涨</td><td>已涨停仅列示不追·回踩5日线低吸</td></tr>
+<tr><td>紫金矿业</td><td>601899</td><td>P1确认·leader</td><td>贵金属领涨核心（节点理论=新核心题材节点·高）；D0=10/9(+4.87%净流18.6亿)→V4.1 P1确认；COMEX金+1.52%避险+量价共振</td><td>持有·回调加仓≤1-2%·破位即撤</td></tr>
+<tr><td>景旺电子</td><td>603228</td><td>P1确认</td><td>三季报PCB/CCL主线（节点理论=新核心题材节点·高）；Q3预增205-265%定锚→V4.1 P1确认；业绩兑现窗口优选</td><td>业绩驱动低吸·防高开兑现·单票≤2-3%</td></tr>
+</table>
+</div>
 
-  <!-- 风险点 + 催化日历 + 止盈止损纪律 -->
-  <div class="block-white">
-    <h2>🚨 风险点清单 + 📅 催化日历 + 🛡️ 止盈止损纪律</h2>
-    <p style="font-size:14px; font-weight:700; color:var(--c-blue-dark); margin-bottom:6px">风险点清单</p>
-    <ul class="risk-list">
-      <li><strong>旧主线踩踏风险：</strong>半导体/CPO/消费电子退潮补跌，20日资金深负；反抽即减仓，不抄底（㊸禁多）。</li>
-      <li><strong>新主线陷阱风险：</strong>传媒/AI应用属事件驱动非趋势，多数板块20日资金深负；涨停股已封板，追高易被闷。</li>
-      <li><strong>外部滞胀压制：</strong>布伦特原油重上100美元、10Y美债5.223%，分母端压力未解，成长股估值承压。</li>
-      <li><strong>地缘与油价：</strong>中东局势推升油价；若谈判突破则油价快速回落，油气链高位兑现。</li>
-      <li><strong>规则58单向失真：</strong>连续两日"空≥80% ∧ 多≤30%"信号若再现，多方向砍半+降仓5pcts。</li>
-      <li><strong>估值分位：</strong>全A PE_TTM 19.56（10年68.77%分位），非低位，上行空间受限。</li>
-    </ul>
+<!-- 9 风险+催化+纪律 -->
+<div class="panel">
+<h2>⚠️ 风险点 + 催化日历 + 止盈止损纪律</h2>
+<p style="font-size:13px; margin:0 0 8px"><b>风险点</b>：①FCC新规10/13生效倒计时，光模块最后一跌风险；②20cm涨停潮分化（AI传媒高开低走概率大）；③三季报"利好出尽"——景旺等预增股防高开兑现；④337调查立讯/富士康（果链压制）；⑤本周解禁414.62亿（陕西能源230亿最大）；⑥10Y美债5.24%高位，成长股分母压制未解；⑦高标9/8/7/6板断层=分歧日，断板票竞价"低开也走"。</p>
+<p style="font-size:13px; margin:0 0 8px"><b>催化日历</b>：今日美国债市休市/本周中国9月CPI·PPI；10/13 苹果智能家居发布会+FCC生效+沪市首份三季报；10/14-15 湾芯展+人工智能产业大会；10/15 台积电/ASML财报；10/23 英伟达DGX Spark开卖；10/26-29 二十届五中全会。</p>
+<p style="font-size:13px; margin:0"><b>止盈止损纪律</b>：沪指3800失守→仓位降至3%以下；3850/3864压力区不追、缩量回踩3950以下逻辑沿旧纪要失效版剔除；中际旭创885锚/北方华创656锚/深南电路400锚未站回前，任何反弹按兑现处理；单笔≤3%，14:00后不开新仓；铁律A复核（集体低开&gt;1%+4300只下跌+外盘冲击→紧急降仓）；港股映射9:25+10:30两次校验。</p>
+</div>
 
-    <p style="font-size:14px; font-weight:700; color:var(--c-blue-dark); margin:16px 0 6px">催化日历</p>
-    <ul class="calendar-list">
-      <li><span class="date">10月12日</span>9:25竞价定强弱；关注传媒/农业/贵金属是否继续确认。</li>
-      <li><span class="date">10月10-13日</span>美国9月CPI及通胀数据陆续披露，影响美债与港股映射。</li>
-      <li><span class="date">10月13日</span>苹果"Welcome Home"智能家居发布会（纽约）。</li>
-      <li><span class="date">10月14-15日</span>湾芯展/人工智能产业大会。</li>
-      <li><span class="date">10月15日</span>台积电Q3财报、ASML Q3财报。</li>
-      <li><span class="date">10月23日</span>英伟达DGX Spark开卖。</li>
-    </ul>
-
-    <p style="font-size:14px; font-weight:700; color:var(--c-blue-dark); margin:16px 0 6px">止盈止损纪律</p>
-    <ul class="discipline-list">
-      <li><strong>总仓位：</strong>40-50%（偏谨慎上限），单票≤15%（热门≤10%）；退潮末段不重仓、不补仓、不追连板。</li>
-      <li><strong>铁律A：</strong>若四大指数集体低开>1%且下跌>4300家，触发[ENV-REVISION]紧急降仓至≤10%。</li>
-      <li><strong>V4.1 中断纪律：</strong>Pair龙头单日跌≥6% 即中断（P1/P2适用），破位离场不"等回本"。</li>
-      <li><strong>止损：</strong>任何持仓个股跌破前低或-8%即离场。</li>
-      <li><strong>止盈：</strong>新主线试错仓反弹3-5%可减仓，不恋战；P2确认持有仓不破20日线不止盈。</li>
-      <li><strong>港股映射：</strong>9:25集合竞价+10:30盘中两次校验，尤其传媒/农业/贵金属方向。</li>
-    </ul>
-  </div>
-
-  <div class="footer">
-    本报告仅供参考，不构成投资建议。数据来源：westock-data、公开网络检索、三大公众号研究链。<br>
-    生成时间：2026-10-12 07:00 CST · 节点引擎：节点狩猎体系 · 阶段判定：三阶段理论 V4.1 九态状态机
-  </div>
-
+<div class="foot">数据来源：westock-data（2026-10-09收盘）/ WebSearch（美东10/9外盘+周末政策）/ 三大公众号研究链<br>本报告仅供参考，不构成投资建议 · 节点引擎：节点狩猎体系（V4.1 九态解释层） · 阿Q量化复盘 2026-10-12 08:30</div>
 </div>
 </body>
 </html>
