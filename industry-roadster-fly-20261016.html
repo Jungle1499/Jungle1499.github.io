@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>特斯拉Roadster「飞行汽车」事件分析 · V4.1 定级 · 2026-10-16</title>
+<style>
+:root{--bg:#f6f7f9;--ink:#1a1d21;--sub:#5b6470;--line:#e4e7ec;--red:#b91c1c;--blue:#2563eb;--teal:#0f766e;--up:#d92b2b;--dn:#0f9d58;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px}
+header{background:linear-gradient(135deg,#7f1d1d,#b91c1c);color:#fff;padding:26px 28px;border-radius:0 0 14px 14px;margin:0 -20px 22px}
+header h1{font-size:21px;margin:0 0 8px}
+header .meta{font-size:13px;opacity:.92;line-height:1.8}
+h2{font-size:17px;margin:30px 0 10px;padding-left:10px;border-left:4px solid var(--blue)}
+h3{font-size:14px;color:var(--teal);margin:16px 0 6px;font-weight:700}
+.concl{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;line-height:1.85;font-size:14px;margin:10px 0}
+.concl b{color:#166534}
+.warn{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;line-height:1.85;font-size:13.5px;margin:10px 0;color:#7f1d1d}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;font-size:13px;color:#92400e;line-height:1.7;margin:10px 0}
+.cmp{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 14px;font-size:13.5px;color:#075985;line-height:1.7;margin:10px 0}
+table.tb{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(16,24,40,.06);font-size:13px;margin:8px 0}
+table.tb th{background:#eef2ff;color:#1e3a8a;font-weight:700;font-size:12px;padding:9px 7px;text-align:center;border-bottom:2px solid #dbeafe}
+table.tb td{padding:8px 7px;text-align:center;border-bottom:1px solid var(--line)}
+table.tb td.l{text-align:left}
+table.tb tbody tr:hover{background:#fafbfd}
+.up{color:var(--up);font-weight:700} .dn{color:var(--dn);font-weight:700}
+.mono{font-variant-numeric:tabular-nums}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-wait{background:#e5e7eb;color:#4b5563}
+.b-p1{background:#fed7aa;color:#c2410c}
+.b-p2{background:#dcfce7;color:#15803d}
+.b-p3{background:#fee2e2;color:#b91c1c}
+.rk{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:700;background:#fee2e2;color:#b91c1c;margin-left:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin:10px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.card .t{font-weight:700;font-size:13.5px;margin-bottom:6px;color:#1e3a8a}
+ol{margin:4px 0;padding-left:20px} ol li{margin:3px 0;font-size:13px}
+.ver{color:var(--teal);font-size:12px;font-weight:700;margin-top:6px}
+.foot{margin-top:26px;color:var(--sub);font-size:12px;line-height:1.8}
+.tag2{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;background:#dbeafe;color:#1e40af}
+</style></head><body><div class="wrap">
+<header>
+<h1>特斯拉 Roadster「飞行汽车」事件分析 · V4.1 定级</h1>
+<div class="meta">事件：<b>特斯拉 Roadster 2.0 发布，SpaceX 冷气推进器实现短暂飞行/空中转体</b>（美东 2026-10-15 晚发布）<br>
+数据基准：<b>2026-10-16 盘中约 11:43</b>　|　阶段口径：<b>三阶段 V4.1（Pair 状态机九态）</b>　|　首个反应日：<b>2026-10-16（今日，板块涨停潮）</b></div>
+<div class="ver">版本 v2 · WKBUILD: roadster-fly-20261016（补亚普/三瑞/中鼎修正/券商研报说明） · 数据基准 2026-10-16 盘中</div>
+</header>
+
+<div class="concl">
+<b>一句话结论：</b>特斯拉 Roadster 2.0「会飞」是<b>技术演示级催化，不是量产落地</b>——它靠 SpaceX 冷气推进器（高压储气罐+10喷嘴+真空吸附）实现封闭场地短时跳跃/转体，<b>无法长时间高空飞行、公路悬浮被法规锁定</b>，预计 2028 年才量产。但事件热度直接点燃了 A 股<b>飞行汽车/eVTOL/低空经济 + 冷气推进（高压储气）+ 特斯拉供应链</b>三条链，今日（10-16）板块大面积涨停。<b>V4.1 定级：全部标的处于 P1预警（今日 D0 涨停刚触发、三天窗未走完、尚未确认），无一进入 P1确认（可买）</b>；唯一例外是金盾/华力创通这对 10-08 就启动的低空旧 wave（已到 P3预警）。
+</div>
+
+<h2>⚡ 结论速览</h2>
+<div class="grid">
+<div class="card"><div class="t">① 事件定性</div>技术演示级催化（冷气推进器下放），非量产飞行汽车；2028 才量产，公路悬浮被航空法规锁定。</div>
+<div class="card"><div class="t">② 受益三链</div>飞行汽车/eVTOL 整机 → 冷气推进(高压储气) → 特斯拉供应链，外溢低空经济/商业航天/军工。</div>
+<div class="card"><div class="t">③ V4.1 阶段</div>全部 P1预警（D0=今日涨停触发，等 D1/D2 确认）；金盾/华力创通 P3预警（10-08 旧 wave）。</div>
+<div class="card"><div class="t">④ 纪律</div>P1预警=观察不买；等 10-17/10-18 三天窗确认进 P1确认再试错买龙头，禁追已涨停的票。</div>
+</div>
+
+<h2>一、事实核心与影响拆解</h2>
+<h3>1.1 四源事实（交叉）</h3>
+<table class="tb">
+<thead><tr><th>维度</th><th>事实</th><th>来源</th></tr></thead>
+<tbody>
+<tr><td class="l"><b>发布</b></td><td class="l">特斯拉 10-15（美东晚）在得州韦科 SpaceX 测试基地发布新一代 Roadster 2.0，现场演示冲上 U 型跑道倒挂吸附→离坡腾空→空中转体→落地</td><td>Yahoo Finance / 新浪汽车 / 同花顺</td></tr>
+<tr><td class="l"><b>技术核心</b></td><td class="l">SpaceX 冷气推进器（内部代号 A71，借鉴猎鹰9号姿态控制喷嘴设计）：250kg 压缩空气罐 + 10 个喷嘴高压气体定向喷射；另配真空风扇吸附系统（2G 下压力）实现倒挂悬停</td><td>Yahoo / 同花顺</td></tr>
+<tr><td class="l"><b>性能</b></td><td class="l">0-60mph 仅 0.81 秒；极速 230mph（马斯克称量产可到 Mach 0.5 ≈ 383mph）；200kWh 电池、三电机、续航约1000km</td><td>Yahoo / 东财</td></tr>
+<tr><td class="l"><b>商业化</b></td><td class="l">预计 <b>2028 年量产</b>；售价超 25 万美元；中国官网开放预订、意向金 33.2 万元</td><td>东财 / 财富号</td></tr>
+</tbody></table>
+
+<h3>1.2 🔴 事实核查（必须说清的边界）</h3>
+<div class="warn">
+<b>这不是真正的「飞行汽车」：</b>同花顺明确指出——Roadster 依靠 SpaceX 冷气推进器，实现的是<b>封闭场地短时跳跃、空中转体</b>，<b>无法长时间高空飞行</b>；受航空法规约束，<b>公路模式悬浮功能锁定，仅封闭赛道解锁</b>；项目历经多次跳票，<b>预计 2028 年才量产</b>。
+⇒ 结论：本事件是<b>「技术演示 + 概念催化」</b>，不是「量产飞行汽车落地」。市场炒的是<b>题材预期差</b>，不是业绩兑现。
+</div>
+
+<h3>1.3 影响层次表</h3>
+<table class="tb">
+<thead><tr><th>层次</th><th>传导逻辑</th><th>受益方向</th><th>弹性</th></tr></thead>
+<tbody>
+<tr><td class="l"><b>直接催化</b></td><td class="l">马斯克背书「飞行汽车」，直接点燃 eVTOL/低空经济情绪</td><td class="l">飞行汽车/eVTOL 整机、低空运营</td><td>🔴 最高</td></tr>
+<tr><td class="l"><b>技术外溢</b></td><td class="l">冷气推进器＝高压储气罐+精密喷嘴+气动元件，与空气悬架储气罐技术同源</td><td class="l">高压储气、气动密封、精密结构件</td><td>🟠 高</td></tr>
+<tr><td class="l"><b>供应链</b></td><td class="l">Roadster 高性能车身 → 特斯拉整车供应链（轻量化底盘/热管理/紧固件）</td><td class="l">特斯拉 Tier1 供应商</td><td>🟡 中</td></tr>
+<tr><td class="l"><b>概念扩散</b></td><td class="l">低空经济、商业航天（SpaceX 联动）、军工（珠海航展12月）多题材共振</td><td class="l">军工航空、卫星导航、3D打印</td><td>🟡 中（纯情绪）</td></tr>
+</tbody></table>
+
+<h2>二、行业逻辑</h2>
+<div class="cmp">
+1. <b>特斯拉是低空经济的「顶级催化源」</b>：马斯克用 SpaceX 火箭技术给超跑装上「会飞」的冷气推进器，把「飞行汽车」从 PPT 拉进「真机演示」，直接抬升整个 eVTOL/低空经济赛道的想象空间与关注度。<br>
+2. <b>技术同源是这轮炒作的「暗线」</b>：冷气推进器本质是高压储气罐+精密喷嘴，与空气悬架高压储气罐、气动密封技术同源——这解释了为什么<b>保隆科技（高压储气罐）</b>被资金当成「技术同源弹性先锋」。<br>
+3. <b>但落地极远、法规锁死</b>：2028 才量产、公路悬浮被法规锁死，意味着这是<b>纯题材催化</b>，业绩兑现遥遥无期——典型「事件驱动 + 情绪博弈」，不是「基本面主线」。
+</div>
+
+<h2>三、事件与催化时间轴</h2>
+<table class="tb">
+<thead><tr><th>时间</th><th>事件</th><th>意义</th></tr></thead>
+<tbody>
+<tr><td>2017-11</td><td class="l">首次发布 Roadster 2.0（1.9秒破百，预告 SpaceX 冷气推进器「可飞」）</td><td class="l">概念起点</td></tr>
+<tr><td>2024</td><td class="l">马斯克再提「新款 Roadster 可以飞」</td><td class="l">持续预热</td></tr>
+<tr><td>2026-10-01</td><td class="l">原定发布（因天气推迟）</td><td class="l">跳票</td></tr>
+<tr><td>2026-10-15（美东晚）</td><td class="l">正式发布 + 飞行演示（倒挂吸附/腾空/转体/落地）</td><td class="l">催化落地</td></tr>
+<tr><td><b>2026-10-16（今日）</b></td><td class="l">A 股飞行汽车/eVTOL/低空经济板块涨停潮，多只 20cm</td><td class="l"><b>首个反应日 D0</b></td></tr>
+<tr><td>2028</td><td class="l">预计量产</td><td class="l">远期待兑现</td></tr>
+</tbody></table>
+
+<h2>四、三阶段方法论（唯一口径 = V4.1 Pair 状态机）</h2>
+<div class="cmp">
+阶段判定只用 <b>三阶段 V4.1</b>：唯一输入＝每日涨跌幅序列；唯一判据＝Pair 状态机（D0 任一只单日≥5% 触发 → 三天观察窗四路径 → 定死 leader → 回溯 2-of-3 推进 P2/P3 → 龙头单日跌≥6% 中断）。九态：WAIT / P1预警 / P1确认 / P2预警 / P2确认 / P3预警 / P3确认 / W结束 / 中断。个股放进同周期 Pair 才可定级，未配对写「未配对·不定级」；P3确认 一票否决不进推荐。
+</div>
+
+<h2>五、产业链分层名单（含 V4.1 阶段）</h2>
+<div class="note">阶段截至 2026-10-16 盘中（今日 D0）。因事件为首日，绝大多数 Pair 处于 <b>P1预警</b>（涨停触发 D0、三天窗未走、未确认）。「金盾/华力创通」是 10-08 启动的旧低空 wave，已推进到 P3预警。</div>
+<table class="tb">
+<thead><tr><th>名称</th><th>代码</th><th>层级</th><th>当日</th><th>PE</th><th>总市值(亿)</th><th>流通市值(亿)</th><th>V4.1阶段</th><th>逻辑</th></tr></thead>
+<tbody>
+<tr><td class="l"><b>保隆科技</b></td><td class="mono">sh603197</td><td>T1 冷气推进·高压储气</td>
+<td><span class="up">+9.99%</span></td><td>18.4</td><td class="mono">62.9</td><td class="mono">62.1</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">高压储气罐（空气悬架+TPMS），与SpaceX冷气推进同源，题材弹性先锋</td></tr><tr><td class="l"><b>亚普股份</b></td><td class="mono">sh603013</td><td>T1 冷气推进·高压储气</td>
+<td><span class="up">+9.97%</span></td><td>14.3</td><td class="mono">76.2</td><td class="mono">76.2</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">汽车油箱龙头+IV型储氢瓶(高压容器COPV)，与冷气推进超高压储气罐技术同源</td></tr><tr><td class="l"><b>万丰奥威</b></td><td class="mono">sz002085</td><td>T2 eVTOL整机</td>
+<td><span class="up">+9.99%</span></td><td>23.3</td><td class="mono">210.4</td><td class="mono">210.4</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">eVTOL整机龙头（钻石飞机+适航取证），板块总龙头</td></tr><tr><td class="l"><b>三瑞智能</b></td><td class="mono">sz301696</td><td>T2 eVTOL动力系统</td>
+<td><span class="up">+10.00%</span></td><td>61.9</td><td class="mono">325.6</td><td class="mono">26.1</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">eVTOL动力系统(电机)+无人机/机器人电机，次新股(4月上市,流通盘仅26亿)</td></tr><tr><td class="l"><b>宗申动力</b></td><td class="mono">sz001696</td><td>T2 航空发动机</td>
+<td><span class="up">+9.98%</span></td><td>31.4</td><td class="mono">181.7</td><td class="mono">141.5</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">航空活塞发动机，低空动力</td></tr><tr><td class="l"><b>中信海直</b></td><td class="mono">sz000099</td><td>T2 低空运营</td>
+<td><span class="up">+9.99%</span></td><td>40.8</td><td class="mono">114.4</td><td class="mono">114.4</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">直升机运营+低空基建，运营端龙头</td></tr><tr><td class="l"><b>拓普集团</b></td><td class="mono">sh601689</td><td>T3 特斯拉Tier1</td>
+<td><span class="up">+5.30%</span></td><td>27.7</td><td class="mono">694.1</td><td class="mono">694.1</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">特斯拉核心Tier1，轻量化底盘+线控</td></tr><tr><td class="l"><b>三花智控</b></td><td class="mono">sz002050</td><td>T3 热管理</td>
+<td><span class="up">+3.80%</span></td><td>33.4</td><td class="mono">1333.5</td><td class="mono">1169.7</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">热管理全球龙头，特斯拉核心供应商</td></tr><tr><td class="l"><b>中鼎股份</b></td><td class="mono">sz000887</td><td>T3 空气悬架/密封</td>
+<td><span class="up">+9.99%</span></td><td>16.1</td><td class="mono">233.3</td><td class="mono">232.9</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">AMK空气悬架总成(含储气罐)，特斯拉Cybertruck供应商，密封+气路双线</td></tr><tr><td class="l"><b>铭科精技</b></td><td class="mono">sz001319</td><td>T3 精密结构件</td>
+<td><span class="up">+10.03%</span></td><td>22.1</td><td class="mono">30.3</td><td class="mono">17.6</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">特斯拉精密结构件</td></tr><tr><td class="l"><b>超捷股份</b></td><td class="mono">sz301005</td><td>T3 紧固件</td>
+<td><span class="up">+7.88%</span></td><td>1663.4</td><td class="mono">100.4</td><td class="mono">98.7</td>
+<td><span class="badge b-wait">P1预警</span> <span class="rk">⚠高PE</span></td><td class="l" style="font-size:12px;color:#5b6470">高端紧固件，特斯拉+商业航天</td></tr><tr><td class="l"><b>铂力特</b></td><td class="mono">sh688333</td><td>T3 金属3D打印</td>
+<td><span class="up">+5.99%</span></td><td>129.7</td><td class="mono">231.6</td><td class="mono">231.6</td>
+<td><span class="badge b-wait">P1预警</span></td><td class="l" style="font-size:12px;color:#5b6470">3D打印推进系统异形件，商业航天+飞行汽车</td></tr><tr><td class="l"><b>晨曦航空</b></td><td class="mono">sz300581</td><td>T4 军工航空</td>
+<td><span class="up">+20.02%</span></td><td>亏损</td><td class="mono">65.0</td><td class="mono">65.0</td>
+<td><span class="badge b-wait">P1预警</span> <span class="rk">⚠亏损</span></td><td class="l" style="font-size:12px;color:#5b6470">航空惯导，军工弹性（20cm）</td></tr><tr><td class="l"><b>广联航空</b></td><td class="mono">sz300900</td><td>T4 航空结构件</td>
+<td><span class="up">+19.99%</span></td><td>亏损</td><td class="mono">73.8</td><td class="mono">57.8</td>
+<td><span class="badge b-wait">P1预警</span> <span class="rk">⚠亏损</span></td><td class="l" style="font-size:12px;color:#5b6470">航空结构件+无人机（20cm）</td></tr><tr><td class="l"><b>金盾股份</b></td><td class="mono">sz300411</td><td>T4 通风/低空</td>
+<td><span class="up">+20.00%</span></td><td>22801</td><td class="mono">39.0</td><td class="mono">29.7</td>
+<td><span class="badge b-p3">P3预警(follower)</span> <span class="rk">⚠高PE</span></td><td class="l" style="font-size:12px;color:#5b6470">风机+飞行汽车概念（20cm，微利高PE）</td></tr><tr><td class="l"><b>华力创通</b></td><td class="mono">sz300045</td><td>T4 卫星导航</td>
+<td><span class="up">+20.04%</span></td><td>亏损</td><td class="mono">84.2</td><td class="mono">66.5</td>
+<td><span class="badge b-p3">P3预警(leader)</span> <span class="rk">⚠亏损</span></td><td class="l" style="font-size:12px;color:#5b6470">卫星导航，10-08起旧低空wave龙头</td></tr><tr><td class="l"><b>司南导航</b></td><td class="mono">sh688592</td><td>T4 高精导航</td>
+<td><span class="up">+19.98%</span></td><td>238.1</td><td class="mono">29.0</td><td class="mono">13.8</td>
+<td><span class="badge b-wait">P1预警</span> <span class="rk">⚠高PE</span></td><td class="l" style="font-size:12px;color:#5b6470">高精度导航（20cm，高PE）</td></tr><tr><td class="l"><b>东安动力</b></td><td class="mono">sh600178</td><td>T4 发动机</td>
+<td><span class="up">+9.98%</span></td><td>亏损</td><td class="mono">47.8</td><td class="mono">47.8</td>
+<td><span class="badge b-wait">未配对·不定级</span> <span class="rk">⚠亏损</span></td><td class="l" style="font-size:12px;color:#5b6470">航空/车用发动机，未配对</td></tr></tbody></table>
+
+<h3>5.1 Pair 配对与状态机输出（实跑）</h3>
+<table class="tb">
+<thead><tr><th>Pair</th><th>当前状态</th><th>D0</th><th>龙头</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="l">万丰奥威 vs 宗申动力</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">eVTOL整机 vs 航空发动机，今日双双涨停触发</td></tr>
+<tr><td class="l">拓普集团 vs 三花智控</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">特斯拉 Tier1，拓普+5.3% 触发</td></tr>
+<tr><td class="l">中鼎股份 vs 铭科精技</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">零部件，双双涨停触发</td></tr>
+<tr><td class="l">保隆科技 vs 超捷股份</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">高压储气 vs 紧固件，保隆涨停触发</td></tr>
+<tr><td class="l">铂力特 vs 超捷股份</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">3D打印 vs 紧固件</td></tr>
+<tr><td class="l">晨曦航空 vs 广联航空</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">军工航空，双双 20cm 触发</td></tr>
+<tr><td class="l">中信海直 vs 司南导航</td><td><span class="badge b-wait">P1预警</span></td><td>10-16</td><td>待定</td><td class="l">低空运营 vs 高精导航</td></tr>
+<tr><td class="l">金盾股份 vs 华力创通</td><td><span class="badge b-p3">P3预警</span></td><td>10-08</td><td>华力创通</td><td class="l">旧低空 wave（10-08 启动），今日 20cm 延续，华力近期有回调需警惕</td></tr>
+<tr><td class="l">东安动力</td><td><span class="badge b-wait">未配对·不定级</span></td><td>—</td><td>—</td><td class="l">航空/车用发动机，未放入同周期 Pair</td></tr>
+</tbody></table>
+
+<h2>六、券商交叉</h2>
+<div class="cmp">
+同花顺联动梳理（2026-10-16）：行情围绕「特斯拉高性能超跑 + 冷气推进技术 + eVTOL 飞行汽车」主线，叠加「高压储气部件 + 特斯拉整车供应链 + 低空经济 + 商业航天零部件」多重属性。核心联动按辨识度：<b>保隆科技（高压储气罐）＞万丰奥威（eVTOL整机）＞拓普集团（特斯拉Tier1）＞三花智控（热管理）＞中鼎股份（密封/空悬双供货）＞超捷股份（紧固件）＞铂力特（3D打印）</b>。
+</div>
+<h3>6.1 🔴 券商研报覆盖情况（诚实说明）</h3>
+<div class="warn">
+截至 2026-10-16，<b>没有证券公司研究所针对「特斯拉 Roadster 飞行汽车」事件发布正式个股研报</b>。目前流传的「标的清单」主要来自：① 腾讯/同花顺等平台的<b>资讯级「产业链标的梳理」</b>（非券商研报）；② 东财财富号/社区的<b>推演</b>；③ 东财「机构紧盯概念股」提到的<b>机构密集调研</b>（多只特斯拉概念股近期获机构调研，但未见成文研报）。券商近期公开观点（国联民生/华创/东吴）集中在 Robotaxi、人形机器人，<b>不是针对本次飞行汽车事件</b>。
+</div>
+<h3>6.2 🔴 标的池盲区修正（v2 补充）</h3>
+<div class="note">
+首版标池来自「飞行汽车(eVTOL)概念板块涨停榜 + 同花顺联动」两路，漏了两只、一只定位不准，已修正：<br>
+① <b>亚普股份（603013）</b>：汽车油箱龙头 + IV型储氢瓶（高压容器/COPV），属「高压容器制造」技术同源暗线，不在「飞行汽车」概念成分里 → 已补入 T1。<br>
+② <b>三瑞智能（301696）</b>：eVTOL 动力系统（电机），2026-04 才上市的次新股，概念成分库更新滞后未纳入涨停榜 → 已补入 T2。<br>
+③ <b>中鼎股份</b>：正确定位是「AMK 空气悬架总成（含储气罐），特斯拉 Cybertruck 供应商」，非简单「密封管路」→ 已改。<br>
+<b>教训（印证标池铁律）</b>：标池须四路并集（概念成分 ∪ 产业链题材 ∪ 券商/资讯推荐 ∪ 技术同源暗线穷举），单靠概念涨停榜必漏「技术同源暗线」与「次新股」。
+</div>
+<div class="warn">
+<b>⚠ 诚实边界（必须说清）</b>：上述所有公司与 Roadster 2 具体项目的<b>供货关系，尚无公开信息证实</b>；传统空气悬架/储氢瓶与高压冷气推进系统在<b>压力等级、材料标准、安全认证上有明显区别，不能因产品结构相似就认定可直接切入</b>（财富号亦如此提示）。冷气推进的产业传导「接近于零，给 A 股的是情绪不是订单」——本报告所有标的是<b>题材映射 + 技术同源推演</b>，非供应商确认。
+</div>
+
+<h2>七、⭐ 前10强（综合分）</h2>
+<div class="warn">
+<b>诚实说明：当前无一标的进入 P1确认（可买）</b>——今日为首日 D0，全部处于 P1预警，三天窗（10-17/10-18）未走完。下面「前10强」是<b>观察候选排序</b>（按技术同源度+涨停强度+龙头地位+流动性综合，<b>非买入清单</b>），须等 V4.1 确认后再动。
+</div>
+<table class="tb">
+<thead><tr><th>序</th><th>标的</th><th>层级</th><th>当日</th><th>排序依据</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="l"><b>保隆科技</b></td><td>T1 冷气推进·高压储气</td><td class="up">+9.99%</td><td class="l">技术同源最纯（高压储气罐），题材弹性先锋</td></tr>
+<tr><td>2</td><td class="l"><b>万丰奥威</b></td><td>T2 eVTOL整机</td><td class="up">+9.99%</td><td class="l">飞行汽车整机龙头，板块总龙头</td></tr>
+<tr><td>3</td><td class="l"><b>中信海直</b></td><td>T2 低空运营</td><td class="up">+9.99%</td><td class="l">低空运营龙头，确定性较高</td></tr>
+<tr><td>4</td><td class="l"><b>宗申动力</b></td><td>T2 航空发动机</td><td class="up">+9.98%</td><td class="l">低空动力（航空发动机）</td></tr>
+<tr><td>5</td><td class="l"><b>拓普集团</b></td><td>T3 特斯拉Tier1</td><td class="up">+5.30%</td><td class="l">特斯拉核心 Tier1，基本面最硬但弹性较小</td></tr>
+<tr><td>6</td><td class="l"><b>中鼎股份</b></td><td>T3 密封管路</td><td class="up">+9.99%</td><td class="l">特斯拉+飞行汽车双供货，PE 仅 16</td></tr>
+<tr><td>7</td><td class="l"><b>三花智控</b></td><td>T3 热管理</td><td class="up">+3.80%</td><td class="l">热管理龙头，市值 1333 亿（中军）</td></tr>
+<tr><td>8</td><td class="l"><b>铂力特</b></td><td>T3 3D打印</td><td class="up">+5.99%</td><td class="l">推进系统异形件 3D 打印</td></tr>
+<tr><td>9</td><td class="l"><b>晨曦航空</b></td><td>T4 军工航空</td><td class="up">+20.02%</td><td class="l">军工 20cm 弹性（⚠亏损，纯情绪）</td></tr>
+<tr><td>10</td><td class="l"><b>华力创通</b></td><td>T4 卫星导航</td><td class="up">+20.04%</td><td class="l">旧低空 wave 龙头（P3预警，⚠亏损，仅观察）</td></tr>
+</tbody></table>
+
+<h2>八、交易框架与风险</h2>
+<h3>8.1 V4.1 九态执行表</h3>
+<table class="tb">
+<thead><tr><th>当前状态</th><th>动作</th><th>触发条件（涨跌幅%）</th></tr></thead>
+<tbody>
+<tr><td><b>P1预警（当前主流）</b></td><td class="l">观察，不买</td><td class="l">等 D1(10-17)/D2(10-18) 确认：任一只单日&gt;5% 或累计&gt;10%</td></tr>
+<tr><td>P1确认</td><td class="l">试错买入龙头（非补涨）</td><td class="l">三天窗确认后，龙头=累计收益大者</td></tr>
+<tr><td>P2确认</td><td class="l">调仓加补涨</td><td class="l">2-of-3 补涨占优</td></tr>
+<tr><td>P3确认</td><td class="l">持有</td><td class="l">龙头跑赢，非清仓</td></tr>
+<tr><td>中断INT</td><td class="l">清仓离场</td><td class="l">仅 P1/P2 且龙头单日跌≥6%</td></tr>
+</tbody></table>
+<h3>8.2 风险清单</h3>
+<div class="warn">
+1. <b>事件是「技术演示」非「量产」</b>：2028 才量产、公路悬浮被法规锁死，纯题材催化，情绪退潮快。<br>
+2. <b>今日涨停不可追</b>：纪律「等回踩低吸、严禁市价追高」，今日已大面积涨停，追高即接盘。<br>
+3. <b>亏损/高PE 标的纯情绪</b>：东安动力、晨曦航空、广联航空、华力创通（亏损）、金盾股份(PE 22801)、超捷股份(PE 1663)、司南导航(PE 238)——涨的是情绪不是业绩。<br>
+4. <b>金盾/华力创通 P3预警</b>：华力创通 10-08 起已连涨，近 5 日有回调（-4.9%~-7.0%），追高风险大。
+</div>
+
+<h2>九、结论三组清单</h2>
+<div class="concl"><b>① 可买（P1确认）</b>：<b>无</b>——今日为首日 D0，全部 P1预警，三天窗未确认。</div>
+<div class="cmp"><b>② 观察候选（等确认）</b>：保隆科技、万丰奥威、中信海直、宗申动力（技术同源/eVTOL 主线，等 D1/D2 确认后试错买龙头）。</div>
+<div class="warn"><b>③ 回避</b>：金盾股份、华力创通（P3预警旧 wave 且华力已回调）、东安动力/晨曦航空/广联航空（亏损纯情绪）、超捷股份/司南导航（高PE微利）。</div>
+
+<div class="foot">
+口径说明：① 阶段判定唯一依据=三阶段 V4.1（Pair 状态机九态），个股放进同周期 Pair 定级、未配对写「未配对·不定级」；② 数据为 2026-10-16 盘中约 11:43 快照（当日涨停为盘中数据，未收盘）；③ 前10强为「观察候选排序」非买入清单，P1确认前不构成任何推荐；④ 本分析为事件驱动技术分析，不构成投资建议。
+<div class="ver">WKBUILD: roadster-fly-v2-20261016 · 版本 v2 · 数据基准 2026-10-16 盘中 11:43</div>
+</div>
+</div></body></html>
