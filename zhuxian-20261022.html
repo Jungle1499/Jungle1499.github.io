@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>主线分析_20261022 · 三阶段框架 V4.1 全球黑色星期四·机器人电机独强</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --red:#d8392b; --red-bg:#fdecea; --green:#1a9e5f; --green-bg:#e8f6ef;
+    --ink:#1f2933; --sub:#5b6b7b; --line:#e6ebf0; --bg:#f5f7fa; --card:#ffffff;
+    --blue:#2563eb; --blue-bg:#eaf1ff; --orange:#e8770b; --orange-bg:#fff3e6;
+    --purple:#7c3aed; --purple-bg:#f1ebff; --gray:#8a97a5;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;font-size:14px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 18px 60px;}
+  header{padding:26px 28px;border-radius:16px;color:#fff;
+    background:linear-gradient(135deg,#1b2a4e 0%,#26407a 55%,#3358b8 100%);}
+  header h1{margin:0 0 6px;font-size:25px;letter-spacing:1px;}
+  header .meta{opacity:.9;font-size:13px;}
+  .badge{display:inline-block;background:var(--red);color:#fff;border-radius:20px;
+    padding:3px 14px;font-size:13px;font-weight:700;margin-top:10px;}
+  .sub-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:20px;
+    padding:3px 14px;font-size:13px;margin:10px 0 0 8px;}
+  section{background:var(--card);border-radius:14px;padding:22px 24px;margin-top:18px;
+    box-shadow:0 1px 3px rgba(20,40,80,.06);}
+  h2{font-size:19px;margin:0 0 14px;padding-left:12px;border-left:5px solid var(--blue);}
+  h2 .n{color:var(--blue);font-weight:800;margin-right:6px;}
+  h3{font-size:15px;margin:18px 0 8px;color:var(--ink);}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px;}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center;}
+  th{background:#f0f4f9;font-weight:700;color:var(--sub);}
+  tr:nth-child(even) td{background:#fafcfe;}
+  .up{color:var(--red);font-weight:700;}
+  .down{color:var(--green);font-weight:700;}
+  .na{color:var(--gray);}
+  .pos{color:var(--red);} .neg{color:var(--green);}
+  .grid{display:grid;gap:14px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;}
+  .card h4{margin:0 0 8px;font-size:15px;}
+  .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:2px 0;border-bottom:1px dashed #eef2f6;}
+  .kv:last-child{border-bottom:none;}
+  .pill{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;}
+  .p1{background:var(--blue-bg);color:var(--blue);}
+  .p2{background:var(--orange-bg);color:var(--orange);}
+  .p3{background:var(--red-bg);color:var(--red);}
+  .pd{background:var(--green-bg);color:var(--green);}
+  .pw{background:#eef2f6;color:var(--sub);}
+  .note{background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:8px;
+    padding:10px 14px;font-size:13px;margin:10px 0;}
+  .warn{background:var(--orange-bg);border-left:4px solid var(--orange);border-radius:8px;
+    padding:10px 14px;font-size:13px;margin:10px 0;}
+  .risk{background:var(--red-bg);border-left:4px solid var(--red);border-radius:8px;
+    padding:10px 14px;font-size:13px;margin:10px 0;}
+  .stage-tag{display:inline-block;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;}
+  .st-p1{background:var(--blue-bg);color:var(--blue);}
+  .st-p2{background:var(--orange-bg);color:var(--orange);}
+  .st-wait{background:#eef2f6;color:var(--sub);}
+  footer{margin-top:26px;padding:16px 20px;border-radius:12px;background:#eef2f6;
+    color:var(--sub);font-size:12px;line-height:1.8;}
+  .hero{border:2px solid var(--blue);border-radius:12px;padding:16px 18px;background:#fff;}
+  .hero h4{margin:0 0 4px;font-size:16px;color:var(--blue);}
+  .tagline{font-size:12px;color:var(--sub);margin:2px 0 8px;}
+  .chart{width:100%;height:300px;}
+  b.r{color:var(--red);} b.g{color:var(--green);}
+</style>
+</head>
+<body>
+<!-- WKBUILD:zhuxian-20261022 -->
+<div class="wrap">
+<header>
+  <h1>主线分析 · 2026-10-22（周四）</h1>
+  <div class="meta">数据快照：15:00 收盘 ｜ 框架：三阶段理论 V4.1（两层结构：板块筛→Pair 定级）｜ 分类体系：腾讯自选股三级→申万三级｜ 模板 pinned-2026-09-20</div>
+  <div class="badge">主线：机器人/电机链（P1确认）</div>
+  <div class="sub-badge">系统性风险日 · 全球黑色星期四 · 涨535/跌4999 · 跌停62</div>
+</header>
+
+<!-- 01 大盘全景 -->
+<section>
+  <h2><span class="n">01</span>大盘全景</h2>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌幅</th><th>点位变化</th><th>5日</th><th>20日</th></tr>
+    <tr><td>上证指数</td><td>3658.03</td><td><span class="down">-1.48%</span></td><td class="neg">-55.00</td><td><span class="down">-1.33%</span></td><td><span class="down">-6.0%</span></td></tr>
+    <tr><td>深证成指</td><td>11357.32</td><td><span class="down">-2.96%</span></td><td class="neg">-347.03</td><td><span class="down">-3.89%</span></td><td><span class="down">-15.59%</span></td></tr>
+    <tr><td>创业板指</td><td>2576.90</td><td><span class="down">-4.37%</span></td><td class="neg">-117.81</td><td><span class="down">-7.41%</span></td><td><span class="down">-22.18%</span></td></tr>
+    <tr><td>科创50</td><td>1305.87</td><td><span class="down">-2.78%</span></td><td class="neg">-37.41</td><td><span class="down">-3.95%</span></td><td><span class="down">-19.2%</span></td></tr>
+    <tr><td>沪深300</td><td>4036.30</td><td><span class="down">-1.84%</span></td><td class="neg">-75.63</td><td><span class="down">-3.11%</span></td><td><span class="down">-9.91%</span></td></tr>
+    <tr><td>中证500</td><td>6655.25</td><td><span class="down">-2.71%</span></td><td class="neg">-185.31</td><td><span class="down">-1.68%</span></td><td><span class="down">-13.38%</span></td></tr>
+  </table>
+  <div class="grid g3">
+    <div class="card"><h4>涨跌家数</h4>
+      <div class="kv"><span>上涨</span><b class="r">535</b></div>
+      <div class="kv"><span>平盘</span><span>43</span></div>
+      <div class="kv"><span>下跌</span><b class="g">4999</b></div>
+      <div class="kv"><span>上涨占比</span><b class="g">9%（情绪低）</b></div>
+    </div>
+    <div class="card"><h4>涨跌停</h4>
+      <div class="kv"><span>涨停</span><b class="r">33</b></div>
+      <div class="kv"><span>跌停</span><b class="g">62</b></div>
+      <div class="kv"><span>&gt;7% 大涨</span><span>15</span></div>
+      <div class="kv"><span>&lt;-7% 大跌</span><b class="g">246</b></div>
+    </div>
+    <div class="card"><h4>成交额</h4>
+      <div class="kv"><span>两市成交</span><b>15287 亿</b></div>
+      <div class="kv"><span>较前日</span><b class="g">+994 亿（放量下跌）</b></div>
+      <div class="kv"><span>沪市</span><span>7061 亿</span></div>
+      <div class="kv"><span>深市</span><span>8226 亿</span></div>
+    </div>
+  </div>
+  <div class="note"><b>大盘小绿判定：</b>当日下跌占比 89.6%（4999/5577）≥65%，但前一日（10/21）下跌占比约 62.4%（3364/5388）未达 65% → <b>连续两日口径判「否」</b>，补标「<b>单日冰点</b>」。今日为 10 月以来最惨烈单日：跌停 62 &gt; 涨停 33，-7% 以下个股 246 只，杀跌集中于 AI 硬件链。<b>数据源交叉</b>：westock data_changedist ↔ 头条/中新经纬/中国基金报收评（535涨/4999跌、成交1.53万亿放量994亿、创业板-4.37% 一致 ✅）。</div>
+  <div id="idxChart" class="chart"></div>
+</section>
+
+<!-- 02 申万二级 Top6 -->
+<section>
+  <h2><span class="n">02</span>申万二级行业涨幅 Top 6</h2>
+  <table>
+    <tr><th>排名</th><th>行业</th><th>涨跌幅</th><th>主力净流入</th><th>5日净流</th><th>领涨代表</th></tr>
+    <tr><td>1</td><td><b>电机Ⅱ</b></td><td><span class="up">+3.58%</span></td><td class="pos">+10.82 亿</td><td class="pos">+11.30 亿</td><td>华阳智能 <span class="up">+20.0%</span>（20cm涨停）</td></tr>
+    <tr><td>2</td><td>白色家电</td><td><span class="up">+1.12%</span></td><td class="pos">+2.62 亿</td><td class="neg">-4.17 亿</td><td>美的集团 <span class="up">+1.71%</span></td></tr>
+    <tr><td>3</td><td>国有大型银行</td><td><span class="up">+0.71%</span></td><td class="neg">-1.80 亿</td><td class="pos">+9.43 亿</td><td>工商银行 <span class="up">+1.66%</span>（创新高）</td></tr>
+    <tr><td>4</td><td>照明设备Ⅱ</td><td><span class="up">+0.59%</span></td><td class="neg">-0.11 亿</td><td class="pos">+3.88 亿</td><td>星光股份 <span class="up">+10.2%</span>（涨停）</td></tr>
+    <tr><td>5</td><td>地面兵装Ⅱ</td><td><span class="up">+0.08%</span></td><td class="neg">-0.46 亿</td><td class="pos">+3.93 亿</td><td>甘化科工 <span class="up">+5.65%</span></td></tr>
+    <tr><td>6</td><td>白酒Ⅱ</td><td><span class="down">-0.04%</span></td><td class="pos">+1.21 亿</td><td class="pos">+6.68 亿</td><td>贵州茅台 <span class="up">+0.67%</span></td></tr>
+  </table>
+  <div class="warn"><b>领跌端（回避方向）</b>：通信设备 <span class="down">-7.09%</span>（主力净流出 <b class="g">-91.41 亿</b> 全场第一）｜元件 <span class="down">-6.21%</span>（-62.72 亿）｜影视院线 <span class="down">-5.91%</span>｜出版 <span class="down">-5.16%</span>｜数字媒体 <span class="down">-5.06%</span>｜广告营销 <span class="down">-4.98%</span>｜教育 <span class="down">-4.89%</span>｜半导体 <span class="down">-2.93%</span>（-51.43 亿）。AI 硬件（光模块/PCB/元件）为今日系统性杀跌主战场。【框架应用 ㉒跷跷板：科技杀跌→资金进银行/白电防御】</div>
+</section>
+
+<!-- 03 概念 Top8 -->
+<section>
+  <h2><span class="n">03</span>概念板块涨幅 Top 8（剔除纯连板类）</h2>
+  <table>
+    <tr><th>排名</th><th>概念</th><th>今日%</th><th>5日主力净流</th><th>当日主力净流</th><th>代表标的</th></tr>
+    <tr><td>1</td><td><b>电子鼻</b></td><td><span class="up">+2.67%</span></td><td class="pos">+2.62 亿</td><td class="pos">+0.92 亿</td><td>安培龙 <span class="up">+14.6%</span></td></tr>
+    <tr><td>2</td><td><b>空心杯电机</b></td><td><span class="up">+1.26%</span></td><td class="pos">+2.82 亿</td><td class="pos">+3.20 亿</td><td>鸣志电器 <span class="up">+10.0%</span>（涨停）</td></tr>
+    <tr><td>3</td><td><b>机器人执行器</b></td><td><span class="up">+0.94%</span></td><td class="pos">+3.51 亿</td><td class="pos">+2.72 亿</td><td>鸣志电器 <span class="up">+10.0%</span></td></tr>
+    <tr><td>4</td><td><b>华为机器人</b></td><td><span class="up">+0.87%</span></td><td class="pos">+3.55 亿</td><td class="pos">+2.16 亿</td><td>兆威机电 <span class="up">+10.0%</span>（涨停）</td></tr>
+    <tr><td>5</td><td>轮边电机</td><td><span class="up">+0.23%</span></td><td class="pos">+2.43 亿</td><td class="pos">+3.12 亿</td><td>大洋电机 <span class="up">+9.97%</span>（涨停）</td></tr>
+    <tr><td>6</td><td>PLC概念</td><td><span class="down">-0.09%</span></td><td class="pos">+1.72 亿</td><td class="neg">-1.91 亿</td><td>睿能科技 <span class="up">+9.99%</span></td></tr>
+    <tr><td>7</td><td>颗粒硅</td><td><span class="down">-0.23%</span></td><td class="neg">-2.51 亿</td><td class="pos">+1.64 亿</td><td>隆基绿能 <span class="up">+1.55%</span></td></tr>
+    <tr><td>8</td><td>证金持股</td><td><span class="down">-0.29%</span></td><td class="neg">-17.43 亿</td><td class="pos">+0.05 亿</td><td>美的集团 <span class="up">+1.71%</span></td></tr>
+  </table>
+  <div class="note">概念口径=腾讯自选股三级（805 条全量扫描）；概念成分重叠、绝对金额仅作排序参考。注：概念指数无「5日涨幅」字段，此列以 5日主力净流替代，口径已明示。<b>题材三件套判定（节点理论输入）</b>：机器人电机链 = 成建制梯队（华阳20cm/鸣志/兆威/大洋/奕帆涨停，大业股份 5 连板）+ 硬催化（人形机器人产业景气）+ 龙头可确认（兆威/鸣志）→ <b>新核心题材（强）候选</b>；但大盘情绪冰点（ADJ_SCORE 9.08≤11）→ 节点闸口整体落<b>防守档</b>。</div>
+  <div id="conceptChart" class="chart"></div>
+</section>
+
+<!-- 04 五维共振 -->
+<section>
+  <h2><span class="n">04</span>五维共振 · 主线确认</h2>
+  <div class="grid g2">
+    <div class="card"><h4>五维信号</h4>
+      <div class="kv"><span>① 指数/量能</span><b class="g">放量下跌 +994 亿 · 单日冰点</b></div>
+      <div class="kv"><span>② 板块强度</span><b>电机Ⅱ +3.58% 全场唯一 &gt;3%</b></div>
+      <div class="kv"><span>③ 涨停结构</span><b>机器人链 5+ 涨停（华阳/鸣志/兆威/大洋/奕帆）</b></div>
+      <div class="kv"><span>④ 资金共振</span><b class="r">电机Ⅱ 主力 +10.82 亿全场第 1</b></div>
+      <div class="kv"><span>⑤ 催化/事件</span><b>人形机器人产业催化 + 避险抱团景气题材</b></div>
+    </div>
+    <div class="card"><h4>双主线判定【框架应用 三-①】</h4>
+      <p><span class="stage-tag st-p1">主线 · P1确认</span> <b>机器人/电机链</b>（空心杯电机/执行器/华为机器人/轮边电机概念前 5 中占 4）——V4.1 Pair（鸣志 vs 兆威）P1确认，leader=兆威机电，buyable ✅。系统性杀跌日唯一资金净流入为正的申万二级。</p>
+      <p><span class="stage-tag st-p1">次线 · P1确认</span> <b>传媒/裸眼3D</b>（利亚德 +8.35% 放量领涨，Pair 利亚德 vs 洲明 P1确认）——但板块内部分化极大（洲明 -4.78%/出版 -5.16%），仅龙头级机会。</p>
+      <p><span class="stage-tag st-wait">防御线 · WAIT</span> <b>银行/白电高股息</b>（工行/建行创新高、美的 +1.71%）——V4.1 无 ≥5% 触发、WAIT 不定级不推荐，仅作避险观察。</p>
+      <p><span class="stage-tag st-p2">分歧</span> AI 硬件（通信设备/元件/半导体）系统性退潮：主力净流出 -91.4/-62.7/-51.4 亿，光库 -5.24%、长飞 -8.38%、新易盛 -12%+，<b>⛔ 不接飞刀【规则 ⑳】</b>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 四重驱动 -->
+<section>
+  <h2><span class="n">05</span>四重核心驱动因素</h2>
+  <div class="grid g2">
+    <div class="card"><h4>① 政策驱动</h4>
+      <p>中东地缘风险急升：美国务院下令驻沙特非紧急人员撤离；美以被报道制定对伊朗「短暂但密集」军事打击计划（目标含能源/核设施），沙特发生致命袭击 → 油价上涨、全球避险情绪骤升（来源：中国基金报/金融界，10/22）。国内「金融论坛利好逐步发酵」（创元期货点评）对冲有限。</p></div>
+    <div class="card"><h4>② 事件驱动</h4>
+      <p>全球「黑色星期四」：日经225 -2.65%、韩国 KOSPI -3.52%（三星/SK海力士领跌）、恒生科技盘中 -5% 创阶段新低；美债收益率维持 5%+ 高位压制科技估值（源达信息吴起涤）；特斯拉下调资本开支预期、Meta 上调——AI 投资增速放缓忧虑发酵（韩国央行表述）。港股离岸信托补税窗口 10/22 前后到期加剧流动性压力。</p></div>
+    <div class="card"><h4>③ 资金驱动</h4>
+      <p>放量 994 亿下跌 = 主动抛售而非缩量阴跌；主力资金集中从 AI 硬件撤退（通信设备 -91.41 亿/元件 -62.72 亿/半导体 -51.43 亿/电池 -34.42 亿），唯一净流入大板块=电机Ⅱ +10.82 亿；避险资金进银行/白电（工行建行创 52 周新高）。个股端：鸣志 +3.10 亿（全市场第 8）、兆威 +2.18 亿（第 17）。</p></div>
+    <div class="card"><h4>④ 技术驱动</h4>
+      <p>创业板指 2576.90 失守 2600，较 6 月历史高点回撤超 40%；上证 3649.86 探出日内低点、5 日/20 日均线空头排列（TREND_SHORT=弱势下跌）；科创50 距 52 周高点 -42%。卖方判断：创元期货「C 浪回落需重新筑底」、华西证券「科技+红利双主线结构分化」。</p></div>
+  </div>
+</section>
+
+<!-- 06 核心龙头精选 -->
+<section>
+  <h2><span class="n">06</span>核心龙头精选 3 只（V4.1 自然筛选 · buyable）</h2>
+  <div class="grid g3">
+    <div class="hero"><h4>1. 兆威机电 sz003021</h4>
+      <div class="tagline">华为机器人/空心杯电机 · Pair leader · <span class="pill p1">P1确认</span></div>
+      <div class="kv"><span>最新价 / 今日</span><b>83.39 / <span class="up">+10.00%</span>（涨停）</b></div>
+      <div class="kv"><span>成交额 / 换手</span><span>6.27 亿 / 3.62%</span></div>
+      <div class="kv"><span>总市值</span><span>223.44 亿</span></div>
+      <div class="kv"><span>5日 / 20日</span><b class="r">+38.18% / +24.65%</b></div>
+      <div class="kv"><span>PE(TTM)</span><span>103.6</span></div>
+      <div class="kv"><span>主力净流入</span><b class="r">+2.18 亿</b></div>
+      <div class="kv"><span>入选理由</span><span>华为机器人概念 leader、D0~D2 累计涨幅定死 leader、主力+2.18亿共振</span></div>
+    </div>
+    <div class="hero"><h4>2. 鸣志电器 sh603728</h4>
+      <div class="tagline">空心杯电机/执行器 · Pair follower · <span class="pill p1">P1确认</span></div>
+      <div class="kv"><span>最新价 / 今日</span><b>54.47 / <span class="up">+10.00%</span>（涨停）</b></div>
+      <div class="kv"><span>成交额 / 换手</span><span>10.28 亿 / 4.56%</span></div>
+      <div class="kv"><span>总市值</span><span>228.17 亿</span></div>
+      <div class="kv"><span>5日 / 20日</span><b class="r">+23.74% / +14.65%</b></div>
+      <div class="kv"><span>PE(TTM)</span><span>319.7（高估值，纪律仓上限）</span></div>
+      <div class="kv"><span>主力净流入</span><b class="r">+3.10 亿（全市场第 8）</b></div>
+      <div class="kv"><span>入选理由</span><span>空心杯电机双龙头之一、当日主力净流入全市场前 10、与兆威同细分同量级</span></div>
+    </div>
+    <div class="hero"><h4>3. 利亚德 sz300296</h4>
+      <div class="tagline">裸眼3D/Micro LED · Pair leader · <span class="pill p1">P1确认</span></div>
+      <div class="kv"><span>最新价 / 今日</span><b>6.10 / <span class="up">+8.35%</span></b></div>
+      <div class="kv"><span>成交额 / 换手</span><span>35.16 亿 / 24.61%（放量）</span></div>
+      <div class="kv"><span>总市值</span><span>165.43 亿</span></div>
+      <div class="kv"><span>5日 / 20日</span><b class="r">+35.25% / +25.00%</b></div>
+      <div class="kv"><span>PE(TTM)</span><span>80.9</span></div>
+      <div class="kv"><span>主力净流入</span><b class="r">+0.07 亿（5日 +55.01 亿）</b></div>
+      <div class="kv"><span>入选理由</span><span>传媒/裸眼3D 龙头、昨日 20cm 今日续强 8.35%、5日主力 +55 亿承接最强</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 七大板块 Pairs -->
+<section>
+  <h2><span class="n">07</span>七大板块 Pairs + 三阶段判定（V4.1 脚本实跑 · v41_grade_pair.py）</h2>
+  <div class="note">Pair 选取统一口径：先圈「同细分（业务同类 + 市值差≤5倍）」→ 再取「当日涨幅 Top2」；阶段以脚本输出 <code>state</code> 为准，<code>buyable</code>（仅 P1确认/P2确认 true）为能否进推荐硬门槛，P3确认=持有一票否决。【框架应用 三-①三-②三-⑤】</div>
+
+  <h3>① 机器人/电机链（主线核心 · 空心杯电机/执行器）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>鸣志电器 sh603728</b>（follower）</td><td>54.47</td><td><span class="up">+10.0%</span></td><td><span class="down">-0.48%</span></td><td>228.17 亿</td><td><span class="up">+23.74%</span></td><td>319.7</td><td class="pos">+3.10 亿</td></tr>
+    <tr><td><b>兆威机电 sz003021</b>（leader）</td><td>83.39</td><td><span class="up">+10.0%</span></td><td><span class="up">+4.46%</span></td><td>223.44 亿</td><td><span class="up">+38.18%</span></td><td>103.6</td><td class="pos">+2.18 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p1">P1确认（leader=兆威机电 · buyable ✅）</span> trace: P1预警 → P1确认。今日验证：板块 <span class="up">+3.58%</span> 全场第 1、概念榜前 5 占 4、涨停梯队成建制（华阳智能 20cm/大洋电机/奕帆传动涨停、大业股份 5 连板）。操作建议：主线唯一 buyable 链，<b>等回踩低吸不追高</b>；华阳智能（20cm 情绪旗手，30.83 亿）与主 Pair 市值差&gt;5 倍，按三-⑧ 单列不定级。【㊼脉冲降档提示：短线连板股次日溢价风险，仓位 ≤3%】</p>
+
+  <h3>② 白色家电（防御 · 高股息）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td>美的集团 sz000333（—）</td><td>85.29</td><td><span class="up">+1.71%</span></td><td><span class="down">-1.67%</span></td><td>6507.85 亿</td><td><span class="up">+0.68%</span></td><td>14.7</td><td class="pos">板块 +2.62 亿</td></tr>
+    <tr><td>格力电器 sz000651（—）</td><td>37.43</td><td><span class="up">+0.81%</span></td><td><span class="down">-3.81%</span></td><td>2096.61 亿</td><td><span class="down">-5.72%</span></td><td>7.5</td><td class="neg">板块 5日 -4.17 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-wait">WAIT（无 leader · 不定级不推荐）</span> 今日验证：避险资金流入但无 ≥5% 触发、未启动 V4.1 波段。操作建议：防御配置仓观察（股息率美的 4.94%/格力 8.01%），非进攻标的。</p>
+
+  <h3>③ 国有大型银行（防御 · 权重）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td>工商银行 sh601398（—）</td><td>8.59</td><td><span class="up">+1.66%</span></td><td><span class="up">+0.25%</span></td><td>30615.30 亿</td><td><span class="up">+2.89%</span></td><td>8.2</td><td class="neg">板块 -1.80 亿</td></tr>
+    <tr><td>农业银行 sh601288（—）</td><td>7.40</td><td><span class="up">+1.51%</span></td><td><span class="up">+0.13%</span></td><td>25898.74 亿</td><td><span class="up">+3.79%</span></td><td>8.7</td><td class="pos">板块 5日 +9.43 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-wait">WAIT（无 leader · 三-⑧ 权重龙头单列）</span> 今日验证：工行/建行股价创 52 周新高（双源：westock high_52week=当日高点 ↔ 中国基金报/金融界收评一致 ✅）。操作建议：避险底仓属性，按股息逻辑持有，不按 V4.1 波段做。</p>
+
+  <h3>④ 照明设备/量子通信题材（情绪题材）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>星光股份 sz002076</b>（leader）</td><td>2.70</td><td><span class="up">+10.2%</span></td><td><span class="up">+9.87%</span></td><td>29.95 亿</td><td><span class="up">+37.06%</span></td><td>亏损</td><td class="neg">-1.45 亿</td></tr>
+    <tr><td><b>阳光照明 sh600261</b>（follower）</td><td>3.60</td><td><span class="up">+10.09%</span></td><td><span class="up">+0.31%</span></td><td>48.06 亿</td><td><span class="up">+12.85%</span></td><td>34.0</td><td class="pos">+0.77 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p1">P1确认（leader=星光股份 · buyable ✅）</span> trace: P1预警 → P1确认。今日验证：双涨停（星光 3 日 +37% 且昨日已 +9.87%，㊹5日 +37%/20日 +26.8%）。⚠️ 资金观察：星光当日主力净流出 -1.45 亿（涨停≠资金进），换手 35.22% 高位巨量——连板情绪票属性。操作建议：仅打板/回封纪律仓 ≤2%，【㊼】次日溢价风险高，破板即离。</p>
+
+  <h3>⑤ 地面兵装/军工（反抽）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td>内蒙一机 sh600967（follower）</td><td>14.15</td><td><span class="up">+4.51%</span></td><td><span class="down">-1.46%</span></td><td>240.80 亿</td><td><span class="up">+8.6%</span></td><td>111.1</td><td class="pos">+0.99 亿</td></tr>
+    <tr><td><b>长城军工 sh601606</b>（leader）</td><td>33.19</td><td><span class="up">+2.25%</span></td><td><span class="up">+1.53%</span></td><td>240.37 亿</td><td><span class="up">+14.37%</span></td><td>亏损</td><td class="neg">-0.67 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p2">P2预警（leader=长城军工 · buyable ❌）</span> trace: P1预警→P1确认→P2预警（last_active_wave=中断INT，前波曾中断后重启）。今日验证：板块 +0.08% 抗跌、甘化科工 +5.65%（44.86 亿小盘情绪标，与主 Pair 市值差 5.4 倍略超约束 → 三-⑧ 单列）。操作建议：P2预警不进推荐，观察内蒙/长城能否回溯 2-of-3 补涨占优。</p>
+
+  <h3>⑥ AI应用/数据服务（昨日主线 · 今日分歧）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td>海量数据 sh603138（follower）</td><td>16.92</td><td><span class="up">+10.01%</span></td><td><span class="up">+10.01%</span></td><td>49.68 亿</td><td><span class="up">+25.89%</span></td><td>亏损</td><td class="neg">-0.05 亿</td></tr>
+    <tr><td><b>海天瑞声 sh688787</b>（leader）</td><td>117.50</td><td><span class="up">+1.64%</span></td><td><span class="up">+11.7%</span></td><td>70.88 亿</td><td><span class="up">+47.98%</span></td><td>352.9</td><td class="pos">+0.44 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p2">P2预警（leader=海天瑞声 · buyable ❌）</span> trace: P1预警→P1确认→P2预警（last_active_wave=W结束，上一波已走完、新波重建）。今日验证：个股续强（海量 2 连板、海天 +1.64%、慧辰 sh688500 +4.63%）但 IT服务板块 <span class="down">-3.41%</span> 被系统性杀跌拖累——个股与板块背离。操作建议：仅存量持有观察，不加仓；板块未修复前不进推荐。</p>
+
+  <h3>⑦ 传媒/裸眼3D/黑神话（次线 · 龙头级机会）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>利亚德 sz300296</b>（leader）</td><td>6.10</td><td><span class="up">+8.35%</span></td><td><span class="up">+20.04%</span></td><td>165.43 亿</td><td><span class="up">+35.25%</span></td><td>80.9</td><td class="pos">+0.07 亿（5日 +55.01 亿）</td></tr>
+    <tr><td>洲明科技 sz300232（follower）</td><td>5.38</td><td><span class="down">-4.78%</span></td><td><span class="up">+8.03%</span></td><td>58.66 亿</td><td><span class="up">+4.26%</span></td><td>亏损</td><td class="neg">-0.37 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p1">P1确认（leader=利亚德 · buyable ✅）</span> trace: P1预警 → P1确认。今日验证：利亚德昨日 20cm 今日再 +8.35%（放量 35 亿），但 follower 洲明 -4.78% 转弱、出版/数字媒体板块大跌 → 板块级退潮、龙头级独立行情。操作建议：只做 leader 回踩低吸（仓位 ≤3%），follower 不碰；若利亚德单日 -6% 触发中断则离场。</p>
+</section>
+
+<!-- 08 前三强 + 最优 Pair -->
+<section>
+  <h2><span class="n">08</span>七大板块前三强 + 最优 Pair</h2>
+  <table>
+    <tr><th>板块</th><th>当日最强</th><th>次强</th><th>第三</th><th>最优 Pair</th></tr>
+    <tr><td>① 机器人/电机</td><td>华阳智能 <span class="up">+20.0%</span></td><td>奕帆传动 <span class="up">+19.99%</span></td><td>鸣志/兆威 <span class="up">+10.0%</span></td><td><b>鸣志 × 兆威</b>（P1确认）</td></tr>
+    <tr><td>② 白色家电</td><td>美的集团 <span class="up">+1.71%</span></td><td>格力电器 <span class="up">+0.81%</span></td><td>海融科技 <span class="up">+2.22%</span></td><td>美的 × 格力（WAIT）</td></tr>
+    <tr><td>③ 国有大行</td><td>工商银行 <span class="up">+1.66%</span></td><td>农业银行 <span class="up">+1.51%</span></td><td>建设银行 <span class="up">+1.48%</span></td><td>工行 × 农行（WAIT）</td></tr>
+    <tr><td>④ 照明设备</td><td>星光股份 <span class="up">+10.2%</span></td><td>阳光照明 <span class="up">+10.09%</span></td><td>海洋王（涨）</td><td><b>星光 × 阳光</b>（P1确认）</td></tr>
+    <tr><td>⑤ 地面兵装</td><td>甘化科工 <span class="up">+5.65%</span></td><td>内蒙一机 <span class="up">+4.51%</span></td><td>长城军工 <span class="up">+2.25%</span></td><td>内蒙 × 长城（P2预警）</td></tr>
+    <tr><td>⑥ AI应用/数据</td><td>海量数据 <span class="up">+10.01%</span></td><td>慧辰股份 <span class="up">+4.63%</span></td><td>海天瑞声 <span class="up">+1.64%</span></td><td>海量 × 海天（P2预警）</td></tr>
+    <tr><td>⑦ 传媒/裸眼3D</td><td>利亚德 <span class="up">+8.35%</span></td><td>出版传媒 <span class="up">+10.0%</span>（活口）</td><td>元隆雅图 <span class="up">+4.35%</span></td><td><b>利亚德 × 洲明</b>（P1确认）</td></tr>
+  </table>
+</section>
+
+<!-- 09 综合研判 -->
+<section>
+  <h2><span class="n">09</span>综合研判与操作建议</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🟢 重点方向（buyable · V4.1 自然筛选）</h4>
+      <p><b>机器人/电机链（P1确认）</b>：兆威机电/鸣志电器/阳光照明/星光股份——主 Pair 回踩低吸，⛔ 严禁市价追涨停。<br>
+      <b>传媒裸眼3D 龙头（P1确认）</b>：利亚德——仅 leader 回踩低吸。</p>
+      <h4>🔴 回避方向</h4>
+      <p><b>AI 硬件</b>（通信设备/元件/半导体/电池）：主力净流出 -91/-63/-51/-34 亿、光库/长飞/新易盛破位，【规则 ⑳】高位放量出货不接飞刀。<br>
+      <b>昨日题材杂毛</b>（出版/数字媒体/广告营销/AI漫剧）：跌停潮（引力传媒/德才股份跌停），P1 预警证伪。<br>
+      <b>莱美药业类肿瘤疫苗</b>：-12.69% 崩跌，P3预警兑现见顶。</p>
+      <h4>🟡 持有方向</h4>
+      <p>银行/白电高股息底仓（WAIT·防御属性）；P3确认类=持有非清仓逻辑不变（今日无 P3确认 Pair）。</p>
+    </div>
+    <div class="card"><h4>内置回测 · 上一交易日（10/21）预判验证 + R-Judge 归因</h4>
+      <table>
+        <tr><th>板块/Pair</th><th>10/21 判定</th><th>10/22 实际</th><th>判定</th></tr>
+        <tr><td>AI应用 慧辰×海天</td><td>P2预警</td><td>慧辰 +4.63%/海天 +1.64% 续强</td><td class="up">命中</td></tr>
+        <tr><td>传媒 利亚德×洲明</td><td>P1预警</td><td>利亚德 +8.35% 续强</td><td class="up">命中</td></tr>
+        <tr><td>光通信 致尚×光库</td><td>P1预警</td><td>光库 -5.24% 破位</td><td class="down">反向</td></tr>
+        <tr><td>农业 东瑞×华统</td><td>P1预警</td><td>东瑞 -3.13%/华统 -2.08%</td><td class="down">反向</td></tr>
+        <tr><td>肿瘤疫苗 莱美×海正</td><td>P3预警</td><td>莱美 -12.69% 见顶</td><td class="up">命中</td></tr>
+        <tr><td>结构件 长盈×科森</td><td>P1确认</td><td>长盈 -2.39% 未延续</td><td class="down">偏差</td></tr>
+        <tr><td>电池 亿纬×国轩</td><td>WAIT</td><td>亿纬 +0.17%/国轩 -2.36% 维持退潮</td><td class="up">命中</td></tr>
+      </table>
+      <p><b>阶段命中率 4/7 ≈ 57.1%</b>（高于随机基准 47.5%）。R-Judge：<b>漏判</b>——机器人/电机链今日爆发（华阳 20cm 等 5+涨停）上一日零覆盖，发现层未扫小盘电机细分；<b>判错</b>——光通信/农业 P1 预警在系统性风险日集体证伪；<b>执行错</b>——结构件 P1确认(buyable) 次日即回落，风险日 buyable 应降权。</p>
+    </div>
+  </div>
+
+  <h3>近一周轮动速度</h3>
+  <table>
+    <tr><th>日期</th><th>主线</th><th>次线</th><th>轮动特征</th></tr>
+    <tr><td>10/16</td><td>—</td><td>—</td><td>（见当日报告）</td></tr>
+    <tr><td>10/19</td><td>元件/PCB 反抽</td><td>机器人（兆威×鸣志 P1确认）</td><td>退潮板块内反抽</td></tr>
+    <tr><td>10/20</td><td>机器人/物理AI</td><td>端侧AI/消费电子</td><td>普涨分化·跌停收敛</td></tr>
+    <tr><td>10/21</td><td>AI应用/软件 + 传媒</td><td>农业/肿瘤疫苗/光通信</td><td>权重杀跌·题材切换（5日5换）</td></tr>
+    <tr><td><b>10/22</b></td><td><b>机器人/电机链</b></td><td><b>传媒裸眼3D + 银行白电防御</b></td><td><b>全球黑色星期四·仅景气题材+高股息存活</b></td></tr>
+  </table>
+
+  <h3>节点理论闸口（决策层 · 与 V4.1 平行互补）</h3>
+  <div class="warn">ADJ_SCORE = 9.08（10/21 口径，≤11 冰点档；10/22 实际更弱）→ <b>两桶三标签：防守档 · 冰点</b> → 总仓 0–3%（单笔 ≤2%）。题材侧机器人电机链三件套齐（成建制梯队+硬催化+龙头可确认）=「新核心题材（强）」信号，但节点理论层级大不过 V4.1、且冰点档整体压制 → 只做 P1确认 Pair 的纪律仓回踩。诚实提示：历史回测显示进攻档 T+3/T+5 显著跑输防守档，节点闸口仅作 T+1 环境标注。</div>
+
+  <h3>风险提示（≥4 条）</h3>
+  <div class="risk">
+    ① <b>地缘风险升级</b>：美以对伊朗军事打击计划报道 + 油价上涨，若冲突落地全球风险资产二次探底（中国基金报 10/22）；<br>
+    ② <b>美债收益率 5%+ 高位</b>：科技成长估值锚持续受压，AI 硬件抛售未见止跌信号（源达信息）；<br>
+    ③ <b>创业板技术破位</b>：失守 2600、较 6 月高点回撤 &gt;40%，C 浪筑底需要时间（创元期货），不抢反弹；<br>
+    ④ <b>连板情绪票风险</b>：星光股份换手 35%/主力净流出、大业股份 5 连板——【㊼】次日断板溢价风险大，纪律仓 ≤2%；<br>
+    ⑤ <b>三季报窗口</b>：10 月底密集披露，个股业绩雷与高位票叠加（P1确认 ≠ 业绩保证）。<br>
+    数据截至 15:00 收盘；双源交叉：westock ↔ 头条/中新经纬/中国基金报/金融界收评（指数/涨跌家数/成交额一致 ✅）。ADJ_SCORE 为 T-1 口径（data_market_overview 恒 T-1）已明示。
+  </div>
+
+  <h3>次日（10/23）跟踪框架草稿</h3>
+  <p>① 机器人电机链：兆威/鸣志开盘 30 分钟是否守住今日收盘价（规则66② 次日再确认）；华阳智能断板则降档。② 利亚德：5 日线（约 5.8）得失，单日 -6% 触发中断离场。③ AI 硬件：新易盛/中际旭创/光库能否缩量企稳，继续放量下跌则退潮延续、绝不接飞刀。④ 中东局势与油价隔夜外盘（纳指期货/日韩股市）对开盘情绪的传导。⑤ <b>纠错闭环</b>：昨日判光通信/农业 P1 预警今日集体证伪——系统性风险日（跌停 &gt; 涨停）所有 P1 预警降半档处理；昨日 P1确认 结构件次日即回落——风险日 buyable 标的仓位强制 ≤2% 且只做回踩。</p>
+
+  <h3>核心看好标的（V4.1 自然筛选 · 共 6 只 · N 随行情广度浮动）</h3>
+  <table>
+    <tr><th>标的</th><th>阶段（V4.1）</th><th>推荐原因</th><th>近期走势</th></tr>
+    <tr><td>兆威机电 sz003021</td><td>P1确认 · leader</td><td>华为机器人 leader、主力 +2.18 亿、当日涨幅 Top1 于同细分 Pair</td><td>今日 +10.0%、5日 +38.2%、20日 +24.7%</td></tr>
+    <tr><td>鸣志电器 sh603728</td><td>P1确认 · follower</td><td>空心杯电机双龙头、主力 +3.10 亿（全市场第 8）</td><td>今日 +10.0%、5日 +23.7%、20日 +14.7%</td></tr>
+    <tr><td>利亚德 sz300296</td><td>P1确认 · leader</td><td>裸眼3D 龙头、5日主力 +55 亿、放量 35 亿续强</td><td>今日 +8.35%、5日 +35.3%、20日 +25.0%</td></tr>
+    <tr><td>星光股份 sz002076</td><td>P1确认 · leader</td><td>照明/量子题材情绪旗手、2 连板</td><td>今日 +10.2%、5日 +37.1%、60日 +50%</td></tr>
+    <tr><td>阳光照明 sh600261</td><td>P1确认 · follower</td><td>照明补涨、主力 +0.77 亿、低估值（PE 34）</td><td>今日 +10.09%、5日 +12.9%、20日 +12.5%</td></tr>
+    <tr><td>洲明科技 sz300232</td><td>P1确认 · follower</td><td>利亚德同细分同量级 follower（今日转弱、观察仓）</td><td>今日 -4.78%、5日 +4.3%、20日 +0.2%</td></tr>
+  </table>
+  <p><b>综合观察</b>：以上 6 只为今日核心看好（V4.1 自然筛选），方向=多（结构性）·总仓控 0–3% 防守档、单票 ≤2%；P3确认一票否决今日无触发；买点=分歧回踩低吸，严禁市价追高。</p>
+</section>
+
+<footer>
+  免责声明：本报告为自动化复盘产物，仅供研究参考，不构成任何投资建议。数据截至 2026-10-22 15:00 收盘快照，来源 westock（腾讯自选股）/Wind/公开收评交叉认证；标注 ⚠️单源 处未经交叉认证。阶段判定唯一依据 = 三阶段 V4.1（Pair 状态机脚本实跑），资金面仅作观察不改判阶段。市场有风险，投资需谨慎。<br>
+  生成：主线分析自动化（automation-zxfx）｜模板 pinned-2026-09-20｜框架 V4.1｜【框架应用】三-① 三-② 三-⑤ 三-⑧ ㊼ ㊹ 规则规则⑳㉒66｜节点理论闸口·防守档冰点
+</footer>
+</div>
+
+<script>
+function paint(id, cats, vals, title){
+  var c = document.getElementById(id); if(!c) return;
+  var ch = echarts.init(c);
+  ch.setOption({
+    title: {text: title, left:'center', textStyle:{fontSize:14}},
+    tooltip: {trigger:'axis'},
+    grid: {left:60, right:20, top:40, bottom:40},
+    xAxis: {type:'category', data: cats, axisLabel:{rotate:20, fontSize:11}},
+    yAxis: {type:'value', axisLabel:{formatter:'{value}%'}},
+    series: [{type:'bar', data: vals.map(function(v){
+        return {value:v, itemStyle:{color: v>=0 ? '#d8392b' : '#1a9e5f'}};
+      }), label:{show:true, position:'top', fontSize:10}}]
+  });
+}
+paint('idxChart', ['上证','深成','创业板','科创50','沪深300','中证500'], [-1.48,-2.96,-4.37,-2.78,-1.84,-2.71], '核心指数涨跌幅（%）');
+paint('conceptChart', ['电子鼻','空心杯电机','机器人执行器','华为机器人','轮边电机','PLC','颗粒硅','证金持股'], [2.67,1.26,0.94,0.87,0.23,-0.09,-0.23,-0.29], '概念板块 Top8 涨跌幅（%）');
+</script>
+</body>
+</html>
