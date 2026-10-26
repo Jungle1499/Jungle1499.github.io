@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>主线分析_20261026 · 三阶段框架 V4.2 缩量回调高低切换·油价+医药防御领涨</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --red:#d8392b; --red-bg:#fdecea; --green:#1a9e5f; --green-bg:#e8f6ef;
+    --ink:#1f2933; --sub:#5b6b7b; --line:#e6ebf0; --bg:#f5f7fa; --card:#ffffff;
+    --blue:#2563eb; --blue-bg:#eaf1ff; --orange:#e8770b; --orange-bg:#fff3e6;
+    --purple:#7c3aed; --purple-bg:#f1ebff; --gray:#8a97a5;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65;font-size:14px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 18px 60px;}
+  header{padding:26px 28px;border-radius:16px;color:#fff;
+    background:linear-gradient(135deg,#1b2a4e 0%,#26407a 55%,#3358b8 100%);}
+  header h1{margin:0 0 6px;font-size:25px;letter-spacing:1px;}
+  header .meta{opacity:.9;font-size:13px;}
+  .badge{display:inline-block;background:var(--red);color:#fff;border-radius:20px;
+    padding:3px 14px;font-size:13px;font-weight:700;margin-top:10px;}
+  .sub-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:20px;
+    padding:3px 14px;font-size:13px;margin:10px 0 0 8px;}
+  section{background:var(--card);border-radius:14px;padding:22px 24px;margin-top:18px;
+    box-shadow:0 1px 3px rgba(20,40,80,.06);}
+  h2{font-size:19px;margin:0 0 14px;padding-left:12px;border-left:5px solid var(--blue);}
+  h2 .n{color:var(--blue);font-weight:800;margin-right:6px;}
+  h3{font-size:15px;margin:18px 0 8px;color:var(--ink);}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px;}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center;}
+  th{background:#f0f4f9;font-weight:700;color:var(--sub);}
+  tr:nth-child(even) td{background:#fafcfe;}
+  .up{color:var(--red);font-weight:700;}
+  .down{color:var(--green);font-weight:700;}
+  .na{color:var(--gray);}
+  .pos{color:var(--red);} .neg{color:var(--green);}
+  .grid{display:grid;gap:14px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;}
+  .card h4{margin:0 0 8px;font-size:15px;}
+  .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:2px 0;border-bottom:1px dashed #eef2f6;}
+  .kv:last-child{border-bottom:none;}
+  .pill{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;}
+  .p1{background:var(--blue-bg);color:var(--blue);}
+  .p2{background:var(--orange-bg);color:var(--orange);}
+  .p3{background:var(--red-bg);color:var(--red);}
+  .pd{background:var(--green-bg);color:var(--green);}
+  .pw{background:#eef2f6;color:var(--sub);}
+  .note{background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:8px;
+    padding:10px 14px;font-size:13px;margin:10px 0;}
+  .warn{background:var(--orange-bg);border-left:4px solid var(--orange);border-radius:8px;
+    padding:10px 14px;font-size:13px;margin:10px 0;}
+  .risk{background:var(--red-bg);border-left:4px solid var(--red);border-radius:8px;
+    padding:10px 14px;font-size:13px;margin:10px 0;}
+  .stage-tag{display:inline-block;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;}
+  .st-p1{background:var(--blue-bg);color:var(--blue);}
+  .st-p2{background:var(--orange-bg);color:var(--orange);}
+  .st-wait{background:#eef2f6;color:var(--sub);}
+  footer{margin-top:26px;padding:16px 20px;border-radius:12px;background:#eef2f6;
+    color:var(--sub);font-size:12px;line-height:1.8;}
+  .hero{border:2px solid var(--blue);border-radius:12px;padding:16px 18px;background:#fff;}
+  .hero h4{margin:0 0 4px;font-size:16px;color:var(--blue);}
+  .tagline{font-size:12px;color:var(--sub);margin:2px 0 8px;}
+  .chart{width:100%;height:300px;}
+  b.r{color:var(--red);} b.g{color:var(--green);}
+</style>
+</head>
+<body>
+<!-- WKBUILD:zhuxian-20261026 -->
+<div class="wrap">
+<header>
+  <h1>主线分析 · 2026-10-26（周一）</h1>
+  <div class="meta">数据快照：15:00 收盘 ｜ 框架：三阶段理论 V4.2（两层结构：板块筛→Pair 定级）｜ 分类体系：腾讯自选股三级→申万三级｜ 模板 pinned-2026-09-20</div>
+  <div class="badge">主线：油价/油服工程（P1预警 · 事件驱动）</div>
+  <div class="sub-badge">缩量回调高低切换 · 涨2252/跌3157 · 涨停59/跌停28 · 缩量 -3475 亿</div>
+</header>
+
+<!-- 01 大盘全景 -->
+<section>
+  <h2><span class="n">01</span>大盘全景</h2>
+  <table>
+    <tr><th>指数</th><th>收盘</th><th>涨跌幅</th><th>点位变化</th><th>5日</th><th>20日</th></tr>
+    <tr><td>上证指数</td><td>3697.52</td><td><span class="up">+0.19%</span></td><td class="pos">+7.04</td><td><span class="down">-0.90%</span></td><td><span class="down">-5.48%</span></td></tr>
+    <tr><td>深证成指</td><td>11534.38</td><td><span class="down">-1.19%</span></td><td class="neg">-139.45</td><td><span class="down">-2.40%</span></td><td><span class="down">-15.44%</span></td></tr>
+    <tr><td>创业板指</td><td>2638.23</td><td><span class="down">-1.71%</span></td><td class="neg">-45.87</td><td><span class="down">-3.93%</span></td><td><span class="down">-21.78%</span></td></tr>
+    <tr><td>科创50</td><td>1315.50</td><td><span class="down">-2.23%</span></td><td class="neg">-30.01</td><td><span class="down">-1.03%</span></td><td><span class="down">-20.40%</span></td></tr>
+    <tr><td>沪深300</td><td>4103.54</td><td><span class="down">-0.04%</span></td><td class="neg">-1.79</td><td><span class="down">-1.70%</span></td><td><span class="down">-8.96%</span></td></tr>
+    <tr><td>中证500</td><td>6712.73</td><td><span class="down">-1.49%</span></td><td class="neg">-101.71</td><td><span class="down">-1.29%</span></td><td><span class="down">-13.94%</span></td></tr>
+  </table>
+  <div class="grid g3">
+    <div class="card"><h4>涨跌家数</h4>
+      <div class="kv"><span>上涨</span><b class="r">2252</b></div>
+      <div class="kv"><span>平盘</span><span>168</span></div>
+      <div class="kv"><span>下跌</span><b class="g">3157</b></div>
+      <div class="kv"><span>上涨占比</span><b>40%（情绪中性偏弱）</b></div>
+    </div>
+    <div class="card"><h4>涨跌停</h4>
+      <div class="kv"><span>涨停</span><b class="r">59</b></div>
+      <div class="kv"><span>跌停</span><b class="g">28</b></div>
+      <div class="kv"><span>&gt;7% 大涨</span><b class="r">57</b></div>
+      <div class="kv"><span>&lt;-7% 大跌</span><b class="g">154</b></div>
+    </div>
+    <div class="card"><h4>成交额</h4>
+      <div class="kv"><span>两市成交</span><b>16087.85 亿</b></div>
+      <div class="kv"><span>较前日</span><b class="g">-3474.99 亿（缩量）</b></div>
+      <div class="kv"><span>沪市</span><span>7465.28 亿</span></div>
+      <div class="kv"><span>深市</span><span>8622.65 亿</span></div>
+    </div>
+  </div>
+  <div class="note"><b>大盘小绿判定：</b>当日下跌占比 56.6%（3157/5577）＜65% → <b>判「否」</b>（连续两日口径：前一日 10/23 下跌占比 16.3%、今日 56.6%，均未达 65%）。今日为典型 <b>缩量回调 + 高低切换</b>：上证在油气+银行权重支撑下微涨 +0.19%（上证50 +0.41% 最强），但创业板 -1.71%、科创50 -2.23%、中证500 -1.49% 明显走弱，北证50 -2.13% 领跌——<b>大盘价值红、小盘成长绿</b>的极端分化。资金从成长转价值防御：主力净流入商业银行 45.25 亿居首，半导体净流出 66.08 亿居前。前一交易日「超跌普涨反抽」次日即缩量回落，兑现上篇报告「反抽≠反转、次日缩量回落概率高」的预警。<b>数据源交叉</b>：westock data_quote ↔ Wind（上证 15:00=3697.52 一致 ✅）+ 证券日报/腾讯新闻/今日头条三源收评（涨2252/跌3157·涨停59/跌停28·成交1.61万亿 完全一致 ✅）；成交额 16087.85 亿 ↔ data_changedist 总额勾稽一致 ✅。</div>
+  <div id="idxChart" class="chart"></div>
+</section>
+
+<!-- 02 申万二级 Top6 -->
+<section>
+  <h2><span class="n">02</span>申万二级行业涨幅 Top 6</h2>
+  <table>
+    <tr><th>排名</th><th>行业</th><th>涨跌幅</th><th>主力净流入</th><th>5日净流</th><th>领涨代表</th></tr>
+    <tr><td>1</td><td><b>油服工程</b></td><td><span class="up">+3.38%</span></td><td class="pos">+0.71 亿</td><td class="pos">+1.30 亿</td><td>中海油服 <span class="up">+7.23%</span></td></tr>
+    <tr><td>2</td><td><b>房地产服务</b></td><td><span class="up">+2.98%</span></td><td class="pos">+2.33 亿</td><td class="pos">+0.68 亿</td><td>*ST皇庭 <span class="up">+7.91%</span></td></tr>
+    <tr><td>3</td><td><b>休闲食品</b></td><td><span class="up">+2.93%</span></td><td class="pos">+0.76 亿</td><td class="neg">-0.95 亿</td><td>桂发祥 <span class="up">+10.04%</span>（涨停）</td></tr>
+    <tr><td>4</td><td><b>医药商业</b></td><td><span class="up">+2.73%</span></td><td class="pos">+1.79 亿</td><td class="neg">-1.53 亿</td><td>百洋医药 <span class="up">+10.62%</span></td></tr>
+    <tr><td>5</td><td>国有大型银行Ⅱ</td><td><span class="up">+2.23%</span></td><td class="pos">+3.73 亿</td><td class="neg">-13.05 亿</td><td>工商银行 <span class="up">+3.13%</span></td></tr>
+    <tr><td>6</td><td>游戏Ⅱ</td><td><span class="up">+2.11%</span></td><td class="pos">+7.11 亿</td><td class="neg">-10.08 亿</td><td>盛天网络 <span class="up">+14.62%</span></td></tr>
+  </table>
+  <div class="warn"><b>领跌端（AI硬件集中回调）</b>：元件 <span class="down">-6.79%</span>（4/61 涨·主力 <b class="g">-65.21 亿</b>）｜玻璃玻纤 <span class="down">-5.40%</span>｜电子化学品Ⅱ <span class="down">-4.33%</span>｜贵金属 <span class="down">-4.27%</span>｜其他电子Ⅱ <span class="down">-3.79%</span>｜通信设备 <span class="down">-3.67%</span>（主力 -44.16 亿）｜半导体 <span class="down">-3.55%</span>（14/183 涨·主力 -51.09 亿）｜小金属 -3.04%｜电机Ⅱ <span class="down">-2.85%</span>（3/26 涨）｜消费电子 -2.14%。【框架应用 ㉒跷跷板：缩量回调日资金从科技成长撤出、回流油气+银行+医药防御】。铜箔覆铜板/CPO/PCB/存储芯片等 AI 硬件概念跌幅靠前，南亚新材/三环集团跌超 12%、联特科技/宇特光电跌超 15%——AI 硬件上篇判定「弱反抽非反转」今日兑现为二次下杀【规则 ㉓】。</div>
+</section>
+
+<!-- 03 概念 Top8 -->
+<section>
+  <h2><span class="n">03</span>概念板块涨幅 Top 8（剔除纯连板类）</h2>
+  <table>
+    <tr><th>排名</th><th>概念</th><th>今日%</th><th>主力净流入</th><th>5日主力</th><th>代表标的</th></tr>
+    <tr><td>1</td><td><b>休闲食品概念</b></td><td><span class="up">+3.44%</span></td><td class="pos">+1.13 亿</td><td class="neg">-1.34 亿</td><td>桂发祥 <span class="up">+10.04%</span>（涨停）</td></tr>
+    <tr><td>2</td><td><b>肿瘤疫苗</b></td><td><span class="up">+2.84%</span></td><td class="pos">+1.30 亿</td><td class="neg">-3.11 亿</td><td>莱美药业 <span class="up">+13.17%</span></td></tr>
+    <tr><td>3</td><td>希音合作商</td><td><span class="up">+2.62%</span></td><td class="pos">+0.76 亿</td><td class="neg">-0.85 亿</td><td>东百集团 <span class="up">+7.77%</span></td></tr>
+    <tr><td>4</td><td><b>油价相关</b></td><td><span class="up">+2.20%</span></td><td class="pos">+3.91 亿</td><td class="pos">+1.53 亿</td><td>中海油服 <span class="up">+7.23%</span></td></tr>
+    <tr><td>5</td><td>进口博览会</td><td><span class="up">+2.11%</span></td><td class="neg">-0.04 亿</td><td class="neg">-3.40 亿</td><td>兰生股份 <span class="up">+10.04%</span>（涨停）</td></tr>
+    <tr><td>6</td><td>证金持股</td><td><span class="up">+2.09%</span></td><td class="pos">+6.21 亿</td><td class="neg">-41.84 亿</td><td>中海油服 <span class="up">+7.23%</span></td></tr>
+    <tr><td>7</td><td>固液电池</td><td><span class="up">+2.07%</span></td><td class="pos">+5.60 亿</td><td class="neg">-52.26 亿</td><td>上海洗霸 <span class="up">+9.99%</span></td></tr>
+    <tr><td>8</td><td><b>SPD(医疗供应链)</b></td><td><span class="up">+2.01%</span></td><td class="neg">-1.97 亿</td><td class="pos">+0.63 亿</td><td>英特集团 <span class="up">+10.04%</span>（涨停）</td></tr>
+  </table>
+  <div class="note">概念口径=腾讯自选股三级（805 条全量扫描）；5日主力=概念指数 5 日主力净流入（数据源 data_sector，单位万元换算）；概念成分重叠、绝对金额仅作排序参考。<b>题材三件套判定（节点理论输入）</b>：油价/油服 = 事件驱动（中东地缘升级·霍尔木兹海峡通航风险·布伦特原油破 116 美元/中国石油 18 年新高）+ 龙头可确认（中海油服 +7.23%）但梯队未成建制（仅油服工程 12/13 涨）→ <b>事件驱动题材（中）</b>；医疗设备 = 三日族群 6 只集群（山外山/天智航/三诺生物/澳华内镜/鱼跃医疗/开立医疗）+ 三季报业绩兑现 + 创新药数据共振 → <b>新核心题材候选（中强）</b>。<b>三日族群扫描</b>（discovery_3d_result_20261026.json · 83 命中 · 实测消费 ✅）：医疗设备 6 只、底盘与发动机系统 5 只（正裕工业/襄阳轴承/万向钱潮/日盈电子/恒勃股份）、电机Ⅲ 4 只（华阳智能/兆威/奕帆传动/鸣志）、机器人 4 只（宇树科技/埃斯顿/江苏北人/绿的谐波）、金属制品 3 只（赛福天/大业股份/锋龙股份）、垂直应用软件 2 只（众诚科技/多伦科技）、IT服务Ⅲ 2 只（海天瑞声/科远智慧）——与单日截面取并集入 04/07 主线确认输入。</div>
+  <div id="conceptChart" class="chart"></div>
+</section>
+
+<!-- 04 五维共振 -->
+<section>
+  <h2><span class="n">04</span>五维共振 · 主线确认</h2>
+  <div class="grid g2">
+    <div class="card"><h4>五维信号</h4>
+      <div class="kv"><span>① 指数/量能</span><b class="g">缩量回调 · -3475 亿 · 广度 40% · 上证50 +0.41% vs 北证50 -2.13%</b></div>
+      <div class="kv"><span>② 板块强度</span><b>石油石化 +2.41%/银行 +1.76%/交运 +1.68%/地产 +1.67% 价值防御齐涨</b></div>
+      <div class="kv"><span>③ 涨停结构</span><b>涨停 59 &gt; 跌停 28 · 医药商业/白酒/休闲食品批量涨停（英特/皇台/良品铺子）</b></div>
+      <div class="kv"><span>④ 资金共振</span><b class="r">银行 +45.25 亿/石油石化 +15.6 亿（申万一级）；半导体 -66.08 亿/元件 -65.21 亿</b></div>
+      <div class="kv"><span>⑤ 催化/事件</span><b>中东地缘·原油破116美元 + 银行中期分红落地 + 医疗器械三季报/创新药数据</b></div>
+    </div>
+    <div class="card"><h4>双主线判定【框架应用 三-①】</h4>
+      <p><span class="stage-tag st-p1">主线 · P1预警（D0）</span> <b>油价/油服工程</b>（石油石化申万第 1 +2.41%、油价相关概念 +2.20%）——V4.2 Pair（中海油服 vs 海油工程）P1预警 D0 触发（中海油服 +7.23%），leader 暂定=中海油服，buyable ❌。中东地缘升级、霍尔木兹海峡通航风险上升、布伦特原油突破 116 美元/WTI 103.27 美元（+3.82%），中国石油 +4.94% 创 18 年新高。⚠️ 中海油服 +7.23% 但当日主力净流出 -0.10 亿（价涨钱出），事件驱动题材次日冲高回落风险大。</p>
+      <p><span class="stage-tag st-p1">次线 · P1确认</span> <b>医疗设备/医药</b>（医疗器械 +2.32%、医药商业 +2.73%、肿瘤疫苗概念 +2.84%）——Pair 山外山 vs 天智航 <b>P1确认</b>（leader=山外山，buyable ✅），三日族群医疗设备 6 只集群（跨 3 日持续走强）。三季报业绩兑现 + 创新药临床数据发布共振，大博医疗/天智航/亚辉龙涨逾 7%。⚠️ 山外山 +12.49%/天智航 +11.33% 但当日主力均净流出（山外山 -0.12 亿/天智航 -0.17 亿，价涨钱出），游资驱动特征需警惕。</p>
+      <p><span class="stage-tag st-p2">防御档 · WAIT</span> <b>银行/高股息</b>（工行 vs 建行 WAIT，无 ≥5% 触发）——中期分红密集落地（21 家上市银行拟派息超 2600 亿、国有大行分红比例上调至 31%），主力净流入 45.25 亿居首，工行 +3.13%/建行 +2.74%，稳健配置非弹性进攻。</p>
+      <p><span class="stage-tag st-p2">退潮 · 旧主线熄火</span> <b>AI 硬件/机器人</b>（元件 -6.79%/半导体 -3.55%/通信设备 -3.67%/电机Ⅱ -2.85%）——上篇主线「机器人/电机」兆威 +4.94% 冲高回落、鸣志 -6.66% 大跌，Pair 状态仍 P1确认但板块层已退潮，资金撤出明确【规则 ㉓】。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 四重驱动 -->
+<section>
+  <h2><span class="n">05</span>四重核心驱动因素</h2>
+  <div class="grid g2">
+    <div class="card"><h4>① 政策/事件驱动（油价·主线）</h4>
+      <p>中东地缘局势升级，霍尔木兹海峡通航风险上升，布伦特原油一度突破 116 美元/桶，WTI 12 月结算 103.27 美元（+3.82%）。A 股油气链全线走强：中国石油 +4.94% 创 2008 年 5 月以来新高，中国海油 +4.27%、中国石化 +3.54%，油服工程中海油服 +7.23%/海油工程 +5.95%。油价上行同时推升通胀与利率预期，资金从久期最长的成长资产转向能源与高股息方向。</p></div>
+    <div class="card"><h4>② 事件驱动（医疗·次线）</h4>
+      <p>医疗器械三季报业绩兑现与创新药临床数据发布共振：山外山 +12.49%（三日 +21.55%）、天智航 +11.33%、大博医疗/亚辉龙涨逾 7%，医药商业英特集团/塞力医疗涨停。三日族群医疗设备 6 只集群（山外山/天智航/三诺生物/澳华内镜/鱼跃医疗/开立医疗），跨 3 日持续走强，是高低切换后资金回流低位的核心方向。白酒/乳业/休闲食品同步活跃：皇台酒业、青岛食品、阳光乳业、良品铺子涨停。</p></div>
+    <div class="card"><h4>③ 资金驱动（高低切换）</h4>
+      <p>缩量 3475 亿 = 增量资金退潮、存量博弈；主力净流入商业银行 45.25 亿居首，半导体净流出 66.08 亿居前——<b>高低切换特征明显</b>【规则 ㉒】。个股端：皇台酒业 +1.50 亿、工商银行 +1.19 亿、盛天网络 +1.14 亿、襄阳轴承 +0.64 亿、海油工程 +0.48 亿；反向：兆威机电 -1.08 亿（价涨钱出）、山外山 -0.12 亿、中海油服 -0.10 亿（价涨钱出）、天智航 -0.17 亿——领涨股主力资金未共振，是本轮防御行情的最大隐忧【资金对抗自检】。</p></div>
+    <div class="card"><h4>④ 技术驱动（缩量回调）</h4>
+      <p>上证 3664.82→3699.01 收 3697.52，微涨 +0.19% 但 20 日涨跌幅仍 -5.48%（弱势结构未改）；创业板 2601.09→2671.81 收 2638.23 跌 -1.71%，20 日 -21.78%；中证500/科创50 同步走弱。上证 50 +0.41% 最强、北证 50 -2.13% 领跌，印证「大盘价值红、小盘成长绿」的极端分化。上篇「低开高走 V 反」已告一段落，今日缩量回落确认反抽性质，技术面回到「反抽后震荡」格局【规则 ㉓】。</p></div>
+  </div>
+</section>
+
+<!-- 06 核心龙头精选 -->
+<section>
+  <h2><span class="n">06</span>核心龙头精选 3 只（V4.2 自然筛选 · buyable）</h2>
+  <div class="grid g3">
+    <div class="hero"><h4>1. 山外山 sh688410</h4>
+      <div class="tagline">医疗设备/血液净化 · Pair leader · <span class="pill p1">P1确认</span></div>
+      <div class="kv"><span>最新价 / 今日</span><b>11.62 / <span class="up">+12.49%</span></b></div>
+      <div class="kv"><span>成交额 / 换手</span><span>3.87 亿 / 7.73%</span></div>
+      <div class="kv"><span>总市值</span><span>51.99 亿</span></div>
+      <div class="kv"><span>5日 / 20日</span><b class="r">+29.11% / +24.54%</b></div>
+      <div class="kv"><span>PE(TTM)</span><span>28.07</span></div>
+      <div class="kv"><span>主力净流入</span><b class="g">-0.12 亿（价涨钱出·游资驱动）</b></div>
+      <div class="kv"><span>入选理由</span><span>医疗设备三日族群 leader、三日 +21.55%、三季报业绩兑现、医疗器械逆势领涨核心</span></div>
+    </div>
+    <div class="hero"><h4>2. 中海油服 sh601808</h4>
+      <div class="tagline">油服工程/油价主线 · Pair leader（暂定） · <span class="pill p2">P1预警（D0）</span></div>
+      <div class="kv"><span>最新价 / 今日</span><b>13.49 / <span class="up">+7.23%</span></b></div>
+      <div class="kv"><span>成交额 / 换手</span><span>5.89 亿 / 1.50%</span></div>
+      <div class="kv"><span>总市值</span><span>643.69 亿</span></div>
+      <div class="kv"><span>5日 / 20日</span><b class="r">+4.82% / +11.03%</b></div>
+      <div class="kv"><span>PE(TTM)</span><span>16.65</span></div>
+      <div class="kv"><span>主力净流入</span><b class="g">-0.10 亿（价涨钱出）</b></div>
+      <div class="kv"><span>入选理由</span><span>油价主线龙头、中东地缘催化、低估值（PE 16.65）油服龙头，但 D0 未确认+价涨钱出</span></div>
+    </div>
+    <div class="hero"><h4>3. 百洋医药 sz301015</h4>
+      <div class="tagline">医药商业/SPD · Pair leader · <span class="pill p1">P1确认</span></div>
+      <div class="kv"><span>最新价 / 今日</span><b>25.00 / <span class="up">+10.62%</span></b></div>
+      <div class="kv"><span>成交额 / 换手</span><span>5.53 亿 / 4.16%</span></div>
+      <div class="kv"><span>总市值</span><span>131.41 亿</span></div>
+      <div class="kv"><span>5日 / 20日</span><b class="r">+17.10% / -2.15%</b></div>
+      <div class="kv"><span>PE(TTM)</span><span>24.51</span></div>
+      <div class="kv"><span>主力净流入</span><b class="r">+0.23 亿</b></div>
+      <div class="kv"><span>入选理由</span><span>医药商业 Pair leader、SPD 医疗供应链、低估值（PE 24.51）、英特集团涨停联动</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 七大板块 Pairs -->
+<section>
+  <h2><span class="n">07</span>七大板块 Pairs + 三阶段判定（V4.2 脚本实跑 · run_v42）</h2>
+  <div class="note">Pair 选取统一口径：先圈「同细分（业务同类 + 市值差≤5倍）」→ 再取「当日涨幅 Top2」；阶段以脚本输出 <code>state</code> 为准（<code>from v42_grade_pair import run_v42</code> 实跑，行情基准 2026-10-26 收盘），<code>buyable</code>（仅 P1确认/P2确认 true）为能否进推荐硬门槛，P3确认=持有·一票否决。⛔ 禁手算阶段。【框架应用 三-①三-②三-⑤】</div>
+
+  <h3>① 油服工程/油价（主线 · 事件驱动）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>中海油服 sh601808</b>（leader 暂定）</td><td>13.49</td><td><span class="up">+7.23%</span></td><td><span class="up">+0.24%</span></td><td>643.69 亿</td><td><span class="up">+4.82%</span></td><td>16.65</td><td class="neg">-0.10 亿</td></tr>
+    <tr><td>海油工程 sh600583</td><td>6.59</td><td><span class="up">+5.95%</span></td><td><span class="down">-0.64%</span></td><td>291.37 亿</td><td><span class="up">+3.29%</span></td><td>14.03</td><td class="pos">+0.48 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p2">P1预警（D0 触发日 · leader 暂定=中海油服 · buyable ❌）</span> trace: P1预警。今日验证：中海油服 +7.23%/海油工程 +5.95% 双触发 D0，油服工程申万第 1 +3.38%、油价相关概念 +2.20%、中国石油 18 年新高。⚠️ <b>中海油服当日主力净流出 -0.10 亿（价涨钱出）</b>、海油工程 +0.48 亿，链内资金未共振。操作建议：事件驱动题材（中东地缘）<b>单日爆发、D1/D2 观察窗</b>，【规则 ㉕】政策/事件脉冲不追连板，等回调低吸或确认主力转正再接力，⛔ 不追高。</p>
+
+  <h3>② 医疗设备（次线 · 三日族群 · P1确认）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>山外山 sh688410</b>（leader）</td><td>11.62</td><td><span class="up">+12.49%</span></td><td><span class="up">+8.74%</span></td><td>51.99 亿</td><td><span class="up">+29.11%</span></td><td>28.07</td><td class="neg">-0.12 亿</td></tr>
+    <tr><td>天智航 sh688277</td><td>17.39</td><td><span class="up">+11.33%</span></td><td><span class="up">+4.55%</span></td><td>81.11 亿</td><td><span class="up">+24.66%</span></td><td>亏损</td><td class="neg">-0.17 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p1">P1确认（leader=山外山 · buyable ✅）</span> trace: P1预警（10-23 D0 山外山 +8.74%）→ P1确认（10-26 连涨2天·累计 21.22%）。今日验证：山外山 +12.49%/天智航 +11.33% 续强，医疗器械 +2.32% 逆势领涨，三日族群医疗设备 6 只集群（山外山/天智航/三诺生物/澳华内镜/鱼跃医疗/开立医疗），大博医疗/亚辉龙涨逾 7%。⚠️ <b>山外山/天智航当日主力均净流出（价涨钱出）</b>，游资驱动特征，龙头 5 日 +29% 后追高赔率恶化【㊼】。操作建议：buyable 链，<b>等回踩低吸不追高</b>，仓位 ≤3%；若次日缩量断板即降档。</p>
+
+  <h3>③ 医药商业/SPD（P1确认）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>百洋医药 sz301015</b>（leader）</td><td>25.00</td><td><span class="up">+10.62%</span></td><td><span class="up">+6.30%</span></td><td>131.41 亿</td><td><span class="up">+17.10%</span></td><td>24.51</td><td class="pos">+0.23 亿</td></tr>
+    <tr><td>英特集团 sz000411</td><td>10.52</td><td><span class="up">+10.04%</span></td><td><span class="up">+1.16%</span></td><td>59.42 亿</td><td><span class="up">+7.79%</span></td><td>12.41</td><td class="pos">+0.33 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p1">P1确认（leader=百洋医药 · buyable ✅）</span> trace: P1预警（10-23 D0 百洋 +6.30%）→ P1确认（10-26 累计 16.92%）。今日验证：百洋 +10.62%/英特 +10.04% 涨停，医药商业 +2.73%、SPD 概念 +2.01%，塞力医疗/漱玉平民/九州通跟随。操作建议：医药商业低估值（百洋 PE 24.51/英特 PE 12.41）+ 资金共振（双主力净流入），<b>buyable 链回踩低吸</b>，是防御方向里资金最健康的细分；仓位 ≤3%。</p>
+
+  <h3>④ 底盘与发动机系统/汽车零部件（三日族群 · P1确认）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td>正裕工业 sh603089</td><td>13.08</td><td><span class="up">+10.01%</span></td><td><span class="up">+9.99%</span></td><td>36.06 亿</td><td><span class="up">+42.95%</span></td><td>亏损</td><td class="pos">+0.30 亿</td></tr>
+    <tr><td><b>襄阳轴承 sz000678</b>（leader）</td><td>14.55</td><td><span class="up">+9.98%</span></td><td><span class="up">+9.98%</span></td><td>66.87 亿</td><td><span class="up">+31.91%</span></td><td>亏损</td><td class="pos">+0.64 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p1">P1确认（leader=襄阳轴承 · buyable ✅）</span> trace: P1预警（10-16 D0 襄阳 +9.96%）→ P1确认（10-19 累计 10.87%）。今日验证：正裕工业/襄阳轴承双涨停（3 日 2 板），底盘与发动机系统三日族群 5 只集群（正裕/襄阳/万向钱潮/日盈电子/恒勃股份），襄阳轴承 5 日 +31.91%/换手 19.28% 高换手。操作建议：小市值高换手连板情绪票，<b>纪律仓 ≤2%</b>，断板即离场【规则 ㊼】；襄阳轴承换手 19.28% 高波动，仅龙头回踩试错。</p>
+
+  <h3>⑤ 国有大行/高股息防御（WAIT）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>工商银行 sh601398</b></td><td>8.58</td><td><span class="up">+3.13%</span></td><td><span class="down">-3.14%</span></td><td>30579.66 亿</td><td><span class="up">+1.55%</span></td><td>8.17</td><td class="pos">+1.19 亿</td></tr>
+    <tr><td>建设银行 sh601939</td><td>11.61</td><td><span class="up">+2.74%</span></td><td><span class="down">-3.09%</span></td><td>30371.80 亿</td><td><span class="up">+0.35%</span></td><td>8.77</td><td class="pos">+0.40 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-wait">WAIT（无 ≥5% 触发 · buyable ❌）</span> trace: (空)。今日验证：工行 +3.13%/建行 +2.74%，国有大行 6/6 全涨、主力净流入 45.25 亿（全市场第 1），中期分红落地（21 家银行拟派息超 2600 亿、分红比例上调 31%）。操作建议：<b>防御配置非弹性进攻</b>，WAIT 不定级、不追涨，作为缩量回调日的避险底仓；银行是资金最确定的方向但无题材弹性【规则 ㉒跷跷板】。</p>
+
+  <h3>⑥ 游戏Ⅱ（P1预警 D0）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>盛天网络 sz300494</b>（leader 暂定）</td><td>9.88</td><td><span class="up">+14.62%</span></td><td><span class="up">+4.23%</span></td><td>48.46 亿</td><td><span class="up">+17.20%</span></td><td>亏损</td><td class="pos">+1.14 亿</td></tr>
+    <tr><td>姚记科技 sz002605</td><td>18.06</td><td><span class="up">+6.61%</span></td><td><span class="up">+2.30%</span></td><td>75.45 亿</td><td><span class="up">+6.36%</span></td><td>17.65</td><td class="pos">+0.14 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p2">P1预警（D0 触发日 · leader 暂定=盛天网络 · buyable ❌）</span> trace: P1预警。今日验证：盛天网络 +14.62%（振幅 20.3%、主力 +1.14 亿）、姚记科技 +6.61%，游戏Ⅱ +2.11%。操作建议：D0 触发日未确认，盛天网络振幅 20.3% 高波动游资票，【规则 ㊼】次日断板风险大，仅观察不接力。</p>
+
+  <h3>⑦ 机器人/电机（旧主线退潮监测 · Pair P1确认但板块退潮）</h3>
+  <table>
+    <tr><th>Pair</th><th>最新价</th><th>当日涨幅</th><th>前一日涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
+    <tr><td><b>兆威机电 sz003021</b>（leader）</td><td>96.26</td><td><span class="up">+4.94%</span></td><td><span class="up">+10.0%</span></td><td>257.92 亿</td><td><span class="up">+43.20%</span></td><td>119.59</td><td class="neg">-1.08 亿</td></tr>
+    <tr><td>鸣志电器 sh603728</td><td>55.91</td><td><span class="down">-6.66%</span></td><td><span class="up">+9.97%</span></td><td>234.20 亿</td><td><span class="up">+18.08%</span></td><td>328.13</td><td class="pos">+0.70 亿</td></tr>
+  </table>
+  <p><span class="stage-tag st-p2">Pair P1确认（leader=兆威机电）/ 板块退潮 · buyable 视板块层面否决</span> trace: P1预警（10-19 D0）→ P1确认（10-20）。今日验证：<b>兆威 +4.94% 冲高回落（高点 98.01 回落收 96.26、主力净流出 -1.08 亿价涨钱出）、鸣志 -6.66% 大跌（follower 单日跌 ≥6%）</b>，电机Ⅱ -2.85%（3/26 涨）板块整体退潮，三日族群虽仍命中（华阳智能 3 日 +72.8%）但内部已分化。操作建议：<b>旧主线退潮，Pair 层 P1确认但板块层资金撤出，一票否决不进新推荐</b>【规则 ㉓】；持有者龙头兆威若次日跌破 5 日线或单日 -6% 即离场，鸣志 -6.66% 已是 Pair 内部分化退潮前兆。</p>
+</section>
+
+<!-- 08 前三强 + 最优 Pair -->
+<section>
+  <h2><span class="n">08</span>七大板块前三强 + 最优 Pair</h2>
+  <table>
+    <tr><th>板块</th><th>当日最强</th><th>次强</th><th>第三</th><th>最优 Pair</th></tr>
+    <tr><td>① 油服工程</td><td>中海油服 <span class="up">+7.23%</span></td><td>海油工程 <span class="up">+5.95%</span></td><td>中油工程 <span class="up">+3.45%</span></td><td>中海油服 × 海油工程（P1预警）</td></tr>
+    <tr><td>② 医疗设备</td><td>山外山 <span class="up">+12.49%</span></td><td>天智航 <span class="up">+11.33%</span></td><td>三诺生物 <span class="up">+9.3%</span></td><td><b>山外山 × 天智航</b>（P1确认）</td></tr>
+    <tr><td>③ 医药商业</td><td>百洋医药 <span class="up">+10.62%</span></td><td>英特集团 <span class="up">+10.04%</span></td><td>塞力医疗 <span class="up">+10.0%</span></td><td><b>百洋 × 英特</b>（P1确认）</td></tr>
+    <tr><td>④ 底盘发动机</td><td>正裕工业 <span class="up">+10.01%</span></td><td>襄阳轴承 <span class="up">+9.98%</span></td><td>万向钱潮 <span class="up">+7.8%</span></td><td>正裕 × 襄阳（P1确认）</td></tr>
+    <tr><td>⑤ 国有大行</td><td>工商银行 <span class="up">+3.13%</span></td><td>南京银行 <span class="up">+2.98%</span></td><td>建设银行 <span class="up">+2.74%</span></td><td>工行 × 建行（WAIT）</td></tr>
+    <tr><td>⑥ 游戏Ⅱ</td><td>盛天网络 <span class="up">+14.62%</span></td><td>姚记科技 <span class="up">+6.61%</span></td><td>三七互娱 <span class="up">+2.72%</span></td><td>盛天 × 姚记（P1预警）</td></tr>
+    <tr><td>⑦ 机器人/电机</td><td>华阳智能 <span class="up">+20.0%</span></td><td>兆威机电 <span class="up">+4.94%</span></td><td>奕帆传动 <span class="up">+3.2%</span></td><td>兆威 × 鸣志（P1确认·退潮）</td></tr>
+  </table>
+</section>
+
+<!-- 09 综合研判 -->
+<section>
+  <h2><span class="n">09</span>综合研判与操作建议</h2>
+  <div class="grid g2">
+    <div class="card"><h4>🟢 重点方向（buyable · V4.2 自然筛选）</h4>
+      <p><b>医疗设备（P1确认）</b>：山外山/天智航——三日族群 leader，回踩低吸，⛔ 主力价涨钱出、仓位 ≤3%。<br>
+      <b>医药商业/SPD（P1确认）</b>：百洋医药/英特集团——低估值+资金共振（双主力净流入），防御方向资金最健康细分，回踩低吸。<br>
+      <b>底盘发动机（P1确认）</b>：襄阳轴承/正裕工业——小市值连板，纪律仓 ≤2%、断板即离场。</p>
+      <h4>🔴 回避方向</h4>
+      <p><b>AI 硬件退潮</b>：元件 -6.79%/半导体 -3.55%/通信设备 -3.67%/消费电子 -2.14%，主力大幅净流出，【规则 ㉓】不接飞刀。<br>
+      <b>旧主线机器人/电机</b>：兆威价涨钱出 -1.08 亿、鸣志 -6.66%，板块退潮，一票否决。<br>
+      <b>油价单日脉冲</b>：中海油服 +7.23% 但主力净流出 -0.10 亿，中东地缘事件驱动【规则 ㉕】，不追连板。</p>
+      <h4>🟡 持有方向</h4>
+      <p>银行/高股息（WAIT 防御底仓，中期分红落地）；游戏/油服（P1预警 D0 观察窗，等 D1/D2 确认）。</p>
+    </div>
+    <div class="card"><h4>内置回测 · 上一交易日（10/23）预判验证 + R-Judge 归因</h4>
+      <table>
+        <tr><th>板块/Pair</th><th>10/23 判定</th><th>10/26 实际</th><th>判定</th></tr>
+        <tr><td>机器人 兆威×鸣志</td><td>P1确认 buyable</td><td>兆威 +4.94% 冲高回落/鸣志 -6.66%、电机Ⅱ -2.85%</td><td class="down">偏差</td></tr>
+        <tr><td>传媒 利亚德×洲明</td><td>Pair P1确认/股票级 P3预警</td><td>利亚德 -7.38% 龙头跌≥6% 中断</td><td class="up">命中</td></tr>
+        <tr><td>AI应用 海天×慧辰</td><td>P3预警持有</td><td>海天 +3.07% 续强/慧辰 -14.56% 大跌</td><td class="up">部分命中</td></tr>
+        <tr><td>消费电子 长盈×龙旗</td><td>P2预警→勘误 P1确认</td><td>长盈 -3.18%/龙旗 -3.72% 回落</td><td class="down">反向</td></tr>
+        <tr><td>半导体 瑞芯微×恒玄</td><td>P2预警→勘误 P1确认</td><td>瑞芯微 -1.79%/恒玄 -0.92% 回落</td><td class="down">反向</td></tr>
+        <tr><td>电池 利元亨×杭可</td><td>P1预警反抽不接力</td><td>利元亨 +0.59%/杭可 -1.07% 反抽熄火</td><td class="up">命中</td></tr>
+        <tr><td>工程机械 南方路机×山河</td><td>P1确认 buyable</td><td>南方路机 +3.35% 冲高回落/山河 -6.32%</td><td class="down">偏差</td></tr>
+      </table>
+      <p><b>阶段命中率 3/7 ≈ 42.9%</b>（随机基准 47.5%·本期跑输）。主线判定：机器人主线 → 退潮 <b class="down">反向</b>；传媒次线 → 中断 <b class="up">命中</b>（P3预警一票否决正确）；AI应用 → 部分命中。R-Judge：<b>漏判</b>——油价/油服（中东地缘+原油破116美元）昨日零覆盖、医疗设备三日族群6只昨日未充分覆盖；<b>判错</b>——10/26 勘误把「长盈×龙旗/瑞芯微×恒玄 P2预警→P1确认」，今日双双回落，高位 P2预警股改判 buyable 反被套；<b>执行错</b>——无（buyable 标的南方路机/兆威续涨，但 follower 山河 -6.32%/鸣志 -6.66% 大跌，Pair 内部分化未在昨日操作建议充分提示）。</p>
+    </div>
+  </div>
+
+  <h3>近一周轮动速度</h3>
+  <table>
+    <tr><th>日期</th><th>主线</th><th>次线</th><th>轮动特征</th></tr>
+    <tr><td>10/20</td><td>机器人/物理AI</td><td>端侧AI/消费电子</td><td>普涨分化·跌停收敛</td></tr>
+    <tr><td>10/21</td><td>AI应用/软件 + 传媒</td><td>农业/肿瘤疫苗/光通信</td><td>权重杀跌·题材切换（5日5换）</td></tr>
+    <tr><td>10/22</td><td>机器人/电机链</td><td>传媒裸眼3D + 银行白电防御</td><td>全球黑色星期四·仅景气题材+高股息存活</td></tr>
+    <tr><td>10/23</td><td>机器人/电机链（续）</td><td>传媒物理AI + AI应用 + 电池反抽</td><td>低开高走 V 反·普涨修复·银行退位</td></tr>
+    <tr><td><b>10/26</b></td><td><b>油价/油服（事件）</b></td><td><b>医疗设备/医药（三日族群）+ 银行防御</b></td><td><b>缩量回调·高低切换·AI硬件二次下杀</b></td></tr>
+  </table>
+
+  <h3>节点理论闸口（决策层 · 与 V4.2 平行互补）</h3>
+  <div class="warn">ADJ_SCORE = 17.99（10/23 口径，data_market_overview 恒 T-1；≤11 冰点档）→ 已脱离冰点、未到进攻档，属<b>中性偏防守档</b>（总仓 3–6%、单票 ≤3%）。今日实际盘面：缩量 3475 亿、下跌 3157 &gt; 上涨 2252（广度 40%）、涨停 59 &gt; 跌停 28——上篇「冰点→修复过渡」未兑现，缩量回落回到中性防守。题材三件套：油价/油服 = 事件驱动（中）；医疗设备 = 三日族群 6 只 + 三季报/创新药共振 = 新核心题材候选（中强）。<b>诚实提示</b>：今日为事件驱动（中东地缘）+ 高低切换日，防御方向领涨缺乏主线资金共振（领涨股中海油服/山外山均价涨钱出），历史回测进攻档 T+3/T+5 显著跑输防守档，节点闸口仅作 T+1 环境标注、决策仍以 V4.2 为准。</div>
+
+  <h3>风险提示（≥4 条）</h3>
+  <div class="risk">
+    ① <b>油价单日脉冲追高风险</b>：中东地缘催化下中海油服 +7.23% 但主力净流出 -0.10 亿，【规则 ㉕】事件驱动不追连板，次日冲高回落概率大；<br>
+    ② <b>医疗设备价涨钱出</b>：山外山 +12.49%/天智航 +11.33% 但主力均净流出（-0.12 亿/-0.17 亿），游资驱动特征，龙头 5 日 +29% 后赔率恶化【㊼】；<br>
+    ③ <b>AI 硬件二次下杀</b>：元件 -6.79%/半导体 -3.55%/通信设备 -3.67%，主力净流出合计超 160 亿，上篇「弱反抽」今日兑现二次下杀，未止跌前不接飞刀；<br>
+    ④ <b>缩量回调未止</b>：成交 1.61 万亿缩量 3475 亿、下跌 3157 只，广度 40% 中性偏弱，反弹能否延续需成交量回升与增量资金持续性（张鹏远/星石投资口径）；<br>
+    ⑤ <b>三季报窗口</b>：10 月底密集披露，业绩雷与高位股叠加（P1确认 ≠ 业绩保证）；<br>
+    ⑥ <b>上证指数编制修订今日实施</b>：单只样本股权重上限 15%、风险股剔除提前，指数结构变化或引发被动资金再平衡扰动。<br>
+    数据截至 15:00 收盘；双源交叉：westock ↔ Wind（上证 15:00=3697.52 一致 ✅）+ 证券日报/腾讯新闻/今日头条三源收评一致 ✅；涨跌家数 westock data_changedist 单源 ⚠️。ADJ_SCORE 为 T-1 口径已明示。
+  </div>
+
+  <h3>次日（10/27 周二）跟踪框架草稿</h3>
+  <p>① 油价/油服：中海油服 P1预警 D1 窗口——量能接力 + 主力转正才升 P1确认，否则事件脉冲回落不碰。② 医疗设备：山外山 5 日线得失，价涨钱出若次日缩量断板即降档。③ 医药商业：百洋/英特回踩低吸，英特集团换手放大后警惕。④ 机器人：兆威 5 日线得失、单日 -6% 触发中断离场，鸣志 -6.66% 已是退潮前兆。⑤ 广度与量能：≥60%+涨停&gt;跌停才修复，否则维持中性防守。<br>
+  <b>纠错闭环（承接 10/23 回测）</b>：昨日勘误把「长盈×龙旗/瑞芯微×恒玄 P2预警→P1确认」今日双双回落——<b>高位 P2 预警股禁止勘误改判 buyable，恢复 P2 预警保守口径</b>；昨日漏判油价/医疗设备——今日已纳入主线/次线，<b>事件驱动（地缘/油价）单日爆发须标「不追高」、三日族群走强比单日截面更可靠</b>；昨日 robot 主线今日退潮、follower 鸣志/山河单日大跌——<b>Pair 内部分化须在操作建议显式提示「follower 掉队风险」</b>。</p>
+
+  <h3>核心看好标的（V4.2 自然筛选 · 共 6 只 · N 随行情广度浮动）</h3>
+  <table>
+    <tr><th>标的</th><th>阶段（V4.2）</th><th>推荐原因</th><th>近期走势</th></tr>
+    <tr><td>山外山 sh688410</td><td>P1确认 · leader</td><td>医疗设备三日族群 leader、三日 +21.55%、三季报业绩兑现</td><td>今日 +12.49%、5日 +29.11%、20日 +24.54%</td></tr>
+    <tr><td>百洋医药 sz301015</td><td>P1确认 · leader</td><td>医药商业 Pair leader、SPD 供应链、低估值 PE 24.51</td><td>今日 +10.62%、5日 +17.10%、20日 -2.15%</td></tr>
+    <tr><td>中海油服 sh601808</td><td>P1预警 · D0</td><td>油价主线龙头、中东地缘催化、PE 16.65 低估值</td><td>今日 +7.23%、5日 +4.82%、20日 +11.03%</td></tr>
+    <tr><td>襄阳轴承 sz000678</td><td>P1确认 · leader</td><td>底盘发动机三日族群 leader、3 日 2 板、5 日 +31.91%</td><td>今日 +9.98%、5日 +31.91%、20日 +62.39%</td></tr>
+    <tr><td>工商银行 sh601398</td><td>WAIT · 防御</td><td>高股息防御、中期分红落地、主力 +1.19 亿</td><td>今日 +3.13%、5日 +1.55%、20日 +8.35%</td></tr>
+    <tr><td>兆威机电 sz003021</td><td>P1确认·退潮监测</td><td>旧主线龙头、冲高回落主力 -1.08 亿（观察·非推荐）</td><td>今日 +4.94%、5日 +43.20%、20日 +39.55%</td></tr>
+  </table>
+  <p><b>综合观察</b>：以上 6 只为今日核心看好（V4.2 自然筛选），方向=中性偏防守（缩量回调高低切换日）·总仓 3–6%、单票 ≤3%；P3确认（持有）一票否决今日无触发；买点=分歧回踩低吸，严禁市价追高。医疗设备/医药商业为资金最健康 buyable 方向，油服/游戏/底盘发动机为事件/情绪驱动需纪律仓。</p>
+</section>
+
+<footer>
+  免责声明：本报告为自动化复盘产物，仅供研究参考，不构成任何投资建议。数据截至 2026-10-26 15:00 收盘快照，来源 westock（腾讯自选股）/Wind/公开收评（证券日报/腾讯新闻/今日头条）交叉认证；标注 ⚠️单源 处未经交叉认证。阶段判定唯一依据 = 三阶段 V4.2（Pair 状态机 run_v42 脚本实跑），资金面仅作观察不改判阶段。市场有风险，投资需谨慎。<br>
+  生成：主线分析自动化（automation-zxfx）｜模板 pinned-2026-09-20｜框架 V4.2｜【框架应用】三-① 三-② 三-⑤ 三-⑧ ㊼ ㉒ ㉓ ㉕ 规则65 66｜节点理论闸口·中性防守
+</footer>
+</div>
+
+<script>
+function paint(id, cats, vals, title){
+  var c = document.getElementById(id); if(!c) return;
+  var ch = echarts.init(c);
+  ch.setOption({
+    title: {text: title, left:'center', textStyle:{fontSize:14}},
+    tooltip: {trigger:'axis'},
+    grid: {left:60, right:20, top:40, bottom:40},
+    xAxis: {type:'category', data: cats, axisLabel:{rotate:20, fontSize:11}},
+    yAxis: {type:'value', axisLabel:{formatter:'{value}%'}},
+    series: [{type:'bar', data: vals.map(function(v){
+        return {value:v, itemStyle:{color: v>=0 ? '#d8392b' : '#1a9e5f'}};
+      }), label:{show:true, position:'top', fontSize:10}}]
+  });
+}
+paint('idxChart', ['上证','深成','创业板','科创50','沪深300','中证500'], [0.19,-1.19,-1.71,-2.23,-0.04,-1.49], '核心指数涨跌幅（%）');
+paint('conceptChart', ['休闲食品','肿瘤疫苗','希音合作','油价相关','进口博览会','证金持股','固液电池','SPD'], [3.44,2.84,2.62,2.20,2.11,2.09,2.07,2.01], '概念板块 Top8 涨跌幅（%）');
+</script>
+</body>
+</html>
