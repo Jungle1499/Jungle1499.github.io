@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>午盘速览 2026-10-26（周一）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a6e;
+    --border: #e0e4e8;
+    --red: #d93026;
+    --green: #1e8e3e;
+    --accent: #2563eb;
+    --warning: #f59e0b;
+    --danger: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .summary-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fbbf24;
+  }
+  .summary-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.95;
+  }
+  .summary-card .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+  .section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+  }
+  .source {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: right;
+  }
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .index-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .index-card .name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .index-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .index-card .change {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .pos { color: var(--red); }
+  .neg { color: var(--green); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  td { color: var(--text); }
+  tr:hover { background: #f8f9fa; }
+  .tfoot { font-weight: 600; background: #f0f4f8; }
+  .chart-box {
+    width: 100%;
+    height: 280px;
+    margin: 12px 0;
+  }
+  .quad-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .quad-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid var(--border);
+  }
+  .quad-card.q1 { border-left-color: #22c55e; }
+  .quad-card.q2 { border-left-color: #3b82f6; }
+  .quad-card.q3 { border-left-color: #f59e0b; }
+  .quad-card.q4 { border-left-color: #ef4444; }
+  .quad-card .q-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .quad-card .q-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .alert-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .alert-box.safe {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+  }
+  .alert-box.danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+  .disclaimer {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    text-align: justify;
+    padding: 14px;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .small { font-size: 11px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+
+
+<h1>午盘速览 2026-10-26（周一）</h1>
+<p class="subtitle">数据基准：2026-10-26 11:30 午间收盘 · 生成时间 11:52 · 数据来源：westock（腾讯自选股）data_quote/data_changedist/data_sector/data_fund_flow/data_kline 11:30 + Wind 分钟截面 11:30:00 + 同花顺行业指数 881 + 证券时报/新浪/网易·界面/腾讯新闻 午评交叉</p>
+
+<!-- 半日小结卡 -->
+<div class="summary-card">
+  <h2>半日小结</h2>
+  <p>七指六绿·<b>结构切换日</b>：沪指低开 3671 后窄幅震荡收 3683.92（-0.18%），深成/创业板/科创50 跌 1.05%/1.65%/1.90%；广度 2446涨/2950跌（43%）·涨停45/跌停15 = <b>指数弱、个股活跃的错位结构</b>。半日成交 10061亿（缩量619亿/-5.8%）。主线明确换挡：<b>资金撤出 AI 硬件链</b>（元件 -6.13% 5/61·覆铜板概念 -8.4%·通信设备 -3.90% 净流出-35.99亿·玻璃玻纤 -4.57%·贵金属 -3.80% 全灭）→ <b>进攻消费+地产+游戏</b>（房地产服务 +3.29% 全市场#1·休闲食品 +2.85%·医药商业 +2.67%·油服工程 +2.66%·游戏Ⅱ +1.89%；招商蛇口/大名城/桂发祥/皇台酒业/青岛食品/阳光乳业/英特集团/上海九百 批量涨停）。铁律A 未触发（2950&lt;4300，距红线 1350 只）；大盘小绿=否（今日跌占比 52.9%&lt;65%，连续两日口径不成立）。</p>
+  <p style="margin-top:8px">
+    <span class="tag">六绿一红</span>
+    <span class="tag">铁律A未触发</span>
+    <span class="tag">缩量619亿</span>
+    <span class="tag">房地产服务+3.29% #1</span>
+    <span class="tag">消费/地产/游戏进攻</span>
+    <span class="tag">AI硬件链退潮加速</span>
+    <span class="tag">涨停45只活跃</span>
+  </p>
+</div>
+
+<!-- 〇、策略衔接对照 -->
+<div class="section">
+  <h3>〇、策略衔接对照（盘前 → 盘中 → 午盘）</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">盘前预判方向</th>
+        <th style="width:20%">关键点位</th>
+        <th style="width:18%">上午实际走势</th>
+        <th style="width:12%">兑现情况</th>
+        <th style="width:28%">午后关注点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>沪指高开/平开后冲高震荡（07:00 盘前）</td>
+        <td>3732（MA10）多空分界；支撑 3650/3623.57</td>
+        <td>低开 3671 震荡，3732 未触及，收 3683.92（-0.18%）</td>
+        <td class="neg">反向（开盘方向判错）</td>
+        <td>3683.92 收复 3690.48（昨收）才算企稳；3664.82 为半日低点</td>
+      </tr>
+      <tr>
+        <td>主线1 机器人/电机链续强（兆威×鸣志 P1确认）</td>
+        <td>兆威/鸣志开盘承接</td>
+        <td>电机Ⅱ -2.82%（4/26）·兆威/鸣志双双走弱撕裂</td>
+        <td class="neg">证伪</td>
+        <td>机器人链今日不碰（板块均值转负·follower 全破位）</td>
+      </tr>
+      <tr>
+        <td>主线2 裸眼3D/物理AI（利亚德×洲明 P1确认）</td>
+        <td>回踩低吸不追 20cm</td>
+        <td>物理AI 概念 +3.58% #2·凡拓数创 +11.17%（P3预警·观察）</td>
+        <td class="pos">部分兑现</td>
+        <td>凡拓/利亚德 P3预警只看不做；低位传媒补涨（锋尚文化+11.67%）观察</td>
+      </tr>
+      <tr>
+        <td>主线3 工程机械（南方路机×山河 P1确认）</td>
+        <td>缩量板后看 2进3</td>
+        <td>工程机械 -0.73%（9/28）·南方路机/山河均弱</td>
+        <td class="neg">证伪</td>
+        <td>退出观察</td>
+      </tr>
+      <tr>
+        <td>主线4 存储业绩链（未配对·仅观察）</td>
+        <td>高开&gt;4%不追</td>
+        <td>长鑫存储概念 -3.78%·半导体 -2.69%·26三季报预增概念 -3.92%</td>
+        <td class="neg">证伪</td>
+        <td>业绩兑现=利好出尽，回避</td>
+      </tr>
+      <tr>
+        <td>09:25 竞价快报：集体低开·不参与观望（6分档）</td>
+        <td>上证今开 -0.53%（3671）</td>
+        <td>低开震荡未修复·方向延续</td>
+        <td class="pos">✅ 兑现</td>
+        <td>竞价6分档「不参与」正确；盘前四主线三证伪 → 印证「竞价 T+0 预判优先」</td>
+      </tr>
+      <tr>
+        <td>10:00 盘中：沪指=空/创业板=空</td>
+        <td>3672.31 / 2623.87</td>
+        <td>11:30 沪指 3683.92 / 创业板 2639.85 低位徘徊</td>
+        <td class="pos">✅ 延续</td>
+        <td>空头判定维持；不抢反弹</td>
+      </tr>
+      <tr>
+        <td>10:00：医药商业=多但 P3确认禁追</td>
+        <td>+2.82%（run_v42 百洋×一心堂 P3确认）</td>
+        <td>医药商业 +2.67%（31/32红）·百洋 +12.17%/英特涨停</td>
+        <td class="pos">✅ 方向对·纪律对</td>
+        <td>百洋跨Pair聚合 P3确认 一票否决·不进推荐（降仓/清仓口径）</td>
+      </tr>
+      <tr>
+        <td>10:00：油服工程=多（油价映射）</td>
+        <td>+1.31%</td>
+        <td>油服工程 +2.66% 加速·中海油服 +6.28%</td>
+        <td class="pos">✅ 兑现</td>
+        <td>中海油服/海油工程 未涨停可买·P1预警 D0=10/26</td>
+      </tr>
+      <tr>
+        <td>10:00：休闲食品=多（防御）</td>
+        <td>+1.38%</td>
+        <td>休闲食品 +2.85%（21/22红）·桂发祥涨停</td>
+        <td class="pos">✅ 兑现</td>
+        <td>涨停封死股不追；乳业（阳光乳业/天润）回踩观察</td>
+      </tr>
+      <tr>
+        <td>10:00：贵金属/元件/通信=空</td>
+        <td>-6.22% / -5.63% / -4.89%</td>
+        <td>贵金属 -3.80%·元件 -6.13%·通信设备 -3.90%</td>
+        <td class="pos">✅ 兑现</td>
+        <td>AI 硬件链继续回避（㊲₆ 退潮第二日·加速出清）</td>
+      </tr>
+      <tr>
+        <td>仓位：总仓 3%（盘前 3-5% 取下限）</td>
+        <td>破3623.57→2%·破3574.27→0-1%</td>
+        <td>3683.92 未破 3623.57 · 维持</td>
+        <td class="pos">✅ 执行</td>
+        <td>午后若破 3664.82（半日低）→ 降至 2%；3732 收复才谈 5%</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：07:00 盘前策略 + 09:25 竞价快报 + 10:00 盘中速览（预测快照_20261026.md 承接）+ 11:30 实盘对照</p>
+</div>
+
+<!-- 零点五、节点卡位四象限 -->
+<div class="section">
+  <h3>零点五、节点卡位四象限（11:35 午盘视角）</h3>
+  <div class="quad-grid">
+    <div class="quad-card q1">
+      <div class="q-title">Q1 防御现金流（当前 3-5% / 建议 5-8%）</div>
+      <div class="q-body">
+        <b>医药商业</b>+2.67%（31/32红·主力+1.66亿·百洋+12.17%/英特涨停）；<b>白酒Ⅱ</b>+0.73%（18/19红·皇台酒业涨停·主力+0.23亿）；<b>国有大行Ⅱ</b>+0.90%（5/6红·工商银行+1.68%·主力+4.61亿）；<b>保险Ⅱ</b>+0.34%（5/5全红）。<br>
+        <b>半日证据：</b>医药商业两体系（申万+2.67%/同花顺881143 +2.99%）一致 = overlap 高置信；银行/白酒方向一致<br>
+        <b>动作：</b>医药商业主线龙头百洋=跨Pair P3确认禁入；防御现金流只留大行/白酒底仓·只做回踩
+      </div>
+    </div>
+    <div class="quad-card q2">
+      <div class="q-title">Q2 新逻辑（当前 0% / 建议 2-3% 试错仓）</div>
+      <div class="q-body">
+        <b>房地产链</b>：房地产服务 +3.29% #1（我爱我家+7.02%·主力+1.00亿 Rank39）+ 房地产开发 +1.91%（招商蛇口/大名城涨停·蛇口主力+1.52亿 Rank18）；概念层 房屋租赁 +1.82%/租售同权 +1.63%/首发经济 +2.03%。<b>游戏/物理AI</b>：游戏Ⅱ +1.89%（盛天网络+12.41% 主力+0.74亿 Rank69/掌趣+6.86% 主力+1.30亿 Rank29·元梦之星概念 +3.2%）；物理AI +3.58%。<br>
+        <b>半日证据：</b>地产两细分齐涨+真实主力净流入（蛇口/我爱我家双进全市场 Rank40）；游戏双 leader 双净流入<br>
+        <b>动作：</b>今日主攻方向·我爱我家/中海油服/盛天网络回踩低吸·单票≤2%·严禁市价追高
+      </div>
+    </div>
+    <div class="quad-card q3">
+      <div class="q-title">Q3 超跌反转（当前 0% / 建议 0-2% 观察仓）</div>
+      <div class="q-body">
+        <b>油服工程</b>+2.66%（11/13·中海油服+6.28% 5日+3.89%·海油工程+4.50%）+ 炼化及贸易 +1.34%（主力+3.28亿）+ 油价相关概念 +1.45%（主力+0.15亿）—— 油价映射链从10:00 +1.31%加速至+2.66%。<br>
+        <b>半日证据：</b>概念+申万双口径共振；中海油服 主力微负（-0.02亿）但 10日+0.27亿/20日+0.07亿双正 = 资金中性价格先行<br>
+        <b>动作：</b>P1预警 D0=10/26 · 试错仓≤2% · 回踩 5 日线低吸 · 破 12.54（半日低）即撤
+      </div>
+    </div>
+    <div class="quad-card q4">
+      <div class="q-title">Q4 主线二波（当前 0% / 建议 0%）</div>
+      <div class="q-body">
+        <b>AI硬件/机器人二波证伪中</b>：元件 -6.13%（5/61）/覆铜板 -8.4%（0/5）/电子布 -3.58%（0/7）/MLCC -3.5%/光芯片 -3.04%/电机Ⅱ -2.82% —— 上周主线全面退潮第二天（㊲₆ 加速出清）。机器人链仅剩华阳智能 +10.11% 个股活口（板块 4/26）。<br>
+        <b>半日证据：</b>概念跌幅榜前 10 全部为 AI 硬件链；通信设备净流出 -35.99亿/元件 -43.92亿/半导体 -37.47亿 三线失血<br>
+        <b>动作：</b>禁接飞刀·二波需等「跌停收敛+龙头 2 日不创新低」确认（今日不满足）
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:14px; font-size:13px">象限切换触发器</h4>
+  <ul style="font-size:12px; color:var(--text-secondary); padding-left:20px; line-height:1.8">
+    <li>Q2升级：地产/游戏午后涨停家数不减 + 我爱我家/盛天封板 → 明日升主攻（仍≤3%）</li>
+    <li>Q3升级：油价继续上行 + 中海油服站稳 13.44（半日高）→ 油服链升主攻</li>
+    <li>Q4 触发二波：元件/覆铜板跌停股开板 + 通信设备净流出收窄至 -10亿内 → 才谈反抽</li>
+    <li>全面降仓触发：沪指破 3623.57 → 总仓 2%；破 3574.27 → 0-1%</li>
+    <li>铁律A 红线复核：未触发（下跌 2950 只 &lt; 4300·距红线 1350 只）→ 总仓维持 3%（盘前 3-5% 取下限）</li>
+  </ul>
+
+  <h4 style="margin-top:12px; font-size:13px">铁律A 红线复核</h4>
+  <div class="alert-box">
+    🟢 铁律A <b>未触发</b> —— 当前下跌家数 <b>2950 只</b>（距 4300 红线尚有 1350 只），上涨 2446 只（43%）；涨停 45/跌停 15。大盘小绿=<b>否</b>（今日跌占比 52.9% &lt; 65%；昨日 87.4% 仅单日达标，连续两日口径不成立 → 补标「前日单日冰点」）。规则55 判定：<b>出清后分化轮动日</b>（五档无精确档·非退潮日因跌家数不足 2 倍且涨停 45 只活跃·规则51 硬件剪刀差今日不适用因 5D 元件/通信为负）。<br>
+    <b>仓位建议：</b>总仓维持 3%（Q2 试错 2% + Q1 防御 1%）；单票 ≤2%；止损 -5%；3623.57 破位 → 2%。
+  </div>
+</div>
+
+<!-- 一、主要指数 -->
+<div class="section">
+  <h3>一、主要指数（11:30 午间收盘）</h3>
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">上证指数</div>
+      <div class="value">3683.92</div>
+      <div class="change neg">-6.56 (-0.18%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">深证成指</div>
+      <div class="value">11551.72</div>
+      <div class="change neg">-122.11 (-1.05%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">创业板指</div>
+      <div class="value">2639.85</div>
+      <div class="change neg">-44.25 (-1.65%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">科创50</div>
+      <div class="value">1319.97</div>
+      <div class="change neg">-25.54 (-1.90%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">北证50</div>
+      <div class="value">979.81</div>
+      <div class="change neg">-5.09 (-0.52%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">沪深300</div>
+      <div class="value">4083.14</div>
+      <div class="change neg">-22.19 (-0.54%)</div>
+    </div>
+  </div>
+  <div class="chart-box" id="indexChart"></div>
+  <p class="small">涨跌幅实算校验（(收盘-前收)/前收）：上证 (3683.92-3690.48)/3690.48=-0.18%✓；深成 (11551.72-11673.83)/11673.83=-1.05%✓；创业板 (2639.85-2684.10)/2684.10=-1.65%✓；科创50 (1319.97-1345.51)/1345.51=-1.90%✓；北证50 (979.81-984.90)/984.90=-0.52%✓；沪深300 (4083.14-4105.33)/4105.33=-0.54%✓。盘中：上证最低 3664.82/最高 3686.10；创业板最低 2601.09。Wind 分钟截面 11:30:00 上证 3683.92 与 westock 逐字一致（双源 ✅）。</p>
+  <p class="source">来源：westock data_quote 2026-10-26 11:30 + Wind get_index_quote 11:30:00 分钟截面（000001.SH=3683.92）+ 证券时报/新浪/网易·界面/腾讯新闻 午评指数口径四源一致</p>
+</div>
+
+<!-- 二、成交与市场广度 -->
+<div class="section">
+  <h3>二、成交与市场广度</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>指标</th>
+        <th>数值</th>
+        <th>对比/解读</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>半日成交额</td>
+        <td><b>10061 亿元</b></td>
+        <td>较昨日上午<b class="neg">缩量 619 亿（-5.8%）</b>（昨半日 10680亿）。三源一致：westock 10061.12亿 / 界面·网易·腾讯 10061.18亿（缩量 618.96亿）→ 缩量分化 = 结构切换非恐慌</td>
+      </tr>
+      <tr>
+        <td>上涨家数</td>
+        <td><b class="pos">2446 只</b></td>
+        <td>占比 43%（upRatio「市场情绪正常」）；westock+界面/腾讯一致</td>
+      </tr>
+      <tr>
+        <td>下跌家数</td>
+        <td><b class="neg">2950 只</b></td>
+        <td>占比 52.9%；铁律A 未触发（距 4300 红线 1350 只）；大盘小绿=否（连续两日口径不成立·昨日 87.4% 单日冰点）</td>
+      </tr>
+      <tr>
+        <td>涨停家数</td>
+        <td><b class="pos">45 只</b></td>
+        <td>地产链（招商蛇口/大名城/上海九百）+ 食品饮料（桂发祥/皇台/青岛食品/阳光乳业/湘佳股份）+ 医药商业（英特集团）+ 传媒（南方传媒/奥雅股份/锋尚文化）多点开花；最高连板梯队数据 ⚠️tool_ranking T-1 滞后未取到·以个股级标注替代</td>
+      </tr>
+      <tr>
+        <td>跌停家数</td>
+        <td><b class="neg">15 只</b></td>
+        <td>westock 口径 15；网易/腾讯口径 14（⚠️两源差 1·取保守 15）。华正新材/澳弘电子/奥士康（元件）等跌停</td>
+      </tr>
+      <tr>
+        <td>黄白线分化</td>
+        <td>题材杀跌·权重护盘</td>
+        <td>沪深300 -0.54% &lt; 上证 -0.18%（白线略抗）；深成 -1.05%/创业板 -1.65% 弱于沪指 = 科技成长失血</td>
+      </tr>
+      <tr>
+        <td>主力资金</td>
+        <td>板块口径分化</td>
+        <td>净流入：汽车零部件+8.49亿/软件开发+4.49亿/国有大行+4.61亿/游戏+5.67亿/房地产开发+1.92亿；净流出：元件-43.92亿/半导体-37.47亿/通信设备-35.99亿/玻璃玻纤-9.33亿（申万口径·概念资金因成分重叠仅作排序参考）</td>
+      </tr>
+      <tr>
+        <td>涨跌停结构</td>
+        <td>45 涨停 / 15 跌停 / 大跌(&gt;7%)81 只</td>
+        <td>涨停&gt;跌停×3 = 赚钱效应尚可的结构切换日；与 10/23（19涨/52跌）反转 → 出清末段特征（㊲₆ 未连续第三日成立）</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：westock data_changedist 11:30 + 界面新闻/腾讯新闻午评 11:33 + Wind 分钟截面</p>
+</div>
+
+<!-- 三、板块表现 -->
+<div class="section">
+  <h3>三、板块表现（领涨/领跌）</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">📈 领涨板块（概念/行业）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>驱动逻辑</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>房地产服务（申万 pt01801183）</td>
+        <td class="pos">+3.29%（9/12红）</td>
+        <td class="pos">+1.71亿</td>
+        <td>全市场涨幅#1；我爱我家+7.02%（主力+1.00亿 Rank39）/特发服务+1.22%；地产政策预期+租售同权概念+1.63%</td>
+      </tr>
+      <tr>
+        <td>休闲食品（申万 pt01801128 / 概念 pt02GN2319 +3.33%）</td>
+        <td class="pos">+2.85%（21/22红）</td>
+        <td class="pos">+0.68亿</td>
+        <td>消费防御进攻；桂发祥涨停/立高·绝味跟随（腾讯午评点名休闲食品涨幅居前）</td>
+      </tr>
+      <tr>
+        <td>医药商业（申万 pt01801154 / 同花顺 881143）</td>
+        <td class="pos">+2.67%（31/32红）</td>
+        <td class="pos">+1.66亿</td>
+        <td>两体系一致（881143 +2.99%）；百洋医药+12.17%/英特集团涨停（SPD概念+2.04% 21/24红）；⚠️百洋跨Pair P3确认禁追</td>
+      </tr>
+      <tr>
+        <td>油服工程（申万 pt01801962 / 概念 油价相关 +1.45%）</td>
+        <td class="pos">+2.66%（11/13红）</td>
+        <td class="pos">+0.29亿</td>
+        <td>油价映射加速（10:00 +1.31%→11:30 +2.66%）；中海油服+6.28%/海油工程+4.50%（证券时报点名石油天然气涨幅居前）</td>
+      </tr>
+      <tr>
+        <td>摩托车及其他（申万 pt01801881）</td>
+        <td class="pos">+2.48%（11/16红）</td>
+        <td class="pos">+0.14亿</td>
+        <td>征和工业+8.08%；春风动力+4.17%（同花顺881128）</td>
+      </tr>
+      <tr>
+        <td>房地产开发（申万 pt01801181）</td>
+        <td class="pos">+1.91%（54/83红）</td>
+        <td class="pos">+1.92亿</td>
+        <td>招商蛇口涨停（主力+1.52亿 Rank18）/大名城涨停（5日+22.59%）；概念层 房屋租赁+1.82%/免税店+1.62%</td>
+      </tr>
+      <tr>
+        <td>游戏Ⅱ（申万 pt01801764）</td>
+        <td class="pos">+1.89%（22/26红）</td>
+        <td class="pos">+5.67亿</td>
+        <td>盛天网络+12.41%/掌趣科技+6.86%（元梦之星概念+3.2% 5/6红）；⚠️同花顺881275 游戏 -0.23% 口径背离（门禁2）</td>
+      </tr>
+      <tr>
+        <td>物理AI（同花顺概念 pt02GN2442）</td>
+        <td class="pos">+3.58%（9/12红）</td>
+        <td>概念5日+12.79亿</td>
+        <td>凡拓数创+11.17%（⚠️P3预警仅观察）/利亚德联动；微软合作伙伴概念+2.7%（海天瑞声+4.96%）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">📉 领跌板块（行业/概念）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>下跌原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>元件（申万 pt01801083）</td>
+        <td class="neg">-6.13%（5/61）</td>
+        <td class="neg">-43.92亿</td>
+        <td>PCB/覆铜板链退潮加速；华正新材/澳弘电子/奥士康跌停（新浪午评点名）；⚠️同花顺881270 元件 -0.13% 疑 stale cache（门禁2 标注）</td>
+      </tr>
+      <tr>
+        <td>覆铜板（同花顺概念 pt02GN0012）</td>
+        <td class="neg">-8.40%（0/5全灭）</td>
+        <td>概念5日-52.68亿</td>
+        <td>PCB 核心材料全线出清（腾讯/网易午评点名铜箔/覆铜板概念走弱）</td>
+      </tr>
+      <tr>
+        <td>玻璃玻纤（申万 pt01801712）</td>
+        <td class="neg">-4.57%（2/16）</td>
+        <td class="neg">-9.33亿</td>
+        <td>电子布/PCB 上游退潮（电子布概念 -3.58% 0/7 全灭·午评点名玻纤走弱）</td>
+      </tr>
+      <tr>
+        <td>通信设备（申万 pt01801102）</td>
+        <td class="neg">-3.90%（19/85）</td>
+        <td class="neg">-35.99亿</td>
+        <td>CPO/光模块退潮第二日；概念 光芯片-3.04%/博通概念-3.18%/陶瓷基板-4.67%（午评点名 CPO 概念走弱）</td>
+      </tr>
+      <tr>
+        <td>贵金属（申万 pt01801053）</td>
+        <td class="neg">-3.80%（0/11全灭）</td>
+        <td class="neg">-6.05亿</td>
+        <td>赤峰黄金 -7.46% 居前（证券时报/新浪午评点名）；金价回调+避险退潮</td>
+      </tr>
+      <tr>
+        <td>电子化学品Ⅱ（申万 pt01801086）</td>
+        <td class="neg">-3.24%（1/36）</td>
+        <td class="neg">-3.60亿</td>
+        <td>半导体材料跟随出清；MLCC -3.5%/被动元件 -3.11%/长鑫存储 -3.78%</td>
+      </tr>
+      <tr>
+        <td>地面兵装Ⅱ（申万 pt01801743）</td>
+        <td class="neg">-3.01%（0/12全灭）</td>
+        <td class="neg">-2.04亿</td>
+        <td>军工退潮延续（10/19 主线彻底出清）</td>
+      </tr>
+      <tr>
+        <td>半导体（申万 pt01801081）</td>
+        <td class="neg">-2.69%（25/183）</td>
+        <td class="neg">-37.47亿</td>
+        <td>26三季报预增概念 -3.92%（业绩兑现=利好出尽）；长鑫存储概念 0/18 全灭</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="chart-box" id="sectorChart"></div>
+  <p class="small"><b>门禁2 差异扫描（sector-coverage-crosscheck）</b>：①游戏 申万 +1.89%（22/26）vs 同花顺 881275 -0.23%（12涨10跌）—— 差 2.12pp，申万含盛天/恺英等 vs 同花顺成分口径差异，并列标注、以概念细分（元梦之星+3.2%/手游+1.55%）定方向；②房地产 申万服务+3.29%/开发+1.91% vs 同花顺 881153 页1 -0.69%/页2 +1.30%（两页自相矛盾 = stale cache 实锤），以申万+个股涨停（招商蛇口/大名城）为准；③元件 申万 -6.13% vs 同花顺 881270 -0.13%（页2 stale），以申万+3只跌停+午评点名 为准。<b>门禁3 涨停反向聚合</b>：地产链 3+ 涨停（蛇口/大名城/上海九百）→ 房地产服务/开发在榜 ✅；食品饮料链 5+ 涨停（桂发祥/皇台/青岛食品/阳光乳业/湘佳）→ 休闲食品/白酒/乳品在榜 ✅；医药商业 2 涨停（英特/百洋未板）→ 在榜 ✅；传媒 3+（南方传媒/奥雅/锋尚/开普云）→ 数字媒体/游戏/IT服务在榜 ✅。无漏判嫌疑。</p>
+  <p class="source">来源：westock data_sector（申万二级 pt018 + 同花顺概念 pt02）11:30 + 同花顺行业指数 881（页1 可用·页2 stale 已标注）+ 证券时报/新浪/网易·界面/腾讯新闻 午评四源交叉</p>
+</div>
+
+<!-- 四、涨停热点与资金动向 -->
+<div class="section">
+  <h3>四、涨停热点与资金动向</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">🔥 涨停热点股（按板块聚类）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>梯队</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>涨幅</th>
+        <th>板块归类</th>
+        <th>信号意义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>首板</b></td>
+        <td>招商蛇口</td>
+        <td>sz001979</td>
+        <td class="pos">+10.07%</td>
+        <td>房地产开发</td>
+        <td>地产主线中军·主力+1.52亿 Rank18·20日+4.41亿持续（封单额未取到·按不推处理）</td>
+      </tr>
+      <tr>
+        <td><b>首板</b></td>
+        <td>大名城</td>
+        <td>sh600094</td>
+        <td class="pos">+10.02%</td>
+        <td>房地产开发</td>
+        <td>5日+22.59% 加速·主力+0.15亿·量比 7.02（封单额未取到·按不推处理）</td>
+      </tr>
+      <tr>
+        <td><b>首板</b></td>
+        <td>桂发祥</td>
+        <td>sz002820</td>
+        <td class="pos">+10.04%</td>
+        <td>休闲食品</td>
+        <td>食品进攻情绪龙头·主力+0.36亿（封单额未取到·按不推处理）</td>
+      </tr>
+      <tr>
+        <td><b>首板</b></td>
+        <td>皇台酒业</td>
+        <td>sz000995</td>
+        <td class="pos">+10.04%</td>
+        <td>白酒</td>
+        <td>白酒唯一涨停·20日+23.34%（封单额未取到·按不推处理）</td>
+      </tr>
+      <tr>
+        <td><b>首板</b></td>
+        <td>英特集团</td>
+        <td>sz000411</td>
+        <td class="pos">+10.04%</td>
+        <td>医药商业/SPD</td>
+        <td>SPD 概念 leader·量比 10.63 巨量（封单额未取到·按不推处理）</td>
+      </tr>
+      <tr>
+        <td><b>首板</b></td>
+        <td>上海九百</td>
+        <td>sh600838</td>
+        <td class="pos">+10.00%</td>
+        <td>一般零售/首发经济</td>
+        <td>首发经济概念+2.03%（42/56红）情绪标</td>
+      </tr>
+      <tr>
+        <td><b>首板</b></td>
+        <td>青岛食品 / 阳光乳业</td>
+        <td>sz002119 / sz001318</td>
+        <td class="pos">+10.02% / +10.00%</td>
+        <td>食品加工/乳品</td>
+        <td>食品饮料链 5 涨停聚类（另 湘佳股份/东方海洋/中基健康）= 门禁3 命中</td>
+      </tr>
+      <tr>
+        <td><b>20cm</b></td>
+        <td>奥雅股份</td>
+        <td>sz300949</td>
+        <td class="pos">+18.01%</td>
+        <td>建筑装饰/首发经济</td>
+        <td>基础建设Ⅱ leader·AIGC 概念+1.47%（⚠️高位不追）</td>
+      </tr>
+      <tr>
+        <td><b>20cm</b></td>
+        <td>开普云</td>
+        <td>sh688228</td>
+        <td class="pos">+17.16%</td>
+        <td>IT服务</td>
+        <td>IT服务Ⅱ leader·家庭医生概念+1.39%</td>
+      </tr>
+      <tr>
+        <td><b>20cm</b></td>
+        <td>科瑞思 / 达瑞电子</td>
+        <td>sz301314 / sz300976</td>
+        <td class="pos">+20.01% / +20.00%</td>
+        <td>通信设备/消费电子</td>
+        <td>退潮板块内反抽涨停 = 个股α（板块 -3.90%/-1.43%）·不改板块判空</td>
+      </tr>
+      <tr>
+        <td>未封板强</td>
+        <td>我爱我家</td>
+        <td>sz000560</td>
+        <td class="pos">+7.02%</td>
+        <td>房地产服务</td>
+        <td>主力+1.00亿 Rank39·换手13.86%·<b>未涨停可买</b>·V4.2 P1预警 leader</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💰 主力资金净流入居前板块</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>板块</th>
+        <th>主力净流入</th>
+        <th>涨停数</th>
+        <th>上涨数</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NO.1</td>
+        <td>机器视觉（同花顺概念）</td>
+        <td class="pos">+9.44亿</td>
+        <td>—</td>
+        <td>96/241</td>
+      </tr>
+      <tr>
+        <td>NO.2</td>
+        <td>三胎概念（同花顺概念）</td>
+        <td class="pos">+9.23亿</td>
+        <td>—</td>
+        <td>136/226</td>
+      </tr>
+      <tr>
+        <td>NO.3</td>
+        <td>汽车零部件（申万 pt01801093）</td>
+        <td class="pos">+8.49亿</td>
+        <td>—</td>
+        <td>88/244</td>
+      </tr>
+      <tr>
+        <td>NO.4</td>
+        <td>国有大型银行Ⅱ（申万 pt01801782）</td>
+        <td class="pos">+4.61亿</td>
+        <td>0</td>
+        <td>5/6</td>
+      </tr>
+      <tr>
+        <td>NO.5</td>
+        <td>游戏Ⅱ（申万 pt01801764）</td>
+        <td class="pos">+5.67亿</td>
+        <td>0</td>
+        <td>22/26</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💵 主力资金净流入居前个股 TOP12（主线定向扫描·data_fund_flow MainInflowRank）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨幅</th>
+        <th>主力净流入</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>招商蛇口</td>
+        <td>sz001979</td>
+        <td>房地产开发</td>
+        <td class="pos">+10.07%</td>
+        <td class="pos">+1.52亿（Rank18）</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>掌趣科技</td>
+        <td>sz300315</td>
+        <td>游戏/元梦之星</td>
+        <td class="pos">+6.86%</td>
+        <td class="pos">+1.30亿（Rank29）</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>我爱我家</td>
+        <td>sz000560</td>
+        <td>房地产服务</td>
+        <td class="pos">+7.02%</td>
+        <td class="pos">+1.00亿（Rank39）</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>盛天网络</td>
+        <td>sz300494</td>
+        <td>游戏</td>
+        <td class="pos">+12.41%</td>
+        <td class="pos">+0.74亿（Rank69）</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>凡拓数创</td>
+        <td>sz301313</td>
+        <td>数字媒体/物理AI</td>
+        <td class="pos">+11.17%</td>
+        <td class="pos">+0.63亿（Rank89）</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>中远海能</td>
+        <td>sh600026</td>
+        <td>航运港口</td>
+        <td class="pos">+3.92%</td>
+        <td class="pos">+0.52亿（Rank106）</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>桂发祥</td>
+        <td>sz002820</td>
+        <td>休闲食品</td>
+        <td class="pos">+10.04%</td>
+        <td class="pos">+0.36亿</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>百洋医药</td>
+        <td>sz301015</td>
+        <td>医药商业</td>
+        <td class="pos">+12.17%</td>
+        <td class="pos">+0.28亿</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>大名城</td>
+        <td>sh600094</td>
+        <td>房地产开发</td>
+        <td class="pos">+10.02%</td>
+        <td class="pos">+0.15亿</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>海油工程</td>
+        <td>sh600583</td>
+        <td>油服工程</td>
+        <td class="pos">+4.50%</td>
+        <td class="pos">+0.12亿</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>中海油服</td>
+        <td>sh601808</td>
+        <td>油服工程</td>
+        <td class="pos">+6.28%</td>
+        <td class="neg">-0.02亿（10日+0.27亿/20日+0.07亿 双正）</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>天润乳业</td>
+        <td>sh600419</td>
+        <td>饮料乳品</td>
+        <td class="pos">+8.23%</td>
+        <td class="pos">板块+0.61亿（个股值未单取）</td>
+      </tr>
+      <tr class="tfoot">
+        <td colspan="5">前12合计（可得口径）</td>
+        <td class="pos">+7.58亿</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">⚠️ 主力资金净流出居前（警示·板块口径）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>板块</th>
+        <th>代码/口径</th>
+        <th>板块归类</th>
+        <th>涨跌幅</th>
+        <th>主力净流出</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>元件</td>
+        <td>申万 pt01801083</td>
+        <td>PCB/覆铜板</td>
+        <td class="neg">-6.13%</td>
+        <td class="neg">-43.92亿</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>半导体</td>
+        <td>申万 pt01801081</td>
+        <td>半导体</td>
+        <td class="neg">-2.69%</td>
+        <td class="neg">-37.47亿</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>通信设备</td>
+        <td>申万 pt01801102</td>
+        <td>CPO/光模块</td>
+        <td class="neg">-3.90%</td>
+        <td class="neg">-35.99亿</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>玻璃玻纤</td>
+        <td>申万 pt01801712</td>
+        <td>电子布/PCB上游</td>
+        <td class="neg">-4.57%</td>
+        <td class="neg">-9.33亿</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>电力</td>
+        <td>申万 pt01801161</td>
+        <td>电力</td>
+        <td class="pos">+0.40%</td>
+        <td class="neg">-7.43亿</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>贵金属</td>
+        <td>申万 pt01801053</td>
+        <td>黄金</td>
+        <td class="neg">-3.80%</td>
+        <td class="neg">-6.05亿</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">🏆 今日核心看好标的（V4.2 自然筛选 · 共 5 只）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>标的(名称+代码)</th>
+        <th>阶段</th>
+        <th>推荐原因</th>
+        <th>近期走势</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>1. 我爱我家（sz000560）</b></td>
+        <td>P1预警 D0=10/26（房产中介 Pair leader·run_v42 实跑）</td>
+        <td>房地产服务 全市场涨幅#1 板块·+7.02% 未涨停可买·主力+1.00亿 Rank39·低价低位（3.05）换手13.86%</td>
+        <td>9月启动后回踩（10/12 高3.68→2.85），今日放量转强·5日持平/20日+5.17%</td>
+      </tr>
+      <tr>
+        <td><b>2. 中海油服（sh601808）</b></td>
+        <td>P1预警 D0=10/26（油服 Pair leader·市值差2.2x）</td>
+        <td>油服工程+2.66% 从10:00 +1.31%加速·+6.28% 未涨停·10日/20日主力双正·油价映射（油价相关概念+1.45%）</td>
+        <td>5日+3.89%/10日+7.91%/20日+10.04% 温和上行·半日低12.54 止损锚</td>
+      </tr>
+      <tr>
+        <td><b>3. 盛天网络（sz300494）</b></td>
+        <td>P1预警 D0=10/26（游戏 Pair leader·市值差2.6x）</td>
+        <td>游戏Ⅱ+1.89% 主力+5.67亿·+12.41% 未涨停（20cm 票封顶10.34）·主力+0.74亿 Rank69·VPN/电子竞技概念共振</td>
+        <td>5日+14.95% 加速段·⚠️涨幅已高仅回踩低吸禁市价追高·止损破 8.53（半日低）</td>
+      </tr>
+      <tr>
+        <td><b>4. 掌趣科技（sz300315）</b></td>
+        <td>P1预警 D0=10/26（游戏 Pair follower）</td>
+        <td>元梦之星概念+3.2% leader·+6.86% 未涨停·主力+1.30亿 Rank29（高于 leader 盛天）·5日+10.78%</td>
+        <td>4元平台突破放量（量比3.03）·10日+12.16%·止损 4.17（半日低）</td>
+      </tr>
+      <tr>
+        <td><b>5. 海油工程（sh600583）</b></td>
+        <td>P1预警 D0=10/26（油服 Pair follower）</td>
+        <td>+4.50% 未涨停·与中海油服同细分共振（市值差2.2x）·油价链二线补涨</td>
+        <td>5日+1.88%/20日+7.26% 滞后于中海油服·只做回踩·止损 6.20</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="small">综合观察：以上 5 只为今日核心看好（V4.2 自然筛选·P1预警×5·数量随行情广度浮动），方向=<b>多（结构性）</b>，单票仓位上限 <b>2%</b>，总仓 3%。全部标的 11:30 未涨停可买。排除说明：百洋医药（Pair 级 P1确认 但跨 Pair 聚合=最高态 <b>P3确认</b>·10:00 百洋×一心堂 P3确认→一票否决·降仓/清仓）；英特集团/招商蛇口/大名城/桂发祥/皇台酒业/青岛食品/阳光乳业/上海九百/延华智能/南方传媒/奥雅股份/开普云 等涨停封死（封单额未取到·按涨停过滤铁律视为封死不推）；凡拓数创（凡拓×利亚德 P3预警 用户裁决）仅观察不进推荐。</p>
+  <p class="source">来源：run_v42（v42_grade_pair.py 实跑·禁手写）+ 跨Pair状态聚合规则（2026-10-26 用户拍板）+ 涨停过滤铁律（2026-10-09）+ westock data_quote/data_fund_flow 11:30</p>
+</div>
+
+<!-- 五、简评与后市观察 -->
+<div class="section">
+  <h3>五、简评与后市观察</h3>
+  <div style="font-size:13px; line-height:1.8; color:var(--text)">
+    <p><b>核心判断：</b>出清后<b>结构切换日</b>（规则55 五档无精确档·非退潮日：跌家数 2950 未达 2 倍+涨停 45 只活跃）—— AI 硬件链退潮第二日加速出清（㊲₆ 板块 5日资金转负+单日换手&gt;10% → 元件/通信/覆铜板脉冲降档维持），消费+地产+游戏接棒进攻。<b>操作上：总仓 3%·Q2 试错 2% + Q1 防御 1%·只做回踩低吸·严禁市价追高。</b>医药商业虽强但主线龙头百洋医药跨 Pair 聚合 P3确认 = 一票否决，这是今日最重要的纪律约束。</p>
+
+    <p style="margin-top:8px"><b>结构观察：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>地产链是今日最强新主线候选</b>：房地产服务 +3.29% #1 + 房地产开发 +1.91%（54/83红）+ 概念层（房屋租赁/租售同权/首发经济/免税店）共振；招商蛇口主力+1.52亿 Rank18/我爱我家+1.00亿 Rank39 双真金流入</li>
+      <li><b>食品饮料链批量涨停</b>：桂发祥/皇台/青岛食品/阳光乳业/湘佳股份 5 涨停聚类（门禁3 命中）—— 休闲食品 21/22 红 + 乳业 26/35 红 = 板块级 β 非个股 α</li>
+      <li><b>AI 硬件链出清加速</b>：概念跌幅榜前 10 全部为硬件链（覆铜板-8.4%/陶瓷基板-4.67%/长鑫存储-3.78%/电子布-3.58%/MLCC-3.5%）；三线资金失血 117亿+（元件-43.92/半导体-37.47/通信-35.99）—— 接飞刀风险高，等跌停开板+龙头 2 日不创新低</li>
+      <li><b>医药商业「强但不能碰」</b>：+2.67%（31/32红）两体系一致，但 10:00 run_v42 百洋×一心堂=P3确认（跨Pair聚合最高态）→ 百洋不进推荐；这是跨Pair状态聚合规则（2026-10-26）的首次实战执行</li>
+      <li><b>油服=超跌反转档唯一可做</b>：油价映射 10:00 +1.31%→11:30 +2.66% 加速，中海油服/海油工程双 P1预警 D0=10/26，市值差 2.2x 同细分合规配对</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>V4.2 三阶段两层定级（阶段判定唯一依据 · 【框架应用 三-①】· 基准 2026-10-26 11:30）：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>第一层·板块筛（只筛选不定级）</b>：申万二级全市场涨幅前三 = 房地产服务 +3.29% / 休闲食品 +2.85% / 医药商业 +2.67%；同花顺概念前三（剔 meta 类）= 物理AI +3.58% / 休闲食品概念 +3.33% / 元梦之星 +3.2%；同花顺 881143 医药商业居 881 榜首 → 地产/食品/医药三线 overlap 高置信</li>
+      <li><b>第二层·Pair 定级（唯一阶段依据·同细分+当日涨幅 Top2·run_v42 实跑回显）</b>：</li>
+      <li>① 医药商业 Pair <b>百洋医药 vs 英特集团</b>（sz301015 vs sz000411·市值差 2.2x）：D0=10/23（百洋+6.30%）→ D1=10/26 百洋+12.17% 路径①连涨2天 → <b>P1确认</b>（leader 定死=百洋·累计 18.47%/11.20%）。⚠️跨Pair聚合：10:00 百洋×一心堂 = <b>P3确认</b> → 股票级取最高态 <b>P3确认·一票否决</b></li>
+      <li>② 油服 Pair <b>中海油服 vs 海油工程</b>（sh601808 vs sh600583·市值差 2.2x）：D0=10/26（+6.28%/+4.50%）→ <b>P1预警</b>（leader 暂定=中海油服）</li>
+      <li>③ 游戏 Pair <b>盛天网络 vs 掌趣科技</b>（sz300494 vs sz300315·市值差 2.6x）：D0=10/26（+12.41%/+6.86%）→ <b>P1预警</b>（leader 暂定=盛天网络）</li>
+      <li>④ 房产中介 Pair <b>我爱我家 vs 世联行</b>（sz000560 vs sz002285·市值差 1.4x）：D0=10/26（+7.02%/+2.83%）→ <b>P1预警</b>（leader 暂定=我爱我家）</li>
+      <li>⑤ 物理AI/裸眼3D Pair <b>凡拓数创 vs 利亚德</b>：<b>P3预警</b>（2026-10-26 用户裁决·覆盖 run_v42 严格口径）→ 仅观察·不进推荐</li>
+      <li>⑥ 延续判定：通信设备/元件/覆铜板/光芯片/贵金属 = <b>W结束/出清中</b>（延续 10:00 判定·今日续跌验证·㊲₆ 第二日）；机器人 电机Ⅱ -2.82% 板块转负 → 上周 Pair（兆威×鸣志等）分歧转弱·禁 follower</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>机构观点摘录：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li>证券时报·人民财讯：<b>"房地产板块走强，招商蛇口、大名城涨停。石油天然气、海运、白酒、游戏等板块涨幅居前。贵金属板块调整…元器件板块走低，华正新材、澳弘电子、奥士康跌停"</b>（来源：证券时报网 11:30 午评）</li>
+      <li>界面新闻/腾讯新闻：<b>"沪深两市成交额约 10061.18 亿元，较前一交易日缩量约 618.96 亿元…休闲食品、首发经济、VPN、食品饮料、航运港口、房地产涨幅居前；铜箔/覆铜板、玻纤、CPO、贵金属、电机、半导体跌幅居前"</b>（来源：界面新闻 11:33）</li>
+      <li>新浪财经：<b>"全市场成交额超 1 万亿元，超 2400 只个股上涨"</b>（来源：新浪财经 11:30 午评）</li>
+      <li>westock 板块资金：<b>国有大行主力+4.61亿/游戏+5.67亿/汽车零部件+8.49亿 净流入居前；元件-43.92亿/半导体-37.47亿/通信设备-35.99亿 净流出居前</b>（⚠️概念资金口径因成分重叠仅作排序参考）</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>午后关注点：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>3664.82 半日低点</b>：破位 → 总仓降至 2%；收复 3690.48（昨收）= 企稳信号，3732 才谈加仓</li>
+      <li><b>地产持续性</b>：招商蛇口/大名城午后是否炸板；我爱我家能否封板（封板则 P1确认提速）</li>
+      <li><b>跌停收敛</b>：15 只跌停（华正新材/澳弘电子/奥士康等元件链）能否开板 = 出清结束第一信号</li>
+      <li><b>食品饮料梯队</b>：桂发祥/青岛食品/阳光乳业 明日 2 进 3 预期 vs 午后炸板风险</li>
+      <li><b>风险事件</b>：五中全会+FOMC 双事件窗（盘前风险预测）；10Y 美债若破 5.05 修复中断；高位股（凡拓 5日+75%/奥雅+18%）兑现风险</li>
+    </ul>
+
+    <h4 style="margin-top:14px; font-size:13px">📊 R-Judge 双轨命中率自审</h4>
+    <p style="font-size:12px; color:var(--text-secondary)"><b>预判层</b>（07:00 盘前 + 09:25 竞价 → 实际）：盘前「沪指高开冲高」反向（实际低开震荡-0.18%）；四主线 3 证伪（机器人/工程机械/存储）1 部分兑现（物理AI）；但 09:25 竞价「集体低开·不参与观望（6分档）」✅ 完全兑现 → 综合 14 条对照 4 兑现/2 部分/8 证伪 → <b>预判层命中率约 35%</b>（盘前 T-1 外推失明连续第 5 日，与 10/19-10/23 同型）。<b>修正层</b>（10:00 → 11:30）：医药商业多✅/油服多✅/休闲食品多✅/贵金属空✅/元件通信空✅/沪指空（低位徘徊基本兑现）→ <b>命中率 100%（6/6）</b>。<b>核心教训：</b>盘前主线预测连续失明 vs 竞价/盘中修正持续高命中 → 印证「盘前方向表权重应下调、09:25 竞价与 10:00 修正层优先」（规则75 候选≠信号教训的延续）。<b>规则58（管多）/规则60（管空）/规则73</b> 命中率口径属回测层 → 待 20:30 整体回测仲裁（本档不产回测）。㊸（禁多）已于 2026-10-14 整条废除，本报告未以㊸为由判空；㊹ 真趋势豁免今日无适用对象（在册方向均非 5+20 日双正）；㊺ 不适用（无 P3 加速段在册 Pair·百洋 P3确认已按一票否决处理）。</p>
+
+    <h4 style="margin-top:14px; font-size:13px">📌 覆盖审计（发现层 → 推荐映射）</h4>
+    <ul style="font-size:12px; color:var(--text-secondary); padding-left:20px; line-height:1.8">
+      <li>房地产服务/开发（#1/#6）→ 我爱我家进推荐 ✅；招商蛇口/大名城封死不推 ⚠️ 已标注</li>
+      <li>休闲食品/乳品（#2·5涨停聚类）→ 全部封死·无买得进标的 → 本期不推（严禁凑数）⚠️ 已标注</li>
+      <li>医药商业（#3）→ 百洋跨Pair P3确认 一票否决不推 ⚠️ 已标注（纪律执行）</li>
+      <li>油服工程（#4）→ 中海油服/海油工程进推荐 ✅</li>
+      <li>游戏/物理AI（#7/概念#2）→ 盛天/掌趣进推荐 ✅；凡拓 P3预警仅观察 ⚠️ 已标注</li>
+      <li>AI 硬件链（跌幅榜）→ 全部回避 ✅；科瑞思/达瑞 退潮板块内反抽涨停 = 个股α不改判空</li>
+      <li>⚠️ 规则57 补涨候选池：今日无板块同时满足「广度≥80%+涨停≥3+涨幅&lt;3%」四条件（食品/地产板块涨幅已&gt;3%）→ 无入池项</li>
+    </ul>
+  </div>
+  <p class="source">来源：westock 11:30 全量快照 + Wind 11:30:00 分钟截面 + 证券时报/新浪/网易·界面/腾讯新闻 午评四源交叉 + fupan-rules 规则库（55/57/59/61/63/65/66/75/㊲₆/㊸废除）+ 三阶段理论 V4.2（run_v42 实跑）</p>
+</div>
+
+<!-- 免责声明 -->
+<div class="disclaimer">
+  <b>免责声明：</b>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+</div>
+
+<script>
+(function() {
+  // 三大指数涨跌幅柱状图
+  const indexChart = echarts.init(document.getElementById('indexChart'));
+  const indexData = [
+    {name: '上证指数', val: 3683.92, pct: -0.18},
+    {name: '深证成指', val: 11551.72, pct: -1.05},
+    {name: '创业板指', val: 2639.85, pct: -1.65},
+    {name: '科创50', val: 1319.97, pct: -1.90},
+    {name: '北证50', val: 979.81, pct: -0.52},
+    {name: '沪深300', val: 4083.14, pct: -0.54}
+  ];
+  indexChart.setOption({
+    title: {text: '主要指数涨跌幅（11:30 收盘）', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}, formatter: function(p) {return p[0].name + '<br/>' + p[0].seriesName + ': ' + (p[0].value > 0 ? '+' : '') + p[0].value.toFixed(2) + '%';}},
+    grid: {left: 60, right: 30, top: 40, bottom: 30},
+    xAxis: {
+      type: 'category',
+      data: indexData.map(d => d.name),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    series: [{
+      name: '涨跌幅',
+      type: 'bar',
+      data: indexData.map(d => ({
+        value: d.pct,
+        itemStyle: {color: d.pct > 0 ? '#d93026' : '#1e8e3e'}
+      })),
+      label: {
+        show: true,
+        position: 'top',
+        formatter: function(p) {return (p.value > 0 ? '+' : '') + p.value.toFixed(2) + '%';},
+        fontSize: 10
+      }
+    }]
+  });
+
+  // 板块涨跌条形图
+  const sectorChart = echarts.init(document.getElementById('sectorChart'));
+  const upSectors = [
+    {name: '房地产服务', pct: 3.29},
+    {name: '休闲食品', pct: 2.85},
+    {name: '医药商业', pct: 2.67},
+    {name: '油服工程', pct: 2.66},
+    {name: '摩托车及其他', pct: 2.48},
+    {name: '房地产开发', pct: 1.91},
+    {name: '航运港口', pct: 1.90},
+    {name: '游戏Ⅱ', pct: 1.89}
+  ];
+  const downSectors = [
+    {name: '半导体', pct: -2.69},
+    {name: '电机Ⅱ', pct: -2.82},
+    {name: '地面兵装Ⅱ', pct: -3.01},
+    {name: '电子化学品Ⅱ', pct: -3.24},
+    {name: '贵金属', pct: -3.80},
+    {name: '通信设备', pct: -3.90},
+    {name: '玻璃玻纤', pct: -4.57},
+    {name: '元件', pct: -6.13}
+  ];
+  sectorChart.setOption({
+    title: {text: '领涨/领跌板块涨跌幅对比', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+    legend: {data: ['领涨', '领跌'], top: 30, textStyle: {fontSize: 11}},
+    grid: {left: 90, right: 30, top: 70, bottom: 30},
+    xAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    yAxis: {
+      type: 'category',
+      data: upSectors.map(d => d.name).reverse().concat(downSectors.map(d => d.name).reverse()),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    series: [
+      {
+        name: '领涨',
+        type: 'bar',
+        data: upSectors.map(d => ({value: d.pct, itemStyle: {color: '#d93026'}})).reverse(),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      },
+      {
+        name: '领跌',
+        type: 'bar',
+        data: new Array(upSectors.length).fill(null).concat(downSectors.map(d => ({value: d.pct, itemStyle: {color: '#1e8e3e'}})).reverse()),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      }
+    ]
+  });
+
+  window.addEventListener('resize', function() {
+    indexChart.resize();
+    sectorChart.resize();
+  });
+})();
+</script>
+</body>
+</html>
