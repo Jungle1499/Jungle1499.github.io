@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>午盘速览 2026-10-29（周四）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a6e;
+    --border: #e0e4e8;
+    --red: #d93026;
+    --green: #1e8e3e;
+    --accent: #2563eb;
+    --warning: #f59e0b;
+    --danger: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .summary-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fbbf24;
+  }
+  .summary-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.95;
+  }
+  .summary-card .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+  .section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+  }
+  .source {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: right;
+  }
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .index-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .index-card .name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .index-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .index-card .change {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .pos { color: var(--red); }
+  .neg { color: var(--green); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  td { color: var(--text); }
+  tr:hover { background: #f8f9fa; }
+  .tfoot { font-weight: 600; background: #f0f4f8; }
+  .chart-box {
+    width: 100%;
+    height: 280px;
+    margin: 12px 0;
+  }
+  .quad-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .quad-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid var(--border);
+  }
+  .quad-card.q1 { border-left-color: #22c55e; }
+  .quad-card.q2 { border-left-color: #3b82f6; }
+  .quad-card.q3 { border-left-color: #f59e0b; }
+  .quad-card.q4 { border-left-color: #ef4444; }
+  .quad-card .q-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .quad-card .q-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .alert-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .alert-box.safe {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+  }
+  .alert-box.danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+  .disclaimer {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    text-align: justify;
+    padding: 14px;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .small { font-size: 11px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>午盘速览 2026-10-29（周四）</h1>
+<p class="subtitle">数据基准：2026-10-29 11:30 午间收盘 · 生成时间 12:18 · 数据来源：腾讯自选股(westock) 11:30 截面 + Wind 000001.SH 11:30:00 分钟截面 + 财联社午评 11:33 + 腾讯新闻/金融界/同花顺/证券时报 午评交叉</p>
+
+<!-- 半日小结卡 -->
+<div class="summary-card">
+  <h2>半日小结</h2>
+  <p>沪指低开低走 <b>-0.93%（3647.12，收于日内最低）</b>，创业板 <b>-3.63%</b>、科创50 <b>-4.21%（1228.98 创 52 周新低，现价=日内最低）</b> —— <b>「反弹次日被外盘一刀劈开」</b>。隔夜费半 -4.49%（闪迪 -14.25%/SK海力士 -8.98%/美光 -8.85%/AMD -8.15%/应用材料 -7.82%）叠加盘后谷歌 Q3 暴雷（-10%+）、12 月加息概率升至七成，AI 硬件链集体塌方：通信设备 <b>-7.35%</b>、元件 <b>-6.64%</b>、半导体 <b>-4.31%</b>，光芯片 -7.51%、谷歌概念 -7.61%、CPO -4.83%（主力 -189.25亿）。天孚通信 <b>-18.96%</b>（主力 -18.87亿全市场最大流出）、光库科技 -13.88%、仕佳光子 -11.32%。<b>唯一成建制逆势主线 = 商业航天/卫星互联网</b>（航天装备Ⅱ <b>+7.27%</b> 全场第 1、7/9；中国卫星/上海沪工/航天晨光/铖昌科技等 10+ 涨停），第二逆势簇 = 银行红利（城商行 +1.89% 17/17、国有大行 +1.80% 6/6，四大行总市值破 10 万亿）。半日成交 9867.45亿（缩量 269.06亿），<b>下跌 4701 只 → 铁律A 触发</b>，广度仅 14%，涨停 36 / 跌停 12，最高连板 4 板（青岛食品）。</p>
+  <p style="margin-top:8px">
+    <span class="tag">沪指-0.93%收日内最低</span>
+    <span class="tag">AI硬件链塌方</span>
+    <span class="tag">商业航天逆势成主线</span>
+    <span class="tag">银行红利破10万亿</span>
+    <span class="tag">铁律A触发</span>
+  </p>
+</div>
+
+<!-- 〇、策略衔接对照 -->
+<div class="section">
+  <h3>〇、策略衔接对照（盘前 → 盘中 → 午盘）</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">盘前预判方向</th>
+        <th style="width:20%">关键点位</th>
+        <th style="width:18%">上午实际走势</th>
+        <th style="width:12%">兑现情况</th>
+        <th style="width:28%">午后关注点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>核心判断：平开偏弱(-0.3%~+0.4%)·「冲高回落 → 10:30 后看承接」·总仓 3-8%（执行 5%）</td>
+        <td>沪指 3681.47（MA5）上方运行</td>
+        <td>沪指低开 3676.77 即为全天最高，单边下行至 3647.12（收于日内最低），最低=收盘</td>
+        <td class="neg">未兑现（连冲高都没有）</td>
+        <td>14:00 前能否收复 3652.37 降仓线；若尾盘再破 3640 则确认破位下沿</td>
+      </tr>
+      <tr>
+        <td>规则66 次日再确认：开盘 30 分钟不破 3681.47 方可确认修复延续</td>
+        <td>3681.47 MA5</td>
+        <td>开盘第一秒 3676.77 即低于 MA5 4.7 点，10:00 距 MA5 -25 点，11:30 距 -34.35 点</td>
+        <td class="pos">兑现（修复延续被否决）</td>
+        <td>MA5 已成压力位；若明日不能收复 3681，反弹结构作废</td>
+      </tr>
+      <tr>
+        <td>电机/机器人链 = V4.2 唯一 buyable（方正 P2确认 / 大洋 P1确认 / 凯中 P2确认）</td>
+        <td>只做弱转强确认、防高位兑现</td>
+        <td>电机Ⅱ <b>-2.90%（1/26）</b>、主力 -4.74亿；方正电机 -1.64%、大洋电机 0.00%、凯中精密 <b>-7.31%</b>（触发龙头单日跌≥6% 中断）</td>
+        <td class="neg">未兑现（板块与个股双杀）</td>
+        <td>凯中破 6% 已令「凯中×方正」由 P3预警 转 中断；电机链 wave 结束，不接飞刀</td>
+      </tr>
+      <tr>
+        <td>通信设备/自动化设备/元件 单日脉冲≥+3% → 规则53 降「中性偏多·持有不加」</td>
+        <td>不追高、防兑现</td>
+        <td>通信设备 <b>-7.35%</b>（10/85·主力 -75.39亿）、元件 <b>-6.64%</b>（2/61·-59.08亿）、自动化设备 -3.78%</td>
+        <td class="pos">方向兑现（降档正确，但幅度远超预期）</td>
+        <td>天孚 -18.96%/光库 -13.88%/仕佳 -11.32% 已破位；等企稳信号而非抄底</td>
+      </tr>
+      <tr>
+        <td>存储/光模块/半导体：外盘费半四连阳映射，但 V4.2 均 P1预警需 D1 确认</td>
+        <td>D1 确认方可加仓</td>
+        <td>D1 不但未确认且反向：半导体 -4.31%（10/183·-90.69亿）、光芯片 -7.51%、谷歌概念 -7.61%</td>
+        <td class="pos">兑现（判定"需确认不追"正确）</td>
+        <td>D1 反向 → 该 wave 转 中断；存储链待费半止跌后再议</td>
+      </tr>
+      <tr>
+        <td>银行防御：盘前判「防御反向失血」（10/28 股份行 -0.89%、城商行 -0.47%）</td>
+        <td>看是否延续失血</td>
+        <td>完全反向：城商行 <b>+1.89%（17/17 全红）</b>、国有大行 <b>+1.80%（6/6）</b>、银行概念 +1.45%（37/42）；工行/建行续创历史新高，四大行总市值破 10 万亿</td>
+        <td class="neg">反向证伪（本档最大误判之一）</td>
+        <td>银行 V4.2 = WAIT（无单日≥5%），㊹ 真趋势豁免成立（国有大行 5D +2.35亿 / 20D +8.13亿 双正），仅作防御底仓</td>
+      </tr>
+      <tr>
+        <td>卫星互联网：「欧洲四大运营商拟成立混合卫星公司（欧洲版星链）」叙事升温</td>
+        <td>题材发酵，非当日主线预期</td>
+        <td><b>成为今日唯一成建制主线</b>：SpaceX概念 +4.04%（9/10）、航天系 +2.78%（16/20）、航天装备Ⅱ +7.27%（7/9）；中国卫星+10.00%/上海沪工+10.00%/航天晨光+10.03%/铖昌科技+10.00%/钧达股份+10.00%/盛洋科技+10.03%/腾达科技+10.01%/龙溪股份+9.98%</td>
+        <td class="pos">超预期兑现（唯一重大命中）</td>
+        <td>10/27-29 卫星互联网产业生态大会 + 上海《行动方案（2027-2030）》3000颗/800亿 + 长征八号甲 10/25 发射低轨28组 + 力箭二号"一箭18星"待发，四催化未走完</td>
+      </tr>
+      <tr>
+        <td>白酒：10/28 领跌 -2.20%（0/19）后是否续跌</td>
+        <td>—</td>
+        <td>白酒Ⅱ <b>+0.82%</b>（8/19），山西汾酒 +3.71%；食品饮料震荡回升，青岛食品 4 连板、巴比食品涨停</td>
+        <td class="neg">反向证伪</td>
+        <td>防御链整体回搬（白酒/保险 +1.15%/农商行 +0.94%），持续性看午后银行能否守住</td>
+      </tr>
+      <tr>
+        <td>中航光电 Q3 净利 +172.13% 业绩硬催化（盘前已列）</td>
+        <td>—</td>
+        <td>中航光电 <b>+5.94%</b>（33.73）、主力 +0.82亿；军工电子Ⅱ +1.36%（33/60·+7.37亿）</td>
+        <td class="pos">兑现</td>
+        <td>业绩驱动能否接棒题材（V4.2 目前 P1预警·D1 未确认）</td>
+      </tr>
+      <tr>
+        <td>铁律A（10:00 已 2/3 触发，降仓至总仓 0-1%）</td>
+        <td>4300 只下跌红线</td>
+        <td>11:30 下跌 <b>4701 只</b>（>4300）→ 铁律A 正式触发；上涨 809 只，占比 14%</td>
+        <td class="pos">兑现（10:00 预警有效）</td>
+        <td>尾盘若下跌仍 >4300，明日按「加速出清」处理；破位不抄底</td>
+      </tr>
+      <tr>
+        <td>量能：10/28 放量 1.6285 万亿，今日能否维持</td>
+        <td>—</td>
+        <td>半日 <b>9867.45亿</b>（含北证 9967.41亿），较上日同时段缩量 269.06亿（-2.65%）</td>
+        <td class="pos">兑现（缩量下跌，非恐慌性放量）</td>
+        <td>全日推算 ~1.97万亿；缩量下跌比放量下跌"温和"，但杀跌未完成</td>
+      </tr>
+      <tr>
+        <td>仓位：修复/拐点过渡档总仓 3-8%（执行 5%）</td>
+        <td>破 3652.37 降至 0-1%</td>
+        <td>10:00 已破 3652.37 → 降 0-1%；11:30 收 3647.12 仍在其下</td>
+        <td class="pos">兑现（10:00 降仓指令正确）</td>
+        <td>维持 0-3% 防守档；节点闸口今日 = 退潮档（ADJ_SCORE 16.87）</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：交易日志 2026-10-29 08:26 盘前策略 + 10:00 盘中速览（pankx-20261029）+ 腾讯自选股 11:30 截面 + 财联社午评 11:33 + WebSearch 11:30 午评</p>
+</div>
+
+<!-- 零点五、节点卡位四象限 -->
+<div class="section">
+  <h3>零点五、节点卡位四象限（11:35 午盘视角）</h3>
+  <div class="quad-grid">
+    <div class="quad-card q1">
+      <div class="q-title">Q1 防御现金流（当前 0-1% / 建议 0-2%）</div>
+      <div class="q-body">
+        <b>银行红利</b>城商行 +1.89%（17/17）、国有大行 +1.80%（6/6）、银行概念 +1.45%（37/42）、保险 +1.15%；工行/建行续创历史新高，<b>四大行总市值突破 10 万亿</b>；煤炭开采 +1.62%（开滦股份涨停）、白酒Ⅱ +0.82%。<br>
+        <b>半日证据：</b>银行 21 家披露中期分红合计 >2600亿、六大行分红率 30%→31%，国金证券"估值锚从息差单边下行切换到可持续分红回报"，中证银行股息率近 4.6% vs 10Y 国债 1.63%。<br>
+        <b>动作：</b>只做底仓不追高。⚠️ V4.2 城商行/国有大行 Pair 均为 <b>WAIT</b>（无单日≥5%），状态不支持"进推荐"；㊹ 真趋势豁免（国有大行 5D +2.35亿/20D +8.13亿 双正）仅为观察背书，不越 V4.2 一票。
+      </div>
+    </div>
+    <div class="quad-card q2">
+      <div class="q-title">Q2 新逻辑（当前 0% / 建议 1-2%）</div>
+      <div class="q-body">
+        <b>商业航天/卫星互联网</b>：航天装备Ⅱ <b>+7.27%</b>（7/9·全场第 1·主力 +8.29亿）、SpaceX概念 +4.04%（9/10·+9.13亿）、航天系 +2.78%（16/20·+9.81亿）、太空算力 +1.33%、太空光伏 +1.20%。涨停 8 只成建制。<br>
+        <b>半日证据：</b>中国卫星主力净流入 <b>+5.17亿（全市场第 1）</b>、西部材料 +3.95亿（第 2）、电科蓝天 +1.74亿（第 15）、铖昌科技 +1.43亿（第 20）、航天晨光 +1.29亿（第 23）——资金与价格同向，非脉冲。<br>
+        <b>动作：</b>V4.2 已 P1确认（电科蓝天×中国卫星 / 铖昌科技×上海沪工），可做回踩低吸，但<b>涨停 8 只全部封死买不进</b>，只做未封板的次级（电科蓝天/航天电子/中航光电/航天动力）。
+      </div>
+    </div>
+    <div class="quad-card q3">
+      <div class="q-title">Q3 超跌反转（当前 0% / 建议 0% 观望）</div>
+      <div class="q-body">
+        <b>AI 硬件链破位，不接飞刀</b>：通信设备 -7.35%（10/85）、元件 -6.64%（2/61）、半导体 -4.31%（10/183）、玻璃玻纤 -4.16%、电子化学品 -3.73%、消费电子 -3.59%。<br>
+        <b>半日证据：</b>天孚通信 <b>-18.96%</b>（主力 -18.87亿·全场最大流出）、新易盛 -8.75亿、沪电股份 -8.73亿、中际旭创 -5.42亿、寒武纪 -4.31亿、光库科技 -13.88%、仕佳光子 -11.32%。谷歌 Q3 EPS 2.12 远低于预期 2.99、自由现金流连续两季为负 → AI 资本开支叙事被质疑。<br>
+        <b>动作：</b>继续观望。等 ①费半止跌 ②天孚/中际不再创新低 ③主力净流出收窄至 -20亿内 三条同时出现再议。
+      </div>
+    </div>
+    <div class="quad-card q4">
+      <div class="q-title">Q4 主线二波（当前 0% / 建议 0% 否决）</div>
+      <div class="q-body">
+        <b>电机/机器人链 wave 结束</b>：电机Ⅱ <b>-2.90%（1/26·主力 -4.74亿）</b>；凯中精密 <b>-7.31%</b> → 触发「龙头单日跌 ≥6%」中断（仅 P1/P2 有效）；方正电机 -1.64%、大洋电机 0.00%。<br>
+        <b>半日证据：</b>盘前 3 只 🏆（方正/大洋/凯中）半日 0✅1◐2❌；10:00 已把「凯中×方正」升至 P3预警并一票否决，11:30 凯中破 6% 转为中断。空心杯电机概念 +0.16%（2/4）为小样本抗跌，非板块修复。<br>
+        <b>动作：</b>P3预警/中断 一票否决，不进新推荐、不加仓；等新一代 wave（新 D0 触发）再重新配对。
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:14px; font-size:13px">象限切换触发器</h4>
+  <ul style="font-size:12px; color:var(--text-secondary); padding-left:20px; line-height:1.8">
+    <li>Q3→Q2：若消费电子/半导体午后跌幅收窄至 -2% 内 + 主力净流出收窄 → AI 硬件链由"观望"升"超跌观察"</li>
+    <li>Q2→Q4：若商业航天明日再现 3+ 只涨停且龙头（电科蓝天/中国卫星）不炸板 → 升格为二波主线，仓位可给到 3%</li>
+    <li>Q1→Q3：若银行午后翻绿 + 四大行跌破今日开盘 → 防御底仓撤，改持现金</li>
+    <li>铁律A 触发（下跌 >4300 只）：全面降至 0-3% 防守档，禁开新仓</li>
+  </ul>
+
+  <h4 style="margin-top:12px; font-size:13px">铁律A 红线复核</h4>
+  <div class="alert-box danger">
+    ❌ 铁律A <b>触发</b> —— 11:30 下跌家数 <b>4701 只</b>（>4300 红线），上涨仅 809 只（占比 14%）、平盘 67 只、停牌 7 只；涨停 36 / 跌停 12。<b>规则55 regime = 退潮日·加速出清档</b>（10/28 还是规则74 多头共振普涨日，隔日即切换）；<b>节点闸口 = 防守档（退潮）</b>，ADJ_SCORE 16.87（>11 非冰点，属退潮区）。<br>
+    <b>仓位建议：</b>总仓 <b>0-3%（单笔 ≤1%）</b>；仅商业航天未封板次级可试错 1-2%，银行作防御底仓 ≤1%，AI 硬件链一股不接。若午后沪指收复 3652.37 且跌幅家数回落至 4000 以下 → 可小幅升至 3-5%；若尾盘破 3640 → 清至 0-1% 只留现金。
+  </div>
+</div>
+
+<!-- 一、主要指数 -->
+<div class="section">
+  <h3>一、主要指数（11:30 午间收盘）</h3>
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">上证指数</div>
+      <div class="value">3647.12</div>
+      <div class="change neg">-34.35 (-0.93%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">深证成指</div>
+      <div class="value">11180.89</div>
+      <div class="change neg">-292.29 (-2.55%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">创业板指</div>
+      <div class="value">2539.04</div>
+      <div class="change neg">-95.72 (-3.63%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">科创50</div>
+      <div class="value">1228.98</div>
+      <div class="change neg">-53.95 (-4.21%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">北证50</div>
+      <div class="value">928.40</div>
+      <div class="change neg">-18.43 (-1.95%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">沪深300</div>
+      <div class="value">4034.81</div>
+      <div class="change neg">-49.06 (-1.20%)</div>
+    </div>
+  </div>
+  <div class="chart-box" id="indexChart"></div>
+  <p class="source">来源：腾讯自选股(westock) 2026-10-29 11:30 截面 + Wind 000001.SH 11:30:00 分钟截面（3647.12 逐字一致 ✅）+ 财联社午评 11:33 / 腾讯新闻 / 金融界 / 同花顺 / 证券时报 e公司 五源交叉（六大指数涨跌幅全部一致）。涨跌幅均按 (收盘-前收)/前收 实算校验。</p>
+</div>
+
+<!-- 二、成交与市场广度 -->
+<div class="section">
+  <h3>二、成交与市场广度</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>指标</th>
+        <th>数值</th>
+        <th>对比/解读</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>半日成交额</td>
+        <td><b>9867.45 亿元</b></td>
+        <td>沪深两市（上证 4467.59亿 + 深证 5399.86亿）；较上日同时段缩量 <b>269.06亿（-2.65%）</b>；含北证 99.96亿 → 全A 9967.41亿。财联社"9867亿·缩量269亿"逐字一致 ✅</td>
+      </tr>
+      <tr>
+        <td>上涨家数</td>
+        <td><b class="neg">809 只</b></td>
+        <td>占比 14%（近一年仅 30% 交易日处于该热度区间）；10:00 为 870 只 → 半日进一步恶化 -61 只</td>
+      </tr>
+      <tr>
+        <td>下跌家数</td>
+        <td><b class="neg">4701 只</b></td>
+        <td>占比 82%；<b>铁律A 触发</b>（>4300 红线，超出 401 只）；10:00 为 4607 只 → 继续扩大</td>
+      </tr>
+      <tr>
+        <td>涨停家数</td>
+        <td><b class="pos">36 只</b></td>
+        <td>腾讯新闻报 35 只（口径差 1 只，已标注）；最高连板 <b>4 板（青岛食品 sz001219）</b>；3 板：江顺科技/文投控股/东贝集团；2 板：铖昌科技/上海沪工/澳洋健康/山东矿机/实丰文化/联明股份</td>
+      </tr>
+      <tr>
+        <td>跌停家数</td>
+        <td><b class="neg">12 只</b></td>
+        <td>腾讯新闻报 10 只（口径差 2 只，已标注）；鹏鼎控股/奥士康（PCB）跌停</td>
+      </tr>
+      <tr>
+        <td>昨日涨停今日表现（lb_idx_chg）</td>
+        <td><b class="pos">+0.36%</b></td>
+        <td>「昨日涨停」概念当日均涨 +0.36%（32/72 上涨），较 10/28 的 +2.06% 大幅衰减；「昨日连板」字段返回 -98.41% 为数据异常，已剔除不采用</td>
+      </tr>
+      <tr>
+        <td>黄白线分化</td>
+        <td>权重相对抗跌·小微盘更弱</td>
+        <td>上证50 -0.23% / 沪深300 -1.20% / 沪指 -0.93% / 中证500 -2.60% / 中证1000 -2.62% / 创业板 -3.63% → 无风格分化，是<b>单边普跌</b>，仅大盘权重与银行逆势</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：腾讯自选股 data_changedist 11:30（upCount 809 / downCount 4701 / flatCount 67 / upLimit 36 / downLimit 12 / totalAmount 9867.39亿，amountChange -269.06亿）+ 财联社午评 11:33 + 腾讯新闻午评（809涨/4701跌/35涨停/10跌停/9867.45亿·缩量269亿）+ 金融界午评（全市场成交额9965亿·较上日缩量255亿，为含北证口径）</p>
+</div>
+
+<!-- 三、板块表现 -->
+<div class="section">
+  <h3>三、板块表现（领涨/领跌）</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">📈 领涨板块（概念/行业）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念（分类体系+代码）</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>驱动逻辑</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>航天装备Ⅱ（申万 pt01801741）</td>
+        <td class="pos">+7.27%</td>
+        <td class="pos">+8.29亿</td>
+        <td>全场第 1·7/9 上涨；中国卫星/航天晨光涨停，电科蓝天 +13.24%。⚠️ 门禁2：同口径「航天装备概念」（101只）仅 +0.27%，差 <b>7.00pp</b> → 并列标注（申万 9 只权重集中，概念被 101 只摊薄）</td>
+      </tr>
+      <tr>
+        <td>SpaceX概念（同花顺概念）</td>
+        <td class="pos">+4.04%</td>
+        <td class="pos">+9.13亿</td>
+        <td>9/10 上涨·西部材料 +9.67% 领涨；卫星互联网产业生态大会（10/27-29 上海）+ 上海《行动方案（2027-2030）》3000颗/800亿 + 长征八号甲 10/25 发射低轨28组 + 力箭二号"一箭18星"待发</td>
+      </tr>
+      <tr>
+        <td>航天系（同花顺概念）</td>
+        <td class="pos">+2.78%</td>
+        <td class="pos">+9.81亿</td>
+        <td>16/20 上涨·航天晨光 +10.03%；5D +4.47亿、20D -19.63亿（拐点过渡可观察）</td>
+      </tr>
+      <tr>
+        <td>城商行Ⅱ（申万 pt01801784）</td>
+        <td class="pos">+1.89%</td>
+        <td class="neg">-0.53亿</td>
+        <td><b>17/17 全红</b>·青岛银行 +7.85% 领涨；21 家银行中期分红 >2600亿、六大行分红率 31%；⚠️ 青岛银行主力 <b>-0.25亿 净流出</b>（价涨资金流出，警示）</td>
+      </tr>
+      <tr>
+        <td>国有大型银行Ⅱ（申万 pt01801782）</td>
+        <td class="pos">+1.80%</td>
+        <td class="pos">+5.53亿</td>
+        <td><b>6/6 全红</b>·交行 +2.54%；工行/建行续创历史新高，<b>四大行总市值破 10 万亿</b>；5D +2.35亿 / 20D +8.13亿 <b>双正 → ㊹ 真趋势豁免</b></td>
+      </tr>
+      <tr>
+        <td>银行概念（同花顺概念）</td>
+        <td class="pos">+1.45%</td>
+        <td class="pos">+4.86亿</td>
+        <td>37/42 上涨·青岛银行领涨；与申万城商行 +1.89% 差 0.44pp，方向一致无冲突</td>
+      </tr>
+      <tr>
+        <td>风电设备（申万 pt01801736）</td>
+        <td class="pos">+1.72%</td>
+        <td class="pos">+4.71亿</td>
+        <td>15/31·飞沃科技 +15.44% 领涨（同时是航天装备概念领涨股）</td>
+      </tr>
+      <tr>
+        <td>煤炭开采（申万 pt01801951）</td>
+        <td class="pos">+1.62%</td>
+        <td class="pos">+0.07亿</td>
+        <td>14/26·开滦股份涨停 +10.00%；煤价企稳+防御搬仓</td>
+      </tr>
+      <tr>
+        <td>军工电子Ⅱ（申万 pt01801745）</td>
+        <td class="pos">+1.36%</td>
+        <td class="pos">+7.37亿</td>
+        <td>33/60·西测测试 +12.30% 领涨；中航光电 Q3 净利 +172.13%、+5.94%</td>
+      </tr>
+      <tr>
+        <td>太空算力 / 太空光伏（同花顺概念）</td>
+        <td class="pos">+1.33% / +1.20%</td>
+        <td class="pos">+6.91亿 / +5.17亿</td>
+        <td>钧达股份 +10.00% 涨停（太空光伏）；太空算力交易平台测试版上线，算力上天叙事</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">📉 领跌板块（行业/概念）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念（分类体系+代码）</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>下跌原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>通信设备（申万 pt01801102）</td>
+        <td class="neg">-7.35%</td>
+        <td class="neg">-75.39亿</td>
+        <td>10/85 上涨；5D -62.39亿 / 20D -727.30亿。天孚通信 <b>-18.96%</b>（主力 -18.87亿全场最大流出）、仕佳光子 -11.32%、光库科技 -13.88%、新易盛 -8.75亿</td>
+      </tr>
+      <tr>
+        <td>元件（申万 pt01801083）</td>
+        <td class="neg">-6.64%</td>
+        <td class="neg">-59.08亿</td>
+        <td>2/61 上涨（仅金安国纪 +2.49%）；20D -497.15亿；覆铜板概念 -5.68%、CPO -4.83%（主力 -189.25亿）</td>
+      </tr>
+      <tr>
+        <td>半导体（申万 pt01801081）</td>
+        <td class="neg">-4.31%</td>
+        <td class="neg">-90.69亿</td>
+        <td>10/183 上涨；20D -804.85亿；隔夜费半 -4.49%（闪迪 -14.25%/美光 -8.85%/AMD -8.15%）；寒武纪 -4.31亿流出</td>
+      </tr>
+      <tr>
+        <td>玻璃玻纤（申万 pt01801712）</td>
+        <td class="neg">-4.16%</td>
+        <td class="neg">-7.16亿</td>
+        <td>3/16 上涨；电子布/玻纤跟随 AI 硬件链回落</td>
+      </tr>
+      <tr>
+        <td>其他电子Ⅱ（申万 pt01801082）/ 电子化学品Ⅱ</td>
+        <td class="neg">-3.87% / -3.73%</td>
+        <td class="neg">-5.46亿 / -5.75亿</td>
+        <td>3/33 与 1/36 上涨；半导体上游材料全线杀跌</td>
+      </tr>
+      <tr>
+        <td>自动化设备（申万 pt01801078）/ 电机Ⅱ</td>
+        <td class="neg">-3.78% / -2.90%</td>
+        <td class="neg">-18.93亿 / -4.74亿</td>
+        <td>5/82 与 <b>1/26</b> 上涨；机器人链兑现（宇树 Q3 净利 -17%、环比 -49%）；凯中精密 -7.31% 触发中断。⚠️ 门禁2：空心杯电机概念 +0.16% vs 电机Ⅱ -2.90%，差 3.06pp（概念仅 4 只小样本，非板块修复）</td>
+      </tr>
+      <tr>
+        <td>消费电子（申万 pt01801085）/ 光学光电子</td>
+        <td class="neg">-3.59% / -3.46%</td>
+        <td class="neg">-25.85亿 / -12.60亿</td>
+        <td>5/91 与 4/93 上涨；立讯精密 -1.16亿流出；谷歌概念 -7.61%（主力 -66.09亿）、博通概念 -7.39%</td>
+      </tr>
+      <tr>
+        <td>光芯片（同花顺概念）/ 谷歌概念 / 交换机</td>
+        <td class="neg">-7.51% / -7.61% / -5.20%</td>
+        <td class="neg">-58.86亿 / -66.09亿 / -27.04亿</td>
+        <td>全部 0 家上涨（光芯片 0/16、谷歌概念 0/18）；CPO 细分比申万通信设备更弱，差 3.20pp → 门禁2 强制进榜</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="chart-box" id="sectorChart"></div>
+  <p class="source">来源：腾讯自选股 data_sector 11:30（申万二级 120 条 + 同花顺概念 805 条，两套分类独立取数）+ 同花顺午评（商业航天 886078 板块强势）+ 财联社午评 11:33 + 金融界午评（板块题材排列逐项一致）。⚠️ 门禁1：同花顺行业指数 881/884（q.10jqka.com.cn）本档未回取，已以「申万二级 + 同花顺概念」双分类替代并显式标注，第三套缺位不作强度定论依据。</p>
+</div>
+
+<!-- 四、涨停热点与资金动向 -->
+<div class="section">
+  <h3>四、涨停热点与资金动向</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">🔥 涨停热点股（按涨幅·连板梯队，逐只 price==price_ceiling 核验）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>梯队</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>涨幅</th>
+        <th>板块归类</th>
+        <th>信号意义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>4连板</b></td>
+        <td>青岛食品</td>
+        <td>001219</td>
+        <td class="pos">+10.01%</td>
+        <td>休闲食品</td>
+        <td>全场最高标·5日 +48.61%；一字封板（开=高=低=收 18.13），主力 +0.12亿</td>
+      </tr>
+      <tr>
+        <td><b>3连板</b></td>
+        <td>文投控股</td>
+        <td>600715</td>
+        <td class="pos">+10.19%</td>
+        <td>影视院线</td>
+        <td>成交 11.00亿·换手 17.13%；5日 +28.98%、20日 +37.58%</td>
+      </tr>
+      <tr>
+        <td><b>3连板</b></td>
+        <td>江顺科技</td>
+        <td>001400</td>
+        <td class="pos">+10.00%</td>
+        <td>专用设备</td>
+        <td>5日 +27.90%、60日 +49.40%；流通仅 31.29亿（小盘高换手 17.56%）</td>
+      </tr>
+      <tr>
+        <td><b>3连板</b></td>
+        <td>东贝集团</td>
+        <td>601956</td>
+        <td class="pos">+10.02%</td>
+        <td>家电零部件</td>
+        <td>一字板（开=收 6.70）；5日 +34.81%</td>
+      </tr>
+      <tr>
+        <td><b>2连板</b></td>
+        <td>上海沪工</td>
+        <td>603131</td>
+        <td class="pos">+10.00%</td>
+        <td>卫星互联网·总装</td>
+        <td>商业航天主升·主力 +0.63亿；5D +0.87亿 / 20D +0.97亿 双正</td>
+      </tr>
+      <tr>
+        <td><b>2连板</b></td>
+        <td>铖昌科技</td>
+        <td>001270</td>
+        <td class="pos">+10.00%</td>
+        <td>卫星互联网·载荷芯片</td>
+        <td>主力 <b>+1.43亿（第 20）</b>；20D 主力 -2.42亿（资金尚未全转正）</td>
+      </tr>
+      <tr>
+        <td><b>2连板</b></td>
+        <td>澳洋健康 / 山东矿机 / 实丰文化 / 联明股份</td>
+        <td>002172/002526/002862/603006</td>
+        <td class="pos">+10.04% / +10.07% / +10.01% / +9.96%</td>
+        <td>医疗服务 / 通用设备 / 文娱用品 / 汽车零部件</td>
+        <td>均为个股 α，对应板块（医疗服务 -1.07%、通用设备 -2.24%）收跌 → 非板块 β</td>
+      </tr>
+      <tr>
+        <td><b>首板·主线</b></td>
+        <td>中国卫星</td>
+        <td>600118</td>
+        <td class="pos">+10.00%</td>
+        <td>商业航天·卫星总体</td>
+        <td>主力净流入 <b>+5.17亿（全市场第 1）</b>；成交 26.08亿·换手 4.07%</td>
+      </tr>
+      <tr>
+        <td><b>首板·主线</b></td>
+        <td>航天晨光</td>
+        <td>600501</td>
+        <td class="pos">+10.03%</td>
+        <td>商业航天·配套</td>
+        <td>主力 +1.29亿（第 23）；5D +10.25%、10D +21.16%、20D +16.32% 三重正</td>
+      </tr>
+      <tr>
+        <td><b>首板·主线</b></td>
+        <td>钧达股份 / 盛洋科技 / 腾达科技 / 龙溪股份 / 顺灏股份</td>
+        <td>002865/603703/001379/600592/002565</td>
+        <td class="pos">+10.00% / +10.03% / +10.01% / +9.98% / +10.00%</td>
+        <td>卫星互联网 / 太空光伏 / 卫星通信</td>
+        <td>商业航天集群扩散（8 只成建制），对应 航天装备Ⅱ #1 在场</td>
+      </tr>
+      <tr>
+        <td>首板·其他</td>
+        <td>开滦股份 / 巴比食品 / 横店影视 / 上海港湾 / 黑牡丹 / 友阿股份 / 爱建集团 / 祥源文旅 / 传智教育 / 阳光照明 / 冰山冷热 / 龙江交通 / 邵阳液压</td>
+        <td>600997/605338/603103/605598/600510/002277/600643/600576/003032/600261/000530/601188/301079</td>
+        <td class="pos">+9.94%~+20.01%</td>
+        <td>煤炭 / 食品 / 影视 / 基建 / 地产 / 商业 / 多元金融 / 旅游 / 教育 / 照明 / 冰雪 / 通用设备</td>
+        <td>碎片化·无集群（每板块仅 1-2 只），按门禁3 判定为个股 α；邵阳液压 +20.01% 为创业板 20CM</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💰 主力资金净流入居前板块</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>板块</th>
+        <th>主力净流入</th>
+        <th>涨停数</th>
+        <th>上涨数</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NO.1</td>
+        <td>证金持股（同花顺 885663）</td>
+        <td class="pos">+19.75亿</td>
+        <td>—</td>
+        <td>20 只</td>
+      </tr>
+      <tr>
+        <td>NO.2</td>
+        <td>同花顺中特估100（886045）</td>
+        <td class="pos">+13.46亿</td>
+        <td>—</td>
+        <td>40 只</td>
+      </tr>
+      <tr>
+        <td>NO.3</td>
+        <td>互联网保险（885767）</td>
+        <td class="pos">+7.68亿</td>
+        <td>—</td>
+        <td>8 只</td>
+      </tr>
+      <tr>
+        <td>NO.4</td>
+        <td>航天系（同花顺概念）</td>
+        <td class="pos">+9.81亿</td>
+        <td>2 只</td>
+        <td>16/20</td>
+      </tr>
+      <tr>
+        <td>NO.5</td>
+        <td>SpaceX概念（同花顺概念）</td>
+        <td class="pos">+9.13亿</td>
+        <td>1 只</td>
+        <td>9/10</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="small">注：NO.1~NO.3 为同花顺午评官方口径（板块级，含成分重叠）；NO.4/NO.5 为腾讯自选股概念口径，两套口径成分重叠度不同、不可直接排同一序列，故分列。</p>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💵 主力资金净流入居前个股（重点标的扫描口径 · 含全市场排名）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨幅</th>
+        <th>主力净流入</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1（全市场）</td>
+        <td>中国卫星</td>
+        <td>600118</td>
+        <td>商业航天·卫星总体</td>
+        <td class="pos">+10.00%</td>
+        <td class="pos">+5.17亿</td>
+      </tr>
+      <tr>
+        <td>2（全市场）</td>
+        <td>西部材料</td>
+        <td>002149</td>
+        <td>航天/钛材·SpaceX概念</td>
+        <td class="pos">+9.67%</td>
+        <td class="pos">+3.95亿</td>
+      </tr>
+      <tr>
+        <td>6（全市场）</td>
+        <td>农业银行</td>
+        <td>601288</td>
+        <td>国有大型银行</td>
+        <td class="pos">+1.35%</td>
+        <td class="pos">+2.54亿</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>电科蓝天</td>
+        <td>688818</td>
+        <td>航天装备·电源</td>
+        <td class="pos">+13.24%</td>
+        <td class="pos">+1.74亿</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>铖昌科技</td>
+        <td>001270</td>
+        <td>卫星互联网·载荷芯片</td>
+        <td class="pos">+10.00%</td>
+        <td class="pos">+1.43亿</td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>航天晨光</td>
+        <td>600501</td>
+        <td>航天装备·配套</td>
+        <td class="pos">+10.03%</td>
+        <td class="pos">+1.29亿</td>
+      </tr>
+      <tr>
+        <td>31</td>
+        <td>招商银行</td>
+        <td>600036</td>
+        <td>股份制银行</td>
+        <td class="pos">+1.12%</td>
+        <td class="pos">+1.14亿</td>
+      </tr>
+      <tr>
+        <td>48</td>
+        <td>中航光电</td>
+        <td>002179</td>
+        <td>军工电子·连接器</td>
+        <td class="pos">+5.94%</td>
+        <td class="pos">+0.82亿</td>
+      </tr>
+      <tr>
+        <td>65</td>
+        <td>上海沪工</td>
+        <td>603131</td>
+        <td>卫星互联网·总装</td>
+        <td class="pos">+10.00%</td>
+        <td class="pos">+0.63亿</td>
+      </tr>
+      <tr>
+        <td>70</td>
+        <td>中国卫通</td>
+        <td>601698</td>
+        <td>卫星运营</td>
+        <td class="pos">+5.52%</td>
+        <td class="pos">+0.58亿</td>
+      </tr>
+      <tr>
+        <td>107</td>
+        <td>航天电子</td>
+        <td>600879</td>
+        <td>航天装备·卫星总体</td>
+        <td class="pos">+6.35%</td>
+        <td class="pos">+0.41亿</td>
+      </tr>
+      <tr>
+        <td>142</td>
+        <td>航天动力</td>
+        <td>600343</td>
+        <td>航天装备·配套</td>
+        <td class="pos">+4.42%</td>
+        <td class="pos">+0.28亿</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="small">⚠️ 口径说明：腾讯自选股 tool_ranking（cap_main_net / limitup_days）本档仍返回 T-1（2026-10-28）数据，无法取得当日全市场净流入榜；上表为「重点标的扫描 + MainInflowRank 全市场排名」口径，<b>不得称"全市场 TOP15"</b>。未覆盖名次（3/4/5/7~14 等）暂缺，标 N/A 不臆造。</p>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">⚠️ 主力资金净流出居前个股（警示）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨跌幅</th>
+        <th>主力净流出</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>天孚通信</td>
+        <td>300394</td>
+        <td>CPO/光模块</td>
+        <td class="neg">-18.96%</td>
+        <td class="neg">-18.87亿</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>新易盛</td>
+        <td>300502</td>
+        <td>CPO/光模块</td>
+        <td class="neg">-9.99%</td>
+        <td class="neg">-8.75亿</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>沪电股份</td>
+        <td>002463</td>
+        <td>PCB</td>
+        <td class="neg">-8.42%</td>
+        <td class="neg">-8.73亿</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>中际旭创</td>
+        <td>300308</td>
+        <td>CPO/光模块</td>
+        <td class="neg">-6.90%</td>
+        <td class="neg">-5.42亿</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>寒武纪</td>
+        <td>688256</td>
+        <td>AI算力</td>
+        <td class="neg">-7.65%</td>
+        <td class="neg">-4.31亿</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>光库科技</td>
+        <td>300620</td>
+        <td>CPO/光器件</td>
+        <td class="neg">-13.88%</td>
+        <td class="neg">-2.43亿</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>仕佳光子</td>
+        <td>688313</td>
+        <td>光芯片</td>
+        <td class="neg">-11.32%</td>
+        <td class="neg">-1.65亿</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>立讯精密</td>
+        <td>002475</td>
+        <td>消费电子/谷歌概念</td>
+        <td class="neg">-2.15%</td>
+        <td class="neg">-1.16亿</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>青岛银行（涨幅居前但主力净流出·警示）</td>
+        <td>002948</td>
+        <td>城商行</td>
+        <td class="pos">+7.85%</td>
+        <td class="neg">-0.25亿（价涨资金流出）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:16px 0 6px">🏆 核心看好标的（V4.2 自然筛选 · 共 5 只 · 数量随行情广度浮动）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>标的(名称+代码)</th>
+        <th>V4.2 九态</th>
+        <th>推荐原因</th>
+        <th>近期走势</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>电科蓝天 sh688818</td>
+        <td class="pos">P1确认 · leader<br><span class="small">电科蓝天×中国卫星（1.23x）</span></td>
+        <td>商业航天唯一 buyable 级 leader；+13.24% 未封板（涨停价 49.76）；主力 +1.74亿（第 15）；5D +26.99%、10D +30.44%、20D +9.82% 三重正；航天电源·卫星能源配套</td>
+        <td>3日 35.78 → 41.47 → 46.96（+31.3%）；⚠️ 流通仅 66.69亿·换手 20.69%，次新小盘高波动，仓位需最严</td>
+      </tr>
+      <tr>
+        <td>中航光电 sz002179</td>
+        <td class="pos">P1预警<br><span class="small">中航光电×航天电器（3.09x）</span></td>
+        <td>Q3 净利 <b>+172.13%</b>（营收 +47.87%）为唯一业绩硬催化；+5.94%·主力 +0.82亿；军工电子Ⅱ +1.36%（33/60）；机构三季报增持方向</td>
+        <td>3日 31.39 → 31.84 → 33.73（+7.5%）；20D 主力 -4.86亿（资金尚未转正，故仅 P1预警）</td>
+      </tr>
+      <tr>
+        <td>航天电子 sh600879</td>
+        <td class="pos">P1预警<br><span class="small">中国卫星×航天电子（1.46x）·follower</span></td>
+        <td>+6.35% 未封板；主力 +0.41亿；卫星总体稀缺标的，与中国卫星同 Pair 但量级仅 0.69x，弹性优于龙头（龙头已封板买不进）</td>
+        <td>3日 12.48 → 12.91 → 13.73（+10.0%）；5D 主力 -0.34亿 / 20D -5.47亿（待转正）</td>
+      </tr>
+      <tr>
+        <td>航天动力 sh600343</td>
+        <td class="pos">P1预警<br><span class="small">航天晨光×航天动力（1.52x）·follower</span></td>
+        <td>+4.42% 未封板；主力 +0.28亿；航天配套小盘组（龙头航天晨光已封板），作为同 Pair 内可买替代</td>
+        <td>3日 15.87 → 16.53 → 17.26（+8.8%）；20D -13.14%（位置低、非高位追）</td>
+      </tr>
+      <tr>
+        <td>航天电器 sz002025</td>
+        <td class="pos">P1预警 · leader<br><span class="small">中航光电×航天电器（3.09x）·D0=10/28</span></td>
+        <td>D0（10/28 +5.03%）定死的 leader，D1 未确认但状态仍有效；军工连接器双龙头之一。<b>仅状态纳入，不构成强度背书</b></td>
+        <td>3日 47.88 → 50.29 → 50.45（+5.4%）；<b>今日仅 +0.32% 滞涨</b>，20D 主力 -4.86亿、20D 跌幅 -30.21%，优先级最低</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="small"><b>筛选规则：</b>V4.2 九态中 P1预警/P1确认/P2预警/P2确认 纳入，P3预警/P3确认/中断/W结束/WAIT 剔除；涨停封死（封单额未取到 → 保守视为封死）一律不推。配对口径 = 同细分 + 市值差≤5倍 + 当日涨幅 Top2；state 为 <code>研究/v42_grade_pair.py::run_v42</code> 实跑输出，禁手算。<b>被剔除：</b>中国卫星（P1确认·涨停封死）、航天晨光（P1预警·涨停封死）、上海沪工（P1确认·涨停封死）、铖昌科技（P1确认·涨停封死）、西部材料（未配对·不定级）、齐鲁银行/苏州银行/交通银行/建设银行（WAIT）。</p>
+</div>
+
+<!-- 五、简评与后市观察 -->
+<div class="section">
+  <h3>五、简评与后市观察</h3>
+  <div style="font-size:13px; line-height:1.8; color:var(--text)">
+    <p><b>核心判断：</b>今日不是"反弹回吐"，而是<b>外生冲击主导的二次杀跌</b>——隔夜费半 -4.49%、盘后谷歌 Q3 EPS 2.12 远低于预期 2.99（自由现金流连续两季为负）、12 月加息概率升至 85%，三条同时落地，A股 AI 硬件链没有任何抵抗空间。沪指收于日内最低 3647.12、科创50 创 52 周新低，<b>指数层面确认 10/28 的修复是"一根阳线的交代"，不是趋势反转</b>（盘前判断"冲高回落"方向对、但"连冲高都没有"的强度判断偏弱）。</p>
+
+    <p style="margin-top:8px"><b>结构观察：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>商业航天是今日唯一成建制主线，且资金与价格同向</b>——航天装备Ⅱ +7.27%（7/9）全场第 1，中国卫星主力 +5.17亿<b>全市场第 1</b>、西部材料 +3.95亿第 2、电科蓝天 +1.74亿第 15、铖昌 +1.43亿第 20、航天晨光 +1.29亿第 23。前五名资金全部集中在航天链，"价涨+资金进"而非"价涨资金跑"，这是与 10/20 端侧AI、10/28 机器人链最大的区别。催化四条未走完：卫星互联网生态大会（10/27-29）、上海《行动方案（2027-2030）》3000颗/800亿、长征八号甲 10/25 发射低轨28组、力箭二号"一箭18星"待发。</li>
+      <li><b>AI 硬件链的杀跌是"业绩证伪"而非"情绪调整"</b>——天孚通信 -18.96%（主力 -18.87亿，全场最大流出）、光库 -13.88%、仕佳 -11.32%、新易盛 -9.99%、中际旭创 -6.90%。谷歌资本开支叙事被自家财报打穿，A股光模块"1.6T 订单确定性"的定价锚被动摇。<b>这与 10/21 的"宁德-10%"同型：龙头业绩/指引变化 → 全链重估</b>，不是三五天能修复的。</li>
+      <li><b>银行红利是"避险+分红"双击，但价格与资金背离</b>——城商行 17/17 全红、国有大行 6/6、四大行总市值破 10 万亿，21 家银行中期分红 >2600亿。但青岛银行 +7.85% 却主力净流出 -0.25亿、城商行板块主力 -0.53亿 → <b>涨的是配置盘而非交易盘</b>，追高性价比低；V4.2 两个银行 Pair 均为 WAIT（无单日≥5%），状态不支持进推荐。</li>
+      <li><b>电机/机器人链 wave 正式结束</b>——10:00 凯中 -5.52% 使「凯中×方正」升 P3预警 一票否决，11:30 凯中 -7.31% 触发"龙头单日跌≥6%"→ 中断。盘前 3 只🏆（方正/大洋/凯中）半日 0✅1◐2❌。规则教训：<b>盘前用"唯一 buyable"给单一链条重仓，等于把全部风险押在一个 wave 上</b>。</li>
+      <li><b>碎片化涨停说明无第二条主线</b>——36 只涨停里 8 只属商业航天集群，其余 28 只分散在食品/影视/煤炭/冰雪/教育等 13 个板块，每个板块仅 1-2 只且多数对应板块收跌（个股 α 非板块 β）。门禁3 反向聚合未发现漏判赛道。</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>机构观点摘录：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li>国金证券：<b>"银行的估值锚正在从息差单边下行切换到可持续的分红回报，中证银行股息率接近 4.6%，与 10 年期国债 1.63% 的利差超过 3 个百分点"</b>（来源：同花顺午评 11:31）</li>
+      <li>中信证券：<b>"展望 2027 年，全球'低效增长'矛盾突出，但产业政策强化将带来诸多结构性机会"</b>（来源：凤凰财经 10/29 09:38 机构观点）</li>
+      <li>中信建投：<b>"三季度主动偏股基金仓位降低，行业上增持医药、减持电子和通信；重仓股中际旭创、新易盛仍为前两大重仓"</b>（来源：同上）——即公募前两大重仓今日双双重挫，筹码压力仍在</li>
+      <li>东吴证券：<b>"本次中期选举 36 个州中多数候选人主张暂缓部分或全部数据中心建设，若州层面审批限制持续扩大，美国 AI 数据中心 2027-2028 投产进度将受明显负面影响"</b>（来源：同上）——AI 算力链的中期需求侧风险被首次正式提出</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>午后关注点：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>商业航天能否封住</b>：中国卫星/上海沪工/航天晨光/铖昌 4 只已封板，午后若不炸板 → 明日仍有溢价；若集体炸板 → 归为"消息日脉冲"，明日按规则53 降档</li>
+      <li><b>天孚通信能否止跌</b>：-18.96% 已近平滑跌停（跌停价 161.14，最低 161.16 仅差 0.02 元），若午后封跌停 → AI 硬件链杀跌进入第二波</li>
+      <li><b>沪指 3640 与 3652.37</b>：3640 是 10/23 盘中低点 3574.27 之上的次级支撑；收盘站不上 3652.37 → 明日按"破位延续"处理</li>
+      <li><b>银行能否守住</b>：若四大行午后翻绿，则避险资金撤离，Q1 防御底仓也要撤</li>
+      <li><b>风险事件</b>：美国州长选举（AI 数据中心审批）后续表态；12 月 FOMC 加息概率已 85%，若再升温则成长股估值继续受压</li>
+    </ul>
+
+    <h4 style="margin-top:14px; font-size:13px">📊 R-Judge 双轨命中率自审</h4>
+    <p style="font-size:12px; color:var(--text-secondary)"><b>预判层</b>（08:26 盘前 → 11:30 实际）：8 条对照中 <b>2 条兑现</b>（规则66 修复否决 ✅；卫星互联网叙事 ✅）<b>+ 6 条未兑现/反向</b>（指数强度、科技链降档幅度、电机链 buyable、🏆3只、银行防御"失血"、仓位 3-8%）→ <b>命中率 25.0%（2/8）</b>，低于随机基准 47.5%。扣分主项：①"通信设备/元件规则53 只降半档"→ 实际 -7.35%/-6.64%，应判空；②"银行防御失血"→ 实际 +1.45%~+1.89% 全红，完全反向。加分项：卫星互联网"欧洲版星链"叙事被升级为当日唯一主线（唯一重大命中）。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>修正层</b>（10:00 → 11:30 实际）：4 条修正 <b>3 条兑现</b>（① 降仓至 0-1% ✅ 续跌；② 凯中 -5.52% 令方正一票否决 ✅ 实际 -7.31% 触发中断；③ 防御回搬（航天/银行/煤炭）✅）<b>1 条反向</b>（"电机链个股活板块死"→ 实际个股也死：方正 +1.00%→-1.64%）→ <b>命中率 75.0%（3/4）</b>。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>综合：</b>(2×1 + 3×1) / (8 + 4) = <b>41.7%（5/12）</b>，低于基准 47.5%。<b>核心错判：</b>把"外盘费半四连阳"作为科技链支撑，低估了"盘后谷歌财报暴雷"的定价权重——这是<b>信息时序错误</b>（费半是隔夜现货，谷歌是盘后事件，后者更晚更近）。<b>规则归因：</b>规则55 regime 判错（10/28 多头共振 → 10/29 退潮加速，隔日切换无缓冲）；规则53 降档幅度不足（只降半档，未触发判空）；规则66 次日再确认机制有效（开盘即破 MA5，正确否决修复延续）；<b>规则58（单向失真）</b>：今日判多命中率 25%、判空项仅 0 条有效样本 → <b>不构成"连续2日 空≥80%∧多≤30%"</b>，暂不触发，待 20:30 整体回测用跟随版二元口径仲裁；<b>规则60（镜像）</b>：今日无有效判空行 → 不适用；<b>规则73（全表失真）</b>：判空项不足（盘前未给纯空行）→ N/A。<b>㊸ 已于 2026-10-14 整条废除</b>，今日 AI 硬件链判空依据为"外部硬冲击 + 业绩证伪"，非㊸ 资金门控。<b>㊹ 真趋势豁免</b>：仅国有大型银行Ⅱ（5D +2.35亿 / 20D +8.13亿 双正、6/6 全红）成立，但 V4.2 = WAIT，不越一票进推荐。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>门禁执行：</b>门禁1（申万二级 120 条 + 同花顺概念 805 条双分类独立取数）✅，第三套同花顺 881/884 本档未回取（已标注）；门禁2 差异命中 3 处（航天装备Ⅱ +7.27% vs 航天装备概念 +0.27%，差 7.00pp；光芯片 -7.51% vs 申万通信设备 -7.35%，差 0.16pp 但细分更弱；空心杯电机 +0.16% vs 电机Ⅱ -2.90%，差 3.06pp）→ 全部并列标注；门禁3 涨停反向聚合（商业航天 8 只集群 → 航天装备Ⅱ #1 在场；其余 28 只分散 13 板块、对应板块多收跌 = 个股 α）→ 无漏判。</p>
+  </div>
+  <p class="source">来源：腾讯自选股 11:30 截面 + Wind 11:30:00 + 财联社午评（cls.cn/detail/2518852）11:33 + 同花顺午评（stock.10jqka.com.cn/20261029）11:31 + 金融界午评（24h.jrj.com.cn）11:31 + 腾讯新闻午评 + 证券时报 e公司 11:35 + 凤凰财经机构观点 + 东方财富卫星产业分析</p>
+</div>
+
+<!-- 免责声明 -->
+<div class="disclaimer">
+  <b>免责声明：</b>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+</div>
+
+<script>
+(function() {
+  // 主要指数涨跌幅柱状图
+  const indexChart = echarts.init(document.getElementById('indexChart'));
+  const indexData = [
+    {name: '上证指数', val: 3647.12, pct: -0.93},
+    {name: '深证成指', val: 11180.89, pct: -2.55},
+    {name: '创业板指', val: 2539.04, pct: -3.63},
+    {name: '科创50', val: 1228.98, pct: -4.21},
+    {name: '北证50', val: 928.40, pct: -1.95},
+    {name: '沪深300', val: 4034.81, pct: -1.20}
+  ];
+  indexChart.setOption({
+    title: {text: '主要指数涨跌幅（11:30 收盘）', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}, formatter: function(p) {return p[0].name + '<br/>' + p[0].seriesName + ': ' + (p[0].value > 0 ? '+' : '') + p[0].value.toFixed(2) + '%';}},
+    grid: {left: 60, right: 30, top: 40, bottom: 30},
+    xAxis: {
+      type: 'category',
+      data: indexData.map(d => d.name),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    series: [{
+      name: '涨跌幅',
+      type: 'bar',
+      data: indexData.map(d => ({
+        value: d.pct,
+        itemStyle: {color: d.pct > 0 ? '#d93026' : '#1e8e3e'}
+      })),
+      label: {
+        show: true,
+        position: 'top',
+        formatter: function(p) {return (p.value > 0 ? '+' : '') + p.value.toFixed(2) + '%';},
+        fontSize: 10
+      }
+    }]
+  });
+
+  // 板块涨跌条形图
+  const sectorChart = echarts.init(document.getElementById('sectorChart'));
+  const upSectors = [
+    {name: '航天装备Ⅱ', pct: 7.27},
+    {name: 'SpaceX概念', pct: 4.04},
+    {name: '航天系', pct: 2.78},
+    {name: '城商行Ⅱ', pct: 1.89},
+    {name: '国有大型银行Ⅱ', pct: 1.80},
+    {name: '风电设备', pct: 1.72},
+    {name: '煤炭开采', pct: 1.62},
+    {name: '军工电子Ⅱ', pct: 1.36}
+  ];
+  const downSectors = [
+    {name: '谷歌概念', pct: -7.61},
+    {name: '光芯片', pct: -7.51},
+    {name: '通信设备', pct: -7.35},
+    {name: '元件', pct: -6.64},
+    {name: '半导体', pct: -4.31},
+    {name: '玻璃玻纤', pct: -4.16}
+  ];
+  sectorChart.setOption({
+    title: {text: '领涨/领跌板块涨跌幅对比', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+    legend: {data: ['领涨', '领跌'], top: 30, textStyle: {fontSize: 11}},
+    grid: {left: 110, right: 40, top: 70, bottom: 30},
+    xAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    yAxis: {
+      type: 'category',
+      data: upSectors.map(d => d.name).reverse().concat(downSectors.map(d => d.name).reverse()),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    series: [
+      {
+        name: '领涨',
+        type: 'bar',
+        data: upSectors.map(d => ({value: d.pct, itemStyle: {color: '#d93026'}})).reverse(),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      },
+      {
+        name: '领跌',
+        type: 'bar',
+        data: new Array(upSectors.length).fill(null).concat(downSectors.map(d => ({value: d.pct, itemStyle: {color: '#1e8e3e'}})).reverse()),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      }
+    ]
+  });
+
+  window.addEventListener('resize', function() {
+    indexChart.resize();
+    sectorChart.resize();
+  });
+})();
+</script>
+</body>
+</html>
