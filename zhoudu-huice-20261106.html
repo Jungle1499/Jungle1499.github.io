@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>周度回测 2026-11-02~11-06 周 · 七任务独立版</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{
+  --bg:#1a1a2e; --card:#22223c; --card2:#1e1e36; --gold:#ffd479; --line:#33335a;
+  --txt:#e8e8f0; --dim:#9a9ab0; --up:#e74c3c; --down:#2ecc71;
+  --ok:#4a9d8f; --bad:#c0392b; --mid:#e8a33d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:0 0 60px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 22px}
+header{background:linear-gradient(135deg,#22223c 0%,#2c2c4d 55%,#1a1a2e 100%);border-bottom:2px solid var(--line);padding:38px 0 28px;margin-bottom:26px}
+h1{font-size:27px;font-weight:700;color:var(--gold);letter-spacing:.5px}
+h1 small{display:block;font-size:13px;color:var(--dim);font-weight:400;margin-top:8px;letter-spacing:0}
+h2{font-size:18px;color:var(--gold);margin:38px 0 14px;padding-left:12px;border-left:4px solid var(--gold)}
+h3{font-size:15px;font-weight:600}
+.sub{color:var(--dim);font-size:12.5px;margin-top:6px}
+.hero-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:22px}
+.hk{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.hk .lb{font-size:11.5px;color:var(--dim);letter-spacing:.3px}
+.hk .vl{font-size:23px;font-weight:700;color:var(--gold);margin-top:4px;line-height:1.25}
+.hk .ft{font-size:11px;color:var(--dim);margin-top:3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px}
+.task-card{border-left:3px solid var(--line)}
+.task-card:hover{border-left-color:var(--gold)}
+.task-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px dashed var(--line)}
+.task-title{display:flex;align-items:center;gap:10px}
+.badge{background:var(--gold);color:#1a1a2e;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:5px;white-space:nowrap}
+.task-time{color:var(--dim);font-size:12px;font-weight:400;margin-left:6px}
+.task-kpi{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.kpi-rate{font-size:26px;font-weight:800;letter-spacing:.5px}
+.kpi-frac{font-size:11.5px;color:var(--dim)}
+.kpi-verdict{font-size:12px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.05)}
+.task-meta{font-size:11.5px;color:var(--dim);margin:10px 0 12px;padding:7px 10px;background:var(--card2);border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:#2b2b47;color:var(--gold);font-weight:600;text-align:left;padding:8px 10px;font-size:11.5px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid #2a2a45;vertical-align:top}
+tbody tr:hover{background:rgba(255,212,121,.045)}
+.c-day{font-weight:600;color:#c9c9dd;white-space:nowrap}
+.c-rate{font-weight:700;white-space:nowrap}
+.c-detail{color:#cfcfe0;line-height:1.65}
+.c-note{color:var(--dim);font-size:11.5px;line-height:1.6}
+.conc{margin-top:14px;background:var(--card2);border-radius:8px;padding:13px 16px}
+.conc-h{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:7px}
+.conc ul{list-style:none}
+.conc li{font-size:12.5px;color:#cfcfe0;padding-left:14px;position:relative;margin-bottom:5px;line-height:1.65}
+.conc li::before{content:"▸";position:absolute;left:0;color:var(--gold)}
+.ok-c{color:var(--ok)!important} .bad-c{color:var(--bad)!important}
+.mid-c{color:var(--mid)!important} .na-c{color:var(--dim)!important}
+.up{color:var(--up)} .down{color:var(--down)} .b{font-weight:700}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold);font-size:12px}
+.small{font-size:11.5px;color:#c3c3d5;line-height:1.6}
+.chart{width:100%;background:var(--card2);border-radius:10px;margin:8px 0 4px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.chart-row{grid-template-columns:1fr}}
+.regime-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:6px}
+.rs{background:var(--card2);border-radius:8px;padding:10px 11px;border-top:2px solid var(--line)}
+.rs .d{font-size:11.5px;color:var(--gold);font-weight:600}
+.rs .r{font-size:12px;color:#cfcfe0;margin-top:4px;line-height:1.5;min-height:38px}
+.rs .i{font-size:10.5px;color:var(--dim);margin-top:5px}
+@media(max-width:900px){.regime-strip{grid-template-columns:1fr 1fr}}
+.note-box{background:rgba(255,212,121,.07);border:1px solid rgba(255,212,121,.28);border-radius:9px;padding:13px 16px;margin:14px 0;font-size:12.5px;line-height:1.75;color:#e8dcc0}
+.note-box b{color:var(--gold)}
+ol.imp{list-style:none;counter-reset:i}
+ol.imp li{background:var(--card2);border-radius:9px;padding:14px 17px;margin-bottom:10px;font-size:12.5px;line-height:1.75;color:#cfcfe0}
+ol.imp li b{display:block;color:var(--gold);font-size:13.5px;margin-bottom:5px}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:11.5px;line-height:1.9}
+.tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:4px;background:rgba(255,212,121,.13);color:var(--gold);margin-right:5px}
+a{color:#8fb8ff;text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>周度回测 2026-11-02 ~ 11-06 周 · 七任务独立版
+      <small>框架 v4.5 / 三阶段 V4.2　|　全 5 交易日无断链日　|　五日五 regime 无重复　|　生成于 2026-11-07 10:0x</small>
+    </h1>
+    <div class="hero-kpi">
+      <div class="hk"><div class="lb">周加权命中率（任务1 盘前方向表）</div><div class="vl">51.4%</div><div class="ft">Σ18.5/36　vs 基准 47.5% → <b class="ok-c">+3.9pp</b>　10/24 周以来首次站上基准</div></div>
+      <div class="hk"><div class="lb">近 10 日滚动均值</div><div class="vl">38.4%</div><div class="ft">窗口 10/26~11/06　较上周 33.8% <b class="ok-c">+4.6pp</b>，仍破基准 −9.1pp</div></div>
+      <div class="hk"><div class="lb">七任务最高 / 最低</div><div class="vl">82.6% / 22.0%</div><div class="ft">T2 盘中10:00 最高　|　T6 主线19:30 最低</div></div>
+      <div class="hk"><div class="lb">规则有效性差值</div><div class="vl">+58.3pp</div><div class="ft">引用 83.3% vs 未引用 25.0% → <b class="ok-c">规则有效·强正向</b></div></div>
+      <div class="hk"><div class="lb">执行错误</div><div class="vl">0</div><div class="ft">连续保持　|　漏判 10 / 判错 18</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>00 · 本周 regime 轮换（五日五档，无一重复）</h2>
+<div class="card">
+  <div class="regime-strip">
+    <div class="rs"><div class="d">11-02 周一</div><div class="r">冰点次日放量普涨反包日</div><div class="i">沪3638.03 +1.08%｜涨停132/跌停11</div></div><div class="rs"><div class="d">11-03 周二</div><div class="r">普涨次日缩量回落·科技杀估值</div><div class="i">沪3608.10 −0.82%｜涨停52/跌停22</div></div><div class="rs"><div class="d">11-04 周三</div><div class="r">冰点后超跌科技报复性反包日</div><div class="i">沪3686.17 +2.16%｜涨停123/跌停11</div></div><div class="rs"><div class="d">11-05 周四</div><div class="r">普涨次日高低切（光伏接棒）</div><div class="i">沪3689.91 +0.10%｜涨停86/跌停0</div></div><div class="rs"><div class="d">11-06 周五</div><div class="r">外盘史诗级崩盘·极端普跌</div><div class="i">沪3649.18 −1.10%｜涨停33/跌停15</div></div>
+  </div>
+  <div class="note-box">
+    <b>本周结构结论：regime 轮换速度 &gt; 外推更新速度。</b>五天分别落在「修复日 → 杀估值日 → 报复反包日 → 高低切日 → 崩盘日」五个不同档位，盘前（T-1 外推）与晚间（收盘后定型）两段外推全部被动追认。
+    结果是<b>实时层准、外推层废</b>再度验证并加剧：盘中 T2 82.6% / T3 80.8%，盘前 T1 51.4%、晚间 T6 22.0%。盘前失真的根因不是判据不足，而是 <b>regime 档本身缺档</b>（缺「外盘黑天鹅崩盘日」第 6 档）+ <b>候选规则未拍板</b>（5 条候选平均 3 日以上未固化，同一根因反复复现）。
+  </div>
+</div>
+
+<h2>01 · 七任务独立章（各任务独立研判 / 独立 ✅❌ / 独立归因）</h2>
+<div class="card task-card" id="t1">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务1</span><h3>盘前策略 <span class="task-time">08:00 / 08:30</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate ok-c">51.4%</div>
+      <div class="kpi-frac">Σ 18.5 / 36</div>
+      <div class="kpi-verdict ok-c">✅ 优于基准 +3.9pp</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：当日收盘（T日盘前 → T日收盘）　|　统计口径：A股方向表</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate bad-c">33.3%（2/6）</td>
+      <td class="c-detail">命中：集运航运多（航运港口 +1.04%✓）、电机中性（+0.19% 平✓）｜反向 4：医药CRO多（−0.25%）、白酒中性（+3.07%）、大金融中性（证券Ⅱ +4.66%）、科技链空（半导体 +2.49%）</td>
+      <td class="c-note">沿用「冰点退潮防守档」全面押防御，踏空当日普涨反包；判空科技 + 判中性白酒/券商三处大幅反向</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate up">62.5%（5/8）</td>
+      <td class="c-detail">命中：券商/非银多✓、贵金属多（+0.80%✓）、半导体空（−5.42%✓）、光模块/CPO空（通信设备 −8.37%✓）、油气空✓｜反向 3：传媒多（−0.56%）、CXO多（−2.67% 踩雷）、白酒中性（+2.35% 踏空）</td>
+      <td class="c-note">空向 3/3 全中 —— 科技硬件杀估值日盘前判空极准，与 11/02 普涨日判空全错形成镜像</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate mid-c">50.0%（4/8）</td>
+      <td class="c-detail">命中：AI应用/传媒多（数字媒体 +4.13%✓）、证券IT/非银多✓、半导体中性偏多（+11.41%✓ 但仅「反抽低吸」）、集运多✓｜反向 4：医药CRO空（+7.83% 踩雷）、白酒中性偏多（−2.05%）、电池中性踏空、空心杯中性踏空</td>
+      <td class="c-note">主攻仅押 AI应用/证券IT（涨幅有限），踏空半导体全产业链 +11.41% 反攻；个股级 V4.2「中断」被误当板块空向</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate up">71.4%（5/7）</td>
+      <td class="c-detail">命中：AI应用/证券IT多（数字媒体 +5.41%✓）、半导体中性偏多（+1.69%✓）、黄金多（+5.19%✓）、机器人多（+1.51%✓）、集运空（−1.73%✓）｜反向 2：医药CRO空（+3.69% 连续第 2 日踩雷）、防御/大金融中性（煤炭 −4.20% 分化）</td>
+      <td class="c-note">判多 4/4 全中为本周最强单日；但光伏 +6.23%（当日最强）零覆盖 —— 晚间预判已判「电力设备=多」却被规则㊵「多上限收敛」砍掉</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate bad-c">35.7%（2.5/7）</td>
+      <td class="c-detail">命中：算力硬件空（元件 −7.13%✓）、光伏空（−1.88%✓）、白酒中性平（−0.22%）｜反向 4：贵金属多（−1.04%）、半导体设备多（−0.18%/0%）、AI应用/传媒空（数字媒体 +0.30%·芒果 +6.25%）、机器人中性（自动化 −3.77% 踩雷）</td>
+      <td class="c-note">「冰点/退潮·防守 0-1%」方向正确（避开 −1%~−4% 崩盘），但 2 个「防御低吸」多（贵金属/半导体设备）全线未守住</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>**判多 11/17 = 64.7%**（本周最强子项，黄金/机器人/半导体/AI应用硬驱动兑现）</li><li>**判空 6/10 = 60.0%**（杀估值日/崩盘日价值高：11/03 空向 3/3、11/06 空向 2/3）</li><li>**判中性 1.5/9 = 16.7%**（三档最弱 —— 中性项在波动放大周系统性反向，本周 4 次「中性→大幅偏离」）</li><li>周二以来连续 3 日站上基准（62.5 / 50.0 / 71.4），周五被外盘黑天鹅打回 35.7%</li></ul></div>
+</div><div class="card task-card" id="t2">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务2</span><h3>盘中速览 <span class="task-time">10:00</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate ok-c">82.6%</div>
+      <div class="kpi-frac">Σ 38 / 46</div>
+      <div class="kpi-verdict ok-c">✅ 优于基准 +35.1pp</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：当日收盘（10:00 快照 → T日收盘）　|　统计口径：时点研判 → 当日收盘</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate up">68.2%（7.5/11）</td>
+      <td class="c-detail">大势中性 0/2、板块 7.5/9</td>
+      <td class="c-note">开盘 30 分钟内纠正盘前「全面防守」误判，识别传媒 AI应用五线爆发</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate up">92.3%（12/13）</td>
+      <td class="c-detail">大势 2/3、板块 10/10 全中</td>
+      <td class="c-note">判空科技硬件 Top5 / 判多防御 Bottom5 全对，高低切当日最强单点能力</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate bad-c">40.0%（2/5）</td>
+      <td class="c-detail">大势 1/3（上证空✗ / 创业板中性✗ / 科创50多✓）；主线 2 项（半导体「反抽非反转」✗ / AI应用多✓）</td>
+      <td class="c-note">**全周唯一失手**：把半导体 +11.41% 全产业链反攻判为「超跌反抽·WAIT」，方向级别误判</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate up">96.7%（14.5/15）</td>
+      <td class="c-detail">大势 1.5/2、板块 13/13 全中</td>
+      <td class="c-note">光伏/贵金属/电池三线齐升全部识别，且银之杰×赢时胜 INT 判对（银之杰 −6.71%）</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate up">100%（2/2）</td>
+      <td class="c-detail">大势沪指空✓ / 创业板空✓ 全中（板块无标准化列表 N/A）</td>
+      <td class="c-note">崩盘日开盘即判空，为本周唯一满分时点</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>板块层命中 **32.5/34 ≈ 95.6%**（剔除 11/06 无标准化板块列表日），是七任务中板块识别能力最强环节</li><li>唯一系统缺口＝**反攻日方向级别误判**（11/04 半导体反攻被降级为「反抽」），与盘前同源（都低估超跌反攻）</li><li>与上周 91.9% 相比回落 9.3pp，拖累全部来自 11/04 单日 40%</li></ul></div>
+</div><div class="card task-card" id="t3">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务3</span><h3>午盘观察 <span class="task-time">11:45</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate ok-c">80.8%</div>
+      <div class="kpi-frac">Σ 59 / 73</div>
+      <div class="kpi-verdict ok-c">✅ 优于基准 +33.3pp</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：当日收盘（11:45 快照 → T日收盘）　|　统计口径：时点研判 → 当日收盘</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate up">89.3%（12.5/14）</td>
+      <td class="c-detail">大势多 2/2、板块 10.5/12</td>
+      <td class="c-note">上午收盘即锁定「多头共振普涨日」（规则74），当日最准时点</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate up">71.9%（11.5/16）</td>
+      <td class="c-detail">大势 2/3、板块 9.5/13</td>
+      <td class="c-note">偏空判断与收盘一致，CXO/传媒偏空正确，白酒反抽漏判</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate bad-c">45.5%（5/11）</td>
+      <td class="c-detail">大势 1/3、板块 4/8：半导体多✓ / 医疗服务多✓ / 航天装备多✓ / 国有大行空✓；出版中性✗ / 元件空✗ / 通信设备空✗ / 房地产空✗</td>
+      <td class="c-note">**确认滞后型误判**：11:45 判空元件/通信设备，收盘 +9.14% / +8.91%，午盘仍站在「反抽」立场</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate up">96.9%（15.5/16）</td>
+      <td class="c-detail">大势 1.5/2、板块 14/14 全中</td>
+      <td class="c-note">板块满分，高低切全线识别（光伏 +6.23% / 贵金属 +5.19% / 数字媒体 +5.41%）</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate up">90.6%（14.5/16）</td>
+      <td class="c-detail">大势 3/3、板块 11.5/13；判空 8 项（电子/通信/有色/医药/电力设备/食品饮料/机械/汽车）全中、判多 3 项（农林牧渔/公用事业/交通运输）全中</td>
+      <td class="c-note">极端杀跌日退潮识别精准，唯一反向＝银行中性（国有大行 +1.06%）</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>5 日中 4 日 ≥71.9%，**午盘是本周第二稳环节**（仅次于 10:00）</li><li>唯一失手 11/04 与 10:00 同源：反攻日「确认滞后」—— 日内演进 45% 为该日最低</li><li>极端日（11/06 崩盘）与普涨日（11/05）都能拿到 ≥90%，说明午盘档的强项是「识别已发生的风格切换」而非「预判未发生的反转」</li></ul></div>
+</div><div class="card task-card" id="t4">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务4</span><h3>盘中速览 <span class="task-time">14:30</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate na-c">N/A</div>
+      <div class="kpi-frac">Σ 0 / 5</div>
+      <div class="kpi-verdict na-c">⚠️ 全周停跑（连续第 4 周）</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：当日收盘（14:30 快照 → T日收盘）　|　统计口径：时点研判 → 当日收盘</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">无 14:30 产出文件（`*1430*2026110*` 零匹配）</td>
+      <td class="c-note">档位停跑，非数据断链</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">无 14:30 产出文件（`*1430*2026110*` 零匹配）</td>
+      <td class="c-note">档位停跑，非数据断链</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">无 14:30 产出文件（`*1430*2026110*` 零匹配）</td>
+      <td class="c-note">档位停跑，非数据断链</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">无 14:30 产出文件（`*1430*2026110*` 零匹配）</td>
+      <td class="c-note">档位停跑，非数据断链</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">无 14:30 产出文件（`*1430*2026110*` 零匹配）</td>
+      <td class="c-note">档位停跑，非数据断链</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>连续第 4 周 N/A —— 上周（10/24 周）曾为七任务最稳 89.7%，停跑是当前链路最大价值损失</li><li>影响：14:30 到收盘的最后 30 分钟无独立快照，无法验证「尾盘修正」是否有效</li><li>修复优先级：高（与 19:15 并列）</li></ul></div>
+</div><div class="card task-card" id="t5">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务5</span><h3>最强主线 <span class="task-time">19:15</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate na-c">N/A</div>
+      <div class="kpi-frac">Σ 0 / 5</div>
+      <div class="kpi-verdict na-c">⚠️ 源持续缺失（连续多周）</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：次日收盘（T日晚间 → T+1收盘）　|　统计口径：晚间预判 → 次日收盘</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">最强主线 HTML 全周零产出（`*最强主线*2026110*` 零匹配）</td>
+      <td class="c-note">源缺失，19:30 主线分析为唯一晚间分源</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">最强主线 HTML 全周零产出（`*最强主线*2026110*` 零匹配）</td>
+      <td class="c-note">源缺失，19:30 主线分析为唯一晚间分源</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">最强主线 HTML 全周零产出（`*最强主线*2026110*` 零匹配）</td>
+      <td class="c-note">源缺失，19:30 主线分析为唯一晚间分源</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">最强主线 HTML 全周零产出（`*最强主线*2026110*` 零匹配）</td>
+      <td class="c-note">源缺失，19:30 主线分析为唯一晚间分源</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate na-c">N/A</td>
+      <td class="c-detail">最强主线 HTML 全周零产出（`*最强主线*2026110*` 零匹配）</td>
+      <td class="c-note">源缺失，19:30 主线分析为唯一晚间分源</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>连续多周 N/A —— 晚间三任务实际只剩 19:30 与 20:30 两个分源，分源独立性下降</li><li>本周 19:30 仅 22.0%，若有 19:15 交叉验证可提前暴露判多系统性失真</li><li>修复优先级：高</li></ul></div>
+</div><div class="card task-card" id="t6">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务6</span><h3>主线分析 <span class="task-time">19:30</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate bad-c">22.0%</div>
+      <div class="kpi-frac">Σ 5.5 / 25</div>
+      <div class="kpi-verdict bad-c">❌ 破基准 −25.5pp</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：次日收盘（T日晚间 → T+1收盘，与任务1「当日」基准不同）　|　统计口径：晚间预判 → 次日收盘</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate bad-c">20.0%（1/5）</td>
+      <td class="c-detail">食品饮料多✓；医药生物中性✗（涨）、电子空✗（半导体 +2.49% 反）；大势 2 项中性全反</td>
+      <td class="c-note">验 10/30 晚</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate bad-c">20.0%（1/5）</td>
+      <td class="c-detail">银行空✓；沪指中性✗（−0.82%）、创业板中性✗（−2.73%）、传媒多✗（−0.56%）、计算机多✗</td>
+      <td class="c-note">验 11/02 晚</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate bad-c">30.0%（1.5/5）</td>
+      <td class="c-detail">国防军工多✓（航天装备 +5.25%）；沪指中性✗（+2.16%）、创业板空✗（+6.40% 暴涨）、电力设备中性✗（+3.5% 踏空）、农林牧渔中性平</td>
+      <td class="c-note">验 11/03 晚</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate bad-c">30.0%（1.5/5）</td>
+      <td class="c-detail">电子多✓；沪指中性平、创业板中性✗（+0.87%）、有色中性✗（+3%）、医药中性✗（+2%）</td>
+      <td class="c-note">验 11/04 晚</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate bad-c">10.0%（0.5/5）</td>
+      <td class="c-detail">大势中性 2 项全反（沪 −1.10% / 创 −3.96%）；电力设备多✗（光伏 −1.88%）、有色多✗（工业金属 −3.53%）、传媒中性平</td>
+      <td class="c-note">验 11/05 晚</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>**全周 5 日全部 ≤30%，无一日站上基准** —— 晚间外推是七任务最弱环节（连续第 5 周）</li><li>失效模式固定：**「判大量中性」+「跨日外推判多」双杀**。11/04·11/05·11/06 三日「中性」项合计 0.5/10</li><li>唯一结构性正确＝11/04 晚判「电力设备=多」（次日光伏 +6.23%），**但盘前未承接（规则㊵ 砍掉）→ 正确预判被流程吃掉**</li></ul></div>
+</div><div class="card task-card" id="t7">
+  <div class="task-head">
+    <div class="task-title"><span class="badge">任务7</span><h3>整体回测 <span class="task-time">20:30</span></h3></div>
+    <div class="task-kpi">
+      <div class="kpi-rate ok-c">✅率 100%</div>
+      <div class="kpi-frac">Σ 5 / 5</div>
+      <div class="kpi-verdict ok-c">✅ 自评全通过</div>
+    </div>
+  </div>
+  <div class="task-meta">基准日：自评：回测是否如实反映当日盘面　|　统计口径：自评质量（非方向命中）</div>
+  <table class="task-table">
+    <thead><tr><th style="width:96px">交易日</th><th style="width:118px">独立命中</th><th>独立研判（逐板块 / 逐源）</th><th style="width:230px">归因</th></tr></thead>
+    <tbody><tr>
+      <td class="c-day">11-02 周一</td>
+      <td class="c-rate up">✅</td>
+      <td class="c-detail">huice-zhengti-20261102 生成（dist_huice_20261102/index.html 标题核验通过）</td>
+      <td class="c-note">5-Why 完整：冰点次日政策托底 regime 分支缺失</td>
+    </tr><tr>
+      <td class="c-day">11-03 周二</td>
+      <td class="c-rate up">✅</td>
+      <td class="c-detail">huice-zhengti-20261103 生成</td>
+      <td class="c-note">5-Why 完整：节点闸门「授力(强)」0% 命中 → 缺竞价情绪联动</td>
+    </tr><tr>
+      <td class="c-day">11-04 周三</td>
+      <td class="c-rate up">✅</td>
+      <td class="c-detail">huice-zhengti-20261104.html 生成（落盘 其他复盘/ 目录）</td>
+      <td class="c-note">5-Why 完整：㊲₄₆ 修复日空向清零覆盖面不足（未覆盖个股级中断）</td>
+    </tr><tr>
+      <td class="c-day">11-05 周四</td>
+      <td class="c-rate up">✅</td>
+      <td class="c-detail">huice-zhengti-20261105 生成</td>
+      <td class="c-note">5-Why 完整：规则㊵「多上限收敛」缺新强线豁免</td>
+    </tr><tr>
+      <td class="c-day">11-06 周五</td>
+      <td class="c-rate up">✅</td>
+      <td class="c-detail">huice-zhengti-20261106 生成</td>
+      <td class="c-note">5-Why 完整：晚间预判缺「隔夜外盘史诗级崩盘对称否决门」</td>
+    </tr></tbody>
+  </table>
+  <div class="conc"><div class="conc-h">本周专属归因</div><ul><li>5/5 全部生成并写入积累文档，无断链日；5-Why 逐日均有根因收敛（本周质量高于 10/31 周）</li><li>瑕疵：**引用/未引用板块分桶仅 3/5 日完成**（11/02·11/04 缺），连续第 5 周未做到 100% 强制</li><li>自评 ✅ 不等于方向正确 —— 说明「回测如实」与「预判准确」是两条独立质量线</li></ul></div>
+</div>
+
+<h2>02 · 七任务周命中率横向对比 vs 随机基准</h2>
+<div class="card">
+  <div class="chart" id="cTask" style="height:300px"></div>
+<script>echarts.init(document.getElementById("cTask")).setOption({"tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}}, "grid": {"left": 108, "right": 64, "top": 24, "bottom": 28}, "xAxis": {"type": "value", "max": 110, "axisLabel": {"color": "#9a9ab0", "fontSize": 11}, "splitLine": {"lineStyle": {"color": "#2a2a45"}}, "axisLine": {"show": false}}, "yAxis": {"type": "category", "data": ["T7 整体回测(自评)", "T6 主线分析19:30", "T5 最强主线19:15", "T4 盘中速览14:30", "T3 午盘观察11:45", "T2 盘中速览10:00", "T1 盘前策略08:30"], "axisLabel": {"color": "#c9c9dd", "fontSize": 11}, "axisLine": {"lineStyle": {"color": "#33335a"}}, "axisTick": {"show": false}}, "series": [{"type": "bar", "barWidth": 16, "data": [{"value": 100, "itemStyle": {"color": "#4a7c59"}}, {"value": 22.0, "itemStyle": {"color": "#c0392b"}}, {"value": 0, "itemStyle": {"color": "#3a3a5c"}, "label": {"show": true, "position": "right", "formatter": "N/A", "color": "#9a9ab0"}}, {"value": 0, "itemStyle": {"color": "#3a3a5c"}, "label": {"show": true, "position": "right", "formatter": "N/A", "color": "#9a9ab0"}}, {"value": 80.8, "itemStyle": {"color": "#ffd479"}}, {"value": 82.6, "itemStyle": {"color": "#ffd479"}}, {"value": 51.4, "itemStyle": {"color": "#e8a33d"}}], "label": {"show": true, "position": "right", "formatter": "{c}%", "color": "#e8e8f0", "fontSize": 11}, "markLine": {"silent": true, "symbol": "none", "lineStyle": {"color": "#5b8ff9", "type": "dashed", "width": 1.5}, "label": {"formatter": "随机基准 47.5%", "color": "#5b8ff9", "fontSize": 10, "position": "end"}, "data": [{"xAxis": 47.5}]}}]});</script>
+  <div class="note-box">
+    <b>读法：</b>T4（14:30）与 T5（19:15）为 N/A 而非 0% —— 档位停跑/源缺失，不计分母。
+    T7 为自评 ✅ 率（口径与方向命中不同，仅作链路健康度参考，不参与 A股命中率加权）。
+    有效方向性命中口径仅 T1/T2/T3/T6 四项。
+  </div>
+</div>
+
+<h2>03 · 本周逐日命中率演进（四任务对照）</h2>
+<div class="card">
+  <div class="chart" id="cDaily" style="height:340px"></div>
+<script>echarts.init(document.getElementById("cDaily")).setOption({"tooltip": {"trigger": "axis"}, "legend": {"data": ["T1 盘前", "T2 10:00", "T3 11:45", "T6 19:30"], "textStyle": {"color": "#c9c9dd", "fontSize": 11}, "top": 0}, "grid": {"left": 48, "right": 24, "top": 44, "bottom": 32}, "xAxis": {"type": "category", "data": ["11-02", "11-03", "11-04", "11-05", "11-06"], "axisLabel": {"color": "#9a9ab0"}, "axisLine": {"lineStyle": {"color": "#33335a"}}}, "yAxis": {"type": "value", "max": 105, "axisLabel": {"color": "#9a9ab0", "formatter": "{value}%"}, "splitLine": {"lineStyle": {"color": "#2a2a45"}}, "axisLine": {"show": false}}, "series": [{"name": "T1 盘前", "type": "line", "smooth": true, "symbolSize": 7, "data": [33.3, 62.5, 50.0, 71.4, 35.7], "lineStyle": {"width": 2.5, "color": "#e8a33d"}, "itemStyle": {"color": "#e8a33d"}}, {"name": "T2 10:00", "type": "line", "smooth": true, "symbolSize": 7, "data": [68.2, 92.3, 40.0, 96.7, 100], "lineStyle": {"width": 2.5, "color": "#ffd479"}, "itemStyle": {"color": "#ffd479"}}, {"name": "T3 11:45", "type": "line", "smooth": true, "symbolSize": 7, "data": [89.3, 71.9, 45.5, 96.9, 90.6], "lineStyle": {"width": 2.5, "color": "#4a9d8f"}, "itemStyle": {"color": "#4a9d8f"}}, {"name": "T6 19:30", "type": "line", "smooth": true, "symbolSize": 7, "data": [20.0, 20.0, 30.0, 30.0, 10.0], "lineStyle": {"width": 2.5, "color": "#c0392b"}, "itemStyle": {"color": "#c0392b"}, "markLine": {"silent": true, "symbol": "none", "lineStyle": {"color": "#5b8ff9", "type": "dashed"}, "label": {"formatter": "47.5%", "color": "#5b8ff9", "fontSize": 10}, "data": [{"yAxis": 47.5}]}}]});</script>
+  <div class="note-box">
+    <b>关键落差：</b>11/04 一日之内 T2 从 92.3%（11/03）掉到 40.0%，T3 从 71.9% 掉到 45.5% —— 全部因为把「半导体 +11.41% 全产业链报复反包」判成「超跌反抽·非反转」。
+    反攻日/崩盘日两类极端日的方向级别判定，是实时层仅存的两处缺口。
+  </div>
+</div>
+
+<h2>04 · 滚动准确率（近 10 交易日）</h2>
+<div class="card">
+  <div class="chart" id="cRoll" style="height:320px"></div>
+<script>echarts.init(document.getElementById("cRoll")).setOption({"tooltip": {"trigger": "axis"}, "grid": {"left": 52, "right": 24, "top": 30, "bottom": 36}, "xAxis": {"type": "category", "data": ["10/26", "10/27", "10/28", "10/29", "10/30", "11/02", "11/03", "11/04", "11/05", "11/06"], "axisLabel": {"color": "#9a9ab0", "fontSize": 10, "rotate": 30}, "axisLine": {"lineStyle": {"color": "#33335a"}}}, "yAxis": {"type": "value", "max": 80, "axisLabel": {"color": "#9a9ab0", "formatter": "{value}%"}, "splitLine": {"lineStyle": {"color": "#2a2a45"}}, "axisLine": {"show": false}}, "series": [{"type": "bar", "barWidth": "52%", "data": [6.25, 25.0, 16.67, 33.33, 50.0, 33.33, 62.5, 50.0, 71.43, 35.71], "itemStyle": {"color": {"type": "linear", "x": 0, "y": 0, "x2": 0, "y2": 1, "colorStops": [{"offset": 0, "color": "#ffd479"}, {"offset": 1, "color": "#8a6b2a"}]}}, "label": {"show": true, "position": "top", "formatter": "{c}%", "color": "#c9c9dd", "fontSize": 10}, "markLine": {"silent": true, "symbol": "none", "data": [{"yAxis": 47.5, "lineStyle": {"color": "#5b8ff9", "type": "dashed"}, "label": {"formatter": "基准 47.5%", "color": "#5b8ff9", "fontSize": 10}}, {"yAxis": 38.422000000000004, "lineStyle": {"color": "#e8a33d", "type": "solid", "width": 1.5}, "label": {"formatter": "滚动均值 38.4%", "color": "#e8a33d", "fontSize": 10, "position": "insideEndTop"}}]}}]});</script>
+  <div class="note-box">
+    近 10 日滚动均值 <b>38.4%</b>（窗口 10/26~11/06）。日度记录原记 37.7%，本报告按日度明细精确值复算为 38.4%（差值 0.7pp 属舍入/窗口微差）。
+    序列形状：10/26 起 6.25% → 11/05 71.43% 单边上行，11/06 回落 35.71% —— 回升趋势被外盘黑天鹅打断一次，但滚动均值仍较上周 33.8% <b class="ok-c">+4.6pp</b>。
+    连续第 13 日处于基准下方，修复尚未完成。
+  </div>
+</div>
+
+<h2>05 · 规则有效性归因（引用 vs 未引用板块）</h2>
+<div class="card">
+  <div class="chart" id="cRule" style="height:300px"></div>
+<script>echarts.init(document.getElementById("cRule")).setOption({"tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}}, "legend": {"data": ["引用规则板块", "未引用板块"], "textStyle": {"color": "#c9c9dd", "fontSize": 11}, "top": 0}, "grid": {"left": 48, "right": 24, "top": 40, "bottom": 32}, "xAxis": {"type": "category", "data": ["11-03", "11-05", "11-06", "周汇总"], "axisLabel": {"color": "#9a9ab0"}, "axisLine": {"lineStyle": {"color": "#33335a"}}}, "yAxis": {"type": "value", "max": 110, "axisLabel": {"color": "#9a9ab0", "formatter": "{value}%"}, "splitLine": {"lineStyle": {"color": "#2a2a45"}}, "axisLine": {"show": false}}, "series": [{"name": "引用规则板块", "type": "bar", "barWidth": 26, "data": [100, 100, 50, 83.3], "itemStyle": {"color": "#ffd479", "borderRadius": [3, 3, 0, 0]}, "label": {"show": true, "position": "top", "formatter": "{c}%", "color": "#e8e8f0", "fontSize": 11}}, {"name": "未引用板块", "type": "bar", "barWidth": 26, "data": [25.0, 33.3, 16.7, 25.0], "itemStyle": {"color": "#7a5c3a", "borderRadius": [3, 3, 0, 0]}, "label": {"show": true, "position": "top", "formatter": "{c}%", "color": "#c9c9dd", "fontSize": 11}}]});</script>
+  <table>
+    <thead><tr><th>交易日</th><th>引用规则板块</th><th>未引用板块</th><th>差值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">11-03</td><td class="ok-c b">100%（4/4）</td><td class="bad-c b">25.0%（1/4）</td><td class="ok-c b">+75.0pp</td><td class="small">规则61 券商多 + 规则63 判空三档（半导体/光模块/油气），杀估值日硬驱动判空全中</td></tr>
+      <tr><td class="mono">11-05</td><td class="ok-c b">100%（4/4）</td><td class="bad-c b">33.3%（1/3）</td><td class="ok-c b">+66.7pp</td><td class="small">规则61 贵金属 / V4.2 集运 / 规则66 半导体 / 规则75 机器人 全中；未引用侧医药CRO 空踩雷</td></tr>
+      <tr><td class="mono">11-06</td><td class="mid-c b">50.0%（2/4）</td><td class="bad-c b">16.7%（0.5/3）</td><td class="ok-c b">+33.3pp</td><td class="small">㉓ 算力硬件空✓ + ㊼ 光伏空✓；规则61 贵金属多✗、规则66 半导体设备多✗（崩盘日硬驱动失效）</td></tr>
+      <tr><td class="mono">11-02 / 11-04</td><td class="na-c">未分桶</td><td class="na-c">未分桶</td><td class="na-c">N/A</td><td class="small">两日未做引用/未引用分桶，按铁律不以单规则验证冒充分桶归因</td></tr>
+      <tr style="background:rgba(255,212,121,.07)"><td class="mono b">周汇总</td><td class="ok-c b">83.3%（10/12）</td><td class="bad-c b">25.0%（2.5/10）</td><td class="ok-c b">+58.3pp</td><td class="small b">3 个有效分桶日全部正向 → 结论：规则有效·强正向。学习对准确率的周度贡献 +58.3pp</td></tr>
+    </tbody>
+  </table>
+  <div class="note-box">
+    <b>但差值是「引用选择性」贡献，不等于规则本身全对。</b>崩盘日（11/06）引用侧掉到 50%、硬驱动类（规则61/66）双双失效 —— 说明规则体系的短板集中在 <b>「极端外盘日」</b> 这一档，而非规则判断力本身。
+  </div>
+</div>
+
+<h2>06 · 三阶段框架有效性（V4.2）</h2>
+<div class="card">
+  <div class="chart" id="cStage" style="height:280px"></div>
+<script>echarts.init(document.getElementById("cStage")).setOption({"tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}}, "grid": {"left": 48, "right": 24, "top": 24, "bottom": 30}, "xAxis": {"type": "category", "data": ["跨日阶段演进", "日内演进", "Pair 相对强弱"], "axisLabel": {"color": "#c9c9dd", "fontSize": 11}, "axisLine": {"lineStyle": {"color": "#33335a"}}}, "yAxis": {"type": "value", "max": 100, "axisLabel": {"color": "#9a9ab0", "formatter": "{value}%"}, "splitLine": {"lineStyle": {"color": "#2a2a45"}}, "axisLine": {"show": false}}, "series": [{"type": "bar", "barWidth": 56, "data": [{"value": 49.7, "itemStyle": {"color": "#c0392b"}}, {"value": 61.6, "itemStyle": {"color": "#e8a33d"}}, {"value": 86.0, "itemStyle": {"color": "#4a7c59"}}], "label": {"show": true, "position": "top", "formatter": "{c}%", "color": "#e8e8f0", "fontSize": 12, "fontWeight": "bold"}, "markLine": {"silent": true, "symbol": "none", "lineStyle": {"color": "#5b8ff9", "type": "dashed"}, "label": {"formatter": "基准 47.5%", "color": "#5b8ff9", "fontSize": 10}, "data": [{"yAxis": 47.5}]}}]});</script>
+  <table style="margin-top:14px">
+    <thead><tr><th>维度</th><th>11-02</th><th>11-03</th><th>11-04</th><th>11-05</th><th>11-06</th><th>周均</th></tr></thead>
+    <tbody>
+      <tr><td class="b">跨日阶段演进</td><td>50%</td><td>50%</td><td>40%</td><td class="ok-c">80%</td><td class="bad-c">28.6%</td><td class="bad-c b">49.7%</td></tr>
+      <tr><td class="b">日内演进</td><td class="bad-c">35%</td><td>70%</td><td class="bad-c">45%</td><td>70%</td><td class="ok-c">88%</td><td class="mid-c b">61.6%</td></tr>
+      <tr><td class="b">Pair 相对强弱</td><td>90%</td><td>85%</td><td>85%</td><td>85%</td><td>85%</td><td class="ok-c b">86.0%</td></tr>
+      <tr><td class="b">买卖纪律增益</td><td>+3pp</td><td>+2pp</td><td>+2pp</td><td>+2pp</td><td>+2pp</td><td class="ok-c b">+2.2pp</td></tr>
+    </tbody>
+  </table>
+  <div class="conc">
+    <div class="conc-h">三阶段专属归因</div>
+    <ul>
+      <li><b>Pair 是唯一稳定 ≥85% 的判据</b>：全周无一日低于 85%，0 例「W结束」误用、0 例降级跳变。周内有效案例：11/03 集运补涨腿锦江 +5.26% 反超中谷 −0.70%（P3预警→P2确认兑现）、11/03 医药CRO 万邦 −8.10% 触发「中断」（龙头单日跌 ≤−6%，机制命中）、11/04 金安国纪 10/30 P1确认→11/03 中断→11/04 反包恢复。</li>
+      <li><b>跨日 49.7% 是本周最弱维度</b>，全部拖累来自 11/06（28.6%）：11/05 晚间判 P1确认/P2预警 buyable 的贵金属/固态电池/能源金属/医药，次日被费半 −12.25% 全线砸掉 —— 属外生黑天鹅，非 V4.2 判据失效。</li>
+      <li><b>日内 61.6% 的关键缺口仍是「确认滞后」</b>：11/02（盘前冰点退潮 → 收盘普涨反包）、11/04（10:00 WAIT → 11:45 P1确认 → 收盘全面爆发）两例。三-④ 校准建议：<b>当竞价高开 &gt;2% 家数 ≥4 倍于前日时，允许日内直接跳档、不必等 11:45 确认</b>（11/02 竞价五席全强已给出信号）。</li>
+      <li><b>买卖纪律 +2.2pp 连续第 N 周正向</b>：主要来自 11/06 盘前正确压仓 0-1% 避开 −1%~−4% 崩盘；负向案例＝11/03 华统试错次日 −1.66%。</li>
+    </ul>
+  </div>
+</div>
+
+<h2>07 · 美股侧周度汇总</h2>
+<div class="card">
+  <div class="note-box" style="margin-top:0">
+    <b>N/A（0 段有效）</b> —— 美股复盘自动化自 2026-09-02 起暂停，<b>连续第 9 周</b>无 US 系列数据，US 规则无引用、无新增、无验证。
+    本周唯一相关事实：11/05 隔夜费半 <b class="bad-c">−12.25%</b>（2020.3 以来最大单日跌幅）/ 纳指 −5.52% / KOSPI −8% 熔断 / 日经 −3.78%，触发＝中期选举民主党横扫 → 得州候任州长吁「暂停数据中心」→ AI 产业政策收紧担忧。
+    该事件直接造成 A股 11/06 极端普跌（涨 758 / 跌 4741，涨停 33 / 跌停 15），并暴露「外盘黑天鹅无对称否决门」的框架缺口。
+  </div>
+  <table>
+    <thead><tr><th>口径</th><th>A股侧（本周）</th><th>美股侧（本周）</th><th>结论</th></tr></thead>
+    <tbody>
+      <tr><td>S+A 加权命中率</td><td>51.4%（任务1）</td><td class="na-c">N/A</td><td class="small">无法并列对比，连续第 9 周</td></tr>
+      <tr><td>全表命中率</td><td>39.5%（跟随版 15/38）</td><td class="na-c">N/A</td><td class="small">跟随版辅口径，破基准 −8.0pp</td></tr>
+      <tr><td>未踩雷率</td><td>72.2%（26/36）</td><td class="na-c">N/A</td><td class="small">风控优于方向（差 20.8pp）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>08 · 规则有效性检验表（本周引用 / 验证 / 漏用）</h2>
+<div class="card">
+  <table>
+    <thead><tr><th style="width:88px">编号</th><th style="width:130px">规则名</th><th>本周实证</th><th style="width:82px">结论</th><th>备注</th></tr></thead>
+    <tbody><tr><td class="mono">规则73</td><td>全表失真镜像</td><td class="small">11/06 跟随版判多 0%(≤20%) ∧ 判空 33.3%(≤60%) → 镜像成立</td><td class="ok-c b">有效</td><td class="small">正式触发，11/09 盘前强制：总仓再降 5pcts + 方向表 ≤6 行 + 重判 regime</td></tr><tr><td class="mono">㊲₄₆</td><td>修复日空向清零</td><td class="small">11/02 判空科技（+2.49% 反）、11/04 医药CRO 空（+7.83% 踩雷）</td><td class="mid-c b">部分有效</td><td class="small">只覆盖「盘前判空板块」，未覆盖「个股级 V4.2 中断 / 防御抱团」→ 连续 2 日踩雷</td></tr><tr><td class="mono">规则61</td><td>硬驱动正向</td><td class="small">11/03 券商多✓、11/05 贵金属多✓、11/06 贵金属多✗</td><td class="mid-c b">部分有效</td><td class="small">政策/商品硬驱动在正常 regime 有效；外盘崩盘日失效（贵金属 −1.04%）</td></tr><tr><td class="mono">规则54</td><td>冰点强信号降级</td><td class="small">11/03 竞价 9 分遇冰点降级「不参与」，当日跌 → 正确防御</td><td class="ok-c b">有效</td><td class="small">连续第 N 日有效；代价＝错过养殖 +3.49% 结构性机会（可接受）</td></tr><tr><td class="mono">规则74</td><td>多头共振普涨日</td><td class="small">11/04 涨停 123 / 跌停 11 / 涨 4667 → 触发，当日 +2.16%~+9.92%</td><td class="ok-c b">有效</td><td class="small">被动修复档识别正确；但盘前未前置执行（只事后确认）</td></tr><tr><td class="mono">规则75</td><td>竞价强度回灌</td><td class="small">11/05 竞价 ≥8 分非冰点 → Top3 收红 3/3（贵金属/广告营销/光伏全红）</td><td class="ok-c b">有效</td><td class="small">本周唯一一次高分竞价，兑现率 100%；11/02 竞合 Top3 2/3 亦达标</td></tr><tr><td class="mono">规则㊵</td><td>普涨次日多上限收敛</td><td class="small">11/05 收敛把「电力设备(光伏)」新强线一并砍掉 → 光伏 +6.23% 零覆盖</td><td class="bad-c b">需修正</td><td class="small">18:00 晚间预判已判电力设备多，被盘前收敛抵消 → 缺「新强线豁免」</td></tr><tr><td class="mono">规则55</td><td>regime 五档</td><td class="small">11/06 外盘史诗级崩盘（费半 −12.25%）无对应档 → 盘前只能套「冰点/退潮防守」</td><td class="bad-c b">需扩档</td><td class="small">连续第 2 次暴露（10/29 谷歌暴雷为第 1 次）→ 须增「外盘黑天鹅崩盘日」第 6 档</td></tr><tr><td class="mono">规则59</td><td>硬驱动正向识别</td><td class="small">11/06 只做正面驱动识别，缺负面黑天鹅对称否决 → 跟随版判多 0/5 全反</td><td class="mid-c b">部分有效</td><td class="small">与规则55 同源缺口：外盘负面事件无否决门</td></tr><tr><td class="mono">节点闸门</td><td>07:30 节点看板</td><td class="small">11/03 首次输出「授力(强·ADJ 16.07)」→ 0% 命中；11/04 50%；11/05 100%</td><td class="mid-c b">部分有效</td><td class="small">ADJ 广度情绪与连板/竞价情绪错位，缺「竞价冰点→闸门降级」联动</td></tr><tr><td class="mono">V4.2 Pair</td><td>Pair 相对强弱</td><td class="small">周均 86.0%（90/85/85/85/85），无一日低于 85%</td><td class="ok-c b">有效</td><td class="small">7 任务中唯一稳定 ≥85% 的判据；全周 0 例「W结束」误用、0 例降级跳变</td></tr></tbody>
+  </table>
+  <div class="conc">
+    <div class="conc-h">本周被引用规则清单及次数</div>
+    <ul>
+      <li><span class="tag">规则61</span>硬驱动正向 ×3（11/03 券商 / 11/05 贵金属 / 11/06 贵金属）｜<span class="tag">规则54</span>冰点降级 ×2（11/03、11/06）｜<span class="tag">规则73</span>全表失真 ×1（11/06 正式触发）</li>
+      <li><span class="tag">规则74</span>多头共振 ×1（11/04）｜<span class="tag">规则75</span>竞价回灌 ×2（11/02、11/05）｜<span class="tag">规则66</span>半导体 ×2（11/05、11/06）｜<span class="tag">规则63</span>判空三档 ×1（11/03）</li>
+      <li><span class="tag">㊲₄₆</span>修复日空向清零 ×2（11/04、11/05 未执行/半执行）｜<span class="tag">㊵</span>多上限收敛 ×1（11/05 误伤光伏）｜<span class="tag">㉓</span>算力硬件 ×1（11/06）｜<span class="tag">㊼</span>光伏 ×1（11/06）</li>
+      <li><span class="tag">三-④</span>确认滞后 ×3（11/02、11/04 日内）｜<span class="tag">三-⑥</span>次日再确认 ×2（11/02 传媒 D1 熄火、11/03 养殖 P1确认）｜<span class="tag">V4.2 Pair</span> 全周 ×35 组</li>
+    </ul>
+  </div>
+  <div class="conc">
+    <div class="conc-h">漏用提示（盘面符合已固化规则特征但未引用）</div>
+    <ul>
+      <li><b class="bad-c">规则74 未前置</b>：11/04 涨停 123 / 跌停 11 / 涨 4667 → 属规则74「多头共振普涨日」明确特征，但盘前未按规则执行「判空向清零」，只在收盘后回测里被追认。</li>
+      <li><b class="bad-c">㊲₄₆ 未覆盖</b>：11/02 科技链判空、11/04 医药CRO 判空 —— 两日均属「冰点次日修复日」，规则明确要求空向清零，实际未执行（连续 2 日踩雷）。</li>
+      <li><b class="bad-c">规则75 未回灌</b>：11/02 竞价 Top5 五席全强（近 5 日首次）已构成 ≥8 分强信号，但盘前方向表（33.3%）未回灌改写，属 10/21 同类事故重演。</li>
+    </ul>
+  </div>
+  <div class="conc">
+    <div class="conc-h">本周新增固化规则</div>
+    <ul>
+      <li><b>0 条</b>（A股 0 / 三阶段 0 / 美股 0）—— 框架维持 <b>v4.5 / V4.2</b>，用户未拍板不擅自固化。</li>
+      <li>候选待拍板 <b>5 组</b>：①冰点次日政策托底+竞价情绪反转→修复日 regime 分支（11/02 第1次）②节点闸门竞价冰点联动降级（11/03 第1次）③普涨次日防御切换扫描（11/03 第1次）④修复日空向清零全覆盖·㊲₄₆扩展（11/04 第2次）⑤普涨次日豁免承接前日晚间新强线（11/05 第1次）⑥隔夜外盘史诗级崩盘对称否决门（10/29 第1次 + 11/06 第2次，<b class="ok-c">已达门槛</b>）。</li>
+    </ul>
+  </div>
+</div>
+
+<h2>09 · R-Judge 归因统计</h2>
+<div class="card">
+  <table>
+    <thead><tr><th style="width:70px">交易日</th><th style="width:78px">识别漏判</th><th style="width:78px">判断错误</th><th style="width:78px">执行错误</th><th>明细</th></tr></thead>
+    <tbody><tr><td class="mono">11-02</td><td class="bad-c b">2</td><td class="bad-c b">4</td><td class="ok-c b">0</td><td class="small">传媒/AI应用主线零覆盖（涨停 132 中传媒占 41 只）；冰点次日普涨反包 regime 未识别</td></tr><tr><td class="mono">11-03</td><td class="bad-c b">2</td><td class="bad-c b">4</td><td class="ok-c b">0</td><td class="small">养殖/军工船舶/保险/白酒 防御+周期切换零覆盖；节点看板「授力(强)」误判</td></tr><tr><td class="mono">11-04</td><td class="bad-c b">2</td><td class="bad-c b">4</td><td class="ok-c b">0</td><td class="small">半导体全产业链反包（+11.41%）未升格主线；贵金属 +10.06% 零覆盖</td></tr><tr><td class="mono">11-05</td><td class="bad-c b">2</td><td class="bad-c b">2</td><td class="ok-c b">0</td><td class="small">光伏 +6.23% 当日最强零覆盖（晚间已判、盘前被砍）；贵金属仓位过保守</td></tr><tr><td class="mono">11-06</td><td class="bad-c b">2</td><td class="bad-c b">4</td><td class="ok-c b">0</td><td class="small">11/05 晚间判多全线未预判费半 −12.25% 崩盘；银行红利+农业种植避险零预判</td></tr>
+      <tr style="background:rgba(255,212,121,.07)"><td class="mono b">周合计</td><td class="bad-c b">10</td><td class="bad-c b">18</td><td class="ok-c b">0</td><td class="small b">执行错误连续保持 0（仓位纪律到位）；判错 18 次中 ≥12 次落在两条未固化候选规则覆盖范围（㊲₄₆ 扩展 / 外盘对称否决门）</td></tr>
+    </tbody>
+  </table>
+  <div class="conc">
+    <div class="conc-h">5-Why 收敛（本周三条线，指向同一根因）</div>
+    <ul>
+      <li><b>线1｜判空踩雷（11/02 科技、11/04 医药CRO）</b>：为什么踩雷 → 沿用 T-1 空向 → 为什么沿用 → ㊲₄₆ 只覆盖「盘前判空板块」不覆盖「个股级 V4.2 中断」→ 为什么没扩 → 候选规则 11/04 才第 2 次验证，未拍板 → <b>根因＝规则治理滞后于盘面暴露速度</b>。</li>
+      <li><b>线2｜判多踏空（11/04 半导体、11/05 光伏）</b>：为什么踏空 → 盘前把「超跌反攻」判为「反抽」+ 规则㊵ 收敛砍掉新强线 → 为什么收敛会砍 → ㊵ 无「新强线豁免」条款 → <b>根因＝收敛规则与晚间预判未打通</b>（11/04 晚已判电力设备多，次日盘前被自己砍掉）。</li>
+      <li><b>线3｜晚间全失（11/06 判多 0/5）</b>：为什么全失 → 11/05 收盘后已定型判多，无法预知 11/05 夜费半 −12.25% → 为什么没有否决机制 → 规则59 只做正面驱动识别，无负面黑天鹅对称否决 → <b>根因＝跨日外推缺「隔夜外盘对称否决门」</b>（与 10/29 谷歌暴雷同源，第 2 次）。</li>
+    </ul>
+  </div>
+</div>
+
+<h2>10 · 下周改进清单（5 条 · 按性价比排序）</h2>
+<div class="card">
+  <ol class="imp">
+    <li><b>① 立即拍板固化「隔夜外盘史诗级崩盘对称否决门」</b>费半/纳指单日跌 ≥5% 或 VIX +50% 以上 → T+1 盘前/晚间预判判多方向强制叠加否决门，改判中性偏空/防守。10/29（谷歌暴雷）第 1 次 + 11/06（费半 −12.25%）第 2 次已达门槛。直接消掉本周 11/06 跟随版判多 0/5 与晚间 19:30 0.5/5。</li><li><b>② 拍板固化「修复日空向清零全覆盖（㊲₄₆ 扩展）」</b>冰点次日除「盘前判空板块」外，「个股级 V4.2 中断 / 防御抱团 / 中性观望」板块同样按普涨日被动修复逻辑改写。11/02 第 1 次 + 11/04 第 2 次。直接消掉医药CRO 连续 2 日踩雷（+7.83% / +3.69%）。</li><li><b>③ 拍板固化「普涨次日方向表豁免承接前日晚间新强线」</b>规则㊵「多上限收敛」执行时，前一日晚间预判（19:30/19:45）已判「多」的新强线须豁免收敛、保留主攻位。11/05 光伏 +6.23% 当日最强、11/04 晚已判「电力设备=多」、盘前零覆盖 —— 正确预判被流程吃掉，是本周最高性价比修复项。</li><li><b>④ 中性项专项治理：波动放大周禁出「中性」</b>本周判中性 1.5/9 = 16.7%，为三档最弱（判多 64.7% / 判空 60.0%）。5 日中出现 4 次「中性→大幅偏离」（11/02 白酒/券商、11/04 电池/电机、11/05 煤炭、11/06 机器人）。规则：当 ADJ ≤ 11 或 ≥ 24（即两端 regime）时，方向表禁止输出「中性」，须二选一给方向。</li><li><b>⑤ 恢复 14:30 档 + 19:15 最强主线源，并把分桶归因改强制</b>T4 连续第 4 周 N/A、T5 连续多周 N/A；本周 T2(82.6%)/T3(80.8%) 已证明盘中档是最高价值环节，缺 14:30 等于放弃最后 30 分钟修正。同时 20:30 引用/未引用分桶仅 3/5 日完成（连续第 5 周），须在回测脚本内置校验：缺分桶 → 标 ❌ 自评。</li>
+  </ol>
+  <div class="note-box">
+    <b>执行约束提醒：</b>规则73 已于 11/06 正式触发（跟随版判多 0% ∧ 判空 33.3% 镜像成立）→ <b>11/09（周一）盘前强制：总仓再降 5pcts + 方向表 ≤6 行 + 强制重判 regime</b>。
+  </div>
+</div>
+
+<h2>11 · 数据缺口与断链说明</h2>
+<div class="card">
+  <table>
+    <thead><tr><th style="width:190px">缺口</th><th style="width:96px">状态</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>14:30 盘中速览</td><td class="na-c b">N/A ×5</td><td class="small">全周零产出，连续第 4 周停跑。上周曾为七任务最稳（89.7%）。</td></tr>
+      <tr><td>19:15 最强主线</td><td class="na-c b">N/A ×5</td><td class="small">源持续缺失，连续多周。晚间三任务实际只剩 19:30 / 20:30 两源。</td></tr>
+      <tr><td>引用/未引用分桶</td><td class="na-c b">缺 2 日</td><td class="small">11/02、11/04 未分桶（5 日中 3 日完成），连续第 5 周未做到 100%。</td></tr>
+      <tr><td>V2.4 竞价 bid</td><td class="na-c b">N/A</td><td class="small">bid_2026110X.json 全周缺失，连续 70+ 日。</td></tr>
+      <tr><td>比价配对信号</td><td class="na-c b">N/A</td><td class="small">p1_scan 信号日志停滞 @09-01，连续 47+ 日无新信号。</td></tr>
+      <tr><td>美股复盘</td><td class="na-c b">N/A</td><td class="small">自动化自 2026-09-02 暂停，连续第 9 周。</td></tr>
+      <tr><td>07:30 节点看板</td><td class="mid-c b">缺 1 日</td><td class="small">11/06 无 07:30 段；11/02 亦缺（4/5 日有）。</td></tr>
+      <tr><td>20:30 整体回测</td><td class="ok-c b">5/5 齐</td><td class="small">全周生成（11/04 落盘 其他复盘/ 目录，其余在 dist_huice_*/index.html），标题核验通过。</td></tr>
+    </tbody>
+  </table>
+  <div class="note-box">
+    <b>断链总评：</b>本周<b class="ok-c">无断链日</b>（5 日全有日度记录 + 全部 20:30 回测），是 10/24 周以来数据最完整的一周。缺口全部是「档位停跑 / 源缺失」类结构性问题，非当日故障。
+  </div>
+</div>
+
+<footer>
+  <div><b>三红线自检</b>　Close the Loop ✅（7 任务逐日闭环 + 20:30 回测 5/5 齐）　|　Fact-Driven ✅（全部数字取自《复盘学习积累》11-02~11-06 日度记录；滚动均值按明细复算并标注与日度记录 0.7pp 差异；缺失标 N/A 不编造）　|　Exhaust Everything ✅（T4/T5 双源确认零产出，标注为档位停跑而非数据异常）</div>
+  <div><b>框架版本</b>　框架 v4.5 / 三阶段 V4.2　|　模板 <code>pinned-2026-09-20</code>　|　V4.2 判定（Pair 强弱/九态）全周调用 <code>v42_grade_pair.py::run_v42</code> 实跑，未手算</div>
+  <div><b>模型约束</b>　本任务要求以 <b>DeepSeek V4.2 Flash</b> 运行。若本运行实例并非该模型，请到 UI / 调度层手动指定 DeepSeek V4.2 Flash 后重跑，不得以其他模型替跑。</div>
+  <div style="margin-top:10px;color:#6a6a85">WKBUILD:zhoudu-20261106-20261107</div>
+</footer>
+
+</div>
+</body>
+</html>
