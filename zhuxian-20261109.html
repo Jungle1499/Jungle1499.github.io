@@ -1,414 +1,335 @@
 <!DOCTYPE html>
-<!-- VERSION: v20260916 · 2026-09-16 · gold light 9-section 终态 -->
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
+<html lang="zh-CN"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>主线分析_20261109 · 三阶段框架 V4.2 · P1 启动</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<title>主线分析_20261109 · 三阶段框架 V4.2 · P1启动</title>
 <style>
-  :root{
-    --red:#d8392b; --red-bg:#fdecea; --green:#1a9e5f; --green-bg:#e8f6ef;
-    --ink:#1f2933; --sub:#5b6b7b; --line:#e6ebf0; --bg:#f5f7fa; --card:#ffffff;
-    --blue:#2563eb; --blue-bg:#eaf1ff; --orange:#e8770b; --orange-bg:#fff3e6;
-    --purple:#7c3aed; --purple-bg:#f1ebff; --gray:#8a97a5;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.65;font-size:14px;}
-  .wrap{max-width:1080px;margin:0 auto;padding:24px 18px 60px;}
-  header{padding:26px 28px;border-radius:16px;color:#fff;
-    background:linear-gradient(135deg,#1b2a4e 0%,#26407a 55%,#3358b8 100%);}
-  header h1{margin:0 0 6px;font-size:25px;letter-spacing:1px;}
-  header .meta{opacity:.9;font-size:13px;}
-  .badge{display:inline-block;background:var(--red);color:#fff;border-radius:20px;
-    padding:3px 14px;font-size:13px;font-weight:700;margin-top:10px;}
-  .sub-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:20px;
-    padding:3px 14px;font-size:13px;margin:10px 0 0 8px;}
-  section{background:var(--card);border-radius:14px;padding:22px 24px;margin-top:18px;
-    box-shadow:0 1px 3px rgba(20,40,80,.06);}
-  h2{font-size:19px;margin:0 0 14px;padding-left:12px;border-left:5px solid var(--blue);}
-  h2 .n{color:var(--blue);font-weight:800;margin-right:6px;}
-  h3{font-size:15px;margin:18px 0 8px;color:var(--ink);}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px;}
-  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center;}
-  th{background:#f0f4f9;font-weight:700;color:var(--sub);}
-  tr:nth-child(even) td{background:#fafcfe;}
-  .up{color:var(--red);font-weight:700;}
-  .down{color:var(--green);font-weight:700;}
-  .na{color:var(--gray);}
-  .pos{color:var(--red);} .neg{color:var(--green);}
-  .grid{display:grid;gap:14px;}
-  .g2{grid-template-columns:1fr 1fr;}
-  .g3{grid-template-columns:repeat(3,1fr);}
-  .g4{grid-template-columns:repeat(4,1fr);}
-  @media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
-  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;}
-  .card h4{margin:0 0 8px;font-size:15px;}
-  .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:2px 0;border-bottom:1px dashed #eef2f6;}
-  .kv:last-child{border-bottom:none;}
-  .pill{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;}
-  .p1{background:var(--blue-bg);color:var(--blue);}
-  .p2{background:var(--orange-bg);color:var(--orange);}
-  .p3{background:var(--red-bg);color:var(--red);}
-  .pd{background:var(--green-bg);color:var(--green);}
-  .pw{background:#eef1f4;color:var(--gray);}
-  .chart{width:100%;height:320px;margin-top:8px;}
-  .note{font-size:12.5px;color:var(--sub);background:#f7f9fc;border-left:3px solid var(--blue);
-    padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0;}
-  .warn{background:#fff7ed;border-left:3px solid var(--orange);}
-  .risk{background:#fef2f2;border-left:3px solid var(--red);}
-  .stage-tag{font-weight:800;font-size:13px;padding:2px 10px;border-radius:6px;display:inline-block;}
-  ul{margin:6px 0 6px 2px;padding-left:20px;}
-  li{margin:3px 0;}
-  .big{font-size:22px;font-weight:800;}
-  .muted{color:var(--sub);font-size:12.5px;}
-  .divider{height:1px;background:var(--line);margin:14px 0;}
-  footer{text-align:center;color:var(--sub);font-size:12px;margin-top:24px;line-height:1.8;}
-</style>
-</head>
+:root{--red:#d8392b;--red-bg:#fdecea;--green:#1a9e5f;--green-bg:#e8f6ef;
+ --ink:#1f2933;--sub:#5b6b7b;--line:#e6ebf0;--bg:#f5f7fa;--card:#fff;
+ --blue:#2563eb;--blue-bg:#eaf1ff;--orange:#e8770b;--orange-bg:#fff3e6;
+ --purple:#7c3aed;--purple-bg:#f1ebff;--gray:#8a97a5;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
+ background:var(--bg);color:var(--ink);line-height:1.7;font-size:14.5px}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 18px 60px}
+header{padding:26px 28px;border-radius:14px;color:#fff;
+ background:linear-gradient(135deg,#1b2a4e 0%,#26407a 55%,#3358b8 100%)}
+header h1{margin:0 0 8px;font-size:25px;letter-spacing:.5px}
+header .sub{opacity:.92;font-size:13px;line-height:1.7}
+.quick{margin:16px 0 0;padding:14px 16px;background:#fffdf5;border-left:4px solid var(--orange);
+ border-radius:0 8px 8px 0;font-size:14px}
+.quick b{color:#b45309}
+section{background:var(--card);border-radius:14px;padding:22px 24px;margin-top:16px;
+ box-shadow:0 1px 3px rgba(20,40,80,.06)}
+h2{font-size:19px;margin:0 0 14px;padding-left:11px;border-left:5px solid var(--blue)}
+h3{font-size:15.5px;margin:20px 0 8px;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+th{background:#f0f4f9;font-weight:700;color:var(--sub);font-size:12.5px}
+td.l,th.l{text-align:left}
+tr:nth-child(even) td{background:#fafcfe}
+.up{color:var(--red);font-weight:700}
+.down{color:var(--green);font-weight:700}
+.flat{color:var(--sub)}
+.na{color:var(--gray)}
+.pill{display:inline-block;border-radius:6px;padding:1px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.p1{background:var(--blue-bg);color:var(--blue)}
+.p2{background:var(--orange-bg);color:var(--orange)}
+.p3{background:var(--red-bg);color:var(--red)}
+.pw{background:#eef1f4;color:var(--gray)}
+.note{font-size:13px;background:#f7f9fc;border-left:3px solid var(--blue);
+ padding:9px 13px;border-radius:0 8px 8px 0;margin:10px 0;color:#33475b}
+.warn{background:#fff7ed;border-left-color:var(--orange)}
+.risk{background:#fef2f2;border-left-color:var(--red)}
+.pairbox{border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin:10px 0;background:#fcfdff}
+.pairbox h4{margin:0 0 8px;font-size:15px}
+.pairline{font-size:13.2px;margin:4px 0;color:#2b3a4a}
+.pairline b{color:#111}
+.verdict{margin:8px 0 4px;font-size:13.2px}
+ul{margin:6px 0 6px 2px;padding-left:20px}li{margin:4px 0}
+ol{margin:6px 0 6px 2px;padding-left:22px}
+footer{text-align:center;color:var(--sub);font-size:12px;margin-top:22px;line-height:1.9}
+.dead{color:var(--gray)}
+</style></head>
 <body>
 <!-- WKBUILD:zhuxian-20261109 -->
 <div class="wrap">
 
 <header>
-  <h1>主线分析 · 2026-11-09（周一）</h1>
-  <div class="meta">三阶段框架 V4.2 + 五维共振 · A股主线板块复盘 · 数据截至 15:00 收盘</div>
-  <div>
-    <span class="badge">主线：人形机器人 + 商业航天/SpaceX（存量高低切换）</span>
-    <span class="sub-badge">阶段判定：P1 启动（缩量分化 · 题材切换首日）</span>
+  <h1>主线分析_20261109 · 三阶段框架 V4.2 · P1启动</h1>
+  <div class="sub">
+    三阶段理论 V4.2（WAIT → P1预警 → P1确认 → P2预警 → P2确认 → P3预警 → P3确认 → W结束/中断）+ 五维共振 主线复盘 ｜
+    生成时间 2026-11-10 02:20 ｜ 行情基准 2026-11-09 收盘 ｜ 数据源：westock（腾讯自选股）+ WebSearch 三源交叉
+  </div>
+  <div class="quick">
+    <b>核心结论速读：</b>今日为<b>缩量分化·冲高回落</b>（成交 1.48 万亿 / 较 11-06 缩量 1752 亿），涨 2242 / 跌 3148、涨停 58 / 跌停 2，连板晋级率仅 9.09%、炸板率超四成，属存量资金高低切换。
+    两条新强线同日启动：<b>人形机器人</b>（苹果开源 HALO，上纬新材/祥明智能 20CM）与 <b>商业航天/SpaceX</b>（星舰第 15 次试飞 11/13，信维通信 +12.77%）；
+    <b>PCB/元件</b>（三季报归母 +102%）与 <b>煤炭/燃气</b>（10 月 PPI 煤炭 +36.6%）为次线。
+    V4.2 七板定级：仅 <b>科技硬件/AI算力（燧原科技）、燃气（东方环宇）2 只 P1确认（buyable）</b>，其余 5 板处 P1预警/P2预警，光伏/新能源为 WAIT（纯下跌不构成 Wave）。
+    无单一断层领涨（行业差 0.15%、概念差 1.04%，均 &lt;3%）。
   </div>
 </header>
 
-<!-- 01 大盘全景 -->
 <section>
-  <h2><span class="n">01</span>大盘全景：冲高回落 · 沪强深弱缩量分化</h2>
-  <div class="grid g2">
-    <div>
-      <table>
-        <tr><th>指数</th><th>收盘</th><th>涨跌幅</th></tr>
-        <tr><td>上证指数</td><td>3660.79</td><td class="up">+0.32%</td></tr>
-        <tr><td>深证成指</td><td>11145.49</td><td class="down">-0.27%</td></tr>
-        <tr><td>创业板指</td><td>2458.56</td><td class="down">-0.27%</td></tr>
-        <tr><td>科创50</td><td>1256.96</td><td class="up">+0.30%</td></tr>
-        <tr><td>上证50</td><td>2789.15</td><td class="up">+0.06%</td></tr>
-        <tr><td>沪深300</td><td>4056.11</td><td class="up">+0.05%</td></tr>
-      </table>
-    </div>
-    <div>
-      <table>
-        <tr><th>项目</th><th>数值</th><th>变化</th></tr>
-        <tr><td>上涨 / 下跌 / 平</td><td>2242 / 3148 / 189</td><td rowspan="4" style="vertical-align:middle">
-          上涨占比 <b class="up">40%</b><br>较 11/06（86%跌）部分修复<br><br>
-          成交 <b>14826亿</b><br><span class="down">缩量 -1752亿（-10.6%）</span></td></tr>
-        <tr><td>涨停 / 跌停</td><td>58 / 2</td></tr>
-        <tr><td>停牌</td><td>6</td></tr>
-        <tr><td>下跌占比</td><td class="down">56.4%</td></tr>
-      </table>
-    </div>
-  </div>
-  <div class="note">
-    <b>大盘小绿判定：否。</b> 当日下跌家数占比 56.4%（&lt;65%），且 11/06 极端杀跌（86%跌）后 11/09 已回落至 56.4%，不构成「连续两日≥65%」口径。
-    市场画像：缩量分化（成交 1.48 万亿连续第二日缩量）、情绪中性偏弱（ADJ_SCORE 18.99，板块宽度=1 全面下跌，价值主导）；三大指数早盘高开冲高后午后逐级回落，深成指/创业板盘中一度涨超 1% 后翻绿，沪指靠煤炭/银行/电力红利权重尾盘守红，属「存量资金高低切换、跷跷板轮动」，赚钱效应集中煤炭/机器人/PCB/商业航天等少数方向。
-  </div>
-  <div class="chart" id="idxChart"></div>
+<h2>一、大盘全景</h2>
+<table>
+<tr><th>指数</th><th>收盘</th><th>涨跌幅</th><th>5日</th></tr>
+<tr><td class="l">上证指数</td><td>3660.79</td><td class="up">+0.32%</td><td class="up">+0.63%</td></tr>
+<tr><td class="l">深证成指</td><td>11145.49</td><td class="down">-0.27%</td><td class="up">+1.22%</td></tr>
+<tr><td class="l">创业板指</td><td>2458.56</td><td class="down">-0.27%</td><td class="down">-0.01%</td></tr>
+<tr><td class="l">科创50</td><td>1256.96</td><td class="up">+0.30%</td><td class="up">+5.01%</td></tr>
+<tr><td class="l">上证50</td><td>2789.15</td><td class="up">+0.06%</td><td class="up">+0.96%</td></tr>
+<tr><td class="l">沪深300</td><td>4056.11</td><td class="up">+0.05%</td><td class="up">+0.98%</td></tr>
+</table>
+<p><b>涨跌分布：</b>上涨 2242（40%）｜ 下跌 3148 ｜ 平 189 ｜ 涨停 58 ｜ 跌停 2 ｜ 停牌 6<br>
+<b>两市成交额：</b>14826.11 亿（较上日 −1751.83 亿 · 缩量 −10.6%，连续第二日缩量）<br>
+<b>下跌家数占比：</b>56.4%（上一交易日 11/06 为 85.0%）</p>
+<div class="note"><b>大盘小绿：否。</b>下跌家数占比 56.4% &lt; 65%，且 11/06 的 85.0% 与今日 56.4% 不构成「连续两日≥65%」口径。</div>
+<div class="note"><b>九维画像（market-overview）：</b>调整评分 <b>18.99</b>（非冰点）｜ 板块宽度=1（全面下跌，上涨板块&lt;20%）｜ 风格=1（价值主导）｜ 中长期趋势=1（暴跌）｜ 短期趋势=2（弱势下跌）｜ 技术指标=5（极强·截面背离）｜ 情绪=3（中性）｜ 成交量能=3（缩量震荡）｜ 行业轮动=4（分化严重）。<br>
+<b>节点理论闸口：</b>ADJ 18.99 未入冰点，但板块宽度=1 全面下跌 → 防守档，总仓不宜进攻。</div>
 </section>
 
-<!-- 02 申万二级行业 Top6 -->
 <section>
-  <h2><span class="n">02</span>申万二级行业涨幅 Top 6（含主力净流入）</h2>
-  <table>
-    <tr><th>排名</th><th>行业</th><th>涨跌幅</th><th>主力净流入(亿)</th><th>5日净流(亿)</th><th>领涨代表</th></tr>
-    <tr><td>1</td><td>焦炭Ⅱ</td><td class="up">+3.68%</td><td class="up">+1.97</td><td class="up">+0.46</td><td>云煤能源 +9.95%</td></tr>
-    <tr><td>2</td><td>航天装备Ⅱ</td><td class="up">+3.53%</td><td class="up">+6.62</td><td class="up">+2.08</td><td>中国卫星 +4.55%</td></tr>
-    <tr><td>3</td><td>元件</td><td class="up">+2.81%</td><td class="up">+37.75</td><td class="down">-97.05</td><td>奥士康 +10.00%</td></tr>
-    <tr><td>4</td><td>燃气Ⅱ</td><td class="up">+2.77%</td><td class="up">+1.82</td><td class="down">-0.60</td><td>东方环宇 +10.03%</td></tr>
-    <tr><td>5</td><td>煤炭开采</td><td class="up">+2.69%</td><td class="up">+6.75</td><td class="down">-12.80</td><td>郑州煤电 +10.00%</td></tr>
-    <tr><td>6</td><td>厨卫电器</td><td class="up">+2.66%</td><td class="up">+0.82</td><td class="up">+1.95</td><td>日出东方 +10.01%</td></tr>
-  </table>
-  <div class="note">行业前 2 名（焦炭、航天装备）涨幅差仅 0.15% &lt; 3%，<b>无单一行业断层领涨</b>；元件主力净流入 +37.75 亿居科技硬件之首，煤炭（焦炭+煤炭开采）与燃气合计主力净流入约 +10.5 亿，资源顺周期与科技硬件（元件）双线并行。</div>
+<h2>二、行业 / 概念涨幅榜</h2>
+<h3>申万二级行业 Top 6</h3>
+<table>
+<tr><th>行业</th><th>涨幅</th><th>主力净流入</th><th>5日主净</th><th>广度</th><th>领涨</th></tr>
+<tr><td class="l">焦炭Ⅱ</td><td class="up">+3.68%</td><td class="up">+1.97亿</td><td class="up">+0.46亿</td><td>7/7</td><td>云煤能源 +9.95%</td></tr>
+<tr><td class="l">航天装备Ⅱ</td><td class="up">+3.53%</td><td class="up">+6.62亿</td><td class="up">+2.08亿</td><td>7/9</td><td>中国卫星 +4.55%</td></tr>
+<tr><td class="l">元件</td><td class="up">+2.81%</td><td class="up">+37.75亿</td><td class="down">−97.05亿</td><td>55/61</td><td>奥士康 +10.00%</td></tr>
+<tr><td class="l">燃气Ⅱ</td><td class="up">+2.77%</td><td class="up">+1.82亿</td><td class="down">−0.60亿</td><td>26/28</td><td>东方环宇 +10.03%</td></tr>
+<tr><td class="l">煤炭开采</td><td class="up">+2.69%</td><td class="up">+6.75亿</td><td class="down">−12.80亿</td><td>26/26</td><td>郑州煤电 +10.00%</td></tr>
+<tr><td class="l">厨卫电器</td><td class="up">+2.66%</td><td class="up">+0.82亿</td><td class="up">+1.95亿</td><td>8/9</td><td>日出东方 +10.01%</td></tr>
+</table>
+<h3>概念涨幅 Top 8（剔除纯连板/标签类）</h3>
+<table>
+<tr><th>#</th><th>概念</th><th>涨幅</th><th>主力净流入</th><th>5日主净</th><th>领涨</th></tr>
+<tr><td>1</td><td class="l">SpaceX概念</td><td class="up">+5.09%</td><td class="up">+12.22亿</td><td class="up">+23.59亿</td><td>信维通信 +12.77%</td></tr>
+<tr><td>2</td><td class="l">空心杯电机</td><td class="up">+4.05%</td><td class="up">+0.14亿</td><td class="down">−0.37亿</td><td>禾川科技 +10.26%</td></tr>
+<tr><td>3</td><td class="l">华为机器人</td><td class="up">+3.90%</td><td class="up">+1.73亿</td><td class="up">+4.77亿</td><td>禾川科技 +10.26%</td></tr>
+<tr><td>4</td><td class="l">机器人执行器概念</td><td class="up">+3.46%</td><td class="up">+4.93亿</td><td class="down">−0.97亿</td><td>禾川科技 +10.26%</td></tr>
+<tr><td>5</td><td class="l">覆铜板</td><td class="up">+3.38%</td><td class="up">+8.90亿</td><td class="down">−14.43亿</td><td>超声电子 +9.98%</td></tr>
+<tr><td>6</td><td class="l">博通概念</td><td class="up">+3.16%</td><td class="up">+9.33亿</td><td class="down">−26.91亿</td><td>胜宏科技 +5.72%</td></tr>
+<tr><td>7</td><td class="l">电子树脂</td><td class="up">+2.92%</td><td class="up">+2.68亿</td><td class="down">−1.48亿</td><td>上纬新材 +20.00%</td></tr>
+<tr><td>8</td><td class="l">智元机器人</td><td class="up">+2.68%</td><td class="up">+8.72亿</td><td class="up">+2.94亿</td><td>上纬新材 +20.00%</td></tr>
+</table>
+<div class="note">概念榜名义前列为「昨日首板 +6.11%」「26三季报预增 +5.49%」「昨日涨停 +3.95%」「龙头股 +3.48%」等纯连板/业绩标签类，已剔除出题材候选。<b>概念板块主力净流因成分股重叠而虚高，仅作排序参考，不引用绝对金额。</b></div>
 </section>
 
-<!-- 03 概念 Top8 -->
 <section>
-  <h2><span class="n">03</span>概念板块涨幅 Top 8（剔除纯连板类 · 含5日/代表）</h2>
-  <table>
-    <tr><th>排名</th><th>概念</th><th>今日%</th><th>5日净流(亿)</th><th>主力净流入(亿)</th><th>代表标的</th></tr>
-    <tr><td>1</td><td>SpaceX概念</td><td class="up">+5.09%</td><td class="up">+23.59</td><td class="up">+12.22</td><td>信维通信 +12.77%</td></tr>
-    <tr><td>2</td><td>空心杯电机</td><td class="up">+4.05%</td><td class="down">-0.37</td><td class="up">+0.14</td><td>禾川科技 +10.26%</td></tr>
-    <tr><td>3</td><td>华为机器人</td><td class="up">+3.90%</td><td class="up">+4.77</td><td class="up">+1.73</td><td>禾川科技 +10.26%</td></tr>
-    <tr><td>4</td><td>机器人执行器概念</td><td class="up">+3.46%</td><td class="down">-0.97</td><td class="up">+4.93</td><td>禾川科技 +10.26%</td></tr>
-    <tr><td>5</td><td>覆铜板</td><td class="up">+3.38%</td><td class="down">-14.43</td><td class="up">+8.90</td><td>超声电子 +9.98%</td></tr>
-    <tr><td>6</td><td>博通概念</td><td class="up">+3.16%</td><td class="down">-26.91</td><td class="up">+9.33</td><td>胜宏科技 +5.72%</td></tr>
-    <tr><td>7</td><td>电子树脂</td><td class="up">+2.92%</td><td class="down">-1.48</td><td class="up">+2.68</td><td>上纬新材 +20.00%</td></tr>
-    <tr><td>8</td><td>智元机器人</td><td class="up">+2.68%</td><td class="up">+2.94</td><td class="up">+8.72</td><td>上纬新材 +20.00%</td></tr>
-  </table>
-  <div class="note">概念榜名义前列为「昨日首板 +6.11%」「26三季报预增 +5.49%」等纯标签类，已剔除出主线候选。真正的主题集群是 <b>SpaceX/商业航天 + 人形机器人（空心杯电机/华为机器人/执行器/智元）+ PCB（覆铜板/电子树脂）</b> 三线共振；「5日净流」列以概念 5 日主力净流替代（数据源无概念 5 日涨跌幅字段，已如实标注）。</div>
+<h2>三、主线确认（五维综合判定）</h2>
+<p><b>① 断层领涨判定：</b>行业 #1 焦炭Ⅱ +3.68% 与 #2 航天装备Ⅱ +3.53% 差 <b>0.15%</b> &lt; 3%；概念 #1 SpaceX概念 +5.09% 与 #2 空心杯电机 +4.05% 差 <b>1.04%</b> &lt; 3% → <b>无单一断层龙头</b>。</p>
+<p><b>② 五维共振：</b></p>
+<ul>
+<li><b>行业涨幅：</b>焦炭 +3.68% / 航天装备 +3.53% / 元件 +2.81% / 燃气 +2.77% / 煤炭开采 +2.69%——资源顺周期与科技硬件双线并行。</li>
+<li><b>概念涨幅：</b>SpaceX +5.09% / 空心杯电机 +4.05% / 华为机器人 +3.90% / 机器人执行器 +3.46% / 覆铜板 +3.38%——机器人集群（4 个概念同框）+ 商业航天 + PCB 三线。</li>
+<li><b>主力净流入：</b>电子行业 +73 亿（全行业第一）、机械设备 +46 亿、通信/银行/汽车各 +20 亿以上；元件 +37.75 亿居申万二级之首；电力设备净流出 −34 亿。</li>
+<li><b>代表标的：</b>上纬新材 +20.00%、祥明智能 +20.00%（20CM 双涨停）；信维通信 +12.77%（主力 +6.24 亿，全市场第 6）；宇树科技 +9.04%（创 2 个半月新高）。</li>
+<li><b>产业链联动：</b>机器人「电机（祥明/禾川）→ 执行器 → 本体（宇树）」；商业航天「星舰试飞 → 太空算力 → 卫星制造（中国卫星）」；PCB「覆铜板（超声电子）→ 元件（奥士康）→ 算力硬件（燧原/寒武纪）」。</li>
+</ul>
+<p><b>主线结论：</b><b>人形机器人（涨停潮最强）+ 商业航天/SpaceX（催化最硬）为双主线</b>，处 P1 启动阶段；
+<b>PCB/元件与煤炭/燃气为次线</b>（业绩 +102% / PPI +36.6% 硬催化）；
+<b>科技硬件/AI算力</b>（元件 +37.75 亿、电子 +73 亿）属上周暴跌后的修复反抽，V4.2 定级 P1确认但需次日放量确认；
+<b>光伏/新能源</b>为获利盘兑现方向（光伏 −2.27%/能源金属 −2.14%/电池 −2.12%），V4.2 状态 WAIT（无 ≥5% 单日启动，纯下跌不构成 Wave）。</p>
 </section>
 
-<!-- 04 五维共振 -->
 <section>
-  <h2><span class="n">04</span>五维共振 · 主线确认</h2>
-  <div class="grid g2">
-    <div class="card">
-      <h4>五维信号</h4>
-      <div class="kv"><span>① 行业涨幅</span><span class="up">焦炭#1 / 航天装备#2 / 元件#3</span></div>
-      <div class="kv"><span>② 概念涨幅</span><span class="up">SpaceX/空心杯电机/机器人集群</span></div>
-      <div class="kv"><span>③ 主力净流入</span><span class="up">元件+37.75亿 电子+73亿(全行业第一)</span></div>
-      <div class="kv"><span>④ 代表标的涨幅</span><span class="up">上纬新材/祥明智能+20% 信维+12.77%</span></div>
-      <div class="kv"><span>⑤ 产业链联动</span><span class="up">机器人(电机→执行器→本体) + 商业航天(星舰→太空算力)</span></div>
-    </div>
-    <div class="card">
-      <h4>结论</h4>
-      <p style="margin:6px 0">五维全面指向 <b class="up">人形机器人 + 商业航天/SpaceX</b> 双主线（叠加 PCB/算力硬件修复次线）：</p>
-      <ul class="muted">
-        <li>人形机器人：苹果开源人形机器人控制系统 HALO（宇树 G1 实测、任务成功率 91%），叠加三星/SK海力士/美光与 SEMI 磋商晶圆厂机器人充电标准化，上纬新材/祥明智能 20CM 涨停、宇树科技 +9.04% 创 2 个半月新高。</li>
-        <li>商业航天/SpaceX：星舰第 15 次试飞最早 11/13 实施（首次机械臂抓取飞船）+ 马斯克太空 AI 计算机 StarMind 2027 Q3 发射，SpaceX 概念 +5.09%、信维通信 +12.77% 主力净流入 +6.24 亿（全市场第 6）。</li>
-        <li>PCB/算力硬件修复：40 家 PCB 公司前三季归母净利 +102.03%，超声电子/奥士康/世运电路涨停，燧原科技 +17.26%、寒武纪 +6.02%，上周暴跌的算力硬件今日修复。</li>
-      </ul>
-      <p class="muted" style="margin:6px 0 0"><b>断层领涨判定：否</b>（行业差 0.15%、概念差 1.04%，均&lt;3%）。故以五维共振锁定双主线。</p>
-    </div>
-  </div>
-  <div class="chart" id="conceptChart"></div>
+<h2>四、核心催化（4 条）</h2>
+<p><b>① 苹果开源人形机器人控制系统 HALO（机器人涨停潮的发令枪）：</b>苹果研究团队开源 HALO，在宇树 G1 上完成真实环境测试，调用阿里千问模型，三层架构实现「指令理解 → 全身动作控制」，6 个陌生环境单项任务平均成功率 <b>91%</b>。同日三星电子、SK 海力士、美光与 SEMI 就晶圆厂机器人充电系统标准化磋商。→ 上纬新材/祥明智能 20CM 涨停，华培动力、锋龙股份、金固股份涨停，宇树科技 +9.04%。</p>
+<p><b>② SpaceX 星舰第 15 次试飞 + 太空 AI 计算机（商业航天催化）：</b>SpaceX 更新试飞安排，第 15 次试飞最早 <b>11/13</b> 实施、首次尝试发射塔机械臂抓取飞船；马斯克预计 <b>2027 年三季度</b>发射首批与英伟达联合设计的 StarMind 太空 AI 计算机，2028 年上量、2029 年达非常大规摸。→ SpaceX 概念 +5.09%、航天装备Ⅱ +3.53%，顺灏股份（8 天 4 板）、西部材料、飞亚达、腾达科技涨停，中国卫星 +4.55%。</p>
+<p><b>③ PCB 产业链三季报高增（元件反转的业绩底）：</b>Wind 数据，40 家 PCB 及相关材料/设备公司前三季度合计营收 <b>2380.06 亿元、同比 +46.78%</b>，归母净利润 <b>353.29 亿元、同比 +102.03%</b>，其中 32 家净利增速高于营收增速。→ 元件 +2.81%（主力 +37.75 亿），超声电子、奥士康、世运电路涨停，胜宏科技 +5.72%，燧原科技 +17.26%、寒武纪 +6.02%。</p>
+<p><b>④ 10 月 PPI 煤炭 +36.6% + 寒潮供暖（顺周期硬数据）：</b>国家统计局 11/9 发布，10 月 PPI 同比 <b>+5.7%</b>（涨幅较上月扩大 0.7pct、创年内新高），其中煤炭开采和洗选业 <b>+36.6%</b>、石油和天然气开采 +35.0%、燃气生产和供应业 +7.9%、计算机通信和其他电子设备制造业 +5.9%；叠加寒潮来袭、北方多地进入供暖季。→ 煤炭开采 +2.69%、焦炭 +3.68%、燃气 +2.77%，郑州煤电、安泰集团、云煤能源、东方环宇、胜通能源涨停。</p>
 </section>
 
-<!-- 05 四重核心驱动 -->
 <section>
-  <h2><span class="n">05</span>四重核心驱动因素（当日/前一日催化）</h2>
-  <div class="grid g2">
-    <div class="card">
-      <h4>① 苹果开源人形机器人控制系统 HALO（机器人涨停潮）</h4>
-      <p class="muted">苹果研究团队开源人形机器人控制系统 HALO，在宇树 G1 上完成真实环境测试，调用阿里千问模型、三层架构实现指令理解到全身动作控制，6 个陌生环境单项任务平均成功率 <b>91%</b>。→ 刺激人形机器人概念涨停潮（上纬新材/祥明智能 20CM、华培动力/锋龙股份/金固股份涨停、宇树科技 +9.04%），机械设备成资金进攻新方向。</p>
-    </div>
-    <div class="card">
-      <h4>② SpaceX 星舰第 15 次试飞 + 太空 AI 计算机（商业航天）</h4>
-      <p class="muted">SpaceX 更新星舰试飞安排，第 15 次试飞最早 <b>11/13</b> 实施、首次尝试发射塔机械臂抓取飞船；马斯克预计 2027 年三季度发射首批与英伟达联合设计的 <b>StarMind 太空 AI 计算机</b>，SpaceX 上周五股价大涨逾 8%。→ 刺激 SpaceX 概念 +5.09%、航天装备 +3.53%，顺灏股份（8天4板）、西部材料、飞亚达、腾达科技等涨停。</p>
-    </div>
-    <div class="card">
-      <h4>③ PCB 产业链三季报高增（算力硬件修复）</h4>
-      <p class="muted">Wind 数据：40 家 PCB 及相关材料/设备公司前三季度合计营收 <b>2380.06 亿元、同比 +46.78%</b>，归母净利润 <b>353.29 亿元、同比 +102.03%</b>，其中 32 家净利增速高于营收增速。→ 元件板块 +2.81%，超声电子/奥士康/世运电路涨停，胜宏科技 +5.72%，燧原科技 +17.26%、寒武纪 +6.02%，上周暴跌的算力硬件今日修复。</p>
-    </div>
-    <div class="card">
-      <h4>④ 10月 PPI 煤炭 +36.6% + 寒潮供暖季（煤炭/燃气顺周期）</h4>
-      <p class="muted">国家统计局 11/9 发布：10 月 PPI 同比 <b>+5.7%</b>（创年内新高），其中煤炭开采和洗选业上涨 <b>36.6%</b>、燃气生产和供应业上涨 7.9%；叠加寒潮来袭、北方多地进入供暖季取暖负荷上升。→ 煤炭开采 +2.69%、焦炭 +3.68%，郑州煤电、安泰集团、云煤能源、东方环宇、胜通能源涨停，顺周期低估值高股息逻辑获资金承接。</p>
-    </div>
-  </div>
+<h2>五、核心龙头精选（3 只）</h2>
+<table>
+<tr><th>角色</th><th>标的</th><th>今日涨幅</th><th>入选理由</th><th>V4.2 阶段</th></tr>
+<tr>
+<td class="l"><b>情绪龙头</b></td><td class="l">信维通信<br><span class="na">300136.SZ</span></td><td class="up">+12.77%</td>
+<td class="l">SpaceX + 6G + 毫米波 + 消费电子多概念共振标杆；成交 48.65 亿、换手 12.12%，主力净流入 <b>+6.24 亿</b>居全市场第 6。<b>⚠️ 盘中最高 50.76 后回落（炸板），情绪分化。</b></td>
+<td><span class="pill p2">P2预警</span></td></tr>
+<tr>
+<td class="l"><b>产业总龙头</b></td><td class="l">燧原科技-U<br><span class="na">688801.SH</span></td><td class="up">+17.26%</td>
+<td class="l">国产 AI 算力芯片（训练/推理），今日领涨半导体；V4.2 轨迹 11/04 D0 → 11/05 连涨2天 P1确认 → 11/06 中断①龙头 −6.53% → 11/09 +17.26% <b>反包恢复</b>；寒武纪同日 +6.02%、主力 +9.08 亿共振。<b>⚠️ PE 亏损、换手 17.21%，纯弹性票。</b></td>
+<td><span class="pill p1">P1确认</span></td></tr>
+<tr>
+<td class="l"><b>防御/弹性龙</b></td><td class="l">东方环宇<br><span class="na">603706.SH</span></td><td class="up">+10.03%</td>
+<td class="l">供暖季刚需 + 10 月 PPI 燃气 +7.9%，<b>PE 17.63 估值合理</b>（全组最低），换手 5.26% 温和；V4.2 11/06 +6.38% D0 → 11/09 连涨2天 P1确认，leader 定死。</td>
+<td><span class="pill p1">P1确认</span></td></tr>
+</table>
+<div class="note warn"><b>注：</b>宇树科技-W（688836，+9.04%、市值 2896 亿）为机器人<b>产业本体总龙</b>，因 PE 516 倍、换手 23.41%、年内 +374.8%，估值透支过重，列观察不进核心三甲。</div>
 </section>
 
-<!-- 06 核心龙头精选 3 只 -->
 <section>
-  <h2><span class="n">06</span>核心龙头精选（3 只 · 含 P 阶段）</h2>
-  <div class="grid g3">
-    <div class="card">
-      <h4>算力芯片龙 · 燧原科技-U <span class="pill p1">P1确认</span></h4>
-      <div class="kv"><span>代码</span><span>688801</span></div>
-      <div class="kv"><span>最新价</span><span>432.80</span></div>
-      <div class="kv"><span>涨幅</span><span class="up">+17.26%</span></div>
-      <div class="kv"><span>成交额</span><span>12.55 亿</span></div>
-      <div class="kv"><span>换手率</span><span>17.21%</span></div>
-      <div class="kv"><span>总市值</span><span>1862.6 亿</span></div>
-      <div class="kv"><span>5日涨幅</span><span class="up">+24.01%</span></div>
-      <div class="kv"><span>PE(TTM)</span><span class="na">亏损</span></div>
-      <div class="kv"><span>年初至今</span><span class="up">+204.4%</span></div>
-      <div class="kv"><span>主力净流入</span><span class="up">+0.95 亿</span></div>
-      <p class="muted" style="margin-top:8px">国产算力芯片（AI 训练/推理芯片）弹性龙，今日 +17.26% 领涨半导体，V4.2 脚本实跑 = P1确认（11/04 D0 触发 → 11/05 连涨2天 P1确认、leader 定死燧原 → 11/06 中断①龙头 -6.53% → 11/09 +17.26% 反包恢复持续推进）。⚠️ PE 亏损、换手 17.21%，纯情绪修复弹性票。</p>
-    </div>
-    <div class="card">
-      <h4>商业航天龙 · 信维通信 <span class="pill p2">P2预警</span></h4>
-      <div class="kv"><span>代码</span><span>300136</span></div>
-      <div class="kv"><span>最新价</span><span>47.70</span></div>
-      <div class="kv"><span>涨幅</span><span class="up">+12.77%</span></div>
-      <div class="kv"><span>成交额</span><span>48.65 亿</span></div>
-      <div class="kv"><span>换手率</span><span>12.12%</span></div>
-      <div class="kv"><span>总市值</span><span>461.5 亿</span></div>
-      <div class="kv"><span>5日涨幅</span><span class="up">+11.14%</span></div>
-      <div class="kv"><span>PE(TTM)</span><span>66.87</span></div>
-      <div class="kv"><span>年初至今</span><span class="down">-23.00%</span></div>
-      <div class="kv"><span>主力净流入</span><span class="up">+6.24 亿</span></div>
-      <p class="muted" style="margin-top:8px">卫星通信天线/毫米波龙头，SpaceX 概念 leader，今日主力净流入 +6.24 亿居全市场第 6。V4.2 脚本实跑 = P2预警（10/29 P1确认 leader 定死顺灏 → 今日信维 +12.77% 补涨强于顺灏 +10.02% → 回 P2预警）。受益星链/6G/卫星互联网共振，但 ⚠️ 今日盘中炸板（最高 50.76 后回落），情绪分化需谨慎。</p>
-    </div>
-    <div class="card">
-      <h4>机器人本体总龙 · 宇树科技-W <span class="pill p1">P1预警</span></h4>
-      <div class="kv"><span>代码</span><span>688836</span></div>
-      <div class="kv"><span>最新价</span><span>716.00</span></div>
-      <div class="kv"><span>涨幅</span><span class="up">+9.04%</span></div>
-      <div class="kv"><span>成交额</span><span>51.17 亿</span></div>
-      <div class="kv"><span>换手率</span><span>23.41%</span></div>
-      <div class="kv"><span>总市值</span><span>2896.0 亿</span></div>
-      <div class="kv"><span>5日涨幅</span><span class="up">+8.13%</span></div>
-      <div class="kv"><span>PE(TTM)</span><span>516.64</span></div>
-      <div class="kv"><span>年初至今</span><span class="up">+374.8%</span></div>
-      <div class="kv"><span>主力净流入</span><span class="up">+2.15 亿</span></div>
-      <p class="muted" style="margin-top:8px">人形机器人本体产业总龙（市值 2896 亿），苹果 HALO 正是其 G1 上完成实测，今日 +9.04% 创 2 个半月新高，主力净流入 +2.15 亿。⚠️ PE 516 倍、换手 23.41%、年内已 +374.8%，估值极高，属产业龙头趋势票而非低位弹性，追高风险大。</p>
-    </div>
-  </div>
+<h2>六、七大板块 Pairs + 三阶段判定（V4.2 脚本实跑 · 基准 2026-11-09 收盘）</h2>
+<div class="note">判定规则：每板块 Pair = <b>当日涨幅 Top2</b>（先圈同细分再取 Top2）；状态由 <b>v42_grade_pair.py::run_v42</b> 脚本实跑输出（禁手算）。<b>buyable</b>（仅 P1确认/P2确认）为推荐硬门槛；<b>P3确认</b> = 降仓/清仓一票否决。⛔ V4.2 九态不含「崩塌」——纯下跌 Pair 不构成 Wave，状态为 WAIT。</div>
+
+<div class="pairbox">
+<h4>① 科技硬件 / AI算力（算力芯片）<span class="pill p1" style="float:right">P1确认</span></h4>
+<div class="pairline">燧原科技-U（产业总龙）<b class="up">+17.26%</b> / 432.80 　vs　 寒武纪（弹性龙）<b class="up">+6.02%</b> / 851.21</div>
+<div class="pairline">今日：燧原 <b>+17.26%</b> vs 寒武纪 <b>+6.02%</b>（燧原跑赢）；昨(11/06)：燧原 −6.53% vs 寒武纪 −4.98%（寒武纪相对强）；前日(11/05)：燧原 +6.15% vs 寒武纪 −0.31%（燧原强）</div>
+<div class="verdict"><b>V4.2 脚本 state = P1确认</b>（11/04 D0 触发 A+15.32%/B+10.38% → 11/05 连涨2天确认、leader 定死=燧原 → 11/06 中断①龙头 −6.53% ≤ −6% → 11/09 +17.26% ≥ 6.53% 反包恢复、持续推进）。<b>buyable = ✅</b></div>
+<div class="pairline"><b>操作建议：</b>P1确认·可试错，但属上周暴跌后修复反抽（中际旭创仅 +0.90%、新易盛 +2.27%），<b>须次日放量确认（规则66）</b>；燧原 PE 亏损、换手 17.21%，仓位从严，禁追高。</div>
+</div>
+
+<div class="pairbox">
+<h4>② 机器人 / 具身智能（电机·执行器）<span class="pill p1" style="float:right">P1预警 · D0</span></h4>
+<div class="pairline">祥明智能（电机弹性）<b class="up">+20.00%</b> / 33.06 　vs　 禾川科技（空心杯电机/执行器）<b class="up">+10.26%</b> / 31.59</div>
+<div class="pairline">今日：祥明 <b>+20.00%</b> vs 禾川 <b>+10.26%</b>（祥明跑赢）；昨(11/06)：祥明 −4.67% vs 禾川 −4.47%（禾川相对强）；前日(11/05)：祥明 +1.40% vs 禾川 +0.98%</div>
+<div class="verdict"><b>V4.2 脚本 state = P1预警</b>（11/09 D0 触发：A +20.00% / B +10.26%，任一 ≥5%；leader 暂定 = 祥明智能）。<b>buyable = ❌</b>（D0 首日未确认）</div>
+<div class="pairline"><b>操作建议：</b>观察不追。苹果 HALO 为事件催化脉冲，规则㉕ 不追连板；等 D1/D2 确认（任一只再涨 &gt;5% 或两日累计 &gt;10%）再谈试错。板块内 20CM 票（上纬新材 PE 亏损、祥明 PE 456）断板风险大。</div>
+</div>
+
+<div class="pairbox">
+<h4>③ 商业航天 / SpaceX<span class="pill p2" style="float:right">P2预警</span></h4>
+<div class="pairline">信维通信（卫星通信/毫米波）<b class="up">+12.77%</b> / 47.70 　vs　 顺灏股份（太空算力，8天4板）<b class="up">+10.02%</b> / 10.54</div>
+<div class="pairline">今日：信维 <b>+12.77%</b> vs 顺灏 <b>+10.02%</b>（信维跑赢=补涨强）；昨(11/06)：信维 −6.68% vs 顺灏 −2.44%（顺灏相对强）</div>
+<div class="verdict"><b>V4.2 脚本 state = P2预警</b>（10/28 P1预警 D0 → 10/29 P1确认 leader 定死=顺灏 → 11/02 P2预警 → 11/03 龙头强回 P1确认 → 11/09 信维 +12.77% 补涨强于顺灏 +10.02% → 回 P2预警）。<b>buyable = ❌</b>（P2预警非确认）</div>
+<div class="pairline"><b>操作建议：</b>观察。信维主力 +6.24 亿最猛但今日盘中炸板；顺灏 8 天 4 板高位（PE 亏损、换手仅 4.66% 缩量板），星舰 11/13 试飞前存题材兑现风险。等补涨/龙头再现连续强势转 P2确认再进。</div>
+</div>
+
+<div class="pairbox">
+<h4>④ 元件 / 覆铜板 / PCB<span class="pill p1" style="float:right">P1预警 · D0</span></h4>
+<div class="pairline">奥士康（PCB 制造）<b class="up">+10.00%</b> / 58.42 　vs　 超声电子（覆铜板/上游材料）<b class="up">+9.98%</b> / 17.86</div>
+<div class="pairline">今日：奥士康 <b>+10.00%</b> vs 超声电子 <b>+9.98%</b>（奥士康微幅跑赢）；昨(11/06)：奥士康 −4.13% vs 超声电子 −7.52%（奥士康相对强）</div>
+<div class="verdict"><b>V4.2 脚本 state = P1预警</b>（11/09 D0 触发：A +10.00% / B +9.98%；leader 暂定 = 奥士康）。<b>buyable = ❌</b></div>
+<div class="pairline"><b>操作建议：</b>观察。超声电子主力净流入 <b>+5.65 亿</b> 居 PCB 之首（换手 14.81% 放量），三季报 +102% 为硬业绩催化（规则61 业绩预告驱动）；但 D0 首日未确认，回踩可试、禁追高。板块整体 5 日主净 −97 亿，反弹持续性存疑。</div>
+</div>
+
+<div class="pairbox">
+<h4>⑤ 周期 / 防御 · 煤炭<span class="pill p1" style="float:right">P1预警 · D0</span></h4>
+<div class="pairline">郑州煤电（焦煤动力煤）<b class="up">+10.00%</b> / 4.73 　vs　 云煤能源（焦炭）<b class="up">+9.95%</b> / 4.20</div>
+<div class="pairline">今日：郑州煤电 <b>+10.00%</b> vs 云煤能源 <b>+9.95%</b>（郑州微幅跑赢）；昨(11/06)：郑州 −0.92% vs 云煤 −0.78%（云煤相对强）</div>
+<div class="verdict"><b>V4.2 脚本 state = P1预警</b>（11/09 D0 触发：A +10.00% / B +9.95%；leader 暂定 = 郑州煤电）。<b>buyable = ❌</b></div>
+<div class="pairline"><b>操作建议：</b>观察。PPI 煤炭 +36.6% 为硬数据催化（规则61 商品驱动），但属顺周期脉冲：两只 PE 均亏损、换手 12% 附近、5 日已 +13.70%/+11.11%，追高接盘风险大。板块 5 日主净 −12.80 亿，资金未见持续流入。</div>
+</div>
+
+<div class="pairbox">
+<h4>⑥ 周期 / 防御 · 燃气（供暖）<span class="pill p1" style="float:right">P1确认</span></h4>
+<div class="pairline">东方环宇（城燃）<b class="up">+10.03%</b> / 20.19 　vs　 胜通能源（LNG 分销）<b class="up">+10.00%</b> / 31.35</div>
+<div class="pairline">今日：东方环宇 <b>+10.03%</b> vs 胜通 <b>+10.00%</b>（东方环宇微幅跑赢）；昨(11/06)：东方环宇 +6.38% vs 胜通 −4.59%（东方环宇强）</div>
+<div class="verdict"><b>V4.2 脚本 state = P1确认</b>（11/06 P1预警 D0：东方环宇 +6.38% → 11/09 连涨2天（D0 +6.38% / D1 +10.03% &gt; 5%）→ P1确认，leader 定死 = 东方环宇）。<b>buyable = ✅</b></div>
+<div class="pairline"><b>操作建议：</b>P1确认·可试错。<b>东方环宇 PE 17.63（全组最低）、换手 5.26% 温和、5 日 +16.17%</b>，是本日「确定性 &gt; 弹性」的最优组合；供暖季 + PPI 燃气 +7.9% 双驱动，属防御底仓型进攻。胜通 PE 亏损、5 日仅 +1.00%，不取。</div>
+</div>
+
+<div class="pairbox">
+<h4>⑦ 光伏 / 新能源（退潮方向）<span class="pill pw" style="float:right">WAIT</span></h4>
+<div class="pairline">阳光电源（逆变器总龙）<b class="down">−5.03%</b> / 77.85 　vs　 隆基绿能（组件总龙）<b class="down">−3.22%</b> / 12.02</div>
+<div class="pairline">今日：阳光 <b>−5.03%</b> vs 隆基 <b>−3.22%</b>（隆基跌得少=相对强）；昨(11/06)：阳光 −3.72% vs 隆基 −0.40%（隆基相对强）；前日(11/05)：阳光 +4.89% vs 隆基 +3.92%</div>
+<div class="verdict"><b>V4.2 脚本 state = WAIT</b>（近 9 个交易日内两只均未出现单日 ≥5% 的启动信号，未触发 P1；<b>V4.2 九态不含「崩塌」</b>，纯下跌 Pair 不构成 Wave）。<b>buyable = ❌</b></div>
+<div class="pairline"><b>操作建议：</b>回避。退潮判断来自价量事实而非 V4.2 定级：光伏设备 −2.27%、电池 −2.12%、能源金属 −2.14%，阳光电源主力净流出 <b>−8.32 亿</b>（全市场前列）、宁德 −6.84 亿、隆基 −1.66 亿；高开低走、获利盘集中兑现。规则⑳ 不接飞刀。</div>
+</div>
+
+<div class="note"><b>（附）贵金属：</b>贵金属Ⅱ +1.70%，中金黄金 +2.84%、山东黄金 +1.98%、紫金矿业 +0.46%，5 日主净 +28 亿后动能衰减。未纳入七板主表（当日涨幅不足、无 ≥5% 启动信号，V4.2 为 WAIT），列观察。</div>
 </section>
 
-<!-- 07 七大板块 Pairs + 三阶段判定 -->
 <section>
-  <h2><span class="n">07</span>七大板块 Pairs + 三阶段判定（V4.2 脚本实跑 · 行情基准 2026-11-09 收盘）</h2>
-  <div class="note">判定规则：每板块 Pair = 当日涨幅 Top2（先圈同细分再取 Top2），用 <b>v42_grade_pair.py::run_v42</b> 脚本实跑（禁手算）；状态以脚本输出 `state` 为准，`buyable`（仅 P1确认/P2确认）= 推荐硬门槛，`P3确认` = 降仓/清仓一票否决，`leader` = 龙头。下列「最新价/当日涨幅/前一日涨幅/总市值/5日/PE/主力净流」均基于 11/06→11/09 截面。</div>
-
-  <!-- Board 1 -->
-  <h3>① 人形机器人（电机/执行器 · 苹果 HALO 催化）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>祥明智能(301226)</td><td>33.06</td><td class="up">+20.00%</td><td class="down">-4.67%</td><td>35.97亿</td><td class="up">+10.42%</td><td>456.0</td><td class="up">+0.31亿</td></tr>
-    <tr><td>禾川科技(688320)</td><td>31.59</td><td class="up">+10.26%</td><td class="down">-4.47%</td><td>47.71亿</td><td class="up">+8.00%</td><td class="na">亏损</td><td class="down">-0.02亿</td></tr>
-  </table>
-  <p><span class="stage-tag p1">P1预警 · D0</span> 今日验证：脚本 state=<b>P1预警</b>（11/09 D0 触发：A 祥明智能 +20.00% / B 禾川科技 +10.26%，任一≥5%；leader 暂定 = A）。buyable=❌。操作：仅观察，未达 D1/D2 确认，不追高（苹果 HALO 为催化脉冲，规则㉕不追连板）。</p>
-
-  <!-- Board 2 -->
-  <h3>② 商业航天 / SpaceX（星舰第15次试飞 + 太空AI）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>信维通信(300136)</td><td>47.70</td><td class="up">+12.77%</td><td class="down">-6.68%</td><td>461.53亿</td><td class="up">+11.14%</td><td>66.87</td><td class="up">+6.24亿</td></tr>
-    <tr><td>顺灏股份(002565)</td><td>10.54</td><td class="up">+10.02%</td><td class="down">-2.44%</td><td>111.72亿</td><td class="up">+28.38%</td><td class="na">亏损</td><td class="up">+2.52亿</td></tr>
-  </table>
-  <p><span class="stage-tag p2">P2预警</span> 今日验证：脚本 state=<b>P2预警</b>（10/28 P1预警 D0 → 10/29 P1确认 leader 定死=顺灏 → 11/02 P2预警 → 11/03 龙头强回 P1确认 → 11/09 信维 +12.77% 补涨强于顺灏 +10.02% → 回 P2预警）。buyable=❌（P2预警非确认）。操作：观察，信维主力 +6.24 亿最强但今日盘中炸板，顺灏 8天4板高位，情绪分化需次日验证持续性。</p>
-
-  <!-- Board 3 -->
-  <h3>③ PCB / 元件（三季报归母净利 +102%）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>奥士康(002913)</td><td>58.42</td><td class="up">+10.00%</td><td class="down">-4.13%</td><td>185.40亿</td><td class="up">+4.55%</td><td>38.64</td><td class="up">+0.92亿</td></tr>
-    <tr><td>超声电子(000823)</td><td>17.86</td><td class="up">+9.98%</td><td class="down">-7.52%</td><td>106.26亿</td><td class="up">+3.36%</td><td>26.82</td><td class="up">+5.65亿</td></tr>
-  </table>
-  <p><span class="stage-tag p1">P1预警 · D0</span> 今日验证：脚本 state=<b>P1预警</b>（11/09 D0 触发：A 奥士康 +10.00% / B 超声电子 +9.98%；leader 暂定 = A）。buyable=❌。操作：观察。超声电子主力净流入 +5.65 亿居 PCB 之首（换手 14.81% 放量），三季报 +102% 为硬业绩催化（规则61 业绩预告驱动），但 D0 首日未确认，回踩可试、禁追高。</p>
-
-  <!-- Board 4 -->
-  <h3>④ 煤炭 / 焦炭（10月PPI 煤炭 +36.6% + 寒潮供暖）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>郑州煤电(600121)</td><td>4.73</td><td class="up">+10.00%</td><td class="down">-0.92%</td><td>57.63亿</td><td class="up">+13.70%</td><td class="na">亏损</td><td class="up">+1.52亿</td></tr>
-    <tr><td>云煤能源(600792)</td><td>4.20</td><td class="up">+9.95%</td><td class="down">-0.78%</td><td>46.62亿</td><td class="up">+11.11%</td><td class="na">亏损</td><td class="up">+0.21亿</td></tr>
-  </table>
-  <p><span class="stage-tag p1">P1预警 · D0</span> 今日验证：脚本 state=<b>P1预警</b>（11/09 D0 触发：A 郑州煤电 +10.00% / B 云煤能源 +9.95%；leader 暂定 = A）。buyable=❌。操作：观察。煤炭有 PPI +36.6% 硬催化 + 供暖季需求双驱动（规则61 商品驱动），但属顺周期脉冲，郑州煤电/云煤能源 PE 均亏损、5日已 +13.7%/+11.1%，追高接盘风险大。</p>
-
-  <!-- Board 5 -->
-  <h3>⑤ 算力芯片 / 半导体（上周暴跌后修复）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>燧原科技-U(688801)</td><td>432.80</td><td class="up">+17.26%</td><td class="down">-6.53%</td><td>1862.56亿</td><td class="up">+24.01%</td><td class="na">亏损</td><td class="up">+0.95亿</td></tr>
-    <tr><td>寒武纪(688256)</td><td>851.21</td><td class="up">+6.02%</td><td class="down">-4.98%</td><td>5352.87亿</td><td class="down">-1.14%</td><td>128.39</td><td class="up">+9.08亿</td></tr>
-  </table>
-  <p><span class="stage-tag p1">P1确认</span> 今日验证：脚本 state=<b>P1确认</b>（11/04 P1预警 D0 → 11/05 连涨2天 P1确认 leader 定死=燧原 → 11/06 中断①龙头 -6.53% ≤ -6% → 11/09 燧原 +17.26% 反包恢复持续推进）。buyable=<b>✅</b>（唯一 buyable 之一）。操作：P1确认·可试错，但寒武纪主力 +9.08 亿更强、燧原 PE 亏损换手 17.21%，属修复反抽，仓位从严（规则66 次日再确认）。</p>
-
-  <!-- Board 6 -->
-  <h3>⑥ 军工航天装备（星舰催化 + 军工电子）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>中国卫星(600118)</td><td>57.50</td><td class="up">+4.55%</td><td class="down">-3.32%</td><td>679.93亿</td><td class="up">+3.23%</td><td>643.42</td><td class="up">+4.02亿</td></tr>
-    <tr><td>西测测试(301306)</td><td>87.30</td><td class="up">+11.78%</td><td class="down">-4.79%</td><td>73.68亿</td><td class="up">+8.88%</td><td class="na">亏损</td><td class="up">+0.96亿</td></tr>
-  </table>
-  <p><span class="stage-tag p1">P1预警 · D0</span> 今日验证：脚本 state=<b>P1预警</b>（11/09 D0 触发：A 中国卫星 +4.55% / B 西测测试 +11.78%；leader 暂定 = B 西测测试）。buyable=❌。操作：观察。航天装备Ⅱ +3.53%（中国卫星 +4.55% 领涨、主力 +4.02 亿），星舰试飞 11/13 催化在前但 D0 未确认，西测测试换手 17.25% 情绪票波动大。</p>
-
-  <!-- Board 7 -->
-  <h3>⑦ 燃气（寒潮供暖 + PPI 燃气 +7.9%）</h3>
-  <table>
-    <tr><th>Pair</th><th>最新价</th><th>11/09涨幅</th><th>11/06涨幅</th><th>总市值</th><th>5日</th><th>PE</th><th>主力净流</th></tr>
-    <tr><td>东方环宇(603706)</td><td>20.19</td><td class="up">+10.03%</td><td class="up">+6.38%</td><td>38.24亿</td><td class="up">+16.17%</td><td>17.63</td><td class="up">+0.37亿</td></tr>
-    <tr><td>胜通能源(001331)</td><td>31.35</td><td class="up">+10.00%</td><td class="down">-4.59%</td><td>128.30亿</td><td class="up">+1.00%</td><td class="na">亏损</td><td class="up">+0.38亿</td></tr>
-  </table>
-  <p><span class="stage-tag p1">P1确认</span> 今日验证：脚本 state=<b>P1确认</b>（11/06 P1预警 D0：东方环宇 +6.38% → 11/09 连涨2天（D0 +6.38% / D1 +10.03%&gt;5%）→ P1确认 leader 定死 = 东方环宇）。buyable=<b>✅</b>。操作：P1确认·可试错，东方环宇 PE 17.63 估值合理、5日 +16.17% 但换手 5.26% 温和，属顺周期防御 + 供暖刚需的确定性方向（相对煤炭更稳）。</p>
+<h2>七、七大板块前三强 + 最优 Pair</h2>
+<table>
+<tr><th>板块</th><th>前三强（细分环节）</th><th>最优配对（大市值双雄）</th><th>小盘高弹性</th></tr>
+<tr><td class="l"><b>科技硬件 / AI算力</b></td><td class="l">算力芯片（燧原 +17.26% / 寒武纪 +6.02%）、元件（+2.81% / 主净 +37.75 亿）、CPO/光通信（中际 +0.90% / 新易盛 +2.27%）</td><td class="l">燧原科技 / 寒武纪</td><td class="l">源杰科技 +7.77% / 沪电股份 +5.31%</td></tr>
+<tr><td class="l"><b>机器人 / 具身智能</b></td><td class="l">空心杯电机（+4.05%）、华为机器人（+3.90%）、机器人执行器（+3.46%）、减速器（+1.88%）</td><td class="l">绿的谐波 / 兆威机电</td><td class="l">祥明智能 +20.00% / 禾川科技 +10.26%</td></tr>
+<tr><td class="l"><b>商业航天 / SpaceX</b></td><td class="l">SpaceX概念（+5.09%）、航天装备Ⅱ（+3.53%）、毫米波（+2.24%）、6G（+2.09%）</td><td class="l">中国卫星 / 信维通信</td><td class="l">顺灏股份 +10.02% / 西部材料 +9.99%</td></tr>
+<tr><td class="l"><b>元件 / 覆铜板 / PCB</b></td><td class="l">覆铜板（+3.38%）、电子树脂（+2.92%）、博通概念（+3.16%）</td><td class="l">胜宏科技 / 华正新材</td><td class="l">奥士康 +10.00% / 超声电子 +9.98%</td></tr>
+<tr><td class="l"><b>周期 / 防御 · 煤炭</b></td><td class="l">焦炭Ⅱ（+3.68%）、煤炭开采（+2.69%）、冶钢原料（−0.98%）</td><td class="l">中国神华 / 陕西煤业</td><td class="l">郑州煤电 +10.00% / 云煤能源 +9.95%</td></tr>
+<tr><td class="l"><b>周期 / 防御 · 燃气</b></td><td class="l">燃气Ⅱ（+2.77%）、厨卫电器（+2.66%）</td><td class="l">新奥股份 / 华润燃气</td><td class="l">东方环宇 +10.03% / 胜通能源 +10.00%</td></tr>
+<tr><td class="l"><b>光伏 / 新能源（退潮）</b></td><td class="l">光伏设备（−2.27%）、电池（−2.12%）、能源金属（−2.14%）</td><td class="l">阳光电源 / 隆基绿能</td><td class="l">— 均退潮，回避</td></tr>
+</table>
+<div class="note">最优 Pair 口径：大市值双雄为板块定级锚（V4.2 Pair 必选），小盘高弹性为情绪弹性观察位。⛔ 市值差 &gt;5 倍的权重龙头按三-⑧ 单列，不参与常规 Pair。</div>
 </section>
 
-<!-- 08 七大板块前三强 + 最优 Pair -->
 <section>
-  <h2><span class="n">08</span>七大板块前三强 + 最优 Pair</h2>
-  <table>
-    <tr><th>板块</th><th>前三强（细分环节）</th><th>最优 Pair（大市值双雄 + 小盘高弹性）</th><th>阶段</th></tr>
-    <tr><td>① 人形机器人</td><td>上纬新材 +20.00% / 祥明智能 +20.00% / 禾川科技 +10.26%</td><td>宇树科技(2896亿) + 祥明智能(弹性)</td><td><span class="pill p1">P1预警</span></td></tr>
-    <tr><td>② 商业航天</td><td>信维通信 +12.77% / 顺灏股份 +10.02% / 西部材料 +9.99%</td><td>信维通信(461.5亿) + 顺灏股份(弹性·高位)</td><td><span class="pill p2">P2预警</span></td></tr>
-    <tr><td>③ PCB/元件</td><td>奥士康 +10.00% / 超声电子 +9.98% / 胜宏科技 +5.72%</td><td>胜宏科技(1291.6亿) + 奥士康(弹性)</td><td><span class="pill p1">P1预警</span></td></tr>
-    <tr><td>④ 煤炭/焦炭</td><td>郑州煤电 +10.00% / 云煤能源 +9.95% / 安泰集团 +9.93%</td><td>郑州煤电(57.6亿) + 云煤能源(弹性)</td><td><span class="pill p1">P1预警</span></td></tr>
-    <tr><td>⑤ 算力芯片</td><td>燧原科技 +17.26% / 寒武纪 +6.02% / 沐曦 +5%+</td><td>寒武纪(5352.9亿) + 燧原科技(弹性)</td><td><span class="pill p1">P1确认</span></td></tr>
-    <tr><td>⑥ 军工航天</td><td>西测测试 +11.78% / 中国卫星 +4.55% / 派克新材 +6.14%</td><td>中国卫星(679.9亿) + 西测测试(弹性·情绪)</td><td><span class="pill p1">P1预警</span></td></tr>
-    <tr><td>⑦ 燃气</td><td>东方环宇 +10.03% / 胜通能源 +10.00% / 长春燃气 +%</td><td>东方环宇(38.2亿) + 胜通能源(弹性)</td><td><span class="pill p1">P1确认</span></td></tr>
-  </table>
+<h2>八、综合研判与操作建议</h2>
+<p><b>市场情绪：</b>缩量分化、冲高回落。涨停 58 / 跌停 2，涨跌比 40% / 56.4%，连板股仅 10 只、连板晋级率 <b>9.09%</b>、炸板率超四成；最高板闽发铝业 6 连板（机器人方向，尾盘一度炸板靠集合竞价回封），三连板及以上仅 1 只，梯队断层明显。情绪较 11/06 冰点小幅修复，但属「存量博弈下的抱团挣扎」。</p>
+<p><b>板块轮动速度（近一周主线）：</b>11/02 算力硬件/CPO → 11/03 科技分化 → 11/04 半导体修复 → 11/05 光伏/新能源反弹 → 11/06 极端杀跌·银行红利 + 农业防御 → 11/09 机器人 + 商业航天 + PCB。一周 5 次主线切换，轮动极快；本次关键边际变化是<b>「科技硬件由崩塌转修复、题材由防御转进攻」</b>。</p>
+<p><b>主线阶段结论：</b>人形机器人 <b>P1预警（D0）</b>；商业航天/SpaceX <b>P2预警</b>；PCB/元件 <b>P1预警（D0）</b>；科技硬件/AI算力 <b>P1确认</b>；燃气 <b>P1确认</b>；煤炭 <b>P1预警（D0）</b>；光伏/新能源 <b>WAIT（退潮回避）</b>。<b>7 板仅 2 只 buyable</b>，与缩量弱市一致。</p>
+<p><b>仓位建议：</b>ADJ 18.99 未入冰点但板块宽度 = 1 全面下跌 → <b>防守档，总仓 2–4 成</b>（低于对方 5 成建议，理由是成交连续两日缩量、连板晋级率 9.09%、7 板仅 2 只 buyable）。结构：燃气（东方环宇）≤1.5 成 · 算力芯片（燧原）≤1 成 · 其余全部观察仓 0；现金 ≥6 成。单票上限 5%。</p>
+<h3>风险提示（6 条）</h3>
+<div class="note risk">
+<ol>
+<li><b>缩量反弹可信度低：</b>成交 1.48 万亿连续第二日缩量（较 11/06 −1752 亿），价涨量缩；增量资金缺席，冲高回落即证据。反弹须放量确认。</li>
+<li><b>科技硬件「一日游」风险：</b>元件 5 日主净 −97.05 亿、通信设备 −89 亿、半导体 −211 亿仍在深负；今日 +37.75 亿只是单日反转，若 11/10 再度转负则修复证伪。</li>
+<li><b>高标估值透支：</b>宇树科技 PE 516（年内 +374.8%）、祥明智能 PE 456、鸣志 PE 222、绿的谐波 PE 355，均为纯情绪票，换手 17~23%，断板回撤极快。</li>
+<li><b>题材兑现风险：</b>苹果 HALO、SpaceX 星舰 11/13 试飞为事件催化，先手已提前；信维通信今日盘中炸板、顺灏 8 天 4 板缩量板，追高接盘风险大（规则㉕）。</li>
+<li><b>跷跷板轮动过快：</b>一周 5 次主线切换；昨日抗跌的新能源（光伏 −2.27%/能源金属 −2.14%）今日被获利盘砸回，风格切换往复周期缩短（规则㉔），勿线性外推。</li>
+<li><b>红利托底的假象：</b>沪指 +0.32% 靠煤炭/银行/电力权重撑住，个股层面超 3100 只下跌；指数红盘 ≠ 赚钱效应，需防「指数掩护、个股失血」。</li>
+</ol>
+</div>
+<h3>次日（11/10）早晨跟踪框架</h3>
+<ol>
+<li><b>量能：</b>能否回到 1.6 万亿以上；若继续萎缩至 1.4 万亿下方，轮动难以为继、指数易再走弱。沪指 3630 支撑、创业板 2450 支撑。</li>
+<li><b>机器人：</b>祥明/禾川是否延续（D1 确认：任一只再涨 &gt;5% 或两日累计 &gt;10%）；苹果 HALO 是否向本体（宇树）/零部件（绿的谐波、拓普）扩散。</li>
+<li><b>商业航天：</b>信维通信能否补量收复今日上影；顺灏 8 天 4 板能否接力；星舰 11/13 试飞前是否二次发酵。</li>
+<li><b>PCB/算力：</b>超声电子/奥士康能否连强；燧原/寒武纪主净能否连续第 2 日为正（真见底判据）。</li>
+<li><b>顺周期：</b>郑州煤电/东方环宇 D1 是否续强；煤炭 5 日主净 −12.80 亿能否转正。</li>
+<li><b>退潮：</b>阳光电源/隆基是否止跌；若继续放量下杀，确认「P3 崩塌」叙事成立（但 V4.2 仍记 WAIT）。</li>
+</ol>
 </section>
 
-<!-- 09 综合研判 -->
 <section>
-  <h2><span class="n">09</span>综合研判与操作建议</h2>
-  <div class="grid g2">
-    <div class="card">
-      <h4>大盘 / 情绪</h4>
-      <div class="kv"><span>大盘小绿</span><span class="down">否（跌占比56.4%）</span></div>
-      <div class="kv"><span>市场情绪</span><span class="na">中性偏弱（涨停58/跌停2/炸板率超4成）</span></div>
-      <div class="kv"><span>成交额</span><span class="down">14826亿 缩量-1752亿</span></div>
-      <div class="kv"><span>风格</span><span class="na">价值主导 · 高低切换跷跷板</span></div>
-      <div class="kv"><span>情绪位置</span><span class="na">ADJ_SCORE 18.99（非冰点·板块宽度=1全面下跌）</span></div>
-    </div>
-    <div class="card">
-      <h4>主线阶段结论</h4>
-      <p class="muted" style="margin:4px 0">人形机器人 + 商业航天/SpaceX 处于 <b class="up">P1 启动</b>（题材切换首日，均为 P1预警/P2预警，未达确认）。7 大板块中仅 <b class="up">算力芯片（P1确认）、燃气（P1确认）</b> 2 个为 buyable（脚本 state=P1确认），其余 5 个均 P1预警/P2预警（D0 首日或观察期）；昨日主线（AI硬件/半导体）今日修复反抽，属「存量高低切换、跷跷板轮动」，持续性需次日放量确认（规则㉒㉔）。</p>
-    </div>
-  </div>
-
-  <h3>近一周每日主线（轮动速度）</h3>
-  <table>
-    <tr><th>11/02</th><th>11/03</th><th>11/04</th><th>11/05</th><th>11/06</th><th>11/09</th></tr>
-    <tr><td>算力硬件/CPO</td><td>算力硬件</td><td>半导体修复</td><td>科技分化</td><td class="down">银行红利+农业防御</td><td class="up">机器人+商业航天+PCB</td></tr>
-  </table>
-  <div class="note">轮动从「算力硬件→防御红利→机器人/商业航天」加速切换，约 1 天一主线，速度极快；缩量存量博弈下无持续主线，任何方向持续性都需次日放量确认（规则㉔ 风格切换往复周期缩短，勿线性外推）。</div>
-
-  <h3>内置回测 · 11/06 预判 → 11/09 实际（闭环纠错）</h3>
-  <div class="note warn">
-    <b>阶段命中率 ≈ 2/7（明确命中）</b>。逐条：⑤半导体 P1确认 → 今日半导体 +0.17% 微涨未破位 ✅；⑤高速公路 P1预警（龙江交通）→ 今日龙江交通涨停 +9.97% ✅；主线「银行红利防御」→ 今日国有大行 +1.85% 延续 ✅；②农业种业 P2预警 → 今日种植业 -0.57% 走弱（万向德农 +9.04% 逆势）◐半命中；次线「农业+电力」→ 农业 -0.57%/电力 -0.19% 走弱 ❌反向；退潮「AI硬件链」→ 元件 +2.81%/通信设备 +1.67%/消费电子 +1.93% 修复反弹 ❌反向。
-    <br><b>R-Judge 归因</b>：①漏判——机器人（苹果 HALO）、商业航天（SpaceX 星舰）、煤炭/燃气（PPI +36.6%）三大当日最强主线，11/06 全未覆盖；②判错——11/06 判「退潮 AI硬件链」，11/09 元件 +2.81% 修复反弹，极端杀跌日次日反抽，退潮判定过早（规则㊲₄₆ 修复日空向清零未前置应用）；③执行错——无。
-    <br><b>纠错闭环</b>：本次预判已引用——「缩量存量博弈下，极端杀跌日的『退潮』次日极易反抽，判空须前置规则㊲₄₆/规则72，禁过早判退潮」。
-  </div>
-
-  <h3>风险提示（≥4 条）</h3>
-  <div class="risk">
-    <ul>
-      <li><b>缩量反弹一日游：</b>成交连续第二日缩量至 1.48 万亿、增量资金缺席、连板晋级率仅 9.09%，冲高回落显示反弹乏力，任何方向持续性都需次日放量确认，缩量反弹易「一日游」。</li>
-      <li><b>高标/估值透支：</b>宇树科技 PE 516 倍年内 +374.8%、祥明智能 PE 456、燧原科技/上纬新材/郑州煤电 PE 亏损，纯情绪票换手 17~23%，断板回撤风险极大。</li>
-      <li><b>题材兑现风险：</b>苹果 HALO、SpaceX 星舰（11/13 试飞）为事件催化脉冲，题材「先手提前、兑现回落」，信维通信今日盘中炸板、顺灏 8天4板高位，追高接盘风险大（规则㉕不追连板）。</li>
-      <li><b>跷跷板轮动过快：</b>「一天进攻科技、一天布局防御」极致跷跷板，昨日抗跌的新能源（光伏 -2.27%/能源金属 -2.14%/电池 -2.12%）今日被获利盘集中兑现，风格切换往复周期缩短（规则㉔），主线难持续。</li>
-      <li><b>海外映射：</b>美债收益率高位震荡对成长股估值压制，SpaceX 星舰试飞、半导体设备管制等海外变量扰动，需关注外围波动传导。</li>
-    </ul>
-  </div>
-
-  <h3>次日（11/10）早晨跟踪框架草稿</h3>
-  <ul>
-    <li>看两市成交能否止跌回升（1.48 万亿若继续萎缩则轮动难继、易再度走弱）；沪指 3630 支撑能否守住。</li>
-    <li>机器人（宇树/禾川/祥明）能否延续、苹果 HALO 是否扩散至本体/零部件；商业航天（信维/顺灏）星舰 11/13 试飞前是否二次发酵。</li>
-    <li>算力芯片（燧原/寒武纪）P1确认后能否放量延续、PCB（奥士康/超声电子）三季报修复能否连强。</li>
-    <li>煤炭/燃气（PPI +36.6% + 供暖）顺周期能否延续；昨日领跌的新能源（光伏/锂矿/能源金属）是否止跌。</li>
-    <li>连板情绪：闽发铝业 6 连板能否晋级、炸板率能否回落，验证情绪修复是否真实。</li>
-  </ul>
+<h2>九、主线核心个股全景（52 只）</h2>
+<table>
+<tr><th class="l">名称</th><th>代码</th><th>最新价</th><th>涨幅</th><th>成交额(亿)</th><th>换手%</th><th>总市值(亿)</th><th>5日</th><th>PE-TTM</th><th>年初至今</th><th>主力净流入(亿)</th></tr>
+<tr><td class='l'>中际旭创</td><td>300308.SZ</td><td>452.03</td><td><span class="up">+0.90%</span></td><td>217.28</td><td>4.29</td><td>5324.50</td><td><span class="down">-17.81%</span></td><td>20.56</td><td><span class="down">-25.63%</span></td><td><span class="up">+6.68</span></td></tr>
+<tr><td class='l'>新易盛</td><td>300502.SZ</td><td>176.00</td><td><span class="up">+2.27%</span></td><td>137.69</td><td>6.17</td><td>2454.74</td><td><span class="down">-8.08%</span></td><td>16.84</td><td><span class="down">-42.68%</span></td><td><span class="up">+9.28</span></td></tr>
+<tr><td class='l'>天孚通信</td><td>300394.SZ</td><td>122.82</td><td><span class="up">+0.67%</span></td><td>47.71</td><td>3.53</td><td>1339.75</td><td><span class="down">-13.35%</span></td><td>50.84</td><td><span class="down">-14.72%</span></td><td><span class="up">+1.02</span></td></tr>
+<tr><td class='l'>沪电股份</td><td>002463.SZ</td><td>77.10</td><td><span class="up">+5.31%</span></td><td>64.69</td><td>4.37</td><td>1486.92</td><td><span class="down">-10.40%</span></td><td>22.10</td><td><span class="up">+6.24%</span></td><td><span class="up">+4.28</span></td></tr>
+<tr><td class='l'>生益科技</td><td>600183.SH</td><td>70.68</td><td><span class="up">+0.27%</span></td><td>66.91</td><td>3.91</td><td>1716.82</td><td><span class="down">-13.89%</span></td><td>22.54</td><td><span class="up">+0.10%</span></td><td><span class="up">+0.14</span></td></tr>
+<tr><td class='l'>胜宏科技</td><td>300476.SZ</td><td>131.42</td><td><span class="up">+5.72%</span></td><td>57.06</td><td>4.98</td><td>1291.58</td><td><span class="down">-2.67%</span></td><td>29.02</td><td><span class="down">-53.98%</span></td><td><span class="up">+3.88</span></td></tr>
+<tr><td class='l'>奥士康</td><td>002913.SZ</td><td>58.42</td><td><span class="up">+10.00%</span></td><td>4.36</td><td>2.55</td><td>185.40</td><td><span class="up">+4.55%</span></td><td>38.64</td><td><span class="up">+37.64%</span></td><td><span class="up">+0.92</span></td></tr>
+<tr><td class='l'>太辰光</td><td>300570.SZ</td><td>102.15</td><td><span class="up">+0.50%</span></td><td>15.19</td><td>7.74</td><td>232.01</td><td><span class="down">-10.59%</span></td><td>69.53</td><td><span class="down">-10.82%</span></td><td><span class="up">+0.53</span></td></tr>
+<tr><td class='l'>源杰科技</td><td>688498.SH</td><td>645.45</td><td><span class="up">+7.77%</span></td><td>45.59</td><td>5.85</td><td>803.59</td><td><span class="down">-4.80%</span></td><td>72.47</td><td><span class="up">+46.13%</span></td><td><span class="up">+3.39</span></td></tr>
+<tr><td class='l'>燧原科技-U</td><td>688801.SH</td><td>432.80</td><td><span class="up">+17.26%</span></td><td>12.55</td><td>17.21</td><td>1862.56</td><td><span class="up">+24.01%</span></td><td><span class="na">亏损</span></td><td><span class="up">+204.40%</span></td><td><span class="up">+0.95</span></td></tr>
+<tr><td class='l'>寒武纪</td><td>688256.SH</td><td>851.21</td><td><span class="up">+6.02%</span></td><td>103.88</td><td>1.95</td><td>5352.87</td><td><span class="down">-1.14%</span></td><td>128.39</td><td><span class="down">-6.33%</span></td><td><span class="up">+9.08</span></td></tr>
+<tr><td class='l'>鸣志电器</td><td>603728.SH</td><td>59.24</td><td><span class="up">+0.68%</span></td><td>5.10</td><td>2.03</td><td>248.15</td><td><span class="up">+0.75%</span></td><td>222.58</td><td><span class="down">-18.09%</span></td><td><span class="up">+0.10</span></td></tr>
+<tr><td class='l'>兆威机电</td><td>003021.SZ</td><td>103.72</td><td><span class="up">+1.74%</span></td><td>13.93</td><td>6.33</td><td>278.02</td><td><span class="up">+15.54%</span></td><td>142.09</td><td><span class="down">-16.22%</span></td><td><span class="up">+0.78</span></td></tr>
+<tr><td class='l'>中大力德</td><td>002896.SZ</td><td>58.51</td><td><span class="up">+1.83%</span></td><td>4.17</td><td>3.60</td><td>114.99</td><td><span class="up">+3.21%</span></td><td>200.31</td><td><span class="down">-34.44%</span></td><td><span class="up">+0.11</span></td></tr>
+<tr><td class='l'>绿的谐波</td><td>688017.SH</td><td>296.20</td><td><span class="up">+3.91%</span></td><td>25.43</td><td>4.64</td><td>543.02</td><td><span class="up">+10.19%</span></td><td>355.43</td><td><span class="up">+54.36%</span></td><td><span class="up">+1.81</span></td></tr>
+<tr><td class='l'>三花智控</td><td>002050.SZ</td><td>34.24</td><td><span class="up">+1.69%</span></td><td>21.46</td><td>1.67</td><td>1440.82</td><td><span class="up">+2.12%</span></td><td>37.06</td><td><span class="down">-37.51%</span></td><td><span class="up">+0.91</span></td></tr>
+<tr><td class='l'>拓普集团</td><td>601689.SH</td><td>46.70</td><td><span class="up">+4.45%</span></td><td>15.79</td><td>1.94</td><td>811.57</td><td><span class="up">+5.66%</span></td><td>32.80</td><td><span class="down">-39.11%</span></td><td><span class="up">+1.60</span></td></tr>
+<tr><td class='l'>禾川科技</td><td>688320.SH</td><td>31.59</td><td><span class="up">+10.26%</span></td><td>3.02</td><td>6.24</td><td>47.71</td><td><span class="up">+8.00%</span></td><td><span class="na">亏损</span></td><td><span class="down">-15.35%</span></td><td><span class="down">-0.02</span></td></tr>
+<tr><td class='l'>祥明智能</td><td>301226.SZ</td><td>33.06</td><td><span class="up">+20.00%</span></td><td>1.21</td><td>3.52</td><td>35.97</td><td><span class="up">+10.42%</span></td><td>456.03</td><td><span class="down">-2.68%</span></td><td><span class="up">+0.31</span></td></tr>
+<tr><td class='l'>宇树科技-W</td><td>688836.SH</td><td>716.00</td><td><span class="up">+9.04%</span></td><td>51.17</td><td>23.41</td><td>2895.96</td><td><span class="up">+8.13%</span></td><td>516.64</td><td><span class="up">+374.80%</span></td><td><span class="up">+2.15</span></td></tr>
+<tr><td class='l'>中国卫星</td><td>600118.SH</td><td>57.50</td><td><span class="up">+4.55%</span></td><td>38.26</td><td>5.48</td><td>679.93</td><td><span class="up">+3.23%</span></td><td>643.42</td><td><span class="down">-39.43%</span></td><td><span class="up">+4.02</span></td></tr>
+<tr><td class='l'>航天晨光</td><td>600501.SH</td><td>17.14</td><td><span class="up">+0.18%</span></td><td>7.62</td><td>10.14</td><td>73.33</td><td><span class="up">+3.63%</span></td><td><span class="na">亏损</span></td><td><span class="down">-43.11%</span></td><td><span class="down">-0.12</span></td></tr>
+<tr><td class='l'>信维通信</td><td>300136.SZ</td><td>47.70</td><td><span class="up">+12.77%</span></td><td>48.65</td><td>12.12</td><td>461.53</td><td><span class="up">+11.14%</span></td><td>66.87</td><td><span class="down">-23.00%</span></td><td><span class="up">+6.24</span></td></tr>
+<tr><td class='l'>上海沪工</td><td>603131.SH</td><td>16.91</td><td><span class="up">+4.71%</span></td><td>13.29</td><td>22.80</td><td>56.97</td><td><span class="down">-2.25%</span></td><td><span class="na">亏损</span></td><td><span class="down">-44.10%</span></td><td><span class="up">+1.53</span></td></tr>
+<tr><td class='l'>西部材料</td><td>002149.SZ</td><td>41.51</td><td><span class="up">+9.99%</span></td><td>6.14</td><td>3.03</td><td>202.66</td><td><span class="up">+19.76%</span></td><td>226.30</td><td><span class="down">-8.49%</span></td><td><span class="up">+3.05</span></td></tr>
+<tr><td class='l'>中航光电</td><td>002179.SZ</td><td>34.34</td><td><span class="up">+0.97%</span></td><td>4.59</td><td>0.63</td><td>721.22</td><td><span class="up">+1.48%</span></td><td>30.56</td><td><span class="down">-1.58%</span></td><td><span class="down">-0.28</span></td></tr>
+<tr><td class='l'>西测测试</td><td>301306.SZ</td><td>87.30</td><td><span class="up">+11.78%</span></td><td>8.89</td><td>17.25</td><td>73.68</td><td><span class="up">+8.88%</span></td><td><span class="na">亏损</span></td><td><span class="down">-23.66%</span></td><td><span class="up">+0.96</span></td></tr>
+<tr><td class='l'>超声电子</td><td>000823.SZ</td><td>17.86</td><td><span class="up">+9.98%</span></td><td>15.27</td><td>14.81</td><td>106.26</td><td><span class="up">+3.36%</span></td><td>26.82</td><td><span class="up">+33.68%</span></td><td><span class="up">+5.65</span></td></tr>
+<tr><td class='l'>华正新材</td><td>603186.SH</td><td>148.51</td><td><span class="up">+4.88%</span></td><td>24.46</td><td>10.61</td><td>232.85</td><td><span class="up">+1.24%</span></td><td>22.96</td><td><span class="up">+200.20%</span></td><td><span class="up">+2.91</span></td></tr>
+<tr><td class='l'>南亚新材</td><td>688519.SH</td><td>164.45</td><td><span class="down">-0.33%</span></td><td>15.43</td><td>3.97</td><td>392.06</td><td><span class="down">-10.96%</span></td><td>25.57</td><td><span class="up">+104.16%</span></td><td><span class="up">+0.18</span></td></tr>
+<tr><td class='l'>金安国纪</td><td>002636.SZ</td><td>66.03</td><td><span class="up">+0.12%</span></td><td>38.52</td><td>8.00</td><td>480.70</td><td><span class="up">+3.66%</span></td><td>23.43</td><td><span class="up">+298.13%</span></td><td><span class="down">-0.75</span></td></tr>
+<tr><td class='l'>广合科技</td><td>001389.SZ</td><td>86.80</td><td><span class="up">+2.35%</span></td><td>10.05</td><td>7.57</td><td>410.33</td><td><span class="down">-2.81%</span></td><td>23.05</td><td><span class="up">+7.18%</span></td><td><span class="up">+0.54</span></td></tr>
+<tr><td class='l'>郑州煤电</td><td>600121.SH</td><td>4.73</td><td><span class="up">+10.00%</span></td><td>6.87</td><td>12.18</td><td>57.63</td><td><span class="up">+13.70%</span></td><td><span class="na">亏损</span></td><td><span class="up">+13.43%</span></td><td><span class="up">+1.52</span></td></tr>
+<tr><td class='l'>云煤能源</td><td>600792.SH</td><td>4.20</td><td><span class="up">+9.95%</span></td><td>5.48</td><td>12.06</td><td>46.62</td><td><span class="up">+11.11%</span></td><td><span class="na">亏损</span></td><td><span class="up">+8.25%</span></td><td><span class="up">+0.21</span></td></tr>
+<tr><td class='l'>东方环宇</td><td>603706.SH</td><td>20.19</td><td><span class="up">+10.03%</span></td><td>1.95</td><td>5.26</td><td>38.24</td><td><span class="up">+16.17%</span></td><td>17.63</td><td><span class="up">+9.14%</span></td><td><span class="up">+0.37</span></td></tr>
+<tr><td class='l'>胜通能源</td><td>001331.SZ</td><td>31.35</td><td><span class="up">+10.00%</span></td><td>2.00</td><td>2.27</td><td>128.30</td><td><span class="up">+1.00%</span></td><td><span class="na">亏损</span></td><td><span class="down">-1.71%</span></td><td><span class="up">+0.38</span></td></tr>
+<tr><td class='l'>中国银行</td><td>601988.SH</td><td>7.00</td><td><span class="up">+2.19%</span></td><td>22.86</td><td>0.16</td><td>22554.87</td><td><span class="down">-0.57%</span></td><td>8.92</td><td><span class="up">+24.71%</span></td><td><span class="up">+2.45</span></td></tr>
+<tr><td class='l'>工商银行</td><td>601398.SH</td><td>8.61</td><td><span class="up">+2.01%</span></td><td>30.77</td><td>0.13</td><td>30686.58</td><td><span class="down">-0.92%</span></td><td>7.99</td><td><span class="up">+13.14%</span></td><td><span class="up">+2.43</span></td></tr>
+<tr><td class='l'>中国神华</td><td>601088.SH</td><td>49.57</td><td><span class="up">+2.12%</span></td><td>17.46</td><td>0.21</td><td>10751.45</td><td><span class="down">-4.38%</span></td><td>19.74</td><td><span class="up">+28.79%</span></td><td><span class="up">+0.31</span></td></tr>
+<tr><td class='l'>中金黄金</td><td>600489.SH</td><td>21.38</td><td><span class="up">+2.84%</span></td><td>13.12</td><td>1.27</td><td>1036.36</td><td><span class="up">+15.44%</span></td><td>14.92</td><td><span class="down">-6.65%</span></td><td><span class="up">+0.73</span></td></tr>
+<tr><td class='l'>山东黄金</td><td>600547.SH</td><td>26.72</td><td><span class="up">+1.98%</span></td><td>16.37</td><td>1.69</td><td>1231.77</td><td><span class="up">+17.14%</span></td><td>31.08</td><td><span class="down">-30.47%</span></td><td><span class="up">+0.94</span></td></tr>
+<tr><td class='l'>紫金矿业</td><td>601899.SH</td><td>28.41</td><td><span class="up">+0.46%</span></td><td>37.71</td><td>0.64</td><td>7554.45</td><td><span class="up">+5.85%</span></td><td>10.57</td><td><span class="down">-15.62%</span></td><td><span class="up">+1.99</span></td></tr>
+<tr><td class='l'>阳光电源</td><td>300274.SZ</td><td>77.85</td><td><span class="down">-5.03%</span></td><td>70.93</td><td>5.63</td><td>1614.00</td><td><span class="up">+8.82%</span></td><td>19.73</td><td><span class="down">-54.13%</span></td><td><span class="down">-8.32</span></td></tr>
+<tr><td class='l'>隆基绿能</td><td>601012.SH</td><td>12.02</td><td><span class="down">-3.22%</span></td><td>14.91</td><td>1.61</td><td>910.88</td><td><span class="up">+4.52%</span></td><td><span class="na">亏损</span></td><td><span class="down">-33.96%</span></td><td><span class="down">-1.66</span></td></tr>
+<tr><td class='l'>宁德时代</td><td>300750.SZ</td><td>248.64</td><td><span class="down">-2.19%</span></td><td>109.08</td><td>1.02</td><td>11505.19</td><td><span class="up">+3.52%</span></td><td>13.12</td><td><span class="down">-30.73%</span></td><td><span class="down">-6.84</span></td></tr>
+<tr><td class='l'>上纬新材</td><td>688585.SH</td><td>216.02</td><td><span class="up">+20.00%</span></td><td>33.25</td><td>3.92</td><td>871.34</td><td><span class="up">+26.53%</span></td><td><span class="na">亏损</span></td><td><span class="up">+69.60%</span></td><td><span class="up">+1.24</span></td></tr>
+<tr><td class='l'>顺灏股份</td><td>002565.SZ</td><td>10.54</td><td><span class="up">+10.02%</span></td><td>5.18</td><td>4.66</td><td>111.72</td><td><span class="up">+28.38%</span></td><td><span class="na">亏损</span></td><td><span class="down">-42.50%</span></td><td><span class="up">+2.52</span></td></tr>
+<tr><td class='l'>华培动力</td><td>603121.SH</td><td>11.98</td><td><span class="up">+10.01%</span></td><td>0.74</td><td>1.85</td><td>40.56</td><td><span class="up">+5.09%</span></td><td><span class="na">亏损</span></td><td><span class="down">-43.38%</span></td><td><span class="up">+0.37</span></td></tr>
+<tr><td class='l'>力星股份</td><td>300421.SZ</td><td>19.02</td><td><span class="up">+15.06%</span></td><td>5.90</td><td>14.05</td><td>55.92</td><td><span class="up">+15.20%</span></td><td>152.14</td><td><span class="down">-48.08%</span></td><td><span class="up">+1.07</span></td></tr>
+<tr><td class='l'>飞亚达</td><td>000026.SZ</td><td>20.19</td><td><span class="up">+10.03%</span></td><td>2.87</td><td>4.01</td><td>81.92</td><td><span class="up">+15.04%</span></td><td>95.42</td><td><span class="up">+24.17%</span></td><td><span class="up">+0.69</span></td></tr>
+<tr><td class='l'>派克新材</td><td>605123.SH</td><td>78.35</td><td><span class="up">+6.14%</span></td><td>2.48</td><td>2.60</td><td>94.94</td><td><span class="up">+8.02%</span></td><td>32.62</td><td><span class="down">-24.02%</span></td><td><span class="up">+0.28</span></td></tr>
+<tr><td class='l'>安泰集团</td><td>600408.SH</td><td>3.32</td><td><span class="up">+9.93%</span></td><td>3.17</td><td>9.67</td><td>33.43</td><td><span class="up">+1.84%</span></td><td><span class="na">亏损</span></td><td><span class="down">-17.62%</span></td><td><span class="up">+1.37</span></td></tr>
+</table>
+<div class="note">数据来源：<b>westock（腾讯自选股接口）</b>——行业/概念榜、涨跌分布、六大指数、个股行情、主力资金；<b>WebSearch 三源交叉</b>（微信公众号收评、同花顺财经、证券时报/网易、市值风云）验证指数与板块方向。<br>
+主力净流入为 westock <code>data_fund_flow</code> 口径（元→亿元），与 Tushare 等第三方「主力」定义不同（超大单/大单边界不一致），跨源数字可能正负相异，<b>本表不与他源混用</b>。PE 负值标「亏损」，缺失标 N/A，绝不臆造。概念板块 5 日价格涨幅 westock 源不稳定，以 5 日主力净流替代并标注。</div>
 </section>
 
 <footer>
-  数据来源：westock（腾讯自选股接口）行业/概念/涨跌分布/指数/个股行情/主力资金 + WebSearch 公开收评三源交叉（微信公众号收评、同花顺财经、证券时报/网易、市值风云）。<br>
-  三阶段判定严格基于 V4.2 脚本（研究/v42_grade_pair.py::run_v42）实跑，行情基准 2026-11-09 收盘；Pair = 当日涨幅 Top2（先圈同细分再取 Top2）。<br>
-  投资有风险，决策需谨慎。过往表现不代表未来收益。
+主线分析 · 2026-11-09（周一）收盘复盘 ｜ 三阶段理论 <b>V4.2</b>（唯一阶段判据，脚本实跑 v42_grade_pair.py::run_v42）｜ 行情基准 2026-11-09 收盘<br>
+投资有风险，决策需谨慎。过往表现不代表未来收益。
 </footer>
 
-</div>
-
-<script>
-function paint(id, cats, vals, color){
-  var el = document.getElementById(id);
-  if(!el || typeof echarts === 'undefined') return;
-  var c = echarts.init(el);
-  c.setOption({
-    grid:{left:80,right:30,top:30,bottom:60},
-    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    xAxis:{type:'category', data:cats, axisLabel:{interval:0, rotate:35, fontSize:11}},
-    yAxis:{type:'value', axisLabel:{formatter:'{value}%'}},
-    series:[{type:'bar', data:vals.map(function(v){return {value:v, itemStyle:{color: v>=0?'#d8392b':'#1a9e5f'}};}),
-      label:{show:true, position:'top', formatter:'{c}%', fontSize:11, color:'#333'}}]
-  });
-}
-paint('idxChart',
-  ['上证','深证','创业板','科创50','上证50','沪深300'],
-  [0.32,-0.27,-0.27,0.30,0.06,0.05]);
-paint('conceptChart',
-  ['SpaceX','空心杯电机','华为机器人','机器人执行器','覆铜板','博通概念','电子树脂','智元机器人','6G','毫米波','减速器','航天装备概念'],
-  [5.09,4.05,3.90,3.46,3.38,3.16,2.92,2.68,2.09,2.24,1.88,1.85]);
-</script>
-</body>
-</html>
+</div></body></html>
