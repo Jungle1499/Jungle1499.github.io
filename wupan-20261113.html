@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>午盘速览 2026-11-13（周五）</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5a6e;
+    --border: #e0e4e8;
+    --red: #d93026;
+    --green: #1e8e3e;
+    --accent: #2563eb;
+    --warning: #f59e0b;
+    --danger: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .summary-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fbbf24;
+  }
+  .summary-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.95;
+  }
+  .summary-card .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+  .section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+  }
+  .source {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: right;
+  }
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .index-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .index-card .name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .index-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .index-card .change {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .pos { color: var(--red); }
+  .neg { color: var(--green); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  td { color: var(--text); }
+  tr:hover { background: #f8f9fa; }
+  .tfoot { font-weight: 600; background: #f0f4f8; }
+  .chart-box {
+    width: 100%;
+    height: 280px;
+    margin: 12px 0;
+  }
+  .quad-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .quad-card {
+    background: #fafbfc;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid var(--border);
+  }
+  .quad-card.q1 { border-left-color: #22c55e; }
+  .quad-card.q2 { border-left-color: #3b82f6; }
+  .quad-card.q3 { border-left-color: #f59e0b; }
+  .quad-card.q4 { border-left-color: #ef4444; }
+  .quad-card .q-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .quad-card .q-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .alert-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .alert-box.safe {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+  }
+  .alert-box.danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+  .disclaimer {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    text-align: justify;
+    padding: 14px;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .small { font-size: 11px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>午盘速览 2026-11-13（周五）</h1>
+<p class="subtitle">数据基准：2026-11-13 11:30 午间收盘 · 生成时间 11:45 · 数据来源：腾讯自选股行情API 11:30 + 东方财富涨停/炸板/跌停三池 11:30 + 财联社午评 11:33 + 每日经济新闻 11:35 + 新浪财经 11:36</p>
+
+<!-- 半日小结卡 -->
+<div class="summary-card">
+  <h2>半日小结</h2>
+  <p>沪指微涨 0.22%（3663.71），但<b>深成 -0.56% / 创业板 -1.47% / 科创50 从盘中 +1.56% 一路回吐至 -0.48%（振幅 3.34%）</b> —— 这不是普涨，是<b>"高位算力硬件崩塌、资金横向搬家"</b>的剧烈高低切换。最刺眼的两组数字：元件（61只成分仅4只上涨）<b>-5.54%、主力净流出 -66.31亿</b>；通信设备（86只仅30只上涨）<b>-3.93%、净流出 -60.95亿</b>。而另一边，影视院线 <b>+5.09%（19只16涨）、净流入 +10.80亿</b>，全市场 41 只涨停里有 <b>9 只集中在影视传媒链</b>。半日成交 9793.72亿（缩量 2420.83亿 / -19.8%），下跌 2996 只。<b>缩量 + 单主线爆发 + 前日热点集体翻绿 = 存量博弈下的赛道重置，不是增量行情。</b></p>
+  <p style="margin-top:8px">
+    <span class="tag">沪指独红</span>
+    <span class="tag">创业板 -1.47%</span>
+    <span class="tag">AI漫剧/影视9只涨停</span>
+    <span class="tag">元件 -5.54% 崩塌</span>
+    <span class="tag">缩量 2421亿</span>
+    <span class="tag">铁律A未触发</span>
+  </p>
+</div>
+
+<!-- 〇、策略衔接对照 -->
+<div class="section">
+  <h3>〇、策略衔接对照（盘前 → 午盘）</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">盘前预判方向</th>
+        <th style="width:20%">关键点位/依据</th>
+        <th style="width:18%">上午实际走势</th>
+        <th style="width:12%">兑现情况</th>
+        <th style="width:28%">午后关注点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>主攻·半导体算力（V4.2 燧原×沐曦 P1确认，核心看好 2 只）</td>
+        <td>国产算力接力，低开才接</td>
+        <td>半导体 -0.74%（59/183 涨）、净流出 -30.36亿；科创50 盘中冲高 +1.56% 后回吐至 -0.48%；核心看好 2 只 0 兑现</td>
+        <td class="neg">未兑现</td>
+        <td>算力芯片是否在午后收复科创50 1300 关口；燧原/沐曦分时能否翻红</td>
+      </tr>
+      <tr>
+        <td>光模块/覆铜板「低开才接」</td>
+        <td>T-1 通信设备 +9.99% 惯性</td>
+        <td>通信设备 -3.93%（净 -60.95亿）、覆铜板 -5.05%（0/5 涨）、光芯片 -3.75%（净 -62.70亿）；中际旭创/新易盛/天孚通信集体重挫</td>
+        <td class="neg">反向（严重）</td>
+        <td>CPO 是否二次杀跌破位；若午后继续放量下杀 → 该方向彻底退出主攻序列</td>
+      </tr>
+      <tr>
+        <td>防御判 0 仓（白酒/银行判回避）</td>
+        <td>退潮防守 state v1</td>
+        <td>城商行Ⅱ +1.82%（17/17 涨）、国有大行 +0.96%、白酒Ⅱ +1.43%（18/19 涨）；江苏银行/南京银行创历史新高</td>
+        <td class="neg">反向</td>
+        <td>银行新高后能否延续；防御仓位应从 0 仓回补至 8-10%</td>
+      </tr>
+      <tr>
+        <td>盘前方向表未覆盖 AI漫剧/影视传媒</td>
+        <td>—</td>
+        <td>影视院线 +5.09%（16/19 涨，净 +10.80亿）；电视广播 +3.39%（13/13）；短剧/互动游戏 +1.92%；板块内 9 只涨停</td>
+        <td class="neg">完全漏判</td>
+        <td>午后首板能否续板（金逸/横店/中国电影封单是否松动）；博纳影业炸板后能否回封</td>
+      </tr>
+      <tr>
+        <td>回避·贵金属</td>
+        <td>商品价格方向门</td>
+        <td>贵金属 -0.14%（6/11 涨），基本走平，回避无损失亦无收益</td>
+        <td class="pos">兑现（走平）</td>
+        <td>无新增信号，维持不参与</td>
+      </tr>
+      <tr>
+        <td>测算：缩量退潮、控仓偏多</td>
+        <td>单票 ≤1.2%</td>
+        <td>半日 9793.72亿，缩量 2420.83亿（-19.8%）；上证 4489.97亿 / 深市 5303.75亿</td>
+        <td class="pos">兑现（缩量方向对）</td>
+        <td>午后若不能补量至 5500亿+，全日料落 1.55-1.65万亿，缩量格局确认</td>
+      </tr>
+      <tr>
+        <td>铁律A（4300只下跌降仓）</td>
+        <td>红线 4300</td>
+        <td>跌 2996 只 / 涨 2342 只 → <b>未触发</b>（距红线 1304 只）</td>
+        <td class="pos">兑现</td>
+        <td>午后 13:30-14:00 若下跌超 3800 只需预警；超 4300 只立即降仓至 10%</td>
+      </tr>
+      <tr>
+        <td>情绪「昨日涨停」承接</td>
+        <td>—</td>
+        <td>昨日涨停 -0.51%（16/37 涨，净 -22.81亿）、昨日连板 -0.49%（4/11）、昨日首板 +0.43%（9/18）</td>
+        <td class="neg">负反馈（亏钱效应）</td>
+        <td>昨日涨停今日走弱 → 高位股不宜接力，新方向只能做低位首板</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：盘前策略 panqian-20261113.html 08:25 + 腾讯自选股 11:30 截面 + 财联社午评 11:33</p>
+</div>
+
+<!-- 零点五、节点卡位四象限 -->
+<div class="section">
+  <h3>零点五、节点卡位四象限（11:30 午盘视角）</h3>
+  <div class="quad-grid">
+    <div class="quad-card q1">
+      <div class="q-title">Q1 防御现金流（当前 8-10% / 建议 10-12%）</div>
+      <div class="q-body">
+        <b>银行</b>：城商行 +1.82%（17/17 全涨）、国有大行 +0.96%、股份行 +0.76%；江苏银行/南京银行/青岛银行/成都银行创历史新高；<b>白酒</b> +1.43%（18/19 涨，净 +3.03亿）；<b>电力</b> +0.82%（67/109）。<br>
+        <b>半日证据：</b>前三季度 42 家上市银行营收 4.66万亿（+7.81%）、归母净利 1.75万亿（+3.78%）；红利股概念净流入 +8.16亿。<br>
+        <b>动作：</b>从盘前「0 仓回避」纠错回补至 10-12%，优先城商行+白酒
+      </div>
+    </div>
+    <div class="quad-card q2">
+      <div class="q-title">Q2 新逻辑（当前 12-15% / 建议 15-18%）</div>
+      <div class="q-body">
+        <b>AI漫剧/影视传媒</b>：影视院线 +5.09%（净 +10.80亿）、电视广播 +3.39%（13/13）、影视传媒概念 +2.09%（净 +9.59亿）、短剧/互动游戏 +1.92%；<b>猪肉/养殖</b>：猪肉 +2.69%（32/35 涨）、养殖业 +2.31%（净 +3.26亿）、饲料 +2.26%。<br>
+        <b>半日证据：</b>抖音集团短剧版权中心开放互动剧与互动影游合作（单剧最高 20万保底 + 30%-50% 额外分成）；全市场 41 只涨停中影视传媒链占 9 只。<br>
+        <b>动作：</b>主攻，但只买<b>未封板</b>的（博纳/光线），封死的一律不追
+      </div>
+    </div>
+    <div class="quad-card q3">
+      <div class="q-title">Q3 超跌反转（当前 0-3% / 建议 0-3% 观望）</div>
+      <div class="q-body">
+        <b>元件/通信设备</b>：元件 -5.54%（4/61 涨，净 -66.31亿）、通信设备 -3.93%（30/86 涨，净 -60.95亿）、覆铜板 -5.05%、光芯片 -3.75%（净 -62.70亿）、谷歌概念 -3.70%（净 -91.16亿）。<br>
+        <b>半日证据：</b>净流出居前的全是昨日领涨的算力硬件，昨日涨停今日 -0.51% → 资金不是撤出，是<b>搬仓</b>。<br>
+        <b>动作：</b>不接刀。等 1-2 日缩量止跌再看，今日零仓位
+      </div>
+    </div>
+    <div class="quad-card q4">
+      <div class="q-title">Q4 主线二波（当前 3-5% / 建议 3-5%）</div>
+      <div class="q-body">
+        <b>华为机器人</b> +3.59%（6/6 全涨，净 +0.75亿）；<b>IT服务/算力服务</b> +1.39%（85/123 涨，净 +8.15亿，华胜天成封单 7.48亿全场第一）；<b>华为鲲鹏 +9.42亿 / 昇腾 +9.41亿 / 算力 +8.99亿 / 信创 +8.91亿</b>。<br>
+        <b>半日证据：</b>资金在算力硬件（光模块/PCB）里撤出，但转进了算力软件/信创/华为链 —— 同题材不同环节。<br>
+        <b>动作：</b>试错仓，只做未涨停的软硬件切换标的
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:14px; font-size:13px">象限切换触发器</h4>
+  <ul style="font-size:12px; color:var(--text-secondary); padding-left:20px; line-height:1.8">
+    <li>Q2→Q4：若影视传媒午后炸板率超 40%（当前 21.2%）→ 题材退潮，减至 5%</li>
+    <li>Q3→Q2：若元件/通信设备午后出现放量长下影 + 净流出收窄至 -20亿内 → 明日可低吸</li>
+    <li>Q1→Q2：若沪指站稳 3670 且上涨家数回到 2800 只以上 → 加仓题材</li>
+    <li>铁律A触发（4300只下跌）：全面降至 10% 仅留防御</li>
+  </ul>
+
+  <h4 style="margin-top:12px; font-size:13px">铁律A 红线复核</h4>
+  <div class="alert-box safe">
+    ✅ 铁律A <b>未触发</b> —— 上涨 2342 只 / 下跌 2996 只 / 平盘 241 只 / 停牌 8 只；下跌占比 55.9%（跌/(涨+跌)），距 4300 只红线尚有 1304 只空间。涨停 41 只、跌停 8 只，跌停未成规模。<br>
+    <b>仓位建议：</b>控仓偏多 20-25%（不因指数绿盘降仓、也不因沪指红盘加仓）；主攻 AI漫剧/影视传媒可买标的 + 防御银行白酒；算力硬件零仓位；单票上限 2%，总仓不超过 25%。
+  </div>
+</div>
+
+<!-- 一、主要指数 -->
+<div class="section">
+  <h3>一、主要指数（11:30 午间收盘）</h3>
+  <div class="index-grid">
+    <div class="index-card">
+      <div class="name">上证指数</div>
+      <div class="value">3663.71</div>
+      <div class="change pos">+7.88 (+0.22%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">深证成指</div>
+      <div class="value">11135.40</div>
+      <div class="change neg">-62.58 (-0.56%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">创业板指</div>
+      <div class="value">2472.53</div>
+      <div class="change neg">-36.90 (-1.47%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">科创50</div>
+      <div class="value">1303.51</div>
+      <div class="change neg">-6.33 (-0.48%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">北证50</div>
+      <div class="value">894.21</div>
+      <div class="change neg">-13.86 (-1.53%)</div>
+    </div>
+    <div class="index-card">
+      <div class="name">沪深300</div>
+      <div class="value">4042.05</div>
+      <div class="change neg">-1.88 (-0.05%)</div>
+    </div>
+  </div>
+  <p class="small" style="margin-top:6px">开/高/低：上证 3658.72 / 3669.44 / 3652.28 ｜ 深成 11236.16 / 11253.31 / 11114.31 ｜ 创业板 <b>2525.39 / 2528.99 / 2466.18（自最高点回吐 2.24%，全天振幅 2.50%）</b> ｜ 科创50 <b>1330.28 / 1342.13 / 1298.42（自最高点回吐 2.84%，振幅 3.34%）</b> ｜ 北证50 910.51 / 913.61 / 892.10 ｜ 沪深300 4047.77 / 4052.06 / 4028.56</p>
+  <div class="chart-box" id="indexChart"></div>
+  <p class="source">来源：腾讯自选股行情API 2026-11-13 11:30:00（六指数逐项）+ 财联社午评 11:33 + 每日经济新闻 11:35 + 新浪财经 11:36（三源数值一致）</p>
+</div>
+
+<!-- 二、成交与市场广度 -->
+<div class="section">
+  <h3>二、成交与市场广度</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>指标</th>
+        <th>数值</th>
+        <th>对比/解读</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>半日成交额</td>
+        <td><b>9793.72 亿元</b></td>
+        <td>较上一交易日同期缩量 2420.83亿（<b>-19.8%</b>）；沪市 4489.97亿 / 深市 5303.75亿 / 北交所 68.53亿。按昨日全天/半日比值折算，全日料 1.55-1.65万亿</td>
+      </tr>
+      <tr>
+        <td>上涨家数</td>
+        <td><b class="pos">2342 只</b></td>
+        <td>占比 43.9%（涨/(涨+跌) 口径）；含平盘停牌占全市场 42.0%（<b>两口径不等，勿混称</b>）</td>
+      </tr>
+      <tr>
+        <td>下跌家数</td>
+        <td><b class="neg">2996 只</b></td>
+        <td>占比 55.9%（跌/(涨+跌)）；<b>铁律A 未触发</b>（距 4300 红线 1304 只）</td>
+      </tr>
+      <tr>
+        <td>平盘 / 停牌</td>
+        <td>241 只 / 8 只</td>
+        <td>平盘占比 4.3%，分化日出现大面积平盘属正常</td>
+      </tr>
+      <tr>
+        <td>涨停家数</td>
+        <td><b class="pos">41 只</b></td>
+        <td>最高板：天普股份 4连板（汽车零部件）；3连板：北纬科技（通信服务）、金辰股份（光伏设备）；20CM：幸福蓝海、华是科技</td>
+      </tr>
+      <tr>
+        <td>跌停家数</td>
+        <td><b class="neg">8 只</b></td>
+        <td>深物业A（地产）/郑中设计（装修）/青岛食品（休闲食品）/海安集团（汽车零部件）/永臻股份（光伏）/闽发铝业（工业金属）/百洋股份（饲料）/新华传媒（出版）</td>
+      </tr>
+      <tr>
+        <td>封板率 / 炸板</td>
+        <td><b>78.8%</b> / 炸板 11 只</td>
+        <td>炸板率 21.2%（41÷(41+11)）；<b>未达 40% 派发红线</b>，题材承接尚可；炸板股中旋极信息 +19.70%、博纳影业 +8.70% 为高位炸板</td>
+      </tr>
+      <tr>
+        <td>昨日涨停今日表现</td>
+        <td><b class="neg">-0.51%</b>（16/37 涨）</td>
+        <td>昨日连板 -0.49%（4/11 涨）、昨日首板 +0.43%（9/18 涨）、昨日高换手 -2.17%；<b>净流出 -22.81亿 → 亏钱效应，高位股不宜接力</b></td>
+      </tr>
+      <tr>
+        <td>黄白线分化</td>
+        <td>权重强 / 成长弱</td>
+        <td>上证 +0.22% vs 创业板 -1.47%、北证50 -1.53%；沪深300 -0.05% 居中。<b>典型「大盘股扛指数、小盘成长杀估值」结构</b></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：腾讯自选股 changedist 11:30（涨跌家数/涨跌停/成交额/顺差-2420.83亿）+ 东方财富涨停池 41 只 · 炸板池 11 只 · 跌停池 8 只（11:30 截面）+ 财联社午评 11:33（9794亿/缩量2421亿/超2900只下跌，三源交叉一致）</p>
+</div>
+
+<!-- 三、板块表现 -->
+<div class="section">
+  <h3>三、板块表现（领涨/领跌）</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">📈 领涨板块（申万二级 + 概念，均标分类体系与代码）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念</th>
+        <th>涨跌幅</th>
+        <th>主力净流入</th>
+        <th>涨跌家数</th>
+        <th>驱动逻辑</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>影视院线</b>（申万二级 pt01801766）</td>
+        <td class="pos">+5.09%</td>
+        <td class="pos">+10.80亿</td>
+        <td>16/19</td>
+        <td><b>今日唯一硬主线</b>：抖音短剧版权中心开放互动剧/互动影游合作（单剧最高 20万保底 + 30-50% 额外分成）；板块内 6 只涨停</td>
+      </tr>
+      <tr>
+        <td><b>影视传媒</b>（腾讯概念 · 56/88 涨）</td>
+        <td class="pos">+2.09%</td>
+        <td class="pos">+9.59亿</td>
+        <td>56/88</td>
+        <td>口径宽于申万影视院线（含内容制作/发行/院线），净流入全概念榜第 4</td>
+      </tr>
+      <tr>
+        <td><b>电视广播Ⅱ</b>（申万二级 pt01801995）</td>
+        <td class="pos">+3.39%</td>
+        <td class="neg">-1.93亿</td>
+        <td><b>13/13</b></td>
+        <td>湖北广电涨停；板块全红但资金净流出 → 小票普涨型，非资金驱动</td>
+      </tr>
+      <tr>
+        <td><b>华为机器人</b>（腾讯概念）</td>
+        <td class="pos">+3.59%</td>
+        <td class="pos">+0.75亿</td>
+        <td><b>6/6</b></td>
+        <td>亿嘉和 +8.60% 领涨；机器人方向在算力硬件崩塌中逆势留住资金</td>
+      </tr>
+      <tr>
+        <td><b>猪肉</b>（腾讯概念）</td>
+        <td class="pos">+2.69%</td>
+        <td class="pos">+3.84亿</td>
+        <td>32/35</td>
+        <td>金新农/天邦食品双涨停；对应申万养殖业 +2.31%（19/22，净 +3.26亿）</td>
+      </tr>
+      <tr>
+        <td><b>城商行Ⅱ</b>（申万二级 pt01801784）</td>
+        <td class="pos">+1.82%</td>
+        <td class="pos">+1.44亿</td>
+        <td><b>17/17</b></td>
+        <td>江苏银行/南京银行/青岛银行/成都银行创历史新高；42 家上市银行前三季营收 +7.81%、净利 +3.78%</td>
+      </tr>
+      <tr>
+        <td><b>白酒Ⅱ</b>（申万二级 pt01801125）</td>
+        <td class="pos">+1.43%</td>
+        <td class="pos">+3.03亿</td>
+        <td>18/19</td>
+        <td>古井贡酒 +5.10% 领涨；低开高走，防御资金回补</td>
+      </tr>
+      <tr>
+        <td><b>饲料</b>（申万二级 pt01801014）</td>
+        <td class="pos">+2.26%</td>
+        <td class="neg">-0.85亿</td>
+        <td>14/18</td>
+        <td>金新农涨停；养殖链一体化跟涨，但主力净流出</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">📉 领跌板块（行业/概念）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>板块/概念</th>
+        <th>涨跌幅</th>
+        <th>主力净流出</th>
+        <th>涨跌家数</th>
+        <th>下跌原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>元件</b>（申万二级 pt01801083）</td>
+        <td class="neg">-5.54%</td>
+        <td class="neg">-66.31亿</td>
+        <td><b>4/61</b></td>
+        <td><b>全场最惨</b>：科翔股份/沪电股份/景旺电子/生益科技/胜宏科技集体重挫；前两日 PCB 抱团资金集中兑现</td>
+      </tr>
+      <tr>
+        <td><b>覆铜板</b>（腾讯概念）</td>
+        <td class="neg">-5.05%</td>
+        <td class="neg">-17.02亿</td>
+        <td><b>0/5</b></td>
+        <td>元件上游，全成分无一上涨，PCB 链自上而下通杀</td>
+      </tr>
+      <tr>
+        <td><b>通信设备</b>（申万二级 pt01801102）</td>
+        <td class="neg">-3.93%</td>
+        <td class="neg">-60.95亿</td>
+        <td>30/86</td>
+        <td>CPO 集体跳水：中际旭创/新易盛/天孚通信/源杰科技/联讯仪器重挫；昨日该板块净流入 70.37亿，今日全部反向</td>
+      </tr>
+      <tr>
+        <td><b>光芯片</b>（腾讯概念）</td>
+        <td class="neg">-3.75%</td>
+        <td class="neg">-62.70亿</td>
+        <td><b>1/16</b></td>
+        <td>源杰科技/仕佳光子杀跌；光模块上游同步崩塌</td>
+      </tr>
+      <tr>
+        <td><b>谷歌概念</b>（腾讯概念）</td>
+        <td class="neg">-3.70%</td>
+        <td class="neg">-91.16亿</td>
+        <td>3/18</td>
+        <td><b>单板块净流出全场第一</b>；含光模块/PCB 核心标的，是今日资金撤离的主通道</td>
+      </tr>
+      <tr>
+        <td><b>陶瓷基板</b>（腾讯概念）</td>
+        <td class="neg">-3.45%</td>
+        <td class="neg">-12.55亿</td>
+        <td>2/13</td>
+        <td>PCB 上游材料，与覆铜板同步杀跌</td>
+      </tr>
+      <tr>
+        <td><b>玻璃玻纤</b>（申万二级 pt01801712）</td>
+        <td class="neg">-3.03%</td>
+        <td class="neg">-8.00亿</td>
+        <td>3/16</td>
+        <td>电子布概念 -2.62%（1/7）传导；旗滨集团 +2.65% 独撑</td>
+      </tr>
+      <tr>
+        <td><b>医疗服务</b>（申万二级 pt01801156）</td>
+        <td class="neg">-1.64%</td>
+        <td class="neg">-12.57亿</td>
+        <td>8/51</td>
+        <td>CRO 震荡调整，百普塞斯跌超 11%；医药资金持续流出</td>
+      </tr>
+      <tr>
+        <td><b>地面兵装Ⅱ</b>（申万二级 pt01801743）</td>
+        <td class="neg">-1.98%</td>
+        <td class="neg">-1.05亿</td>
+        <td><b>0/12</b></td>
+        <td>全成分下跌，军工内部资金撤离</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="chart-box" id="sectorChart"></div>
+  <p class="source">来源：腾讯自选股 data_sector 11:30（申万二级 130 板块 + 腾讯概念 805 板块独立取数）+ 东方财富行业三级（元件/通信设备跌幅交叉验证）+ 财联社午评 11:33 + 新浪财经 11:36</p>
+  <p class="small" style="margin-top:6px"><b>【板块覆盖三门禁执行记录】</b>①双分类独立取数：申万二级 130 条 + 腾讯概念 805 条（两套体系分别取，未混用）；②差异扫描命中 3 处 → 影视传媒（腾讯 +2.09%）vs 影视院线（申万 +5.09%）差 3.00pp；猪肉（腾讯 +2.69%）vs 养殖业（申万 +2.31%）差 0.38pp；覆铜板（腾讯 -5.05%）vs 元件（申万 -5.54%）差 0.49pp → 均已在表内并列标注体系与代码；③涨停反向聚合：41 只涨停按行业聚合 → 影视院线 6 只（对应板块 #1 ✓）、汽车零部件 6 只（板块仅 +0.42% 判个股 α）、通用设备 2 只（-1.17% 判个股 α）、游戏Ⅱ 2 只（+0.11%，但腾讯「短剧/互动游戏」+1.92% 已在榜 ✓）、IT服务Ⅱ 2 只（+1.39%，净 +8.15亿已在榜 ✓）→ <b>无板块级漏判</b>。</p>
+</div>
+
+<!-- 四、涨停热点与资金动向 -->
+<div class="section">
+  <h3>四、涨停热点与资金动向</h3>
+
+  <h4 style="font-size:13px; margin:8px 0 6px">🔥 涨停热点股（按连板梯队 · 41 只中取代表）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>梯队</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>涨幅</th>
+        <th>封单额</th>
+        <th>板块归类</th>
+        <th>信号意义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>4连板</b></td>
+        <td>天普股份</td>
+        <td>605255</td>
+        <td class="pos">+10.00%</td>
+        <td>0.25亿</td>
+        <td>汽车零部件</td>
+        <td>全市场最高板，但封单仅 2500万 → 高度虚，明日大概率开板</td>
+      </tr>
+      <tr>
+        <td><b>3连板</b></td>
+        <td>北纬科技</td>
+        <td>002148</td>
+        <td class="pos">+9.96%</td>
+        <td>3.68亿</td>
+        <td>通信服务</td>
+        <td>封单 3.68亿 + 换手 10.6%，在算力硬件崩塌中独立走强</td>
+      </tr>
+      <tr>
+        <td><b>3连板</b></td>
+        <td>金辰股份</td>
+        <td>603396</td>
+        <td class="pos">+10.00%</td>
+        <td>0.68亿</td>
+        <td>光伏设备</td>
+        <td>光伏板块 -1.19%（5/67 涨）内的孤立强势，判个股 α</td>
+      </tr>
+      <tr>
+        <td>20CM 涨停</td>
+        <td><b>幸福蓝海</b></td>
+        <td>300528</td>
+        <td class="pos">+20.01%</td>
+        <td>1.02亿</td>
+        <td>影视院线</td>
+        <td>影视链涨幅第一，10 日累计 +53.76%；封单 1.02亿已封死</td>
+      </tr>
+      <tr>
+        <td>20CM 涨停</td>
+        <td><b>华是科技</b></td>
+        <td>301218</td>
+        <td class="pos">+20.00%</td>
+        <td>2.92亿</td>
+        <td>IT服务/算力服务</td>
+        <td>续创历史新高，换手 23.2%；算力软件接棒硬件的最强信号</td>
+      </tr>
+      <tr>
+        <td>首板（影视）</td>
+        <td>中国电影</td>
+        <td>600977</td>
+        <td class="pos">+10.00%</td>
+        <td>2.99亿</td>
+        <td>影视院线</td>
+        <td>发行龙头，封单 2.99亿；板块 6 只涨停之一</td>
+      </tr>
+      <tr>
+        <td>首板（影视）</td>
+        <td>横店影视</td>
+        <td>603103</td>
+        <td class="pos">+10.03%</td>
+        <td>2.01亿</td>
+        <td>影视院线</td>
+        <td>换手仅 1.0% → <b>低位筹码锁定度高，抛压最轻</b></td>
+      </tr>
+      <tr>
+        <td>首板（影视）</td>
+        <td>金逸影视</td>
+        <td>002905</td>
+        <td class="pos">+10.00%</td>
+        <td>1.43亿</td>
+        <td>影视院线</td>
+        <td>4天2板；换手 2.1%，封单 1.43亿</td>
+      </tr>
+      <tr>
+        <td>首板（影视）</td>
+        <td>北京文化</td>
+        <td>000802</td>
+        <td class="pos">+10.13%</td>
+        <td>1.09亿</td>
+        <td>影视院线</td>
+        <td>换手 17.0% 高换手封板，短线情绪票</td>
+      </tr>
+      <tr>
+        <td>首板（游戏）</td>
+        <td>文投控股</td>
+        <td>600715</td>
+        <td class="pos">+10.03%</td>
+        <td><b>6.22亿</b></td>
+        <td>游戏/影视</td>
+        <td>5天4板，封单 6.22亿全场第二；20 日累计 +95.40%，高位风险已显</td>
+      </tr>
+      <tr>
+        <td>首板（IT服务）</td>
+        <td>华胜天成</td>
+        <td>600410</td>
+        <td class="pos">+10.00%</td>
+        <td><b>7.48亿</b></td>
+        <td>IT服务/信创</td>
+        <td>封单 7.48亿全场第一，主力净流入 +8.43亿全场第一；算力软件新龙头</td>
+      </tr>
+      <tr>
+        <td>首板（猪肉）</td>
+        <td>金新农 / 天邦食品</td>
+        <td>002548 / 002124</td>
+        <td class="pos">+10.06% / +10.00%</td>
+        <td>0.71亿 / 0.32亿</td>
+        <td>养殖业</td>
+        <td>猪肉概念 +2.69%（32/35 涨）双龙头，属于本轮 CPI 预期修复支线</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💰 主力资金净流入居前板块（概念口径 · 净流入为板块成分合计）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>板块</th>
+        <th>主力净流入</th>
+        <th>涨跌幅</th>
+        <th>上涨数</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NO.1</td>
+        <td>京津冀一体化</td>
+        <td class="pos">+13.02亿</td>
+        <td class="neg">-0.04%</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>NO.2</td>
+        <td>破净股</td>
+        <td class="pos">+12.04亿</td>
+        <td class="pos">+0.06%</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>NO.3</td>
+        <td>智慧政务</td>
+        <td class="pos">+10.83亿</td>
+        <td class="pos">+0.62%</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>NO.4</td>
+        <td><b>影视传媒</b></td>
+        <td class="pos">+9.59亿</td>
+        <td class="pos">+2.09%</td>
+        <td>56/88</td>
+      </tr>
+      <tr>
+        <td>NO.5~</td>
+        <td>华为鲲鹏 / 华为昇腾 / 网络安全 / 时空大数据 / 华为算力 / 信创</td>
+        <td class="pos">+9.42 / +9.41 / +9.36 / +9.34 / +8.99 / +8.91亿</td>
+        <td class="pos">+0.5%~+1.2%</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin-top:6px">⚠️ 口径提示：概念板块成分高度重叠（华为鲲鹏/昇腾/算力/信创互为子集），上述净流入为**成分合计口径**，存在重复计算，仅用于排序参考，不可相加。</p>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">💵 主力资金净流入居前个股 TOP15</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨幅</th>
+        <th>主力净流入</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>华胜天成</td>
+        <td>600410</td>
+        <td>IT服务/信创</td>
+        <td class="pos">+10.00%</td>
+        <td class="pos">+8.43亿</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>文投控股</td>
+        <td>600715</td>
+        <td>游戏/影视</td>
+        <td class="pos">+10.03%</td>
+        <td class="pos">+4.83亿</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>旋极信息</td>
+        <td>300324</td>
+        <td>计算机设备/信创</td>
+        <td class="pos">+19.70%</td>
+        <td class="pos">+4.28亿</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>长川科技</td>
+        <td>300604</td>
+        <td>半导体设备</td>
+        <td class="pos">+0.22%</td>
+        <td class="pos">+4.21亿</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>儒意电影</td>
+        <td>002739</td>
+        <td>影视院线</td>
+        <td class="pos">+9.96%</td>
+        <td class="pos">+3.67亿</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>百亚股份</td>
+        <td>003006</td>
+        <td>个护用品</td>
+        <td class="neg">-3.48%</td>
+        <td class="pos">+3.39亿</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>盛科通信-U</td>
+        <td>688702</td>
+        <td>半导体/交换芯片</td>
+        <td class="pos">+5.55%</td>
+        <td class="pos">+2.49亿</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>北方华创</td>
+        <td>002371</td>
+        <td>半导体设备</td>
+        <td class="pos">+0.72%</td>
+        <td class="pos">+2.46亿</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>中国电影</td>
+        <td>600977</td>
+        <td>影视院线</td>
+        <td class="pos">+10.00%</td>
+        <td class="pos">+2.41亿</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>模塑科技</td>
+        <td>000700</td>
+        <td>汽车零部件</td>
+        <td class="pos">+10.01%</td>
+        <td class="pos">+2.12亿</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>伊利股份</td>
+        <td>600887</td>
+        <td>饮料乳品</td>
+        <td class="pos">+2.10%</td>
+        <td class="pos">+2.11亿</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>锐捷网络</td>
+        <td>301165</td>
+        <td>通信设备</td>
+        <td class="pos">+3.85%</td>
+        <td class="pos">+2.06亿</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>福龙马</td>
+        <td>603686</td>
+        <td>环境治理</td>
+        <td class="pos">+10.03%</td>
+        <td class="pos">+2.01亿</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td>金辰股份</td>
+        <td>603396</td>
+        <td>光伏设备</td>
+        <td class="pos">+10.00%</td>
+        <td class="pos">+1.98亿</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>中科曙光</td>
+        <td>603019</td>
+        <td>计算机设备/算力</td>
+        <td class="pos">+2.22%</td>
+        <td class="pos">+1.93亿</td>
+      </tr>
+      <tr class="tfoot">
+        <td colspan="5">前15合计</td>
+        <td class="pos">+48.38亿</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 style="font-size:13px; margin:14px 0 6px">⚠️ 主力资金净流出居前个股（警示）</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>股票名称</th>
+        <th>代码</th>
+        <th>板块归类</th>
+        <th>涨跌幅</th>
+        <th>主力净流出</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>新易盛</td>
+        <td>300502</td>
+        <td>CPO/光模块</td>
+        <td class="neg">大跌</td>
+        <td class="neg">居前（光芯片概念 -62.70亿的核心）</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>中际旭创</td>
+        <td>300308</td>
+        <td>CPO/光模块</td>
+        <td class="neg">走弱</td>
+        <td class="neg">居前（谷歌概念 -91.16亿的主通道）</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>天孚通信</td>
+        <td>300394</td>
+        <td>CPO/光器件</td>
+        <td class="neg">集体下挫</td>
+        <td class="neg">居前</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>源杰科技</td>
+        <td>688498</td>
+        <td>光芯片</td>
+        <td class="neg">集体大跌</td>
+        <td class="neg">居前</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>沪电股份 / 景旺电子 / 生益科技</td>
+        <td>002463 / 603228 / 600183</td>
+        <td>PCB/覆铜板</td>
+        <td class="neg">元件板块 -5.54%</td>
+        <td class="neg">元件净流出 -66.31亿的主要来源</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>百普塞斯</td>
+        <td>688278</td>
+        <td>CRO</td>
+        <td class="neg">跌超 11%</td>
+        <td class="neg">医疗服务净流出 -12.57亿</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source">来源：东方财富个股主力净流入榜 11:30（f62 口径，正/反双向）+ 腾讯自选股 data_sector 板块净流入 11:30 + 财联社午评 11:33（CPO 集体下挫名单）+ 新浪财经 11:36（百普塞斯 -11%）</p>
+  <p class="small" style="margin-top:6px">⚠️ 口径说明：净流出个股榜的**具体金额**本次未完整取到（东财 f62 反向榜仅返回前 20 位按净流入排序，反向需另取），为避免编造，此处只列方向与所属板块净流出合计值，<b>不填单只金额</b>。</p>
+</div>
+
+<!-- 五、简评与后市观察 -->
+<div class="section">
+  <h3>五、简评与后市观察</h3>
+  <div style="font-size:13px; line-height:1.8; color:var(--text)">
+    <p><b>核心判断：</b>这是一次<b>「赛道重置」而非「行情结束」</b>。判断依据不在指数涨跌（沪指还是红的），而在这三组对冲数据：①元件 -5.54%（61 只仅 4 只涨）+ 通信设备 -3.93%（86 只仅 30 只涨），净流出合计 -127.26亿；②影视院线 +5.09%（19 只 16 只涨）+ 电视广播 +3.39%（13/13）+ 猪肉 +2.69%（32/35）+ 城商行 +1.82%（17/17），净流入合计 +16.83亿；③全市场 41 只涨停里 9 只来自影视传媒链、2 只来自养殖、2 只来自 IT 服务。<b>钱没跑，只是换了口袋</b>。半日缩量 2420.83亿（-19.8%）是这轮搬仓的成本 —— 存量博弈里，一个板块的爆发必须以另一个板块的崩塌为代价。</p>
+
+    <p style="margin-top:8px"><b>结构观察：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>唯一硬主线 = AI漫剧/影视传媒（V4.2 多组 P1预警·新 D0）</b>：影视院线 +5.09% 居全市场行业第一，板块内 6 只涨停（中国电影/横店影视/金逸影视/北京文化/幸福蓝海/儒意电影）。催化明确且可验证 —— 抖音集团短剧版权中心面向互动内容/短剧/漫剧/游戏制作方开放合作，单剧最高 20万元保底激励 + 30%-50% 额外分成，可叠加。<b>这不是纯情绪炒作，有平台级分账规则落地</b>。</li>
+      <li><b>算力硬件 → 算力软件的资金切换已完成一半</b>：光模块/PCB/覆铜板全线杀跌（净流出 -127亿+），但华胜天成（IT服务）封单 7.48亿、主力净流入 8.43亿双双全场第一，华是科技 20CM 涨停续创历史新高，旋极信息 +19.70%。<b>同属算力题材，硬件被弃、软件被抢</b>，这是今日最有信息量的结构变化。</li>
+      <li><b>银行创新高不是「防御失灵」而是「利率下行 + 高股息」的独立逻辑</b>：江苏银行/南京银行/青岛银行/成都银行创历史新高，42 家上市银行前三季营收 +7.81%、净利 +3.78%。盘前把防御判 0 仓是明确失误。</li>
+      <li><b>昨日热点全线负反馈</b>：昨日涨停 -0.51%（16/37 涨，净 -22.81亿）、昨日连板 -0.49%（4/11）、昨日高换手 -2.17%。<b>接力亏钱 → 今日只能做首板，不能做连板</b>。天普股份 4 连板但封单仅 2500万，高度虚。</li>
+      <li><b>封板质量尚可但炸板有隐忧</b>：封板率 78.8%（41 封 / 11 炸），未达 40% 派发红线；但炸板里的旋极信息（+19.70%，触及 20CM 后回落）、博纳影业（+8.70%，触及 +9.81% 后回落）都是高位炸板，说明<b>午后追高意愿不足</b>。</li>
+    </ul>
+
+    <p style="margin-top:8px"><b>V4.2 三阶段判定（基准 2026-11-13 11:30 · 全部脚本实跑 run_v42，配对法=同业务细分配对 + 市值差≤5倍；禁止手算）</b></p>
+    <table style="margin-top:6px">
+      <thead>
+        <tr>
+          <th>细分方向</th>
+          <th>配对（A / B）</th>
+          <th>市值比</th>
+          <th>state（脚本原文）</th>
+          <th>leader</th>
+          <th>可买性</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>影视-电影发行</td>
+          <td>博纳影业 sz001330 / 光线传媒 sz300251</td>
+          <td>4.1×</td>
+          <td class="pos"><b>P1确认</b></td>
+          <td>博纳影业（11/04 定死）</td>
+          <td class="pos">✅ buyable</td>
+        </tr>
+        <tr>
+          <td>游戏/影视</td>
+          <td>文投控股 sh600715 / 凯撒文化 sz002425</td>
+          <td>3.6×</td>
+          <td class="pos"><b>P1确认</b></td>
+          <td>文投控股</td>
+          <td class="neg">buyable 但双双封死</td>
+        </tr>
+        <tr>
+          <td>影视-头部内容/发行</td>
+          <td>中国电影 sh600977 / 儒意电影 sz002739</td>
+          <td>1.5×</td>
+          <td>P1预警（今日新 D0）</td>
+          <td>中国电影（暂定）</td>
+          <td class="neg">不可买</td>
+        </tr>
+        <tr>
+          <td>影视-院线放映</td>
+          <td>横店影视 sh603103 / 金逸影视 sz002905</td>
+          <td>3.3×</td>
+          <td>P1预警（今日新 D0）</td>
+          <td>横店影视（暂定）</td>
+          <td class="neg">不可买</td>
+        </tr>
+        <tr>
+          <td>影视-小市值弹性</td>
+          <td>幸福蓝海 sz300528 / 北京文化 sz000802</td>
+          <td>2.2×</td>
+          <td>P1预警（今日新 D0，上一 wave 11/12 W结束）</td>
+          <td>幸福蓝海（暂定）</td>
+          <td class="neg">不可买</td>
+        </tr>
+        <tr>
+          <td>影视-小市值（观察档）</td>
+          <td>幸福蓝海 sz300528 / 华智数媒 sz300426</td>
+          <td>1.3×</td>
+          <td>P1预警（今日新 D0）</td>
+          <td>幸福蓝海（暂定）</td>
+          <td class="neg">不可买（观察级）</td>
+        </tr>
+        <tr>
+          <td>养殖-生猪</td>
+          <td>金新农 sz002548 / 天邦食品 sz002124</td>
+          <td>1.6×</td>
+          <td>P1预警（今日新 D0）</td>
+          <td>金新农（暂定）</td>
+          <td class="neg">不可买（双双封死）</td>
+        </tr>
+        <tr>
+          <td>IT服务/算力软件</td>
+          <td>华胜天成 sh600410 / 华是科技 sz301218</td>
+          <td>—</td>
+          <td>P1预警（今日新 D0）</td>
+          <td>华是科技（暂定）</td>
+          <td class="neg">不可买（双双封死）</td>
+        </tr>
+        <tr>
+          <td>影视-内容</td>
+          <td>华策影视 sz300133 / 光线传媒 sz300251</td>
+          <td>—</td>
+          <td>WAIT（两个 wave 均 INT 结束）</td>
+          <td>—</td>
+          <td class="neg">不可买</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="small" style="margin-top:6px">脚本回显校验：`run_v42` 返回 `state='P1确认'`（博纳×光线，wave 始于 11/02 D0 → 11/04 P1确认定死 leader=博纳 → 11/11 P2预警（补涨强）→ 11/12 回 P1确认）；`state='P1预警'`（中国电影×儒意，当前 wave 轨迹原文「2026-11-13 P1预警 D0 触发：A 10.00% / B 9.96%（任一 ≥5%）；leader 暂定 = A」）。<b>未配对·不定级</b>：上海电影（187.57亿 × 无同量级影视标的可比）、华智数媒 51.84亿 与 中国电影 318.32亿 差 6.1倍超限。</p>
+
+    <p style="margin-top:10px"><b>🏆 今日核心看好标的（V4.2 自然筛选 · 共 3 只）</b></p>
+    <table style="margin-top:6px">
+      <thead>
+        <tr>
+          <th>标的（名称+代码）</th>
+          <th>阶段</th>
+          <th>推荐原因</th>
+          <th>近期走势</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>博纳影业 sz001330</b></td>
+          <td class="pos">P1确认（leader）</td>
+          <td>影视发行龙头，V4.2 于 11/04 定死 leader 并持有至今；今日 +8.70% 炸板但未破位，成交 10.76亿、换手 13.84% 为板块内最大换手 → 资金真实参与而非一字空封</td>
+          <td>今日 +8.70%（最高 +9.81%）；5日 +10.27%；10日 +35.77%；市值 94.43亿</td>
+        </tr>
+        <tr>
+          <td><b>光线传媒 sz300251</b></td>
+          <td class="pos">P1确认（follower）</td>
+          <td>影视内容+发行双主业，与博纳同属「电影发行」细分且市值差 4.1 倍在限内；今日 +6.28% 未涨停可正常买入，是主线内最稳的补涨位</td>
+          <td>今日 +6.28%（最高 +6.92%）；5日 +6.70%；10日 +17.74%；市值 387.53亿</td>
+        </tr>
+        <tr>
+          <td><b>华智数媒 sz300426</b></td>
+          <td>P1预警（观察级）</td>
+          <td>影视内容小市值弹性，今日新 D0 但尚未确认 → <b>只做小仓试错、不作首选</b>；10日 +78.45% 位置偏高，需严格止损</td>
+          <td>今日 +6.48%（最高 +12.87% 后回落）；5日 +17.93%；10日 +78.45%；市值 51.84亿</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:6px; font-size:12px; color:var(--text-secondary)"><b>综合观察：</b>以上 3 只为今日核心看好，方向 = <b>控仓偏多（结构化做多，非全面看多）</b>；博纳/光线合计仓位 ≤4%（单票 ≤2%），华智数媒 ≤1%（试错仓）；<b>板块内 6 只涨停封单均 ≥3000万（中国电影 2.99亿 / 横店 2.01亿 / 金逸 1.43亿 / 北京文化 1.09亿 / 幸福蓝海 1.02亿 / 儒意 3.70亿），全部买不进，一律不推。</b>总仓上限 25%。</p>
+
+    <p style="margin-top:10px"><b>午后关注点：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li><b>影视传媒能否续板</b>：中国电影（封单 2.99亿）、横店影视（封单 2.01亿，换手仅 1.0%）午后封单若松动，说明首板资金在兑现 → 明日主线降级</li>
+      <li><b>博纳影业能否回封</b>：现 +8.70%，若午后回封则 P1确认 加固；若跌破 +5% 则视为炸板失败，明日减仓</li>
+      <li><b>算力硬件是否二次杀跌</b>：元件 -5.54% 已属恐慌，若午后继续放量下杀（净流出再扩 30亿+）→ 明日可能出现超跌反弹机会；若缩量止跌 → 视为正常换手</li>
+      <li><b>量能</b>：半日 9793.72亿，午后需补 5500亿+ 才够 1.55万亿；不足则缩量格局确认，题材只能做单主线</li>
+      <li><b>风险点</b>：①4连板天普股份封单仅 2500万，若午后开板将打击情绪高度；②创业板 -1.47% 若继续下探 2460 下方，小盘成长会拖累题材股；③今日是周五，隔夜外盘不确定性（美股周五收盘）需减仓过节</li>
+    </ul>
+
+    <p style="margin-top:10px"><b>机构/盘面观点摘录：</b></p>
+    <ul style="padding-left:20px; line-height:1.9">
+      <li>财联社午评（11:33）：<b>"AI漫剧概念逆势走强，文投控股5天4板，金逸影视4天2板，华是科技、幸福蓝海20CM涨停"</b>，同时指出 CPO 概念股集体下挫</li>
+      <li>新浪财经（11:36）：<b>"抖音集团短剧版权中心面向具备互动内容、短剧、漫剧或游戏制作能力的合作方，开放互动剧与互动影游合作……单剧最高可获得20万元保底激励、30%~50%的额外分成"</b></li>
+      <li>新浪财经（11:36）：<b>"前三季度42家上市银行合计实现营业收入4.66万亿元，归母净利润1.75万亿元，同比分别增长7.81%、3.78%"</b></li>
+      <li>每日经济新闻（11:35）：<b>"银行板块表现活跃，江苏银行、南京银行双双创历史新高"</b></li>
+    </ul>
+
+    <h4 style="margin-top:14px; font-size:13px">📊 R-Judge 双轨命中率自审</h4>
+    <p style="font-size:12px; color:var(--text-secondary)"><b>预判层</b>（盘前 08:25 → 11:30 实际）：方向表 8 条 = 1✅（贵金属回避走平）+ 1◐ + 6❌；核心看好 2 只（燧原×沐曦 P1确认）= 0✅ 0◐ 2❌ → <b>综合命中率 15.0%（1.5/10）</b>，<b>大幅低于随机基准 47.5%</b>。扣分集中在：主攻半导体算力（半导体 -0.74%）、光模块「低开才接」（通信设备 -3.93%）、防御判 0 仓（银行/白酒双双上涨）。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>修正层</b>（10:00 盘中档 → 11:30）：今日 10:00 档未产出可对照的方向快照 → <b>N/A，本项不参与计分</b>（不虚构命中率）。</p>
+    <p style="font-size:12px; color:var(--text-secondary); margin-top:4px"><b>核心错判（连续第 6 次同型错误）：</b>盘前把「T-1 全场第一的通信设备 +9.99%」线性外推为光模块接棒，而今日它是全市场跌幅前三（-3.93%）；同时<b>完全漏掉影视传媒</b>——该方向在 11/10、11/11、11/12 均已三次出现在板块前列，属「Z 字型反复活跃」而非突发，盘前应有覆盖。<b>根因：方向表只做「昨日强势 + 隔夜外盘映射」两个输入，缺「多日反复活跃度」这一维度。</b>本报告已按此补做：把影视院线近 5 日净流入 +6.55亿、20 日 +7.85亿（持续净流入而非脉冲）作为独立证据列出。</p>
+  </div>
+  <p class="source">来源：财联社 11:33 + 每日经济新闻 11:35 + 新浪财经 11:36 + 腾讯自选股 11:30 截面 + 盘前策略 panqian-20261113.html 08:25</p>
+</div>
+
+<!-- 免责声明 -->
+<div class="disclaimer">
+  <b>免责声明：</b>以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+
+</div>
+
+<script>
+(function() {
+  // 三大指数涨跌幅柱状图
+  const indexChart = echarts.init(document.getElementById('indexChart'));
+  const indexData = [
+    {name: '上证指数', val: 3663.71, pct: 0.22},
+    {name: '深证成指', val: 11135.40, pct: -0.56},
+    {name: '创业板指', val: 2472.53, pct: -1.47},
+    {name: '科创50', val: 1303.51, pct: -0.48},
+    {name: '北证50', val: 894.21, pct: -1.53},
+    {name: '沪深300', val: 4042.05, pct: -0.05}
+  ];
+  indexChart.setOption({
+    title: {text: '主要指数涨跌幅（11:30 收盘）', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}, formatter: function(p) {return p[0].name + '<br/>' + p[0].seriesName + ': ' + (p[0].value > 0 ? '+' : '') + p[0].value.toFixed(2) + '%';}},
+    grid: {left: 60, right: 30, top: 40, bottom: 30},
+    xAxis: {
+      type: 'category',
+      data: indexData.map(d => d.name),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    series: [{
+      name: '涨跌幅',
+      type: 'bar',
+      data: indexData.map(d => ({
+        value: d.pct,
+        itemStyle: {color: d.pct > 0 ? '#d93026' : '#1e8e3e'}
+      })),
+      label: {
+        show: true,
+        position: 'top',
+        formatter: function(p) {return (p.value > 0 ? '+' : '') + p.value.toFixed(2) + '%';},
+        fontSize: 10
+      }
+    }]
+  });
+
+  // 板块涨跌条形图
+  const sectorChart = echarts.init(document.getElementById('sectorChart'));
+  const upSectors = [
+    {name: '影视院线', pct: 5.09},
+    {name: '华为机器人', pct: 3.59},
+    {name: '电视广播Ⅱ', pct: 3.39},
+    {name: '猪肉', pct: 2.69},
+    {name: '养殖业', pct: 2.31},
+    {name: '饲料', pct: 2.26},
+    {name: '城商行Ⅱ', pct: 1.82},
+    {name: '白酒Ⅱ', pct: 1.43}
+  ];
+  const downSectors = [
+    {name: '元件', pct: -5.54},
+    {name: '覆铜板', pct: -5.05},
+    {name: '通信设备', pct: -3.93},
+    {name: '光芯片', pct: -3.75},
+    {name: '谷歌概念', pct: -3.70},
+    {name: '玻璃玻纤', pct: -3.03}
+  ];
+  sectorChart.setOption({
+    title: {text: '领涨/领跌板块涨跌幅对比', left: 'center', textStyle: {fontSize: 13, color: '#1a1a2e'}},
+    tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+    legend: {data: ['领涨', '领跌'], top: 30, textStyle: {fontSize: 11}},
+    grid: {left: 90, right: 40, top: 70, bottom: 30},
+    xAxis: {
+      type: 'value',
+      axisLabel: {fontSize: 11, color: '#5a5a6e', formatter: '{value}%'}
+    },
+    yAxis: {
+      type: 'category',
+      data: upSectors.map(d => d.name).reverse().concat(downSectors.map(d => d.name).reverse()),
+      axisLabel: {fontSize: 11, color: '#5a5a6e'}
+    },
+    series: [
+      {
+        name: '领涨',
+        type: 'bar',
+        data: upSectors.map(d => ({value: d.pct, itemStyle: {color: '#d93026'}})).reverse(),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      },
+      {
+        name: '领跌',
+        type: 'bar',
+        data: new Array(upSectors.length).fill(null).concat(downSectors.map(d => ({value: d.pct, itemStyle: {color: '#1e8e3e'}})).reverse()),
+        label: {show: true, position: 'right', formatter: '{c}%', fontSize: 10}
+      }
+    ]
+  });
+
+  window.addEventListener('resize', function() {
+    indexChart.resize();
+    sectorChart.resize();
+  });
+})();
+</script>
+</body>
+</html>
