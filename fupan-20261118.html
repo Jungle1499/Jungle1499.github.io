@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>完整复盘 2026-11-18 · 算力硬件链垂直反攻 · 深 V 翻红</title>
+<style>
+  :root{--bg:#0a0e1a;--panel:#131a2e;--panel2:#1a2238;--line:#26304a;--txt:#e7ebf3;--muted:#8b93a7;--up:#f04142;--up2:#ff6b6b;--down:#15c47e;--down2:#37e0a0;--gold:#ffc14d;--blue:#4d9fff;--purple:#a78bfa}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 60px}
+  header{background:linear-gradient(135deg,#16203a,#0d1426);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:22px}
+  header h1{font-size:26px;font-weight:800;letter-spacing:1px}
+  header .sub{color:var(--muted);margin-top:8px;font-size:13px}
+  .tag{display:inline-block;background:rgba(255,193,77,.14);color:var(--gold);border:1px solid rgba(255,193,77,.35);padding:2px 10px;border-radius:20px;font-size:12px;margin-right:8px;margin-top:10px}
+  .tag.r{background:rgba(240,65,66,.14);color:var(--up2);border-color:rgba(240,65,66,.35)}
+  .tag.g{background:rgba(21,196,126,.14);color:var(--down2);border-color:rgba(21,196,126,.35)}
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:7px}
+  nav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:4px 10px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+  nav a:hover{color:var(--gold);border-color:rgba(255,193,77,.35);background:rgba(255,193,77,.08)}
+  .sec{margin-top:34px;scroll-margin-top:60px}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:12px;border-left:4px solid var(--gold)}
+  .sec-h h2{font-size:20px;font-weight:700}
+  .sec-h .n{background:var(--gold);color:#1a1300;font-weight:800;border-radius:8px;padding:1px 9px;font-size:13px}
+  .pt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .pt-h{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px}
+  .pt-d{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .pt-b{font-size:13.5px;color:var(--txt);background:var(--panel2);border-radius:10px;padding:11px 13px;margin-top:10px;border-left:3px solid var(--blue)}
+  .pt-b.warn{border-left-color:var(--gold)}
+  .pt-b.risk{border-left-color:var(--up)}
+  .pt-b.ok{border-left-color:var(--down)}
+  .pt-b b{color:#fff}
+  .up{color:var(--up)} .down{color:var(--down)} .gold{color:var(--gold)} .blue{color:var(--blue)} .pp{color:var(--purple)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .chart{width:100%;height:340px}
+  .chart.s{height:300px}
+  .chart.l{height:420px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px}
+  .cards6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .card .v{font-size:24px;font-weight:800}
+  .card .k{font-size:12px;color:var(--muted);margin-top:3px}
+  .cards6 .card{padding:11px 6px}
+  .cards6 .card .v{font-size:18px}
+  .cards6 .card .k{font-size:11px}
+  .pill{display:inline-block;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:600;margin:3px 4px 0 0}
+  .p-up{background:rgba(240,65,66,.15);color:var(--up2)}
+  .p-down{background:rgba(21,196,126,.15);color:var(--down2)}
+  .p-mid{background:rgba(77,159,255,.15);color:var(--blue)}
+  .p-warn{background:rgba(255,193,77,.15);color:var(--gold)}
+  .p-pp{background:rgba(167,139,250,.15);color:var(--purple)}
+  .hb{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .hb .pill{font-size:11.5px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+  th{background:var(--panel2);color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  tr:hover td{background:rgba(77,159,255,.05)}
+  .stk{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+  .stkc{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;border-top:3px solid var(--up)}
+  .stkc.t{border-top-color:var(--blue)}
+  .stkc h4{font-size:16px;font-weight:800;margin-bottom:2px}
+  .stkc .code{font-size:11.5px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .stkc .row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed rgba(38,48,74,.7)}
+  .stkc .row span:first-child{color:var(--muted)}
+  .ladder{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .lrow{display:flex;align-items:center;gap:10px}
+  .lrow .lb{width:78px;flex-shrink:0;font-size:12px;font-weight:700;text-align:right;color:var(--gold)}
+  .lrow .lc{flex:1;display:flex;flex-wrap:wrap;gap:5px}
+  .foot{margin-top:40px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--muted);line-height:1.8}
+  .frame{margin-top:30px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .frame h3{color:var(--gold);font-size:15px;margin-bottom:8px}
+  .frame .rule{display:inline-block;background:rgba(77,159,255,.12);color:var(--blue);border:1px solid rgba(77,159,255,.3);border-radius:7px;padding:2px 8px;font-size:12px;margin:3px 4px}
+  .pairtbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+  .pairtbl th{background:var(--panel2);color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .pairtbl td{padding:8px 10px;border-bottom:1px solid rgba(38,48,74,.55);vertical-align:top}
+  .pairtbl tr:hover td{background:rgba(77,159,255,.05)}
+  .stage{display:inline-block;padding:2px 9px;border-radius:8px;font-size:12px;font-weight:700}
+  .s-p1{background:rgba(255,193,77,.18);color:var(--gold)}
+  .s-p2{background:rgba(77,159,255,.18);color:var(--blue)}
+  .s-p3{background:rgba(240,65,66,.18);color:var(--up2)}
+  .s-hold{background:rgba(21,196,126,.18);color:var(--down2)}
+  .s-avoid{background:rgba(139,147,167,.18);color:var(--muted)}
+  @media(max-width:860px){.grid2,.grid3,.stk{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.cards6{grid-template-columns:repeat(3,1fr)}}
+  .sec-h.gold-h{border-left-color:var(--gold)}
+  .sec-h.gold-h h2{color:var(--gold)}
+</style></head>
+<body><div class="wrap"><body><div class="wrap">
+<header>
+  <h1>完整版日复盘 · 2026-11-18（周三）</h1>
+  <div class="sub">结论前置 · 一~六部分 · 结构对齐 qp-20260908 正版（19 图同形式 · v47）· 三阶段理论 V4.2<span style="display:none">WKBUILD:v47-20261118</span>（<b>算力硬件链垂直反攻 · 四大指数深 V 翻红 · 跌停从 84 腰斩至 48 · 资金净差四日首次转正 +57.08 亿</b>——上证 <b>+0.09%</b> / 深成 <b>+0.20%</b> / 创业板 <b>+0.85%</b> / 科创50 <b>+2.19%（最强）</b>·<b>四大指数盘中同步创本轮调整新低、收盘全部翻红</b>·成交 <b>13697.02 亿</b> 缩量 <b>879.93 亿（-6.04%，五连缩创本轮新低）</b>·量能比 <b>0.838</b>·涨 <b>1318</b> / 跌 <b>4133</b> / 平 129（红盘率 23.6%）·涨停 <b>43</b> / 跌停 <b>48</b>·<b>元件 +4.90%（54/61）</b> / 通信服务 +3.01%（28/36）/ 黑色家电 +2.84%（4/9）·<b>贵金属 -4.62%（0/11）</b> / 航空装备 -4.39% / 电视广播 -4.38%（0/13）/ 影视院线 -3.43%·概念：<b>博通概念 +7.30%（6/6）</b> / 覆铜板 +4.02%（6/6）/ 超节点 +3.66%（24/28）/ 算力租赁 +3.20%（净 +58.42 亿）·主力前十流入 <b>+161.60 亿</b> vs 流出 <b>-104.52 亿</b>（<b>1.55:1 净流入 +57.08 亿，本轮四日首次转正</b>）·机构龙虎榜 <b>2.86:1 净买 +10.35 亿</b>（三日来首次转净买）·V4.2 Pair 级 中断 <b>51.8%</b>（131/253，连续第 4 日 &gt;45%）/ P1确认 26 / W结束 21）。</div>
+  <div>
+    <span class="tag r">🧭 V4.2 唯一判据</span>
+    <span class="tag r">🟡 退潮尾段·探底回升（待确认）</span>
+    <span class="tag r">💾 算力硬件链垂直反攻</span>
+    <span class="tag">⚠️ 缩量 13697 亿 · 广度 23.6%</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#s0">结论（8条）</a><a href="#s1">一、大盘宏观</a><a href="#s2">二、短线情绪</a>
+  <a href="#s3">三、情绪流选股</a><a href="#s4">四、机构趋势</a><a href="#s5">五、趋势选股</a><a href="#s6">六、机会分析</a>
+</nav>
+
+<section class="sec" id="s0">
+  <div class="sec-h gold-h"><span class="n">★</span><h2>核心研判 8 条（T 日收盘 · 对 2026-11-19 周四的前瞻）</h2></div>
+  <div class="pt">
+    <div class="pt-h">① 情绪温度：<b>「指数收红、广度冰点」—— 涨 1318 / 跌 4133（红盘率 23.6%）、跌停 <span class="no">48</span> 仍超涨停 <span class="up">43</span></div>
+    <div class="pt-d">指数红、个股绿：这是修复的第一形态，不是普涨</div>
+    <div class="pt-b">四大指数三红一绿（上证 <b>+0.09%</b>、深成 <b>+0.20%</b>、创业板 <b>+0.85%</b>、科创50 <b>+2.19%</b>、上证50 <b>-0.14%</b>），但涨跌家数仍是 <b>1318 涨 / 4133 跌 / 129 平</b>，涨跌比 0.32 与昨日 0.32 完全持平。<b>跌停 48 只 vs 涨停 43 只</b>，跌停连续第 4 日多于涨停，但差距从昨日 46 只（84 对 38）收窄到 <b>5 只</b>——这是本轮第一次把「跌停潮」压回与涨停同量级。情绪刻度仍在冰点区（红盘率 23.6%，昨日 23.8%），但<b>绞杀烈度已明显下降</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">② 周期位置：<b>四大指数盘中全部下探本轮新低后深 V 翻红 —— 上证最低 3560.45、深成 10515.14、创业板 2265.76、科创50 1213.76</div>
+    <div class="pt-d">探底回升的第一根反包阳线，成立与否要看明日能否守住今日下影线低点</div>
+    <div class="pt-b">上证收 3587.83（<b>+0.09%</b>，日内振幅 1.01%，收盘站在日内 78.9% 分位）、深成 10659.41（<b>+0.20%</b>）、创业板 2311.62（<b>+0.85%</b>）、科创50 1247.99（<b>+2.19%</b>，日内振幅 4.07%，从最低 1213.76 拉起 <b>+2.82%</b>）。<b>四个指数同日创出本轮调整新低、又同日收回</b>，是 11/13 以来第一次出现「下跌结构被打断」的形态。但注意：今日成交只有 13697.02 亿，是五连缩的最小值，<b>缩量反包的可靠性弱于放量反包</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">③ 最强主线：<b>算力硬件链垂直反攻 —— 元件 +4.90%（54/61）· 通信服务 +3.01%（28/36）· IT服务 +1.68%（59/123）</div>
+    <div class="pt-d">一条链从 PCB 上游一直打到 IDC 下游，中间没有断点，这是本轮第一次</div>
+    <div class="pt-b">概念层更清楚：<b>博通概念 +7.30%（6/6 全红）· 覆铜板 +4.02%（6/6）· 超节点 +3.66%（24/28）· 算力租赁 +3.20%（99/143、主力 +58.42 亿）· 交换机 +2.28%（净 +23.95 亿）· 服务器 +1.92%（净 +36.48 亿）</b>。链条完整度＝<b>CCL（覆铜板 6/6）→ PCB（元件 54/61）→ 交换机/服务器 → IDC/算力租赁（99/143）</b>，四段全红且主力资金同向。<b>超节点是唯一「今日 / 5 日 / 20 日」三口径全正的概念（+36.22 / +29.35 亿）</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">④ 最高标：<b>4 板 · 华东重机 sz002685（工程机械整机 leader）—— 但今日是 <span class="no">一字板（open=high=low=7.37）</span>，按规则口径7 属🚫不可买入</div>
+    <div class="pt-d">最高板回到 4 板，但「不可买入」的一字板不构成情绪真实的赚钱效应</div>
+    <div class="pt-b">华东重机今日成交仅 1.63 亿、换手 2.20%、量比 0.28，5 日 +53.22%、r3 +33.03%（V4.2 P1确认 leader）。<b>一字板的意义是「昨日买的人赚钱」，不是「今日能买」</b>。真实可交易高度在 2 板：卡莱特（20cm、+20.01%）、华胜天成（+10.01%）、真视通（+10.02%）、泰嘉股份（+10.03%）、双环科技（+10.02%）、盛剑科技（一字板）、全筑股份（一字板）——<b>7 只 2 板里有 2 只一字、5 只可交易</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑤ 连板梯队：<b>4 板×1 · 2 板×7 · 首板×35 —— 连板 8 只（11/17 为 6）、首板 35 只（31）、晋级率 18.9%（21.2%）</div>
+    <div class="pt-d">梯队从「两层平台」回填成「三层塔」，但中间层（3 板）依旧空缺</div>
+    <div class="pt-b">11/13 的形态是 4-2-31、11/16 是 4-2-22、11/17 是 3-2-31、今日是 <b>4-2-35</b>。<b>首板数从 31 回到 35，是四日最高</b>，说明有新资金愿意在低位试错；但 3 板继续空缺（连续第 2 日），意味着<b>「2 进 3」仍是全市场最难的一步</b>。晋级率 18.9%（7/37）低于昨日 21.2%，高度传导仍未打通。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑥ 资金主力：<b>净差首次转正 +57.08 亿（流入前十 +161.60 亿 vs 流出前十 -104.52 亿，1.55:1）—— 本轮四日来第一次</div>
+    <div class="pt-d">资金面的拐点比价格面更早出现，这是今日最值得记的一条</div>
+    <div class="pt-b">四日净差：11/13 <b>-292.82 亿</b> → 11/16 <b>-369.19 亿</b> → 11/17 <b>-93.36 亿</b> → 11/18 <b>+57.08 亿</b>。<b>流入端从 +43 亿（11/16）扩张到 +161.60 亿，是三倍量级</b>：元件 +46.18 / 半导体 +45.13 / 通信设备 +23.93 / IT服务 +17.54 / 通信服务 +10.56，前五条全是算力硬件链。<b>流出端同步收缩</b>：工业金属 -25.18（昨日小金属 -27.94 同类）、航空装备 -15.50、化学制药 -13.47，流出前十合计从 -412.32 亿降到 -104.52 亿。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑦ 最大隐患：<b>「缩量拉指数」—— 成交 13697.02 亿五连缩（-879.93 亿 / -6.04%），量能比 0.838 创本轮新低，广度只有 23.6%</div>
+    <div class="pt-d">钱在往一条链里挤，而不是往市场里进</div>
+    <div class="pt-b">成交序列：19320.82 → 16556.68 → 14844.90 → 14576.95 → <b>13697.02</b>，五日累计 <b>-29.1%</b>。今日 1318 只上涨里，算力硬件链（元件+半导体+通信设备+IT服务+通信服务，合计 96.23 亿净流入）贡献了绝大部分增量资金，<b>其余板块的净流出只是「缩量下的自然衰减」，不是被买回来</b>。第二个隐患：<b>机构净买第一又是沪电股份（+3.50 亿机构买入额 / 净买 6.24 亿）</b>，而 11/16 同一只票机构净买第一后当日跌停——「机构净买」在退潮期的信号方向仍需打折（框架待更新①）。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑧ 明日策略：<b>退潮尾段的试探性反抽，总仓 1-2 成（不上调），只做「算力链回踩」不追一字板；跌停数能否继续压到 30 只以下是核心观察点</div>
+    <div class="pt-d">从「空仓等待 4 分」调到 2 分、低吸回踩 3 分——这是本轮第一次把「低吸」排到「空仓」前面</div>
+    <div class="pt-b">🟢 <b>进攻方向</b>：①算力硬件链（覆铜板→PCB→交换机/服务器→IDC/算力租赁），条件＝明日元件/通信服务不破今日收盘、且成交额不再缩；②半导体封测（盛合晶微 +11.20% 带动，集成电路封测 P1确认）。<br>🔴 <b>回避方向</b>：①贵金属 -4.62%（0/11 全绿、主力 -6.29 亿）；②传媒三链（电视广播 -4.38% 0/13、影视院线 -3.43%、数字媒体 -2.24%）；③工业金属 -3.33%（4/59）。<br>🟡 <b>持有核心</b>：V4.2 P1确认 且 buyable 的 6 只（见⑨）；一字板（华东重机/盛剑科技/全筑股份）只看不追。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑨ 核心看好标的（V4.2 自然筛选 · 共 6 只 · 数量随行情广度浮动）—— <b>🏆 本节为核心，按「最看好」降序</b></div>
+    <div class="pt-d">取样口径：V4.2 P1确认 且 buyable=true（脚本真值），再按「主线强度 × 阶段位置 × 可买性」排序；P3 一票否决，P1预警/中断/W结束 不进核心</div>
+    <div class="pt-b"><div style="line-height:2.1">
+<b>1. 华胜天成 sh600410</b> ｜ P1确认·follower（Pair leader 宏景科技）｜ 算力租赁/IDC 二板核心，5 日 +34.56% 主力持续流入｜ r3 +17.62% · 今日 +10.01%<br>
+<b>2. 盛合晶微 sh688820</b> ｜ P1确认·leader（集成电路封测）｜ 封测龙头放量 +11.20%，半导体 +45.13 亿全市场第二｜ r3 +15.82% · 今日 +11.20%<br>
+<b>3. 意华股份 sz002897</b> ｜ P1确认·leader（通信网络设备及器件）｜ 高速铜连接核心，今日未涨停＝明日仍有买点｜ r3 +8.46% · 今日 +6.17%<br>
+<b>4. 共进股份 sh603118</b> ｜ P1确认·leader（通信终端及配件）｜ 光通信终端 +6.76%，5 日 +23.44% 资金连续性最好之一｜ r3 +18.18% · 今日 +6.76%<br>
+<b>5. 卡莱特 sz301391</b> ｜ P1确认·follower（Pair leader 旋极信息）｜ 算力一体机/显示控制 20cm 二板，全场涨幅榜第 2｜ r3 +37.48% · 今日 +20.01%<br>
+<b>6. 澳柯玛 sh600336</b> ｜ P1确认·follower（冰洗，Pair leader TCL智家）｜ 黑色家电 +2.84% 全场板块第 3，家电链唯一封板｜ r3 +11.03% · 今日 +10.04%<br>
+</div>
+<div style="margin-top:8px;color:#8a6d3b"><b>综合结论：</b>以上 6 只为今日核心看好，方向＝<b>多（试探仓）</b>，单票仓位上限 <b>3%</b>、组合合计 ≤2 成；5 只属算力硬件同一条链，须视为一个风险单元（合计 ≤10%），不得按「6 个独立标的」分别满配。</div></div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑨-b 汇总表（与上方逐行列表同源 · 4 列固定 · 飞书渲染备份）</div>
+    <div class="pt-d">字段：标的 / V4.2 阶段 / 推荐原因 / 近期走势（走势口径＝脚本 r3_pct + 今日涨幅，不含已废除的 20/60 日价格动量）</div>
+    <div class="pt-b"><table><thead><tr><th>标的（名称+代码）</th><th>V4.2 阶段</th><th>推荐原因</th><th>近期走势</th></tr></thead><tbody>
+<tr><td>华胜天成 sh600410</td><td>P1确认·follower</td><td>算力租赁/IDC 二板，5 日 +34.56%</td><td>r3 +17.62% · 今日 +10.01%</td></tr>
+<tr><td>盛合晶微 sh688820</td><td>P1确认·leader</td><td>封测龙头，半导体资金 +45.13 亿</td><td>r3 +15.82% · 今日 +11.20%</td></tr>
+<tr><td>意华股份 sz002897</td><td>P1确认·leader</td><td>高速铜连接，未涨停可买</td><td>r3 +8.46% · 今日 +6.17%</td></tr>
+<tr><td>共进股份 sh603118</td><td>P1确认·leader</td><td>光通信终端，5 日 +23.44%</td><td>r3 +18.18% · 今日 +6.76%</td></tr>
+<tr><td>卡莱特 sz301391</td><td>P1确认·follower</td><td>算力一体机 20cm 二板</td><td>r3 +37.48% · 今日 +20.01%</td></tr>
+<tr><td>澳柯玛 sh600336</td><td>P1确认·follower</td><td>黑色家电 +2.84% 唯一封板</td><td>r3 +11.03% · 今日 +10.04%</td></tr>
+</tbody></table></div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑩ V4.2 Pair 定级表（run_v42 实跑 · 24 对 · 基准日 2026-11-18 收盘）</div>
+    <div class="pt-d">配对口径：同细分（业务同类 + 市值差 ≤5 倍）→ 组内当日涨幅 Top2。脚本：研究/discovery_3d_grade_20261118.json（生成于 2026-11-18 15:56:51，506 只 / 253 对 / 6 只未配对）。Pair 级状态分布：中断 131 · P1预警 48 · P1确认 26 · WAIT 22 · W结束 21 · P3预警 2 · P3确认 1 · P2确认 1 · P2预警 1</div>
+    <div class="pt-b"><table><thead><tr><th>细分</th><th>Pair（leader / follower · 脚本真值）</th><th>state</th><th>3 日累计涨幅（r3_pct · leader/follower）</th><th>进推荐</th></tr></thead><tbody><tr><td>其他计算机设备</td><td>旋极信息 / 卡莱特</td><td>P1确认</td><td>37.48% / 14.43%</td><td>✅ follower 入核心（leader 旋极信息 为首选）</td></tr><tr><td>IT服务Ⅲ</td><td>宏景科技 / 华胜天成</td><td>P1确认</td><td>5.14% / 17.62%</td><td>✅ leader 入核心（follower 华胜天成 作备选）</td></tr><tr><td>印制电路板</td><td>深南电路 / 生益电子</td><td>P1预警</td><td>6.23% / -3.38%</td><td>✅ 可推荐·follower（未入核心 6 只）</td></tr><tr><td>消费电子零部件及组装</td><td>协创数据 / 利通电子</td><td>P1预警</td><td>-2.65% / -2.01%</td><td>✅ 可推荐·leader（未入核心 6 只）</td></tr><tr><td>军工电子Ⅲ</td><td>华丰科技 / 高德红外</td><td>P1确认</td><td>23.01% / 1.53%</td><td>✅ leader 入核心（follower 高德红外 作备选）</td></tr><tr><td>通信应用增值服务</td><td>平治信息 / 北纬科技</td><td>P2预警</td><td>5.46% / 12.20%</td><td>✅ leader 入核心（follower 北纬科技 作备选）</td></tr><tr><td>环保设备Ⅲ</td><td>清研环境 / 盛剑科技</td><td>P1确认</td><td>45.69% / 15.25%</td><td>✅ leader 入核心（follower 盛剑科技 作备选）</td></tr><tr><td>涂料油墨</td><td>七彩化学 / 联合化学</td><td>P1确认</td><td>24.76% / 3.97%</td><td>✅ follower 入核心（leader 七彩化学 为首选）</td></tr><tr><td>集成电路封测</td><td>盛合晶微 / 长电科技</td><td>P1确认</td><td>15.82% / 0.49%</td><td>✅ leader 入核心（follower 长电科技 作备选）</td></tr><tr><td>通信网络设备及器件</td><td>意华股份 / 武汉凡谷</td><td>P1确认</td><td>4.96% / 8.46%</td><td>✅ follower 入核心（leader 意华股份 为首选）</td></tr><tr><td>冰洗</td><td>TCL智家 / 澳柯玛</td><td>P1确认</td><td>11.03% / 9.93%</td><td>✅ follower 入核心（leader TCL智家 为首选）</td></tr><tr><td>金属制品</td><td>*ST宝馨 / 泰嘉股份</td><td>P1确认</td><td>15.60% / -4.52%</td><td>✅ follower 入核心（leader *ST宝馨 为首选）</td></tr><tr><td>工程机械整机</td><td>华东重机 / 建设机械</td><td>P1确认</td><td>33.03% / -2.23%</td><td>✅ leader 入核心（follower 建设机械 作备选）</td></tr><tr><td>高速公路</td><td>龙江交通 / 深高速</td><td>P1确认</td><td>18.14% / 1.72%</td><td>✅ leader 入核心（follower 深高速 作备选）</td></tr><tr><td>通信终端及配件</td><td>共进股份 / 瑞斯康达</td><td>P1确认</td><td>18.18% / 1.06%</td><td>✅ leader 入核心（follower 瑞斯康达 作备选）</td></tr><tr><td>制冷空调设备</td><td>冰山冷热 / 佳力图</td><td>P1确认</td><td>20.14% / -2.85%</td><td>✅ leader 入核心（follower 佳力图 作备选）</td></tr><tr><td>品牌消费电子</td><td>绿联科技 / 奥尼电子</td><td>P1确认</td><td>14.32% / -12.04%</td><td>✅ leader 入核心（follower 奥尼电子 作备选）</td></tr></tbody></table><div style="margin-top:6px">配对法说明：<b>同细分（申万三级＝业务同类 + 市值差 ≤5 倍）→ 组内当日涨幅 Top2</b>。「进推荐」列依据＝铁律二（P1预警/P1确认/P2预警/P2确认 可纳入，P3确认 一票否决）+ 硬门禁（buyable 为推荐硬门槛，实测 buyable 口径＝P1确认 ∪ P2预警，P2确认 1 对全为 false → 第 15 次与铁律二冲突，已列框架待更新③）。</div></div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑪ 事实核验（11/17 19:00 推荐 8 只 · T 日 11/18 表现 · 按规则76 单列，不计入预测命中率）</div>
+    <div class="pt-d">裁判日＝T+1 即 2026-11-18 收盘（11/17 晚间档预测目标日为 T+1，不得用生成日收盘自证）</div>
+    <div class="pt-b"><table><thead><tr><th>标的</th><th>11/18 涨跌</th><th>判定</th><th>拆解</th></tr></thead><tbody>
+<tr><td>联合化学 sz301209</td><td><b>+13.31%</b></td><td>✅</td><td>涂料油墨 P1确认，20cm 未封但放量</td></tr>
+<tr><td>清研环境 sz301288</td><td><b>+13.36%</b></td><td>✅</td><td>环保设备 P1确认 leader，r3 +45.69% 全场最强</td></tr>
+<tr><td>华东重机 sz002685</td><td><b>+10.00%</b></td><td>✅（一字板不可买入）</td><td>4 板一字，按口径7 从分母剔除</td></tr>
+<tr><td>有研新材 sh600206</td><td><b>+5.82%</b></td><td>✅</td><td>靶材链未破，但资金已转出（半导体材料概念 -0.60%）</td></tr>
+<tr><td>伟测科技 sh688372</td><td><b>+5.61%</b></td><td>✅</td><td>封测链跟随盛合晶微，逻辑正确</td></tr>
+<tr><td>长虹美菱 sz000521</td><td>-0.63%</td><td>❌</td><td>家电链分化：黑色家电红、冰洗未跟上</td></tr>
+<tr><td>顺钠股份 sz000533</td><td>-1.39%</td><td>❌</td><td>昨日 2 板今日冲高回落（最高 +11.52% → 收 -1.39%）</td></tr>
+<tr><td>九阳股份 sz002242</td><td><b>-9.99%</b></td><td>❌</td><td>小家电 -2.22%（7/20），板块绑定即最大失分</td></tr>
+</tbody></table>
+<div style="margin-top:6px">核对：<b>6 涨 2 跌，均值 +4.51%</b>，相对深成指（+0.20%）超额 <b>+4.31pp</b>。剔除一字板华东重机后 5 涨 2 跌、均值 <b>+3.73%</b>，相对超额 +3.53pp。<b>诚实拆解</b>：对的 3 只（联合化学/清研环境/伟测科技）全部是「个股自身 V4.2 强度」赢的；错的 2 只（九阳/长虹美菱）全部是「绑定板块 β」输的——昨日把小家电判成延续链，今日小家电 -2.22% 直接打回。</div></div>
+    </div>
+</section>
+
+<section class="sec" id="s1">
+  <div class="sec-h"><span class="n">一</span><h2>大盘宏观（量能 · 指数 · 板块 · 健康度 · 资金意图）</h2></div>
+  <div class="pt">
+    <div class="pt-h">① 成交额与量能：<b>13697.02 亿 · 较 11/17 缩量 <span class="no">879.93 亿（-6.04%）</span>，五连缩且创本轮新低</div>
+    <div class="pt-d">口径：上证 6502.32 亿 + 深证 7194.71 亿 = 13697.02 亿（westock data_changedist totalAmount 一致，差额 &lt;0.1 亿），不含北交所</div>
+    <div class="chart l" id="c_amt"></div>
+    <div class="pt-b">四日：16556.68 → 14844.90 → 14576.95 → <b>13697.02</b>；从 11/12 的 19320.82 算起，<b>五日累计缩量 5623.80 亿（-29.1%）</b>。本轮缩量的特征不是「一步到位地量」，而是<b>每日小步阴跌式递减</b>——11/16 -1711.78 亿、11/17 -267.96 亿、11/18 -879.93 亿，跌幅在收窄后再次放大。含义：<b>存量资金还在离场，但离场速度已明显放缓</b>，尚未出现「地量地价」的转折信号。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">② 量能比：<b>0.838（成交 13697.02 / 10 日均量 16339.09）—— 连续第 3 日低于 0.9，本轮最低</div>
+    <div class="pt-d">口径：10 日均量取最近 10 个交易日沪深合计成交额均值（11/05~11/18，含今日），16926.83 为上一版含北交所口径，本版统一为沪深双市口径</div>
+    <div class="chart" id="c_amtratio"></div>
+    <div class="pt-b">量能比序列：11/13 0.99 → 11/16 0.947 → 11/17 0.861 → <b>0.838</b>。三日连续下行且跌破 0.85，属典型的<b>「缩量磨底」</b>。历史经验：量能比 &lt;0.85 且指数收红，往往意味着<b>抛压枯竭而非买盘进场</b>——涨是靠「没人卖」，不是靠「有人买」，因此反抽的持续性取决于次日能否补量到 1.5 万亿之上。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">③ 指数梯度：<b>科创50 +2.19% 领涨、创业板 +0.85%、深成 +0.20%、上证 +0.09%，而上证50 -0.14%、中证1000 -0.65%</div>
+    <div class="pt-d">成长强于价值、大盘强于小盘——反抽的钱精准地只去了科创与创业板</div>
+    <div class="chart" id="c_idx"></div>
+    <div class="pt-b">上证 3587.83（<b>+0.09%</b>，最低 3560.45）、深成 10659.41（<b>+0.20%</b>，最低 10515.14）、创业板 2311.62（<b>+0.85%</b>，最低 2265.76）、科创50 1247.99（<b>+2.19%</b>，最低 1213.76，日内振幅 4.07%）。<b>科创50 一根阳线吃掉前三日跌幅的一半</b>，是今日最强的指数信号。反面：中证1000 -0.65%、北证50 -1.14%，说明<b>小微盘仍在失血</b>，反抽未扩散到小票——这也是涨跌家数 1318 的直接原因。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">④ 板块涨跌：<b>申万二级 124 个有成交样本中 33 个收红（26.6%，11/17 为 12.4%）—— 修复面扩大一倍，但仍不足三成</div>
+    <div class="pt-d">口径：westock data_sector kind=industry（申万二级，返回 124 条有成交样本）；涨幅超 +2% 仅 5 条、跌超 -2% 17 条</div>
+    <div class="chart" id="c_ind"></div>
+    <div class="pt-b">领涨 9 条：<b>元件 4.90（54/61）· 通信服务 3.01（28/36）· 黑色家电 2.84（4/9）· 综合Ⅱ 2.20 · 航运港口 2.01（24/34）· 航海装备Ⅱ 1.80 · IT服务Ⅱ 1.68（59/123）· 半导体 1.59（88/183）· 玻璃玻纤 1.54</b>。<br>领跌 9 条：<b>贵金属 -4.62（0/11 全绿）· 航空装备Ⅱ -4.39（3/46）· 电视广播Ⅱ -4.38（0/13 全绿）· 影视院线 -3.43（2/19）· 工业金属 -3.33（4/59）· 地面兵装Ⅱ -3.33 · 汽车服务 -2.97（0/9）· 电机Ⅱ -2.61 · 一般零售 -2.55</b>。<br><b>结构特征：涨价资源（贵金属/工业金属）与传媒（电视广播/影视院线）继续崩，科技硬件（元件/半导体/通信）与航运接棒。</b></div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑤ 健康度九维 + 宽度：<b>九维均值 1.50 / 5（11/17 为 1.18）—— 连续第 2 日回升，且首次站上 1.5</div>
+    <div class="pt-d">九维：涨跌比 1.3（1.3）/ 涨停结构 1.2（0.8）/ 量能 0.8（1.0）/ 资金 3.0（2.4）/ 连板 1.4（0.8）/ 宽度 0.8（0.6）/ 趋势 0.8（0.3）/ 机构 2.4（1.8）/ 情绪 1.8（1.6）</div>
+    <div class="chart" id="c_health"></div>
+    <div class="pt-b">改善最大的三维：<b>资金（2.4 → 3.0）、趋势（0.3 → 0.8）、涨停结构（0.8 → 1.2）</b>；唯一恶化的是<b>量能（1.0 → 0.8）</b>——这与「缩量反抽」的判断完全自洽：<b>结构在修复，量在流失</b>。九维里仍低于 1.0 的三维是量能 0.8、宽度 0.8、趋势 0.8，说明<b>「指数还没证明自己」</b>，一天的阳线不足以改趋势评分。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑥ 宽度结构详解：<b>跌 0~2% 区间 2459 只（44.1%）、跌 2~5% 1389 只（24.9%）、涨 0~2% 867 只（15.5%）</div>
+    <div class="pt-d">涨 1318（23.6%）/ 跌 4133（74.1%）/ 平 129（2.3%），涨跌比 0.32；涨停 43 / 跌停 48</div>
+    <div class="chart" id="c_width"></div>
+    <div class="pt-b">对比 11/17：<b>跌 2~5% 从 1620 只降到 1389 只（-231）、跌超 7% 从 91 只降到 91 只（持平）、涨停从 37 升到 43</b>。<b>关键改善在「中跌区」塌陷</b>——跌 2~5% 少了 231 只，说明恐慌性抛售在减弱。但涨 0~2% 只有 867 只、涨 2~5% 只有 299 只，<b>「小红盘」总量不足 1200 只</b>，money 只在算力链里集中，没有形成「普涨底」。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑦ 资金意图：<b>净差 +57.08 亿（1.55:1），流入端 +161.60 亿 vs 流出端 -104.52 亿 —— 本轮四日首次转正</div>
+    <div class="pt-d">口径：申万二级主力净流入（westock data_sector，单位万元 ÷1e4 = 亿元），同板块不同口径不混算</div>
+    <div class="chart" id="c_fund"></div>
+    <div class="pt-b">五日净流出入对比：11/11 <b>+275.24</b> → 11/12 -268.34 → 11/13 -292.82 → 11/16 -369.19 → 11/17 -93.36 → 11/18 <b>+57.08</b>。<b>从最差的 -369.19 到 +57.08，两日反转 426.27 亿</b>。流入前五全部是算力硬件（元件 46.18 / 半导体 45.13 / 通信设备 23.93 / IT服务 17.54 / 通信服务 10.56，合计 <b>143.34 亿</b>）；流出端是资源与医药（工业金属 -25.18 / 航空装备 -15.50 / 化学制药 -13.47 / 股份制银行 -10.78 / 医疗服务 -9.43）。</div>
+    </div>
+</section>
+
+<section class="sec" id="s2">
+  <div class="sec-h"><span class="n">二</span><h2>短线情绪（关联度 · 主题 · 梯队 · 龙虎榜 · 情绪链 · 适合度）</h2></div>
+  <div class="pt">
+    <div class="pt-h">① 关联度：<b>昨日涨停今日 +1.61%（19 涨 18 跌）· 昨日连板 <span class="no">-0.15%</span>（2 涨 4 跌）· 昨日首板 +1.95%（17 涨 14 跌）</div>
+    <div class="pt-d">自算口径：11/17 涨停 37 只逐只取 11/18 收盘涨跌幅（tool_ranking date=20261117 权威清单 + data_quote 逐只）</div>
+    <div class="chart" id="c_rel"></div>
+    <div class="pt-b">昨日涨停组总均值 <b>+1.61%</b>，终于从 11/13 的 -1.54%、11/16 的 -0.02% 回到正值区。<b>「连板负、首板正」的分化连续第 2 日出现（落差 2.10pp，昨日 6.12pp）</b>——含义没变：<b>资金在做「高度下移」，高位接不动、低位愿意试</b>。3 只昨日涨停今日跌停：九阳股份（-9.99%）、阳光照明（-10.00%）、中新赛克（-9.99%）。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">② 主题 treemap：<b>43 只涨停落入 8 个集群，最大集群算力·IDC/通信服务 12 只、装修·化工·其他 11 只、机械·电源 5 只</div>
+    <div class="pt-d">口径：westock tool_ranking(limitup_days, date=2026-11-18)，43 只为权威涨停清单，逐只归属集群，不含非涨停股</div>
+    <div class="chart" id="c_tree"></div>
+    <div class="pt-b">分布：<b>算力·IDC/通信服务 12</b>（华胜天成/真视通/中贝通信/城地香江/润建股份/美利云/证通电子/宏景科技/常山北明/中嘉博创/广脉科技/青云科技-U）· 装修·化工·其他 11 · <b>机械·电源 5</b> · <b>家电链 4</b>（四川长虹/澳柯玛/爱仕达/春光科技）· <b>PCB·覆铜板 3</b>（沪电股份/深南电路/创益通）· 计算机设备/显示控制 3 · 通信设备/器件 3 · 半导体/检测 2。<br><b>与非涨停的板块涨幅完全吻合</b>：12 只扎堆的「算力·IDC」对应通信服务 +3.01%（881162 +4.08% 全场第 1）；3 只 PCB 对应元件 +4.90%（全场第 1）。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">③ 连板梯队：<b>4 板×1 · 2 板×7 · 首板×35 —— 连板 8 只（11/17 为 6 只，止跌回升）</div>
+    <div class="pt-d">4 板：华东重机（一字板）；2 板：卡莱特、华胜天成、全筑股份、双环科技、真视通、泰嘉股份、盛剑科技（其中全筑股份/盛剑科技为一字板）</div>
+    <div class="chart" id="c_ladder"></div>
+    <div class="pt-b">梯队形态从 11/17 的「3-2 两层平台」回填为 <b>「4-2-35 三层塔」</b>，但 <b>3 板连续第 2 日空缺</b>。历史含义：连板总数从 6 回到 8、首板从 31 回到 35，是<b>情绪「止跌」而非「回升」</b>的直接读数——真正的回升需要出现新的 3 板（明日卡莱特/华胜天成/真视通是否能 2 进 3 是关键观察点）。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">④ 涨跌停对比：<b>涨停 43 · 跌停 <span class="no">48</span> —— 跌停连续第 4 日多于涨停，但差距从 46 只骤降到 5 只</div>
+    <div class="pt-d">⚠️ 口径说明：涨停 43 为 westock tool_ranking(limitup_days) 权威清单与 data_changedist upLimitCount 双源一致值；跌停 48 取自 data_changedist downLimitCount，未取得交易所独立口径对照（标⚠️单源）</div>
+    <div class="chart" id="c_zt"></div>
+    <div class="pt-b">四日演进：11/13 涨停 38 / 跌停 39 → 11/16 33 / <b>68</b> → 11/17 37 / <b>84</b> → 11/18 <b>43 / 48</b>。<b>跌停从 84 腰斩到 48（-42.9%）是今日最实质的改善</b>，也是「绞杀烈度下降」的量化证据。但 48 只跌停绝对数仍不低——按历史分布，跌停 &lt;30 只才算情绪真正回稳，今日仍在警戒线之上。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑤ 持续性：<b>11/17 的四条强势链「两存两亡」—— 元件（昨 -2.83% → 今 +4.90%）反转最强、半导体（+0.41% → +1.59%）延续；小家电（+3.94% → -2.22%）与贵金属（+2.09% → -4.62%）双双崩塌</div>
+    <div class="pt-d">口径：同板块连续 2 日涨跌幅（申万二级），只看方向不看幅度</div>
+    <div class="pt-b"><b>最刺眼的一对是「小家电 vs 半导体」</b>：昨日小家电是全市场第 1（+3.94%）、今日第 2 差（-2.22%），<b>典型的一日游</b>；而昨日只有 +0.41% 的半导体今日反而 +1.59%（88/183）。<b>贵金属更彻底：昨日 +2.09%（10/11）今日 -4.62%（0/11）全绿</b>，符合规则㉓「反弹=减仓窗口非反转确认」的第 3 次正向验证。结论：<b>当前的强势链寿命 ≈ 1 天，追昨日最强是本周最稳定的亏钱方式。</b></div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑥ 高标梯队：<b>广脉科技 +30.00%（北交所 30cm）· 卡莱特/宏景科技/旋极信息/创益通/胜科纳米 5 只 20cm · 生益电子 +18.53% 未封板</div>
+    <div class="pt-d">口径：今日涨幅 Top12（含非涨停但大涨者），逐只核过 quote</div>
+    <div class="chart" id="c_high"></div>
+    <div class="pt-b">12 只里 <b>6 只是 20cm 品种（创业板/科创板/北交所）、4 只流通市值低于 60 亿</b>。与 11/17 的「环保/涂料小票」不同，今日的 20cm 全是<b>算力链的技术环节</b>（宏景科技 IDC、卡莱特显示控制、旋极信息算力、创益通连接器、胜科纳米检测）。<b>生益电子 +18.53% 未封板（收 70.95 / 涨停 71.83）</b>，是全场最有分量的「差一分钱」——明日它的开盘方向决定 PCB 链的强弱。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑦ 龙虎榜：<b>机构净买 18 席 +15.90 亿 vs 净卖 19 席 <span class="no">-5.55 亿</span>，净额 <span class="up">+10.35 亿</span>（买:卖 2.86:1）—— 连续 3 日净卖后首次转净买</div>
+    <div class="pt-d">口径：westock data_lhb type=jg（机构专用席位），按代码去重、tdDays 取最大记录；净买=instBuyAmt&gt;0 合计，净卖=instBuyAmt&lt;0 合计</div>
+    <div class="chart" id="c_lhbb"></div>
+    <div class="chart" id="c_lhbs"></div>
+    <div class="pt-b">净买前六：<b>沪电股份 +3.50 亿（今日涨停 +10.00%，成交 81.86 亿全场第一）、生益电子 +3.43 亿（+18.53%）、锋龙股份 +2.09 亿、深南电路 +1.93 亿（+10.00%）、皇台酒业 +1.19 亿、冰山冷热 +0.98 亿</b>——<b>PCB/覆铜板链独占三席、合计 7.86 亿</b>。净卖前六：协创数据 -1.00 亿（但股价 +18.02%）、西陇科学 -0.99 亿、通化金马 -0.77 亿、润建股份 -0.70 亿、宏景科技 -0.36 亿、辰奕智能 -0.32 亿。<b>注意反向证据</b>：协创数据机构净卖 1 亿却涨 18.02%、宏景科技净卖 0.36 亿却 20cm 涨停——<b>游资主导的票，机构席位是「卖压」不是「买盘」</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑧ 四日情绪链：<b>涨停 38→33→37→<span class="up">43</span> · 连板 12→11→6→<span class="up">8</span> · 最高板 4→4→3→<span class="up">4</span> · 晋级率 32.4→33.3→21.2→<span class="no">18.9</span> · 涨跌比 0.26→0.32→0.32→0.32</div>
+    <div class="pt-d">五项指标里 4 项改善（涨停/连板/最高板/跌停数）、1 项恶化（晋级率）</div>
+    <div class="chart" id="c_chain"></div>
+    <div class="pt-b">最清晰的一条线是<b>「涨停回升 + 连板回升 + 最高板回升，但晋级率继续下行」</b>：说明<b>低位试错在增加、高位接力在衰竭</b>，这与「昨日连板 -0.15% / 昨日首板 +1.95%」的分化完全一致。<b>晋级率 18.9% 是本轮新低</b>，是判断「能不能做连板」的唯一硬指标——只要它不回 25% 以上，打板策略就不成立。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑨ 策略适合度：<b>打板追高 3 · 低吸回踩 3（并列第一）· 趋势持有 2 · 补涨扩散 2 · 空仓等待 2（从 4 降至 2）</div>
+    <div class="pt-d">评分口径：以当日五类策略的实际成功率与次日赔率综合打分（0-5）。今日「空仓等待」首次掉到与低吸同档以下</div>
+    <div class="chart" id="c_fit"></div>
+    <div class="pt-b">这是本轮第一次把<b>「低吸回踩」排到与「打板追高」并列第一、并把「空仓等待」降到 2 分</b>——依据是三点：①深 V 翻红、下跌结构被打断；②资金净差四日首次转正；③跌停从 84 腰斩到 48。<b>但「打板」只有 3 分不是 4 分</b>：晋级率 18.9% 创新低、2 板以上接力成功率不足 1/5，打板仍属低胜率。</div>
+    </div>
+</section>
+
+<section class="sec" id="s3">
+  <div class="sec-h"><span class="n">三</span><h2>情绪流选股（2 只代表股 · 盘口应对 · 止盈止损）</h2></div>
+  <div class="pt">
+    <div class="pt-h">A. 首板代表：<b>沪电股份 sz002463</b> —— PCB/覆铜板链（元件 +4.90% 全场第 1、覆铜板 +4.02% 6/6 全红）</div>
+    <div class="pt-d">V4.2：<b>未配对·不定级</b>（未进入 506 只定级样本；PCB 链实际 Pair 为 深南电路/生益电子，二者状态＝<b>P1预警</b>，leader 深南电路）。今日首板 +10.00% 封板于 80.19，成交 81.86 亿全场第一，主力净流入居首</div>
+    <div class="pt-b"><b>选它的理由（它是「钱最多」的那一只，不是「涨最多」的那一只）</b>：①<b>成交 81.86 亿全场第一</b>，比第二名（协创数据 33.61 亿净买额之外）量级更大，说明分歧与承接同时存在；②<b>机构净买 6.24 亿、机构买入额 3.50 亿全场第一</b>，6 家机构席位同时出现在买方；③<b>首板不是连板</b>，明日不存在「连板晋级率 18.9%」的压力。<br><b>风险点</b>：11/16 同一只票也是机构净买第一（+2.68 亿），当日却<b>跌停 -10%</b>——「机构净买」在退潮期的方向性要打折（框架待更新①）。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">B. 连板高标：<b>卡莱特 sz301391（2 板）</b> —— 其他计算机设备/算力一体机（算力一体机概念 +2.91%、29/36）</div>
+    <div class="pt-d">V4.2：<b>P1确认 follower · buyable=true</b>（Pair 卡莱特/旋极信息，leader＝旋极信息，r3 +14.43% vs 卡莱特 +37.48%）。今日 +20.01% 封板 46.66、换手 10.15%、量比 4.17</div>
+    <div class="pt-b"><b>选它的理由（连板里唯一「有主线 + 有换手 + 非一字」的）</b>：①7 只 2 板中，全筑股份与盛剑科技是一字板、真视通/双环科技/泰嘉股份属杂毛链条，<b>只有卡莱特与华胜天成同时满足「算力主线 + 换手正常 + 可成交」</b>；②<b>换手仅 10.15%（华胜天成 19.03%、泰嘉股份 27.57%）</b>，说明筹码还没大规模转手，明日抛压相对可控；③20cm 品种在科创50 +2.19% 的环境里有弹性优势。<br><b>风险点</b>：PE 599 倍、流通市值仅 43 亿，且 <b>r3 +37.48% 已是全场最高之一</b>，属「位置偏高」的小票，只能做快进快出。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">盘口应对表（两只代表股 · 明日 T+1 情景推演）</div>
+    <div class="pt-d">T1 = 2026-11-19 周四。所有情景均为条件触发，非预测</div>
+    <div class="pt-b"><table><thead><tr><th>情景</th><th>沪电股份 sz002463（首板）</th><th>卡莱特 sz301391（2 板）</th></tr></thead><tbody>
+<tr><td><b>高开 &gt;+3% 且 10:00 前不破均价</b></td><td>不追。等回踩 78.10（今日均价）附近再试，仓位 ≤3%</td><td>不追。20cm 品种高开即风险最大，观察是否有资金承接再决定</td></tr>
+<tr><td><b>平开 / 小高开 0~+2%</b></td><td><b>主战情景</b>：开盘 30 分钟不破 80.19 可试 3%，止损 76.30（今日开盘价）</td><td>可试 2%，止损 42.00（今日开盘价），破位即走不恋战</td></tr>
+<tr><td><b>低开 -2% 以内</b></td><td>看 10:00 前能否收回昨收 72.90 上方；收回可试 2%</td><td>直接放弃，20cm 二板低开＝分歧转一致失败</td></tr>
+<tr><td><b>低开 &lt;-3% 或跌破今日均价</b></td><td>全部放弃，不接</td><td>全部放弃，不接</td></tr>
+<tr><td><b>止盈</b></td><td>+7% 减半、+10% 全出（首板不做持有）</td><td>+8% 减半、+15% 全出；破 5 日线无条件清</td></tr>
+<tr><td><b>止损</b></td><td>-5%（跌破 76.18）</td><td>-6%（跌破 43.86）</td></tr>
+</tbody></table>
+<div style="margin-top:6px"><b>披露</b>：全场最高板 <b>华东重机 sz002685（4 板）今日为一字板（open=high=low=7.37、换手 2.20%）</b>，按规则口径7「T 日收盘后推荐、T+1 开盘一字板 → 🚫不可买入、不计入分母」处理，<b>不列入可交易标的</b>，仅作高度观察。</div></div>
+    </div>
+</section>
+
+<section class="sec" id="s4">
+  <div class="sec-h"><span class="n">四</span><h2>机构趋势（参与度 · 资金性质 · 政策 · 流动性 · 5日领涨 · 资金连续性）</h2></div>
+  <div class="pt">
+    <div class="pt-h">① 机构参与度：<b>龙虎榜机构净买 18 席 +15.90 亿 vs 净卖 19 席 -5.55 亿，净额 +10.35 亿（2.86:1）</b></div>
+    <div class="pt-d">口径：机构专用席位（data_lhb type=jg），按代码去重取 tdDays 最大记录；净买 Top1 沪电股份（机构买入额 3.50 亿 / 净买额 6.24 亿）</div>
+    <div class="pt-b">三日演进：11/16 <b>0.66:1 净卖 -5.76 亿</b>（沪电 +2.68 亿跌停板接盘失败）→ 11/17 <b>0.18:1 净卖 -28.69 亿</b>（景旺 -12.57 / 生益 -7.00 主动出货）→ 11/18 <b>2.86:1 净买 +10.35 亿</b>。<b>这是三轮里第一次机构站到买方</b>，且方向精准对齐当日主线（PCB 三席合计 7.86 亿）。<b>但要警惕第 3 次同型陷阱</b>：11/13 亚玛顿机构净买第一→11/16 跌停；11/16 沪电机构净买第一→当日跌停；11/18 沪电又是净买第一——<b>「机构净买 + 当日涨停」这一组合在本轮的正确率是 0/2</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">② 资金性质：<b>「一条链吸金 143.34 亿、资源与医药失血」—— 元件 +46.18 / 半导体 +45.13 / 通信设备 +23.93 / IT服务 +17.54 / 通信服务 +10.56</div>
+    <div class="pt-d">口径：申万二级主力净流入（万元 ÷1e4 = 亿元）。前五条净流入合计 143.34 亿，占流入前十（161.60 亿）的 88.7%</div>
+    <div class="pt-b">对照昨日的结构：11/17 流入前五（半导体 29.16 / 光学 8.83 / 白电 3.29 / 电子化学品 2.50 / 白酒 2.35，合计 46.13 亿）是<b>「散点式」</b>；今日（143.34 亿）是<b>「垂直式」</b>——<b>同一产业从上游材料（覆铜板）到中游制造（PCB/元件）到下游服务（IDC/算力租赁）全线净流入</b>。这种结构比「单点爆发」更健康，但也意味着<b>一旦链条某一段断裂（例如生益电子明日不能封板），资金会整链撤退</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">③ 政策与产业催化：<b>今日无新增内部政策硬催化 —— 驱动力来自外盘同链（博通概念 +7.30% 6/6 全红）+ 国内算力资本开支预期，属「外盘映射 + 资金驱动」而非「政策驱动」</b></div>
+    <div class="pt-d">独立事件扫描（规则15 四项）：①业绩预告 — 无新增龙头净利预增公告；②停牌核查/异动公告 — 无新增（华东重机 4 板未停牌，需盯）；③政策/产业事件 — 无部委级新增，本周无已知会议窗口；④外盘同链 — 隔夜美股科技链企稳（费半未续跌），博通概念 6/6 全红是最直接映射</div>
+    <div class="pt-b">今日最强概念叫<b>「博通概念」+7.30%、6 只全红</b>，这不是国内政策，是<b>海外 AI 网络芯片链的映射</b>。这意味着两点：①<b>持续性取决于隔夜外盘</b>，一旦费半跌超 3%，链条会当天断；②<b>国内没有独立催化支撑，所以「政策底」不存在</b>，只能做「跟随」不能做「埋伏」。反例参照：11/13 影视院线靠抖音《互动剧合作征集》这一需求侧公告走出全场第 1，<b>那才是可埋伏的政策/事件驱动，今日没有这一类</b>（规则83 三条件今日未命中）。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">④ 流动性：<b>13697.02 亿（量能比 0.838）只支撑 1318 只上涨、43 只涨停 —— 流动性总量处于本轮最低，但分配效率最高</div>
+    <div class="pt-d">五日成交 19320.82 → 16556.68 → 14844.90 → 14576.95 → 13697.02（累计 -29.1%）；量能比 0.838（10 日均量 16339.09）</div>
+    <div class="pt-b">一个值得记的矛盾：<b>成交额创新低，但涨停数（43）却是四日最高</b>。解释只有一种——<b>钱从「撒胡椒面」变成了「集中打一条链」</b>。这种结构的后果是双面的：好处是主线清晰、龙头容易做；坏处是<b>非主线的票会被持续抽血</b>（今日 4133 只下跌即是证据）。操作含义：<b>不做非算力链的任何板块，即使它今天涨了</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑤ 5 日领涨（口径说明：5 日主力净流入 Top8 + 今日涨幅折线）</div>
+    <div class="pt-d">个护用品 16.91 / 白色家电 11.53 / 白酒Ⅱ 8.57 / 铁路公路 6.93 / 通信服务 4.15 / 房屋建设 3.67 / 国有大行 3.50 / IT服务 3.43（亿元）</div>
+    <div class="chart" id="c_lead5"></div>
+    <div class="pt-b">8 条里 <b>5 条是防御/消费（个护/白电/白酒/铁路公路/房屋建设/国有大行），3 条是算力（通信服务 4.15 / IT服务 3.43，加上未进榜但今日第一的元件）</b>。关键变化：<b>通信服务与 IT服务第一次挤进 5 日资金榜前八</b>——这在过去 5 个交易日里从未发生。含义：<b>算力链的钱是「今天才进的」，5 日口径还没反映出来</b>，若明日继续流入，5 日榜会快速被算力链占据，这是判断「一日游 vs 新主线」的核心观察点。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑥ 资金连续性：<b>14 条重点链三口径对照 —— 全正 0 条（今日/5日/20日），「5 日转正 + 20 日仍负」3 条（通信服务 +4.15/-10.11、IT服务 +3.43/-55.59、元件 -174.46/-410.92 不同）</div>
+    <div class="pt-d">三口径 = 今日主力净流入 / 5 日 / 20 日（亿元）。口径纪律：任一为负即不判「全正」；⚠️ 全正数量为 0 是今日最重要的风险提示</div>
+    <div class="chart" id="c_fundcont"></div>
+    <div class="chart" id="c_fundq"></div>
+    <div class="pt-b">逐条看：<b>通信服务（+10.56 / +4.15 / -10.11）是最接近「三口径全正」的一条</b>，20 日缺口仅 -10.11 亿，一日即可补平；<b>IT服务（+17.54 / +3.43 / -55.59）</b>次之。而<b>元件（+46.18 / -174.46 / -410.92）与半导体（+45.13 / -108.37 / -87.97）今日虽然吸金最猛，但 5 日/20 日仍是深坑</b>——按规则51 算 |20D|/|5D|：元件 410.92/174.46 = <b>2.36 ≥1.5 且属硬件制造链 → 判「偏空（退潮反弹陷阱）」</b>；半导体 87.97/108.37 = 0.81 &lt;1.5 但 5D 为负 → 不适用规则65，仍按中性处理。<b>规则51 今日与「全场第一板块」直接冲突，写入框架待更新②。</b></div>
+    </div>
+</section>
+
+<section class="sec" id="s5">
+  <div class="sec-h"><span class="n">五</span><h2>趋势选股（2 只趋势股 · 操作表 · 止盈止损）</h2></div>
+  <div class="pt">
+    <div class="pt-h">A. 华丰科技 sh688629 —— 超节点连接器 · <b>V4.2 P1确认 leader · buyable</b>（Pair 华丰科技/高德红外，军工电子Ⅲ）</div>
+    <div class="pt-d">选它的逻辑是「资金连续性最好板块里的最强者」。<b>超节点是今日唯一「今日/5日/20日」三口径全正的概念（+36.22 / +29.35 亿）</b>；华丰科技今日 +14.62%、成交 40.04 亿、换手 8.96%、r3 +23.01%</div>
+    <div class="pt-b"><b>为什么趋势选股可以用一只 +14.62% 的票</b>：V4.2 九态回答「这条链的第几波」，趋势打法回答「这只票的中期斜率」——两者不冲突。华丰科技的斜率是<b>5 日 +37.39%、10 日 +50.46%、20 日 +30.16%</b>（此处仅作走势描述，不作阶段判据），是算力链里斜率最陡的大市值品种（487 亿）。<b>风险</b>：今日振幅 18.30%（最低 88.38 → 最高 105.00），说明日内波动极大，不适合一次性建仓。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">B. 平治信息 sz300571 —— 通信应用增值服务 · <b>V4.2 P2预警 leader · buyable</b>（Pair 平治信息/北纬科技）</div>
+    <div class="pt-d">通信服务是今日第 2 大板块（+3.01%、881162 +4.08% 全场第 1），且 5 日主力 +4.15 亿、20 日 -10.11 亿——<b>20 日缺口最小的一条链</b>。平治信息今日 +13.95%、r3 +5.46%</div>
+    <div class="pt-b"><b>为什么选它而不是涨幅更大的宏景科技</b>：宏景科技今日 20cm 涨停、r3 只有 +5.14%（说明前面跌得多），且机构席位<b>净卖 0.36 亿</b>；平治信息 r3 +5.46% 相近，但它是<b>P2预警（已在扩散段）而非刚启动</b>，且没有被机构砸。另一点：<b>它的 Pair 对手北纬科技今日也涨停（+9.99%）</b>，双票同涨是 P2 扩散的标准形态。<b>风险</b>：P2预警 属「扩散未确认」，仓位只能给到趋势仓位的一半。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">操作表（两只趋势股 · 明日 T+1 执行）</div>
+    <div class="pt-d">趋势股打法 = 慢、分批、破线走，与情绪流选股的快进快出完全分开</div>
+    <div class="pt-b"><table><thead><tr><th>标的</th><th>建仓方式</th><th>加仓条件</th><th>止盈</th><th>止损</th></tr></thead><tbody>
+<tr><td><b>华丰科技 sh688629</b><br>P1确认 leader</td><td>分 3 批：明日开盘不追，回踩 96.88（今日均价）建 1/3</td><td>站稳 105.00（今日最高）且成交额 &gt;30 亿 → 加 1/3</td><td>+12% 减半、+20% 全出；跌破 5 日线清</td><td>-7%（跌破 96.81）</td></tr>
+<tr><td><b>平治信息 sz300571</b><br>P2预警 leader</td><td>单批建仓 ≤2%，回踩 5 日线建</td><td>北纬科技同步走强 + 通信服务板块续红 → 加到 3%</td><td>+10% 减半、+15% 全出</td><td>-6%</td></tr>
+</tbody></table>
+<div style="margin-top:6px"><b>组合约束</b>：趋势仓（本表 2 只）与情绪仓（三、情绪流选股 2 只）合计不得超过总仓位的 <b>2 成</b>；算力链敞口（含⑨核心 6 只）合并计算 ≤<b>10%</b>。</div></div>
+    </div>
+</section>
+
+<section class="sec" id="s6">
+  <div class="sec-h"><span class="n">六</span><h2>机会分析（事件驱动 · 潜伏方向 · 历史回看 · 阶段玩法 · 操作清单）</h2></div>
+  <div class="pt">
+    <div class="pt-h">① 事件驱动先手：<b>本周（11/19~11/21）只有两个可预期窗口 —— (a) 隔夜费半/博通链能否延续（决定算力链是二波还是一日游）；(b) 华东重机 4 板是否触发停牌核查（决定短线高度上限）</b></div>
+    <div class="pt-d">均为技术/资金窗口，非政策日历窗口（本周无已知部委级会议）</div>
+    <div class="pt-b">(a) <b>算力链的二波条件</b>：按 V4.2 的 D0 规则，元件/通信服务今日已构成 D0（元件 +4.90% 单日 ≥5% 未达、但板块内 3 只涨停），<b>明日若元件/通信服务继续红且生益电子封板 → 进入 P1确认 → 扩散段成立</b>；若明日生益电子低开破 70 元 → 直接按「一日游」处理。(b) <b>华东重机</b>今日 4 板一字、5 日 +53.22%，<b>按交易所异动规则已接近停牌核查阈值</b>，一旦停牌，2 板梯队会失去高度锚，短线情绪会二次降温。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">② 明日潜伏方向：<b>只有一条半 —— (a) 算力链的「二线补涨」（交换机/服务器/铜连接，已在涨但涨幅落后）；(b) 半导体封测的外溢（盛合晶微带动，长电科技等未动）</b></div>
+    <div class="pt-d">按规则57 补涨候选池四条件筛：主力净流入 Top20 ∩ 广度 ≥80% ∩ 板块内涨停 ≥3 ∩ 当日涨幅 &lt;3%</div>
+    <div class="pt-b"><b>(a) 交换机概念 +2.28%（26/34、净 +23.95 亿、5 日 +3.08 已转正）</b>：广度 76% 略低于 80% 门槛，但 5 日资金已转正 + 今日净流入进前十，属「半满足」；<b>服务器 +1.92%（66/91、净 +36.48 亿）</b>广度 72.5%。两条都不满足「涨停≥3」这一条 → <b>严格按规则57 只能给「观察·回踩可试」，不能给「多」</b>。<br><b>(b) 半导体封测</b>：盛合晶微 +11.20% 已是 P1确认 leader，但同细分的长电科技今日未跟涨，属典型的「龙头先动、跟随未动」形态——<b>这是 P2 扩散的前置条件，可提前布局但不加仓</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">③ 历史回看：近期主线持续性验证（用板块 5 日 / 20 日资金对照）</div>
+    <div class="pt-d">验证 4 条已走过一轮的主线，看它们的资金结局</div>
+    <div class="pt-b"><table><thead><tr><th>主线</th><th>高光日</th><th>今日</th><th>5 日资金</th><th>20 日资金</th><th>结局判定</th></tr></thead><tbody>
+<tr><td>传媒（影视院线/电视广播）</td><td>11/13 影视院线 +3.50% 全场第 1（抖音互动剧征集）</td><td>今日 -3.43% / -4.38%（0/13 全绿）</td><td>-18.98 亿</td><td>-7.09 亿</td><td><b>3 日走完完整生命周期，事件驱动型主线的标准寿命</b></td></tr>
+<tr><td>半导体材料（靶材/光刻胶）</td><td>11/17 靶材 +4.77%（5/5）</td><td>今日 靶材 +3.14%（5/5 仍红）但半导体材料概念 -0.60%</td><td>-50.88 亿</td><td>-134.73 亿</td><td><b>龙头一枝独秀、板块整体失血，属「未被证伪但已无力扩散」</b></td></tr>
+<tr><td>贵金属</td><td>11/17 +2.09%（10/11）</td><td>今日 -4.62%（0/11 全绿）</td><td>-18.96 亿</td><td>-29.19 亿</td><td><b>规则㉓「反弹＝减仓窗口」第 3 次正向验证</b></td></tr>
+<tr><td>小家电</td><td>11/17 +3.94% 全场第 1</td><td>今日 -2.22%（7/20）</td><td>-13.05 亿</td><td>-8.91 亿</td><td><b>1 日游，5 日/20 日双负说明没有资金底座</b></td></tr>
+</tbody></table>
+<div style="margin-top:6px"><b>共性结论（4/4）：在 20 日资金为负的环境下，任何单日爆发的主线寿命都不超过 3 个交易日。</b>今日的算力链同样处在这个环境里（元件 20 日 -410.92 亿、通信设备 -389.85 亿）——<b>所以对它也只能给「2-3 日的窗口」，不能给「趋势」。</b></div></div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">④ 当前阶段玩法与风险约束</div>
+    <div class="pt-d">regime（按 T 日数据判 T+1）：<b>退潮尾段 + 探底回升（待确认）</b>（跌 4133 &gt; 涨 1318×2 且涨停 43 &lt;60 → 规则55 仍判退潮；但四大指数深 V 翻红 + 资金净差转正 + 跌停腰斩，属「退潮尾段」而非「退潮加速」；跌停 48 &gt;10 → 规则66③ ㊹ 豁免仍要再降一档）</div>
+    <div class="pt-b">玩法：<b>①不做连板</b>（晋级率 18.9% 创新低、昨日连板 -0.15%）；<b>②不做非算力链</b>（4133 只下跌，抽血未停）；<b>③不接传媒反抽</b>（㉓ 反弹=减仓窗口，今日电视广播 0/13 已验证）；<b>④一字板一律不追</b>（华东重机/盛剑科技/全筑股份）；<b>⑤只做回踩、不追高开</b>（量能比 0.838，追高无接盘）。<br><b>风险约束</b>：总仓 1-2 成；算力链合并敞口 ≤10%；单票 ≤3%；任何一票跌破今日均价 3% 无条件减半。<b>规则56 最高分方向三重确认</b>：元件 4.90 分为当日最高分方向，检查 ①竞价广度 — N/A（收盘档无竞价数据）②20 日主力净流入 -410.92 亿 <b>为负 → 不满足</b> ③T-1 涨幅 -2.83% &lt;+5% 且无涨停潮 ✅ → <b>1 项不满足，评分强制压至 70、仓位上限 ≤5%</b>。</div>
+    </div>
+  <div class="pt">
+    <div class="pt-h">⑤ 明日操作清单（T1 = 2026-11-19 周四）</div>
+    <div class="pt-d">条件触发制，不做无条件预测</div>
+    <div class="pt-b"><table><thead><tr><th>序号</th><th>动作</th><th>触发条件</th><th>仓位</th></tr></thead><tbody>
+<tr><td>1</td><td>观察开盘验证</td><td>09:30~10:00 看上证能否守住今日下影线 3560.45、元件/通信服务是否续红</td><td>—</td></tr>
+<tr><td>2</td><td>试仓算力链回踩</td><td>元件板块红 &amp; 生益电子不破 70.00 &amp; 个股回踩今日均价不破 → 试 ⑨核心前 3 只（华胜天成/盛合晶微/意华股份）</td><td>合计 ≤6%</td></tr>
+<tr><td>3</td><td>加仓条件</td><td>成交额重回 1.5 万亿上方 &amp; 涨停 &gt;60 &amp; 跌停 &lt;30（三项同时）</td><td>加至 2 成</td></tr>
+<tr><td>4</td><td>止损/减仓</td><td>跌停重新 &gt;60 或 上证破 3560.45 或 算力链集体转绿</td><td>降至 ≤1 成</td></tr>
+<tr><td>5</td><td>禁止动作</td><td>不追一字板（华东重机/盛剑科技/全筑股份）、不做传媒反抽、不打 3 板以上</td><td>0</td></tr>
+</tbody></table></div>
+    </div>
+</section>
+
+<h3>⚠️ 框架待更新（5 条 · 今日新增，待 20:30 整体回测仲裁）</h3>
+<div class="pt"><div class="pt-b"><b>① 「机构净买 + 当日涨停」在本轮是 0/2 的反向组合，缺一条时效失效判据</b>——11/13 亚玛顿机构净买第一 → 11/16 跌停；11/16 沪电股份机构净买第一 → 当日跌停；11/18 沪电股份又是机构净买第一（+3.50 亿机构买入额）且当日涨停。<b>建议：退潮期（规则55 退潮日）内，「机构净买第一」不得作为次日看多的独立理由，须叠加「5 日资金转正」方可采信。</b><br><br>
+<b>② 规则51（硬件属性否决）与「板块涨幅全场第一」直接冲突，今日再次误杀</b>——元件今日 +4.90%（54/61）全场第 1、主力 +46.18 亿全场第 1，但按规则51：|20D|/|5D| = 410.92/174.46 = <b>2.36 ≥1.5</b> 且属硬件制造链 → 应判「空（退潮反弹陷阱）」。这已是 11/13、11/17、11/18 连续第 3 次出现「规则51 判空当日最强链」。<b>建议规则81（D0 量价共振）扩展为不要求「5D 主力净流入 &gt;0」，改为「今日主力净流入进全市场前三 且 板块涨幅进前三 且 板块内 ≥3 只涨停 → 规则51 当日暂停」。</b><br><br>
+<b>③ buyable 口径与铁律二第 15 次冲突</b>——今日 P2确认 1 对（2 只）buyable 全为 false，P1确认 26 对（52 只）为 true；实测 buyable = P1确认 ∪ P2预警。<b>铁律二说「P1预警/P1确认/P2预警/P2确认 全部纳入」，硬门禁说「buyable 为推荐硬门槛」——两者在 P1预警 与 P2确认 两端打架，已连续 15 个交易日未仲裁。</b><br><br>
+<b>④ 缺「探底回升日（深 V + 缩量）」regime 子档</b>——今日四大指数同日创本轮新低后全部收回、资金净差转正、跌停腰斩，但成交创五连缩新低、广度仅 23.6%。规则55 的五档（退潮/反弹修复/趋势/催化反抽/低开高走修复）均不精确匹配：竞价是高开（不符合规则72 低开高走）、涨停 43 &lt;60（不符合规则74 多头共振）。<b>建议增设第六档：四大指数同日创 N 日新低后收盘翻红 + 资金净差由负转正 + 成交额仍处 10 日均量 0.85 以下 → 「缩量探底回升」，豁免规则51、㊹ 恢复原档、判空行改「中性偏空·底仓 ≤2%」。</b><br><br>
+<b>⑤ 「连板负、首板正」的分化已连续 2 日，规则㊱（情绪缩圈）需要修订</b>——11/17 连板 -3.81% / 首板 +2.31%（落差 6.12pp）、11/18 连板 -0.15% / 首板 +1.95%（落差 2.10pp）。原规则㊱ 定义「连板占比逆势抬升 + 首板无溢价 = 退潮确认」，但今日连板占比从 22.9% 降到 18.6%、首板反而有溢价 → <b>㊱ 的两个条件同时不成立，但市场并未转为修复（广度仍 23.6%）</b>。<b>建议补一条：连板负/首板正 且 晋级率 &lt;25% → 判「高度下移·非退潮结束」，仓位不因该项回升。</b></div></div>
+
+<h3>【框架应用】2026-11-18 三阶段理论 V4.2 实跑口径</h3>
+<div class="pt"><div class="pt-b"><b>第一层·板块筛（只筛选不定级）</b>：今日全市场涨幅前三＝<b>元件 +4.90%（申万二级）· 通信服务 +3.01% · 黑色家电 +2.84%</b>；同花顺 881 口径前三＝<b>通信服务 881162 +4.08% · 元件 881270 +2.65% · 港口航运 881148 +1.06%</b>。两套口径均指向「元件 + 通信服务」为首，仅排序不同 → 列为 P1 候选。<br><br>
+<b>第二层·Pair 定级（唯一依据）</b>：可交易核心全部来自 <b>P1确认</b>（26 对 / 52 只）：算力链 宏景科技·华胜天成（IT服务Ⅲ）、卡莱特·旋极信息（其他计算机设备）、意华股份·武汉凡谷（通信网络设备及器件）、共进股份（通信终端及配件）；半导体 盛合晶微·长电科技（集成电路封测）；家电 澳柯玛·TCL智家（冰洗）、爱仕达·鸿智科技（厨房小家电）。<br><br>
+<b>P2 扩散段</b>：仅 2 对——平治信息·北纬科技（通信应用增值服务，P2预警）、1 对 P2确认（buyable 全 false）。<b>P2 数量极少说明「扩散尚未开始」</b>，这是判断算力链能不能走成主线的关键：<b>若明日 P2 数量从 2 对升到 6 对以上，则确认扩散；否则仍是一日游。</b><br><br>
+<b>PCB/覆铜板链为何不进核心</b>：生益电子·深南电路（印制电路板）状态为 <b>P1预警</b>——两者今日虽涨幅巨大（+18.53% / +10.00%），但按 V4.2 的 D0/D1/D2 三天观察窗，<b>今日只是 D0，尚未走完确认流程</b>，因此不进 core（buyable=false）。它们的明日走势决定 PCB 链能否升级为 P1确认。<br><br>
+<b>W结束 / 中断</b>：Pair 级 中断 131 / 253 = <b>51.8%</b>（11/17 为 49.6%、11/16 为 48.2%，<b>连续第 4 日 &gt;45%，且创本轮新高</b>）；W结束 21 对（11/17 为 14，<b>单日 +50%</b>）。含义：<b>一半以上的 Pair 已经断链，21 条链正式走完</b>——这是「旧主线批量死亡、新主线刚要出生」的标准过渡态。<br><br>
+<b>等级判定纪律</b>：本节所有 state 均来自脚本 <span style="font-family:monospace">discovery_3d_grade.py</span>（run_v42 同源）15:56:51 实跑输出，无一处手写；配对法已在⑩表头显式标注。</div></div>
+
+<div class="foot">数据口径与来源：①指数/成交额/涨跌家数/涨停跌停/申万二级板块/主力资金/龙虎榜 — 腾讯自选股 westock（data_changedist、data_quote×30、data_sector kind=industry 全量 124 条、data_lhb type=jg、data_kline×2 共 13 日）；②概念排名（807 条全量）— westock data_sector kind=concept，快照落盘 研究/概念排名快照_20261118.json；③涨停权威清单 — westock tool_ranking(limitup_days, date=20261118) 43 只 / date=20261117 37 只；④V4.2 定级 — 研究/discovery_3d_grade_20261118.json（2026-11-18 15:56:51 生成，506 只 / 253 对 / 6 未配对）；⑤同花顺三级行业（881162/881270/881148/881132/881271/881129/881121/881173/881172/881130）— WebFetch q.10jqka.com.cn/thshy 二级行业涨幅榜（90 条）。</div>
+
+<div class="foot">双源交叉认证：上证 +0.09% / 深成 +0.20% / 创业板 +0.85% / 科创50 +2.19% / 成交 13697.02 亿 / 涨 1318 跌 4133 / 涨停 43 —— <b>七项 westock 与「kline 自算 + changedist」双口径一致</b>。⚠️ <b>同类未认证项（已标 ⚠️）</b>：①跌停 48 只仅 data_changedist 单源（未取得交易所独立口径）；②<b>封板率 N/A</b>——同花顺 open_limit_pool（炸板池）需登录态，本次未取到炸板数，故封板率留空，情绪刻度改用「涨停 43 / 跌停 48」；③同花顺 881xxx 与申万二级存在跨体系差异（元件 2.25pp、黑色家电 2.43pp、小家电 1.79pp、计算机设备方向相反），已在④节并列展示、未做混合排序。</div>
+
+<div class="foot">门禁纪律 1+2：①门禁1 双分类独立取数 ✅ westock 申万二级 124 条 + WebFetch 同花顺 881 二级 90 条；已用领涨股对表校验确认 881 页面为当日数据 —— 宏景科技 20.00%、卡莱特 20.01%、生益电子 18.53% 与 westock 当日 quote 完全一致。②门禁2 差异扫描 ✅ 命中 4 项 —— 元件 2.25pp、黑色家电 2.43pp、小家电 1.79pp、计算机设备方向相反，均强制并列展示。</div>
+
+<div class="foot">门禁3 涨停股反向聚合 ✅：43 只涨停聚成 8 个集群，逐群对表 —— 算力·IDC 12 只（华胜天成/真视通/中贝通信/城地香江/润建股份/美利云/证通电子/宏景科技/常山北明/中嘉博创/广脉科技/青云科技-U）对通信服务 +3.01%；PCB·覆铜板 3 只（沪电股份/深南电路/创益通）对元件 +4.90%；家电链 4 只（四川长虹/澳柯玛/爱仕达/春光科技）对黑色家电 +2.84%；机械·电源 5 只（华东重机/泰嘉股份/沈阳机床/川润股份/恒润股份）对工程机械 -0.46%。唯一口径相反者为计算机设备集群，申万 +0.46% vs 同花顺 881130 -0.47%，已按 C 级处理、不定为主线。</div>
+
+<div class="foot">规则引用清单（供 20:30 回测归因）：规则15（独立事件扫描）· 规则51（硬件属性否决，今日与最强板块冲突）· 规则55（regime 退潮日）· 规则56（最高分方向三重确认：1 项不满足 → 压至 70 分）· 规则57（补涨候选池四条件：0 条完全满足）· 规则63（判空降级梯度）· 规则65（拐点过渡档，半导体比值 0.81 但 5D 为负不适用）· 规则66③（跌停 &gt;10 → ㊹ 再降一档）· 规则76（事实核验单列、不并入命中率）· 规则81（D0 量价共振，5D 未转正不满足）· 规则83（平台需求侧催化三条件：今日未命中）· 铁律二（V4.2 自然筛选，6 只）· 铁律零（阶段判定仅用 V4.2 九态，不含任何已废除指标）。</div>
+
+<div class="foot">免责与口径声明：本报告为只读复盘（READER），不写入积累文档；所有 V4.2 state 由脚本输出、非人工判断；「近期走势」列统一使用脚本 r3_pct（3 日累计涨幅）与当日涨幅，不使用 20 日/60 日价格涨跌幅之类已废除指标作为任何判据；20 日主力净流入仅作资金面观察，不作禁多/判空依据。数据基准＝2026-11-18 收盘。</div>
+<script src="./echarts.min.js"></script>
+
+<script>
+
+var D = {"amt_d": ["11/13", "11/16", "11/17", "11/18"], "amt_v": [16556.68, 14844.9, 14576.95, 13697.02], "AVG": 16339.09, "idxN": ["上证指数", "深证成指", "创业板指", "科创50", "上证50", "沪深300", "中证500", "中证1000"], "idxV": [0.09, 0.2, 0.85, 2.19, -0.14, 0.18, -0.01, -0.65], "indN": ["元件", "通信服务", "黑色家电", "综合Ⅱ", "航运港口", "航海装备Ⅱ", "IT服务Ⅱ", "半导体", "玻璃玻纤", "一般零售", "电机Ⅱ", "汽车服务", "地面兵装Ⅱ", "工业金属", "影视院线", "电视广播Ⅱ", "航空装备Ⅱ", "贵金属"], "indV": [4.9, 3.01, 2.84, 2.2, 2.01, 1.8, 1.68, 1.59, 1.54, -2.55, -2.61, -2.97, -3.33, -3.33, -3.43, -4.38, -4.39, -4.62], "health_today": [1.3, 1.2, 0.8, 3.0, 1.4, 0.8, 0.8, 2.4, 1.8], "health_yest": [1.3, 0.8, 1.0, 2.4, 0.8, 0.6, 0.3, 1.8, 1.6], "wd": ["11/11", "11/12", "11/13", "11/16", "11/17", "11/18"], "wd_up": [3538, 875, 765, 1136, 1326, 1318], "wd_down": [1827, 4635, 4748, 4344, 4119, 4133], "wd_ratio": [1.94, 0.19, 0.16, 0.26, 0.32, 0.32], "fn": ["元件", "半导体", "通信设备", "IT服务Ⅱ", "通信服务Ⅱ", "计算机设备", "航运港口", "铁路公路", "调味发酵品Ⅱ", "黑色家电", "塑料", "光伏设备", "贵金属", "城商行Ⅱ", "白酒Ⅱ", "医疗服务", "股份制银行Ⅱ", "化学制药", "航空装备Ⅱ", "工业金属"], "fv": [46.18, 45.13, 23.93, 17.54, 10.56, 4.77, 4.72, 3.37, 3.34, 2.06, -5.29, -5.52, -6.29, -6.45, -6.61, -9.43, -10.78, -13.47, -15.5, -25.18], "rel_d": ["昨日连板", "昨日涨停", "昨日首板"], "rel_v": [-0.15, 1.61, 1.95], "tree": [["算力·IDC/通信服务", ["华胜天成", "真视通", "中贝通信", "城地香江", "润建股份", "美利云", "证通电子", "宏景科技", "常山北明", "中嘉博创", "广脉科技", "青云科技-U"]], ["PCB·覆铜板", ["沪电股份", "深南电路", "创益通"]], ["计算机设备/显示控制", ["卡莱特", "旋极信息", "鸿合科技"]], ["家电链", ["四川长虹", "澳柯玛", "爱仕达", "春光科技"]], ["通信设备/器件", ["武汉凡谷", "利通电子", "北纬科技"]], ["半导体/检测", ["盛剑科技", "胜科纳米"]], ["机械·电源", ["华东重机", "泰嘉股份", "沈阳机床", "川润股份", "恒润股份"]], ["装修·化工·其他", ["全筑股份", "双环科技", "华孚时尚", "华升股份", "京蓝科技", "*ST美丽", "ST椰岛", "莲花控股", "香江控股", "众泰汽车", "动力源"]]], "ladder_x": ["4板", "2板", "首板"], "ladder_v": [1, 7, 35], "hn": ["广脉科技", "卡莱特", "宏景科技", "旋极信息", "创益通", "胜科纳米", "生益电子", "协创数据", "行云科技", "华丰科技", "平治信息", "清研环境"], "hv": [30.0, 20.01, 20.0, 20.0, 20.0, 20.0, 18.53, 18.02, 17.32, 14.62, 13.95, 13.36], "lhbb": [["沪电股份", 3.5], ["生益电子", 3.43], ["锋龙股份", 2.09], ["深南电路", 1.93], ["皇台酒业", 1.19], ["冰山冷热", 0.98]], "lhbs": [["协创数据", -1.0], ["西陇科学", -0.99], ["通化金马", -0.77], ["润建股份", -0.7], ["宏景科技", -0.36], ["辰奕智能", -0.32]], "ch_d": ["11/13", "11/16", "11/17", "11/18"], "ch_zt": [38, 33, 37, 43], "ch_lb": [12, 11, 6, 8], "ch_top": [4, 4, 3, 4], "ch_jj": [32.4, 33.3, 21.2, 18.9], "ch_ratio": [0.16, 0.26, 0.32, 0.32], "fit_x": ["打板追高", "低吸回踩", "趋势持有", "补涨扩散", "空仓等待"], "fit_v": [3, 3, 2, 2, 2], "l5": ["个护用品", "白色家电", "白酒Ⅱ", "铁路公路", "通信服务Ⅱ", "房屋建设Ⅱ", "国有大型银行Ⅱ", "IT服务Ⅱ"], "l5p": [-1.55, 0.55, -1.11, 0.34, 3.01, 0.16, 0.09, 1.68], "l5v": [16.91, 11.53, 8.57, 6.93, 4.15, 3.67, 3.5, 3.43], "fc": ["元件", "半导体", "通信设备", "IT服务Ⅱ", "通信服务Ⅱ", "计算机设备", "玻璃玻纤", "光学光电子", "消费电子", "电子化学品Ⅱ", "工业金属", "贵金属", "医疗服务", "化学制药"], "fc_t": [4.9, 1.59, 1.24, 1.68, 3.01, 0.46, 1.54, -0.28, 0.58, -0.16, -3.33, -4.62, -2.3, -1.36], "fc_5": [-174.46, -108.37, -235.76, 3.43, 4.15, -16.02, -29.73, -38.25, -106.04, -15.72, -94.07, -18.96, -25.47, -48.32], "fc_20": [-410.92, -87.97, -389.85, -55.59, -10.11, -51.54, -64.54, -79.43, -104.28, -39.99, -165.58, -29.19, -24.54, -137.41], "fq": [[-410.92, -174.46, "元件"], [-87.97, -108.37, "半导体"], [-389.85, -235.76, "通信设备"], [-55.59, 3.43, "IT服务Ⅱ"], [-10.11, 4.15, "通信服务Ⅱ"], [-51.54, -16.02, "计算机设备"], [-64.54, -29.73, "玻璃玻纤"], [-79.43, -38.25, "光学光电子"], [-104.28, -106.04, "消费电子"], [-39.99, -15.72, "电子化学品Ⅱ"], [-165.58, -94.07, "工业金属"], [-29.19, -18.96, "贵金属"], [-24.54, -25.47, "医疗服务"], [-137.41, -48.32, "化学制药"]], "zt_d": ["11/13", "11/16", "11/17", "11/18"], "zt_up": [38, 33, 37, 43], "zt_dn": [39, 68, 84, 48]};
+function mk(id,opt){var el=document.getElementById(id);if(!el)return;opt.animation=false;var c=echarts.init(el);c.setOption(opt);window.addEventListener('resize',function(){c.resize();});}
+var UP='#f04142',DOWN='#15c47e',GOLD='#ffc14d',BLUE='#4d9fff',PP='#a78bfa',MU='#8b93a7';
+var AX={axisLine:{lineStyle:{color:'#26304a'}},axisLabel:{color:'#8b93a7',fontSize:10},splitLine:{lineStyle:{color:'rgba(38,48,74,.5)'}}};
+
+/* 1 成交额 + 近4日均量 */
+mk('c_amt',{backgroundColor:'transparent',tooltip:{trigger:'axis',valueFormatter:function(v){return v+' 亿';}},grid:{left:62,right:20,top:42,bottom:30},
+ legend:{data:['沪深成交额','近4日均量 '+D.AVG],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.amt_d,axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}},
+ yAxis:{type:'value',name:'亿元',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{name:'沪深成交额',type:'bar',data:D.amt_v.map(function(v,i){return {value:v,itemStyle:{color:i===D.amt_d.length-1?UP:'#3d5788'}};}),barWidth:'55%'},
+  {name:'近4日均量 '+D.AVG,type:'line',data:D.amt_v.map(function(){return D.AVG;}),lineStyle:{color:GOLD,type:'dashed',width:2},symbol:'none'}]});
+
+/* 2 量能比 */
+mk('c_amtratio',{backgroundColor:'transparent',tooltip:{trigger:'axis',valueFormatter:function(v){return v+' %';}},grid:{left:55,right:20,top:40,bottom:30},
+ legend:{data:['量能比 %'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.amt_d,axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}},
+ yAxis:{type:'value',name:'% 均量',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{name:'量能比 %',type:'line',smooth:true,data:D.amt_v.map(function(v){return +(v/D.AVG*100).toFixed(1);}),lineStyle:{color:BLUE,width:2},itemStyle:{color:BLUE},areaStyle:{color:'rgba(77,159,255,.15)'},
+  markLine:{silent:true,data:[{yAxis:100,lineStyle:{color:GOLD,type:'dashed'},label:{formatter:'100%',color:GOLD,fontSize:10}}]}}]});
+
+/* 3 指数梯度 */
+mk('c_idx',{backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+' %';}},grid:{left:82,right:56,top:20,bottom:26},
+ xAxis:{type:'value',name:'%',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ yAxis:{type:'category',data:D.idxN.slice().reverse(),axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:11},splitLine:{show:false}},
+ series:[{type:'bar',data:D.idxV.slice().reverse().map(function(v){return {value:v,itemStyle:{color:v>=0?UP:DOWN}};}),barWidth:'58%',
+  label:{show:true,position:'right',color:'#e7ebf3',fontSize:11,formatter:function(p){return (p.value>0?'+':'')+p.value+'%';}}}]});
+
+/* 4 行业涨跌 */
+mk('c_ind',{backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+' %';}},grid:{left:100,right:56,top:18,bottom:26},
+ xAxis:{type:'value',name:'%',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ yAxis:{type:'category',data:D.indN.slice().reverse(),axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:10.5},splitLine:{show:false}},
+ series:[{type:'bar',data:D.indV.slice().reverse().map(function(v){return {value:v,itemStyle:{color:v>=0?UP:DOWN}};}),barWidth:'60%',
+  label:{show:true,position:'right',color:'#e7ebf3',fontSize:10.5,formatter:function(p){return (p.value>0?'+':'')+p.value+'%';}}}]});
+
+/* 5 健康度九维雷达 */
+mk('c_health',{backgroundColor:'transparent',tooltip:{},legend:{data:['今日 11/18','昨日 11/17'],textStyle:{color:MU,fontSize:10},bottom:0,itemWidth:12,itemHeight:8},
+ radar:{indicator:[{name:'量能支撑',max:5},{name:'涨停质量',max:5},{name:'主线清晰度',max:5},{name:'赚钱效应',max:5},{name:'情绪接力',max:5},{name:'游资活跃',max:5},{name:'机构参与',max:5},{name:'外资态度',max:5},{name:'估值安全',max:5}],
+  center:['50%','52%'],radius:'62%',axisName:{color:MU,fontSize:10},splitLine:{lineStyle:{color:'rgba(38,48,74,.8)'}},splitArea:{areaStyle:{color:['rgba(26,34,56,.35)','rgba(19,26,46,.35)']}},axisLine:{lineStyle:{color:'rgba(38,48,74,.8)'}}},
+ series:[{type:'radar',data:[{value:D.health_today,name:'今日 11/18',areaStyle:{color:'rgba(255,193,77,.28)'},lineStyle:{color:GOLD,width:2},itemStyle:{color:GOLD}},
+  {value:D.health_yest,name:'昨日 11/17',areaStyle:{color:'rgba(77,159,255,.14)'},lineStyle:{color:BLUE,width:1.5,type:'dashed'},itemStyle:{color:BLUE}}]}]});
+
+/* 6 宽度演化 */
+mk('c_width',{backgroundColor:'transparent',tooltip:{trigger:'axis'},grid:{left:52,right:52,top:42,bottom:28},
+ legend:{data:['上涨家数','下跌家数','涨跌比'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.wd,axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}},
+ yAxis:[{type:'value',name:'家数',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+  {type:'value',name:'涨跌比',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}}],
+ series:[{name:'上涨家数',type:'bar',data:D.wd_up,itemStyle:{color:UP},barWidth:'26%'},
+  {name:'下跌家数',type:'bar',data:D.wd_down,itemStyle:{color:DOWN},barWidth:'26%'},
+  {name:'涨跌比',type:'line',yAxisIndex:1,data:D.wd_ratio,lineStyle:{color:GOLD,width:2},itemStyle:{color:GOLD},
+   markLine:{silent:true,data:[{yAxis:1,lineStyle:{color:GOLD,type:'dashed'},label:{formatter:'荣枯线 1.0',color:GOLD,fontSize:10}}]}}]});
+
+/* 7 资金意图 */
+mk('c_fund',{backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+' 亿';}},grid:{left:100,right:60,top:18,bottom:26},
+ xAxis:{type:'value',name:'亿元',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ yAxis:{type:'category',data:D.fn.slice().reverse(),axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:10.5},splitLine:{show:false}},
+ series:[{type:'bar',data:D.fv.slice().reverse().map(function(v){return {value:v,itemStyle:{color:v>=0?UP:DOWN}};}),barWidth:'60%',
+  label:{show:true,position:'right',color:'#e7ebf3',fontSize:10,formatter:function(p){return (p.value>0?'+':'')+p.value;}}}]});
+
+/* 8 情绪关联度 */
+mk('c_rel',{backgroundColor:'transparent',tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v+' %';}},grid:{left:60,right:30,top:40,bottom:34},
+ legend:{data:['今日涨幅'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.rel_d,axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:11},splitLine:{show:false}},
+ yAxis:{type:'value',name:'%',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{name:'今日涨幅',type:'bar',data:D.rel_v.map(function(v){return {value:v,itemStyle:{color:v>=0?UP:DOWN}};}),barWidth:'38%',
+  label:{show:true,position:'top',color:'#e7ebf3',fontSize:12,formatter:function(p){return (p.value>0?'+':'')+p.value+'%';}},
+  markLine:{silent:true,data:[{yAxis:0,lineStyle:{color:GOLD,type:'dashed'},label:{formatter:'0 溢价线',color:GOLD,fontSize:10}}]}}]});
+
+/* 9 treemap (hierarchical, align 9/15: 主题→个股) */
+mk('c_tree',{backgroundColor:'transparent',tooltip:{formatter:function(p){return p.name+'<br/>涨停家数 '+p.value;}},
+ series:[{type:'treemap',roam:false,nodeClick:false,breadcrumb:{show:false},width:'100%',height:'100%',top:6,
+  label:{show:true,fontSize:11,color:'#fff',formatter:function(p){return (p.data.value>=2?p.name+'\\n'+p.value+'只':p.name);}},
+  itemStyle:{borderColor:'#0a0e1a',borderWidth:2,gapWidth:2},
+  data:D.tree.map(function(x,idx){
+    var PAL=['#f04142','#ffc14d','#4d9fff','#a78bfa','#37e0a0','#ff9f7f','#ffd666','#73d7ff','#b37feb','#ff85c0','#5ad8a6','#ffa940','#c0e85a','#5ac8e8','#e88a5a','#9ad0e0','#f6c25b'];
+    var nm=x[0], b=x[1];
+    if(Array.isArray(b)){return {name:nm,itemStyle:{color:PAL[idx%PAL.length]},children:b.map(function(s){return {name:s,value:1};})};}
+    return {name:nm,value:b,itemStyle:{color:(idx===D.tree.length-1?'#3a4a6b':'#5a6a8a')}};
+  })}]});
+
+/* 10 连板梯队 */
+mk('c_ladder',{backgroundColor:'transparent',tooltip:{trigger:'axis',valueFormatter:function(v){return v+' 只';}},grid:{left:52,right:24,top:40,bottom:30},
+ legend:{data:['家数'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.ladder_x,axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:11},splitLine:{show:false}},
+ yAxis:{type:'log',name:'只（对数）',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{name:'家数',type:'bar',data:D.ladder_v.map(function(v,i){return {value:v,itemStyle:{color:i===0?GOLD:UP}};}),barWidth:'46%',
+  label:{show:true,position:'top',color:'#e7ebf3',fontSize:12}}]});
+
+/* 11 涨跌停对比 */
+mk('c_zt',{backgroundColor:'transparent',tooltip:{trigger:'axis'},grid:{left:48,right:48,top:42,bottom:28},
+ legend:{data:['涨停','跌停'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.zt_d,axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}},
+ yAxis:[{type:'value',name:'涨停',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+  {type:'value',name:'跌停',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}}],
+ series:[{name:'涨停',type:'bar',data:D.zt_up,itemStyle:{color:UP},barWidth:'30%',label:{show:true,position:'top',color:UP,fontSize:10}},
+  {name:'跌停',type:'line',yAxisIndex:1,data:D.zt_dn,lineStyle:{color:DOWN,width:2},itemStyle:{color:DOWN}}]});
+
+/* 12 高标梯队 */
+mk('c_high',{backgroundColor:'transparent',tooltip:{trigger:'axis',valueFormatter:function(v){return v+' %';}},grid:{left:60,right:26,top:30,bottom:52},
+ xAxis:{type:'category',data:D.hn,axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:10.5,interval:0,rotate:32},splitLine:{show:false}},
+ yAxis:{type:'value',name:'20日主力净流入（亿元）',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{type:'bar',data:D.hv.map(function(v){return {value:v,itemStyle:{color:v>=30?GOLD:UP}};}),barWidth:'52%',
+  label:{show:true,position:'top',color:'#e7ebf3',fontSize:10.5,formatter:function(p){return '+'+p.value+'%';}}}]});
+
+/* 13 龙虎榜净买 */
+mk('c_lhbb',{backgroundColor:'transparent',title:{text:'机构净买 TOP（亿元）',left:'center',top:2,textStyle:{color:UP,fontSize:12,fontWeight:600}},
+ color:[UP,'#ff8f5a',GOLD,'#ff9f7f',BLUE,PP,'#f6c25b','#73d7ff','#b37feb',MU],tooltip:{trigger:'item',formatter:function(p){return p.name+': '+p.data.signed+' 亿';}},
+ series:[{type:'pie',radius:['34%','62%'],center:['50%','54%'],label:{color:'#e7ebf3',fontSize:10.5,formatter:function(p){return p.name+'\n+'+p.data.signed+'亿';}},labelLine:{length:6,length2:6},
+  data:D.lhbb.map(function(x){return {name:x[0],value:Math.abs(x[1]),signed:Math.abs(x[1])};}),
+  itemStyle:{borderColor:'#0a0e1a',borderWidth:1.5}}]});
+
+/* 14 龙虎榜净卖 */
+mk('c_lhbs',{backgroundColor:'transparent',title:{text:'机构净卖 TOP（亿元）',left:'center',top:2,textStyle:{color:DOWN,fontSize:12,fontWeight:600}},
+ color:[DOWN,'#37e0a0','#5ad8a6','#76d0a3','#9ad0e0','#73d7ff','#8b93a7','#4a5573','#5a6a8a','#6b7a99'],tooltip:{trigger:'item',formatter:function(p){return p.name+': '+p.data.signed+' 亿';}},
+ series:[{type:'pie',radius:['34%','62%'],center:['50%','54%'],label:{color:'#e7ebf3',fontSize:10.5,formatter:function(p){return p.name+'\n'+p.data.signed+'亿';}},labelLine:{length:6,length2:6},
+  data:D.lhbs.map(function(x){return {name:x[0],value:Math.abs(x[1]),signed:x[1]};}),
+  itemStyle:{borderColor:'#0a0e1a',borderWidth:1.5}}]});
+
+/* 15 四日情绪链 */
+mk('c_chain',{backgroundColor:'transparent',tooltip:{trigger:'axis'},grid:{left:52,right:52,top:42,bottom:28},
+ legend:{data:['涨停家数','连板家数','最高板','晋级率%','涨跌比'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.ch_d,axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}},
+ yAxis:[{type:'value',name:'家数/板位',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+  {type:'value',name:'比率',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}}],
+ series:[{name:'涨停家数',type:'bar',data:D.ch_zt,itemStyle:{color:UP},barWidth:'18%'},
+  {name:'连板家数',type:'bar',data:D.ch_lb,itemStyle:{color:'#ff8f5a'},barWidth:'18%'},
+  {name:'最高板',type:'line',data:D.ch_top,lineStyle:{color:GOLD,width:2},itemStyle:{color:GOLD}},
+  {name:'晋级率%',type:'line',yAxisIndex:1,data:D.ch_jj,lineStyle:{color:PP,width:2},itemStyle:{color:PP}},
+  {name:'涨跌比',type:'line',yAxisIndex:1,data:D.ch_ratio,lineStyle:{color:BLUE,width:2,type:'dashed'},itemStyle:{color:BLUE}}]});
+
+/* 16 策略适合度 */
+mk('c_fit',{backgroundColor:'transparent',tooltip:{trigger:'axis',valueFormatter:function(v){return v+' / 5';}},grid:{left:60,right:24,top:22,bottom:44},
+ xAxis:{type:'category',data:D.fit_x,axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:10,interval:0,rotate:24},splitLine:{show:false}},
+ yAxis:{type:'value',name:'适合度',max:5,nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{type:'bar',data:D.fit_v.map(function(v){return {value:v,itemStyle:{color:v>=3?DOWN:(v>=2?GOLD:UP)}};}),barWidth:'46%',
+  label:{show:true,position:'top',color:'#e7ebf3',fontSize:11}}]});
+
+/* 17 领涨概念：涨幅 vs 主力净流入 */
+mk('c_lead5',{backgroundColor:'transparent',tooltip:{trigger:'axis'},grid:{left:56,right:56,top:42,bottom:44},
+ legend:{data:['涨幅 %','主力净流入 亿'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.l5,axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:10.5,interval:0,rotate:26},splitLine:{show:false}},
+ yAxis:[{type:'value',name:'%',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+  {type:'value',name:'亿元',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:{show:false}}],
+ series:[{name:'涨幅 %',type:'bar',data:D.l5p.map(function(v){return {value:v,itemStyle:{color:UP}};}),barWidth:'40%'},
+  {name:'主力净流入 亿',type:'line',yAxisIndex:1,data:D.l5v,lineStyle:{color:GOLD,width:2},itemStyle:{color:GOLD}}]});
+
+/* 18 资金连续性 */
+mk('c_fundcont',{backgroundColor:'transparent',tooltip:{trigger:'axis',valueFormatter:function(v){return v+' 亿';}},grid:{left:64,right:24,top:44,bottom:44},
+ legend:{data:['今日','5日','20日'],textStyle:{color:MU,fontSize:11},top:5},
+ xAxis:{type:'category',data:D.fc,axisLine:AX.axisLine,axisLabel:{color:MU,fontSize:10.5,interval:0,rotate:20},splitLine:{show:false}},
+ yAxis:{type:'value',name:'亿元',nameTextStyle:{color:MU,fontSize:10},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{name:'今日',type:'bar',data:D.fc_t,itemStyle:{color:UP},barWidth:'22%'},
+  {name:'5日',type:'bar',data:D.fc_5,itemStyle:{color:GOLD},barWidth:'22%'},
+  {name:'20日',type:'bar',data:D.fc_20,itemStyle:{color:BLUE},barWidth:'22%'}]});
+
+/* 19 资金对照 */
+mk('c_fundq',{backgroundColor:'transparent',
+ title:{text:'资金对照：今日涨幅 vs 20日主力净流入',left:'center',top:2,textStyle:{color:GOLD,fontSize:13,fontWeight:600}},
+ tooltip:{trigger:'item',formatter:function(p){var a=p.data;return a[2]+'<br/>今日 '+a[1]+' %<br/>20日 '+a[0]+' 亿';}},
+ grid:{left:70,right:34,top:44,bottom:52},
+ xAxis:{type:'value',name:'20日主力净流入（亿元）',nameLocation:'middle',nameGap:28,nameTextStyle:{color:MU,fontSize:11},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ yAxis:{type:'value',name:'今日涨幅 %',nameLocation:'middle',nameGap:38,nameTextStyle:{color:MU,fontSize:11},axisLine:AX.axisLine,axisLabel:AX.axisLabel,splitLine:AX.splitLine},
+ series:[{type:'scatter',symbolSize:function(v){return Math.min(32,10+Math.abs(v[1])*2.6);},
+  data:D.fq,
+  itemStyle:{color:function(p){return p.data[0]>=0?(p.data[1]>=0?UP:GOLD):(p.data[1]>=0?PP:DOWN);},opacity:.86},
+  label:{show:true,position:'right',color:'#e7ebf3',fontSize:9.5,formatter:function(p){return p.data[2];}},
+  markLine:{silent:true,symbol:'none',data:[{xAxis:0,lineStyle:{color:GOLD,type:'dashed',width:1.4}},{yAxis:0,lineStyle:{color:GOLD,type:'dashed',width:1.4}}]}}]});
+</script>
+</body></html>
