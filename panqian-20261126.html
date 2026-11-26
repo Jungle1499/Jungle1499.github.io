@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>每日盘前策略 · 2026-11-26</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #eef1f6; color: #1c2430; line-height: 1.65;
+    -webkit-font-smoothing: antialiased; padding: 12px 8px 40px;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .block-white { background: #fff; border-radius: 12px; padding: 18px 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(13,71,161,.07); }
+  .block-panel { background: #f5f7fb; border-radius: 12px; padding: 16px; margin-bottom: 14px; border-left: 4px solid #0d47a1; }
+  .dark-card { background: #17212f; color: #e8eef7; border-radius: 12px; padding: 18px 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(11,20,32,.35); }
+  .dark-card .dc-title { font-size: 15px; font-weight: 700; color: #7fc4ff; letter-spacing: .5px; margin-bottom: 12px; border-bottom: 1px solid #2b3a4f; padding-bottom: 8px; }
+  .dark-card table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .dark-card th { background: #223047; color: #9fc7f0; font-weight: 600; padding: 6px 8px; text-align: left; }
+  .dark-card td { padding: 6px 8px; border-bottom: 1px solid #263449; color: #dbe6f4; vertical-align: top; }
+  .sec-title { font-size: 16px; font-weight: 700; color: #0d47a1; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  h1 { font-size: 21px; line-height: 1.4; }
+  .hero { background: linear-gradient(135deg, #0d47a1 0%, #1a237e 55%, #283593 100%); color: #fff; border-radius: 14px; padding: 22px 18px; margin-bottom: 14px; box-shadow: 0 6px 20px rgba(13,71,161,.3); }
+  .hero .date { font-size: 12.5px; opacity: .85; letter-spacing: 1px; }
+  .hero .lyric { font-size: 12.5px; opacity: .9; margin-top: 8px; font-style: italic; border-left: 2px solid rgba(255,255,255,.45); padding-left: 8px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag { background: rgba(255,255,255,.17); border: 1px solid rgba(255,255,255,.32); border-radius: 20px; padding: 3px 10px; font-size: 11.5px; }
+  .tag.hot { background: rgba(230,81,0,.9); border-color: #ff8a4c; }
+  table.dt { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.dt th { background: #0d47a1; color: #fff; padding: 7px 8px; text-align: left; font-weight: 600; white-space: nowrap; }
+  table.dt td { padding: 6px 8px; border-bottom: 1px solid #e3e8f0; vertical-align: top; }
+  table.dt tr:nth-child(even) td { background: #fafbfe; }
+  .up { color: #c62828; font-weight: 600; }
+  .dn { color: #2e7d32; font-weight: 600; }
+  .warn { color: #e65100; font-weight: 600; }
+  .neu { color: #546e7a; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+  .kpi { background: #f5f7fb; border-radius: 9px; padding: 10px 11px; border-left: 3px solid #0d47a1; }
+  .kpi .k { font-size: 11px; color: #5a6b80; }
+  .kpi .v { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  ul.li { list-style: none; }
+  ul.li li { position: relative; padding-left: 15px; margin-bottom: 7px; font-size: 13px; }
+  ul.li li::before { content: "▸"; position: absolute; left: 0; color: #0d47a1; font-weight: 700; }
+  .chain { border-left: 2px dashed #90a4c4; margin-left: 6px; padding-left: 14px; }
+  .chain-item { position: relative; margin-bottom: 13px; font-size: 13px; }
+  .chain-item::before { content: ""; position: absolute; left: -20px; top: 6px; width: 9px; height: 9px; border-radius: 50%; background: #0d47a1; border: 2px solid #fff; box-shadow: 0 0 0 2px #0d47a1; }
+  .chain-item b { color: #1a237e; }
+  .flow-tag { display: inline-block; font-size: 11px; background: #e3edfb; color: #0d47a1; border-radius: 4px; padding: 1px 5px; margin-right: 4px; font-weight: 600; }
+  .note-box { background: #fff8e1; border-left: 4px solid #e65100; border-radius: 8px; padding: 11px 13px; font-size: 12.5px; margin-top: 12px; }
+  .ok-box { background: #e8f5e9; border-left: 4px solid #2e7d32; border-radius: 8px; padding: 11px 13px; font-size: 12.5px; margin-top: 12px; }
+  .flag { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; background: #0f1825; border: 1px solid #2f4257; border-radius: 6px; padding: 9px 11px; color: #a5e8b0; word-break: break-all; }
+  .footer { text-align: center; font-size: 11.5px; color: #78889c; padding: 18px 8px; line-height: 1.8; }
+  .badge { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 4px; font-weight: 600; }
+  .b-red { background: #fdecea; color: #c62828; }
+  .b-grn { background: #e8f5e9; color: #2e7d32; }
+  .b-org { background: #fff3e0; color: #e65100; }
+  .b-blu { background: #e3edfb; color: #0d47a1; }
+  .summary-p { font-size: 13.5px; margin-bottom: 10px; text-align: justify; }
+  .two-col { display: grid; grid-template-columns: 78px 1fr; gap: 4px 10px; font-size: 12.5px; }
+  .two-col .lbl { color: #5a6b80; }
+  @media (max-width: 420px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ 1. 标题区 ============ -->
+  <div class="hero">
+    <div class="date">2026年11月26日 · 星期四 · 农历十月十八（数据日：11/25 收盘 + 美东 11/25 隔夜 + 今晨亚太）</div>
+    <h1 style="margin-top:6px">每日盘前策略<br><span style="font-size:14px; font-weight:400; opacity:.92">「3476 不是底，是问你敢不敢再看一天的地方」</span></h1>
+    <div class="lyric">歌名：《追梦赤子心》<br>「向前跑，迎着冷眼和嘲笑；生命的广阔不历经磨难怎能感到」<br>—— 10% 的上涨家数不是恐慌，是筹码在换手；今天只测底，不抄底。</div>
+    <div class="tags">
+      <span class="tag">节点：冰点（恐慌杀跌 · 退潮末段）</span>
+      <span class="tag hot">情绪：跌停 49 / 上涨占比 10% / 溢价 -0.64%</span>
+      <span class="tag">state v1 · premarket</span>
+      <span class="tag">费半 -0.65%（跌幅收敛 12 倍）</span>
+      <span class="tag hot">关键位 3468.65（11/25 低点）</span>
+    </div>
+  </div>
+
+  <!-- ============ 2. 核心摘要 ============ -->
+  <div class="block-white">
+    <div class="sec-title">📌 核心摘要</div>
+
+    <div style="font-weight:700; color:#1a237e; font-size:13.5px; margin-bottom:6px">一、昨日回顾（承接 11/25 交易日志）</div>
+    <p class="summary-p">
+      11/25 是<b class="dn">本轮调整最完整的一次恐慌杀跌</b>：沪指 <b class="dn">-2.03% 收 3476.47</b>（高 3526.34 / 低 <b class="dn">3468.65</b>，<b>收盘距全天最低仅 7.8 点</b>），深成指 <b class="dn">-3.24% 收 10086.36</b>、创业板指 <b class="dn">-4.19% 收 2183.58</b>、科创50 <b class="dn">-5.12% 收 1186.14</b>、中证500 <b class="dn">-3.63%</b>、北证50 <b class="dn">-4.75%</b>，沪深300 <b class="dn">-1.65%</b>、上证50 <b class="dn">-0.82%</b>（唯一跌幅小于 1%）。成交 <b>1.3831万亿</b>，较 11/24 <b class="dn">缩 2719.88亿（-16.4%）</b>——<b>缩量下跌 = 无承接式下跌</b>，为 11 月以来最低量。
+    </p>
+    <p class="summary-p">
+      广度是毁灭性的：<b class="dn">涨 586 / 跌 4926</b>（平 69 / 停牌 8），<b class="dn">上涨占比仅 10%</b>；<b class="up">涨停 58</b> / <b class="dn">跌停 49</b>（11/24 仅 4 只）；<b class="dn">跌超 5% 达 1864 只</b>（其中跌停 49 + 跌超 7% 732 + 5~7% 1083）。结构上只有<b>防御全线独活</b>：<b class="up">渔业 +4.65%（3/6）、医药商业 +1.09%（17/32）、酒店餐饮 +1.01%、非白酒 +1.00%、饮料乳品 +0.96%、白酒 +0.89%（5/19，主力 +5.84亿 全市场第一）、中药 +0.88%（38/66）、旅游及景区 +0.67%、国有大行 +0.60%（4/6）、一般零售 +0.27%（29/60）</b>；另一边是<b class="dn">硬件链总崩</b>：<b class="dn">电子化学品 -8.94%（1/36）、电池 -7.30%（1/97）、半导体 -7.02%（3/183，主力 -124.97亿）、航天装备 -5.91%（0/9）、金属新材料 -5.88%（0/32）、能源金属 -5.48%（0/12）、军工电子 -5.41%（0/60）、通用设备 -5.31%、消费电子 -4.79%（1/91）、元件 -4.48%（5/61）、通信设备 -2.44%（9/86）</b>。港股台股同步：恒指 <b class="dn">-1.14%</b>（华虹宏力H <b class="dn">-17%</b>、宁德时代H <b class="dn">-12%</b>、壁仞 <b class="dn">-24%</b>）、台湾加权 <b class="dn">-4.8%</b>（联发科跌停、鸿海 -9%）——<b>这是全球 AI 硬件同步去杠杆，不是 A股 独有的情绪波动</b>。
+    </p>
+    <p class="summary-p">
+      <b>内置回测（11/25 08:30 盘前 → 11/25 收盘）：🏆 1✅0◐2❌ 命中率 33.3%</b>——创源股份 <b class="up">+20.03%</b> ✅ / 奥尼电子 <b class="dn">-12.79%</b> ❌ / 华虹宏力 <b class="dn">-13.89%</b> ❌（<b>开盘 193.06 即破 198 止损锚</b>）；<b>方向表 7✅1◐3❌ = 68.2%</b>；<b>合计 8✅1◐5❌ = 60.7%</b>。<b>R-Judge</b>：①<b>判错</b>——消费电子判"做多·回踩接"给 62 分全场最高分，实际 <b class="dn">-4.79%、1/91、主力 -17.09亿</b>，<b>又是"T-1 强度线性外推"（规则 89 场景）</b>；②<b>判错</b>——晶圆代工"外盘越杀越受益"的对抗性逻辑，实际半导体 -7.02%（3/183）、华虹开盘即破止损，<b>该逻辑当日被完全证伪</b>；③<b>执行错</b>——华虹 09:25 竞价已 -7.80% 明确破 198 止损，却仍留到午盘 -10.17%，<b>止损位被破当日未移除名单</b>；④<b>漏判</b>——渔业 +4.65%（全场第一）、医药商业 +1.09%、中药 +0.88% 三条防御消费零覆盖，抗流感链（流感概念 79/178、16 只涨停、主力 +9.87亿）连续两日失明。<b>今日纠错已落地</b>：①规则 89（T-1 强度禁线性外推）四项条件全中 → 渔业/医药商业/酒店餐饮全部降档；②半导体不再给"对抗性受益"多头；③止损破位当日移除；④防御消费给真实仓位而非 0。
+    </p>
+
+    <div style="font-weight:700; color:#1a237e; font-size:13.5px; margin:12px 0 6px">二、核心信号</div>
+    <ul class="li">
+      <li><b class="warn">隔夜"跌幅收敛、结构更差"</b>：道指 <b class="up">+0.33%（50182.95）</b>、标普 <b class="dn">-0.25%（7182.78）</b>、纳指 <b class="dn">-0.62%（23585.80）</b>——三大指数盘中分别曾跌 <b>2% / 3% / 4.5%</b>，尾盘全部收窄。费半 <b class="dn">-0.65%</b>（<b>较 11/25 的 -7.88% 收敛 12 倍</b>，30 只成分股 11 涨 19 跌）。<b>但内部是"AI 算力继续杀、模拟/工业芯片独立走强"</b>：英伟达 <b class="dn">-3.91%</b>（盘中一度 -9%，市值 3.61万亿）、美光 <b class="dn">-4.53%</b>、闪迪 <b class="dn">-5.57%</b>、台积电 <b class="dn">-2%+</b>、ASML <b class="dn">-2.47%</b>、应用材料 <b class="dn">-3.89%</b> vs 亚德诺 <b class="up">+6.44%</b>、德州仪器 <b class="up">+4.55%</b>、惠普 <b class="up">+11%</b>。</li>
+      <li><b class="up">今晨亚太首次转正</b>：KOSPI 开 <b class="up">4745.10（+1.01%）</b>，<b>SK海力士 +2%、三星 +1%</b>；日经 225 <b class="up">57429.54（+0.73%）</b>。这是 11/25（KOSPI -4.21%）之后存储链的第一次正映射；A50 期指夜盘 <b class="up">+0.56%（12689）</b>。中概金龙 <b class="up">+1.87%</b>（BOSS直聘 +12.56%、理想 +11.03%、名创 +6%）。</li>
+      <li><b class="warn">新增外部风险，不可忽略</b>：美国拟对 <b>14 个主要贸易伙伴加征新关税</b>（日韩 15%、欧盟最高 20%、泰国 ≥18%、越南 20%，与中国加税待宣布且不与此前 10%/12.5% 叠加），外交部回应"反对借口产能过剩政治操弄"。叠加标普全球将<b>英伟达 AA 评级列入负面信用观察</b>（90 天内或降至 AA-）——<b>AI 叙事的信用端首次被下调</b>。</li>
+      <li><b class="up">政策对冲在加码（这是今日唯一的多头底牌）</b>：央行 11/25 逆回购净投放 <b>6010亿</b>（抵消 MLF 缩量 2000亿）；宽基 ETF 尾盘天量承接（<b>沪深300ETF华夏最后 15 分钟 91.98亿、全天 126亿</b>）；9/28 以来股票型 ETF 净流入 <b>7653亿</b>（11/16-24 单段 +1862亿）；11 月已有 <b>123 家</b>公司公告取得回购增持专项贷款承诺函；创业板做市商渐行渐近。</li>
+      <li><b class="warn">产业端双刃</b>：①《学习时报》发文<b>"算力供给避免一哄而上"</b>，点名"地方平台采购中低端算力芯片、无法适配大模型迭代"——<b>对低端智算/IDC/算力租赁是直接压制</b>；②华为 4 篇论文入选 ISSCC2027（含 <b>4096bit 位宽 HBM 方案、5 层 W2W 混合键合</b>），昇腾 950 已搭载自研 HBM——<b>对国产 HBM 是中期利多，但今日难敌情绪</b>；③广期所<b>氢氧化锂期货今日上市</b>（基准价 75000元/吨），锂链首日多空博弈。</li>
+      <li><b class="warn">利率口径分歧，必须标注</b>：10月核心 PCE 同比 <b>+3.3%</b>（预期 3.2%，创 2023/11 来最高）→ 主流解读"12 月加息几成定局"；<b>但 10Y 美债收益率反而跌 6.77bp 至 4.858%、2Y 跌 3.52bp</b>——债市在交易"衰退"而非"加息"。<b>两个口径方向相反，本报告不据此给任何单边加/减仓结论</b>。</li>
+    </ul>
+
+    <div style="font-weight:700; color:#1a237e; font-size:12px; margin:8px 0 4px">商品与外盘尾盘（同期）</div>
+    <p class="summary-p" style="font-size:12.5px">
+      WTI <b class="up">84.15（+2.56%）</b>、布油 <b class="up">90.85（+2.33%）</b>——胡塞武装无人机袭击沙特 <b>Ras Tanura 炼油厂</b>（日处理 55 万桶，沙特最大）；COMEX 金 <b class="up">3588.40（+0.74%）</b>，<b>现货金盘中跌破 3500 创 2025/9 以来新低后 V 型反转</b>；银 <b class="up">41.15（+0.90%）</b>（现货银盘中破 40，较高点累计回落逾 67%）；LME 铜 +0.47%、镍 +1.41%、<b class="dn">锡 -5.19%</b>；美元指数 <b class="dn">103.70（-0.12%）</b>、离岸人民币 6.6675。
+    </p>
+
+    <div style="font-weight:700; color:#1a237e; font-size:13.5px; margin:12px 0 6px">三、今日展望（预判）</div>
+    <p class="summary-p">
+      <b>低开概率高（-0.3%~-0.8%），但今日的核心不是开在哪，而是 3468.65 守不守。</b>指数按 CALIBER 判 <b>down</b>：收盘 3476.47 距当日 MA5 <b>3535.04 差 -1.66%</b>（超 1% 容差）、3 日累计 <b>-1.62%</b>（超 ±1.5%）、MA5&lt;MA10（3574.04）&lt;MA20（3613.37）空头排列——<b>不能上修 sideways</b>。但冰点已给出赔率：ADJ 3.97（11/24 13.07 → 单日 -9.10，<b>规则 54 冰点强信号 ≤11</b>），加上外盘跌幅收敛 12 倍、亚太转正、A50 夜盘 +0.56%，<b>今日具备"低开→技术性修复"的外因</b>。
+    </p>
+    <p class="summary-p">
+      <b>两套剧本，盘前不预设：</b>①<b>守住 3468.65 + 量能不低于 1.2万亿 + 涨停回 70 以上</b> → 冰点修复成立，总仓可到 <b>3-5%</b>，方向给医药/零售/油气；②<b>放量破 3468.65</b> → 二次探底指向 <b>3400</b>（-2.2%），总仓压到 <b>0-1%</b>，<b>当日只做减法</b>。<b>仓位定调：总仓 0-3%（执行 2%）</b>，单笔 ≤1%，新开仓合计 ≤1.5%。这里给低仓位的理由不是"看空"，而是<b>冰点日的胜率与赔率不对称</b>——错了要亏 3-5%，对了先赚 2-3%，<b>必须等竞价和 10:00 的承接来验证第一笔</b>。
+    </p>
+    <p class="summary-p" style="font-size:12.5px; color:#5a6b80">
+      <b>V4.2 定级说明（防误读）</b>：今日 run_v42 实跑 13 组，<b>buyable（P1确认/P2预警）7 只 leader</b>，但叠加上"① 板块当日同向为正 ② 外盘不冲击 ③ 竞价不高开&gt;3% ④ 换手&lt;25% ⑤ 规则 89（T-1 前三降档）"五道门后<b>只剩 3 只</b>——<b>脚本 buyable ≠ 可买</b>，这不是筛选失败，是冰点日的结构性稀缺。
+    </p>
+  </div>
+
+  <!-- ============ DIFF1 今日核心看好标的 ============ -->
+  <div class="block-white">
+    <div class="sec-title">🏆 今日核心看好标的（V4.2 自然筛选 · 共 3 只）</div>
+    <div style="font-size:12.5px; margin-bottom:10px">
+      筛选口径：只取 V4.2 <b>P1确认 / P2预警（buyable）</b> 的 Pair leader，<b>P3确认/预警一票否决</b>，同一股票跨 Pair 取最高态。本次 <b>run_v42 实跑 13 组</b>同细分 Pair（基准 <b>2026-11-25 收盘</b>，同申万二级 + 市值差≤5倍 + 当日涨幅 Top2），buyable 共 <b>7 只 leader</b>；再叠加五道门——<b>① 板块当日同向为正</b>（淘汰 创源/中京/金新农）<b>② 外盘不冲击</b>（AI 硬件链全部出局）<b>③ 竞价不高开&gt;3%</b>（盘前设置）<b>④ 换手&lt;25%</b>（中京 42.49% 出局）<b>⑤ 规则 89 · T-1 强度禁线性外推</b>（ADJ&lt;20 / 涨停&lt;60 / 缩量&gt;10% / 跌停≥20 四项全中 → T-1 涨幅前三板块的 leader 最高只给"观察 ≤0.5%"）：<b>渔业第一板块的好当家因此降为观察</b>。最终保留 <b>3 只</b>，合计仓位 <b>1.9%</b>。
+    </div>
+
+    <p style="font-size:13px; margin-bottom:8px"><b>1. 杭州解百 sh600814</b> ｜ <b>P2预警</b>（leader B；一般零售 Pair「11/23 D0（B +10.05%）→ 11/24 确认 → 11/25 补涨强于龙头 → P2预警」，累计 A +4.04% / B +20.05%，leader 定死 B）｜ <b>百货里唯一"低换手+三连板"结构</b>：一般零售 <b class="up">+0.27%（29/60 红，宽度为本日全市场最好之一）</b>，11/25 <b class="up">+10.01% 收 8.35</b>（成交 3.32亿、<b>换手仅 5.44%</b>、量比 1.99），所属"离境退税概念 <b class="up">+3.64%（8/11，全场概念第一）</b>"、"免税店概念 +0.40%（13/28）"双线共振；<b>5日 +23.16%、10日 +17.28%、20日 +18.27%</b>（市值 61.38亿，中盘筹码稳定）</p>
+    <p style="font-size:13px; margin-bottom:8px"><b>2. 天圣制药 sz002872</b> ｜ <b>P1确认</b>（leader B；中药 Pair「11/19 D0（B +6.93%）→ 11/24 确认 → 11/25 B 一字 +10.08%」，累计 A +0.90% / B +19.63%，leader 定死 B）｜ <b>中药是唯一"高宽度+有梯队"的防御方向</b>：中药Ⅱ <b class="up">+0.88%（38/66 红）</b>、中药概念 <b class="up">+0.53%（65/134）</b>、流感概念 <b class="up">+0.47%（79/178，净 +9.87亿 全场前列）</b>，催化为<b>疾控局官宣流感流行季 + 农村"一老一小"免费疫苗接种政策</b>（公开可预判，连续两日被漏掉）；11/25 <b>一字板 +10.08% 收 7.10</b>（<b>换手仅 1.47%、量比 0.30</b>，筹码完全锁定）；<b>5日 +32.96%、20日 +28.62%</b>（市值 22.58亿，超小盘、严格止损）</p>
+    <p style="font-size:13px; margin-bottom:8px"><b>3. 合富中国 sh603122</b> ｜ <b>P1确认</b>（leader B；医药商业 Pair「11/23 D0（B +6.18%）→ 11/24 D1 未确认 → 11/25 D2「涨&gt;5%」确认 +10.03%」，累计 A +13.13% / B +16.98%，leader 定死 B）｜ <b>位置最低的涨停板 + 板块宽度最好</b>：医药商业 <b class="up">+1.09%（17/32 红）</b>、仿制药一致性评价 <b class="up">+0.76%（64/138）</b>、医药电商 +0.06%（77/181），11/25 <b class="up">+10.03% 收 10.09</b>（成交 5.03亿、换手 12.91%、<b>量比 3.11 明显放量</b>）；<b>5日 +4.99%、10日 -15.71%、20日 -10.15%</b>——<b>三只里唯一"低位启动"</b>（市值 40.16亿）。<b>但医药商业是 T-1 涨幅第 2 板块 → 规则 89 降为"观察 ≤0.5%"</b>，故仓位最小</p>
+
+    <div class="scroll" style="margin-top:6px">
+      <table class="dt" style="min-width:600px">
+        <thead><tr><th>标的</th><th>V4.2 阶段</th><th>收盘/涨跌（11/25）</th><th>推荐原因</th><th>建议仓位 / 止损</th></tr></thead>
+        <tbody>
+          <tr><td><b>杭州解百 sz600814</b></td><td class="warn">P2预警（leader）</td><td>8.35 / <span class="up">+10.01%</span> 3板</td><td>一般零售 29/60 宽度最佳；离境退税 +3.64%（8/11）全场概念第一；换手仅 5.44% 筹码锁定</td><td><b>0.8%</b> / 7.68</td></tr>
+          <tr><td><b>天圣制药 sz002872</b></td><td class="up">P1确认（leader）</td><td>7.10 / <span class="up">+10.08%</span> 2板一字</td><td>中药 38/66 + 流感 79/178 + 疾控局流行季；一字板换手 1.47% 完全锁定</td><td><b>0.6%</b> / 6.53（仅开板承接）</td></tr>
+          <tr><td><b>合富中国 sh603122</b></td><td class="up">P1确认（leader）</td><td>10.09 / <span class="up">+10.03%</span></td><td>医药商业 17/32；10日 -15.71% 位置最低；量比 3.11 放量突破</td><td><b>0.5%</b> / 9.28（规则89降档）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ok-box">
+      <b>综合观察：</b>以上 3 只为今日核心看好，<b>方向 = 控仓（低开承接，不打高开、不追一字）</b>，单票仓位上限 <b>0.8%</b>，合计 <b>1.9%</b>。三只共性 = <b>板块宽度为正 + 换手 &lt;25% + 低位或筹码锁定</b>，全部与隔夜 AI 硬件零映射。<b>今日不出手也是正确答案</b>——冰点日的第一任务是"不扩大亏损"，不是"抢反弹"。
+    </div>
+    <div style="font-size:11.5px; color:#78889c; margin-top:10px; line-height:1.7">
+      <b>剔除留痕（全部可追溯，禁止事后改口）</b>：<b>好当家</b>（P1确认·渔业 +4.65% 全场第一、涨停 +10.09%，但<b>规则 89 四项条件全中</b>→T-1 第一板块 leader 降档；且 5日 +29.96% / 20日 +65.14% 高位、板块宽度仅 3/6、收于涨停价 3.60 无空间）｜<b>创源股份</b>（P1确认·+20.03% 三连板，但文娱用品 <b>-1.68%</b> 板块为负 = 硬门槛淘汰；5日 +63.15%）｜<b>中京电子</b>（P1确认·5板，但元件 <b>-4.48%</b> 板块为负 + <b>换手 42.49%</b> + 5日 +61.12%）｜<b>金新农</b>（P1确认·4板，但饲料 <b>-1.38%</b> 板块为负 + 换手 22.57%、5日 +33.24%）｜<b>天孚通信×新易盛</b>（<b>P2确认 = 非可买态</b>，且通信设备 -2.44%、9/86）｜<b>华虹宏力</b>（<b>INT 中断①</b>·龙头 -13.89% ≤ -6%，当日清仓）｜<b>中央商场</b>（P2预警·但是补涨腿而非 leader）｜<b>康芝药业/新华制药</b>（P1预警 D0 未确认，0 仓）｜<b>西陇科学/江化微</b>（P1预警 D1 未确认，0 仓）｜<b>山西汾酒/古井贡酒、同庆楼/金陵饭店</b>（WAIT，不定级）。
+    </div>
+  </div>
+
+  <!-- ============ 3. 决策逻辑链 ============ -->
+  <div class="block-panel">
+    <div class="sec-title">🔗 决策逻辑链</div>
+    <div class="chain">
+      <div class="chain-item">
+        <span class="flow-tag">数据</span>11/25 成交 1.3831万亿（缩 2719.88亿 / -16.4%）、涨586:跌4926（上涨占比<b class="dn">10%</b>）、涨停 58（前日 64）、<b class="dn">跌停 49</b>（前日 4）、跌超 5% 达 1864 只、连板 31→<b class="dn">15</b>、最高 4→5板（中京电子）、1进2 <b>18.2%</b>、lb_idx_chg <b class="dn">-0.64%</b>（26/64 红）。<br>
+        <span class="flow-tag">分析</span>情绪三条件裁决：①涨停 58 &gt; 50 ✓ ②<b class="dn">昨日涨停溢价 -0.64% 转负 ✓</b> ③封板率约 45% 未破 35% ✓；退潮三条件：跌停递增 4→49 ✓、<b>溢价转负 +4.14%→-0.64% ✓</b>、高度名义未断（5板）但<b>连板梯队由 31 腰斩至 15</b>。→ <b>退潮已确认，且已进入冰点区</b>。<br>
+        <span class="flow-tag">判断</span>emo_stage = <b>冰点（恐慌杀跌 · 退潮末段）</b>；节点由"纯情绪节点·分歧"下调为 <b>冰点</b>（ADJ 3.97 ≤ 11，规则 54 强信号）。<br>
+        <span class="flow-tag">行动</span>模式<b>全部收敛</b>：只允许 <b>M2 弱转强</b>（且必须"低开承接"而非"高开追"）与 <b>防御型持有</b>；<b>禁止 M1/M3/M4/M5/M6 全部</b>。
+      </div>
+      <div class="chain-item">
+        <span class="flow-tag">数据</span>沪指收盘 3476.47 vs 当日 MA5 <b>3535.04</b>（差 -58.57 点 / <b>-1.66%</b>）、MA10 <b>3574.04</b>、MA20 <b>3613.37</b>、3日累计 <b>-1.62%</b>（11/20 3533.79 → 11/25 3476.47）、日内低点 <b>3468.65</b>。<br>
+        <span class="flow-tag">分析</span>CALIBER：收盘距 MA5 <b>超 1% 容差</b>、3日累计<b>超 ±1.5% 容差</b>、均线空头排列 → <b>不得上修 sideways</b>（与 10/27、11/23 的上修情形不同，那两次分别差 -0.04% / 在容差内）。<br>
+        <span class="flow-tag">判断</span>idx_trend = <b>down</b>（维持，不上修）；指数继续提供负向扣分；<b>3468.65 为今日第一防线</b>。<br>
+        <span class="flow-tag">行动</span>升级触发器改为三条件：①收盘不破 3468.65 且收复 <b>3535（MA5）</b>；②量 ≥<b>1.5万亿</b>；③涨停回 <b>≥70</b> 且连板 ≥20 → 总仓升至 3-5%。任一不满足维持 2% 以内。
+      </div>
+      <div class="chain-item">
+        <span class="flow-tag">数据</span>费半 <b class="dn">-0.65%</b>（11/25 -7.88%）、英伟达 -3.91%（盘中 -9%）、美光 -4.53%、闪迪 -5.57% vs 亚德诺 +6.44%、德仪 +4.55%；今晨 KOSPI <b class="up">+1.01%</b>（海力士 +2%）、日经 <b class="up">+0.73%</b>、A50 夜盘 +0.56%；A股 11/25 半导体 -7.02%、元件 -4.48%、消费电子 -4.79%。<br>
+        <span class="flow-tag">分析</span>外盘跌幅收敛 12 倍 + 亚太转正 + A50 夜盘翻红 = <b>外部不再单边冲击，具备修复外因</b>；但<b>内部结构是"模拟/工业芯片独立强、AI 算力继续杀"</b>，A股对应标的（CPO/存储/PCB）仍在外盘负映射段内，且《学习时报》"算力一哄而上"是<b>新增的政策性利空</b>。<br>
+        <span class="flow-tag">判断</span>AI 硬件 = <b>不参与</b>（既非反转，也不是低吸位——缩量下跌中低吸=接刀）；<b>外盘映射今日的正确用法是"不杀防御"，不是"抄硬件"</b>。<br>
+        <span class="flow-tag">行动</span>硬件链 0 仓（通信设备/元件/半导体/存储/算力租赁全禁）；若 10:00 后板块由 -4% 收窄至 -1% 且量能放大 → 只允许 <b>0.3% 观察仓</b>试错，不列为方向。
+      </div>
+      <div class="chain-item">
+        <span class="flow-tag">数据</span>11/25 只有 10 个二级板块收红（渔业 +4.65、医药商业 +1.09、酒店餐饮 +1.01、非白酒 +1.00、饮料乳品 +0.96、白酒 +0.89、中药 +0.88、旅游 +0.67、国有大行 +0.60、一般零售 +0.27），<b>其余 100+ 个全绿</b>；跌幅前 12 全部是硬件/材料/军工链。<br>
+        <span class="flow-tag">分析</span>这是<b>"防御独活"的极端结构</b>：不是板块轮动，而是资金从高波动资产<b>单边撤退到低波动资产</b>（白酒主力 +5.84亿、化学制药 +4.33亿、渔业 +3.72亿、医药商业 +3.23亿、中药 +3.05亿 vs 半导体 -124.97亿、元件 -39.60亿、电池 -27.65亿、通信设备 -25.47亿）。<br>
+        <span class="flow-tag">判断</span>new_core_theme = <b>false</b>（无新主线，只有避险）；theme_strength = <b>weak</b>（防御方向无高度：最高板中京属元件、非防御）。<br>
+        <span class="flow-tag">行动</span>仓位只给<b>宽度为正 + 低位 + 低换手</b>的防御细分（中药/医药商业/一般零售），每个细分 ≤1%，<b>不给板块溢价、不给"主线"称号</b>。
+      </div>
+      <div class="chain-item">
+        <span class="flow-tag">数据</span>今日：广期所<b>氢氧化锂期货上市</b>（基准 75000元/吨）；美国对 14 国加税落地、对中国加税待宣布；标普将英伟达列入负面信用观察；11/26 美股<b>感恩节休市</b>、11/27 提前至 13:00 收盘；<b>11/30 融资保证金 100%→80% 正式施行</b>。<br>
+        <span class="flow-tag">分析</span>①感恩节休市 = <b>今晚没有外盘指引</b>，A股今日走自己的节奏，明日（11/27）外盘只半天 → <b>本周剩余两个交易日的定价权在内资</b>；②11/30 融资保证金下调是<b>已经定价的预期</b>（11/23 大奇迹日就是它），<b>不构成今日新增催化</b>；③锂期货上市首日对锂矿是<b>价格发现 + 波动放大</b>双向，而 11/25 电池 -7.30%（1/97）刚崩完，<b>不做首日</b>。<br>
+        <span class="flow-tag">判断</span>事件密度<b>低但有尾部</b>（中美关税、伊朗），本周仓位天花板<b>锁死在 3%</b>。<br>
+        <span class="flow-tag">行动</span>14:00 后不开新仓；今日买入的标的<b>默认不过夜超过 2 个交易日</b>；关税类消息若盘中落地 → <b>立即减半</b>，不辩论。
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4. 盘前30秒速览 ============ -->
+  <div class="block-white">
+    <div class="sec-title">⚡ 盘前 30 秒速览</div>
+    <ul class="li">
+      <li><b>① 竞价看三只表态</b>：<b>杭州解百</b>（8.35 三连板，低开 -2%~+2% = 可承接，高开 &gt;+4% = 兑现盘主导只观察）、<b>天圣制药</b>（7.10 一字，继续一字 = 无法买入，开板后回踩 6.80 附近才接）、<b>合富中国</b>（10.09，高开 &gt;+3% 不追，等回踩 9.80）。</li>
+      <li><b>② 指数位</b>：3476.47 收盘 / <b>3468.65（11/25 低点，第一防线）</b> / 3476.65（11/23 低点）/ MA5 <b>3535.04</b> / 3400（二次探底目标）。<b>破 3468.65 且不能 30 分钟内收回 = 全天防御</b>。</li>
+      <li><b>③ 量能门槛</b>：昨日 1.3831万亿（11 月最低）。修复有效需 <b>≥1.5万亿</b>；<b>&lt;1.2万亿 的反弹一律视为"缩量反抽"，只减不加</b>；放量破位（&gt;1.5万亿下跌）= 恐慌二次释放，直接 0-1%。</li>
+      <li><b>④ 涨跌停预期</b>：涨停 40-70 为冰点常态；<b>&gt;80 且跌停回 &lt;15 = 修复确认</b>；跌停再 &gt;50 或 1进2 继续 &lt;20% = 冰点深化，<b>当日清空观察仓</b>。</li>
+      <li><b>⑤ 铁律A复核（9:25）</b>：外盘冲击项<b>已部分解除</b>（费半 -0.65%、亚太转正、A50 +0.56%），但<b>中美关税待宣布 + 英伟达评级下调</b>属"事件型尾部"，<b>触发概率中</b>。若 9:25 四大指数集体低开 &gt;1% 且跌停 &gt;30 → 直接 0-1%。</li>
+      <li><b>⑥ AH 映射两次校验</b>：恒指昨 -1.14%、恒生科技 <b class="dn">-2.56%</b>（华虹H -17%、宁德H -12%、壁仞 -24%）。<b>9:25 看恒生科技是否止跌</b>，若港股科技继续跌而 A股 防御独涨 → <b>说明是"避险"不是"修复"</b>，仓位不打折也不加。</li>
+      <li><b>⑦ 今日事件</b>：<b>广期所氢氧化锂期货上市</b>（LI2706-LI2711，基准 75000元/吨，我国首个锂盐期货）；国家数据局"数字经济十五五"行动计划（2030 核心产业占 GDP 12.5%）；<b>美股感恩节休市</b>；华为 ISSCC2027 四篇论文（含 4096bit HBM）；小鹏 IRON 机器人 2027/1 硬件量产。</li>
+      <li><b>⑧ 一句话纪律</b>：<b>今日只做"低开承接"和"不亏钱"两件事，其余全部放弃。</b>总仓 0-3%（执行 2%），单笔 ≤1%，新开仓合计 ≤1.5%，<b>破 3468.65 全部减半</b>。</li>
+    </ul>
+    <div class="note-box">
+      <b>9:21 竞价快照</b>：本报告运行于 08:30，竞价数据尚未生成。<b>9:21 请以竞价 V3 信号卡为准</b>，重点比对 ①③⑤ 三项：若竞价涨幅榜被<b>医药/零售/油气</b>占据而硬件链继续低开 -3% 以上 → <b>剧本①（防御修复）成立，可执行 2%</b>；若竞价阶段防御也开始补跌（白酒/中药低开 &gt;2%）→ <b>说明避险资金也在撤，直接降到 0-1%，今日不做</b>。
+    </div>
+  </div>
+
+  <!-- ============ 5. 节点狩猎·盘前定位 ============ -->
+  <div class="dark-card">
+    <div class="dc-title">🎯 节点狩猎 · 盘前定位　<span style="font-size:11px; color:#8fa8c4; font-weight:400">state v1 / writer=premarket / validate ok</span></div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px">
+      <div style="background:#0f1825; border-radius:9px; padding:11px; border-left:3px solid #7fc4ff">
+        <div style="font-size:11px; color:#8fa8c4">节点类型</div>
+        <div style="font-size:17px; font-weight:700; color:#7fc4ff; margin-top:2px">冰点</div>
+        <div style="font-size:11.5px; color:#b6c8dd; margin-top:2px">置信：高（ADJ 3.97 ≤11 · 规则54 强信号）</div>
+      </div>
+      <div style="background:#0f1825; border-radius:9px; padding:11px; border-left:3px solid #ff8a65">
+        <div style="font-size:11px; color:#8fa8c4">情绪位置</div>
+        <div style="font-size:17px; font-weight:700; color:#ff8a65; margin-top:2px">恐慌杀跌 · 退潮末段</div>
+        <div style="font-size:11.5px; color:#b6c8dd; margin-top:2px">跌停 49 · 溢价 -0.64% · 连板 31→15</div>
+      </div>
+    </div>
+
+    <table>
+      <tr><th style="width:92px">项</th><th>读数 / 依据</th></tr>
+      <tr>
+        <td>指数方向</td>
+        <td><b style="color:#7fc4ff">down（维持，不上修）</b><br>
+        收盘 <b>3476.47</b>（-2.03%）｜当日 MA5 <b>3535.04</b>（差 -58.57点 / <b>-1.66%</b>）｜MA10 <b>3574.04</b>｜MA20 <b>3613.37</b><br>
+        3日累计 <b>-1.62%</b>（3533.79→3476.47）｜日内低 <b>3468.65</b>（收盘距最低仅 7.8点）｜成交 1.3831万亿 = 缩 16.4%<br>
+        <span style="color:#8fa8c4; font-size:11.5px">CALIBER：收盘距 MA5 超 1% 容差 + 3日累计超 ±1.5% + 均线空头排列 ⇒ 不得上修 sideways（区别于 10/27 差 -0.04%、11/23 在容差内两次上修）</span></td>
+      </tr>
+      <tr>
+        <td>情绪结构</td>
+        <td>涨停 <b>58</b>（昨 64）｜跌停 <b>49</b>（昨 4）｜上涨占比 <b>10%</b>（586/4926）｜跌超 5% <b>1864 只</b><br>
+        连板 <b>31 → 15（腰斩）</b>｜最高板 <b>4 → 5板（中京电子，元件·非防御方向）</b>｜4板2（金新农/克来机电）｜3板6｜2板6｜首板43<br>
+        晋级率 <b>29.0%</b>（9/31）｜1进2 <b>18.2%</b>（6/33）<br>
+        <b style="color:#ff8a65">lb_idx_chg = -0.64%（实测·westock「昨日涨停」概念，26/64 红）</b>——11/24 +4.14% → 11/25 -0.64%，<b>溢价首次转负</b><br>
+        交叉验证：昨日连板 <b>+0.10%</b>（13/31）｜昨日首板 <b>-1.61%</b>（10/28）｜昨日触板 <b>-6.25%</b>（15/82）｜昨日高换手 -4.36%</td>
+      </tr>
+      <tr>
+        <td>推荐模式</td>
+        <td>
+          <b style="color:#7fc4ff">M2 弱转强（2-3）· 仅限"低开承接"变体</b>｜信号：昨日强、今竞价平开或低开 -2% 以内且 9:35 前站回均价 → 冰点日唯一合法买点｜赔率 <b>回撤4% / 上行8-12% ≈ 2-3</b><br>
+          <b style="color:#7fc4ff">防御型持有（不适用进攻模式）</b>｜信号：已持有的宽度方向（中药/医药商业/零售）不破 5 日线 → 持有不加<br>
+          <span style="color:#ff8a65">已排除：M1（2进3，需高度抬升）、M3（换手龙，需板块量能扩张）、M4（补涨，冰点补涨=接刀）、M5（双头二波，无结构）、M6（杂毛1+3，冰点日无共振基础）</span>
+        </td>
+      </tr>
+      <tr>
+        <td>仓位规则<br><span style="color:#8fa8c4; font-size:11px">（具体数字）</span></td>
+        <td>
+          引擎 position_rule：<b>冰点档（0-3%）· 规则54 强信号降级执行</b><br>
+          <b style="color:#ffb74d">本策略执行 → 总仓 0-3%（执行 2%）</b>；单一细分 ≤1%；<b>单笔 ≤1%</b>；新开仓合计 ≤1.5%<br>
+          分层：中药/流感链 0.6% ｜ 一般零售 0.8% ｜ 医药商业 0.5% ｜ 油气事件 0-0.3%（仅低开）｜ 其余 0<br>
+          <b style="color:#ff8a65">降仓触发</b>：放量破 <b>3468.65</b> → 总仓 0-1%；跌破 <b>3400</b> → <b>清仓</b>；跌停 &gt;50 或 1进2 &lt;20% → 当日不再新开；中美关税落地 → 立即减半<br>
+          <b style="color:#a5e8b0">升级触发（三条件全满足→3-5%）</b>：① 收盘不破 3468.65 且收复 <b>3535（MA5）</b>；② 量 ≥<b>1.5万亿</b>；③ 涨停 ≥<b>70</b> 且连板 ≥20
+        </td>
+      </tr>
+      <tr>
+        <td>错配预警</td>
+        <td>
+          <span style="color:#ff8a65">① 外盘"跌幅收敛"≠"转多"错配</span>：费半 -0.65% 只是从 -7.88% 退了一步，英伟达仍跌 3.91% 且<b>评级被列入负面观察</b>，存储/光通信继续跌。收敛 ≠ 反转。<br>
+          <span style="color:#ff8a65">② 防御独活 = 避险而非轮动错配</span>：10 个红盘板块全是低波动资产，白酒主力 +5.84亿第一。这是<b>资金撤退</b>，不是"新主线"，不能给板块溢价。<br>
+          <span style="color:#ff8a65">③ 涨停 58 &gt; 跌停 49 的假象错配</span>：涨停集中在医药/零售/ST 小票，<b>含 6 只 ST</b>，而跌停 49 只集中在高标与硬件。<b>数量好看、质量极差</b>。<br>
+          <span style="color:#ff8a65">④ 利率口径冲突错配</span>：核心 PCE 3.3% 超预期（利空）vs 10Y 跌 6.77bp（利多）。<b>方向相反时不作为加减仓依据</b>，已标注口径分歧。<br>
+          <span style="color:#ff8a65">⑤ 政策对冲 vs 政策压制错配</span>：央行净投放 6010亿 + ETF 天量承接（利多）vs《学习时报》批算力一哄而上 + 中美关税（利空）。<b>对冲的是指数，压的是结构</b>。
+        </td>
+      </tr>
+      <tr>
+        <td>口径自检</td>
+        <td>
+          <b style="color:#ffb74d">caliber_flags = ["ADJ_SCORE 板块宽度维度滞后", "封板率第三方口径", "利率方向分歧"]</b>
+          <div class="flag" style="margin-top:6px">caliber_flags: ["ADJ 维度滞后已降权采信", "封板率≈45%为第三方口径(westock无炸板字段)", "核心PCE与10Y方向相反→不作单边依据"]<br>input_flags: ["涨停58=westock口径", "lb_idx_chg 实测非估算"]<br>validate: ok=true / errors=[] / warnings=3<br>version: 1 / writers: ["premarket:init"]</div>
+          <span style="color:#8fa8c4; font-size:11.5px; display:block; margin-top:6px">说明：①<b>lb_idx_chg=-0.64% 为 westock「昨日涨停」概念板块实测值</b>（26/64 红），非估算，已用「昨日连板 +0.10%」交叉；②ADJ 3.97 的"板块宽度 1 分（全面下跌）"与本日"10 个板块收红"一致，<b>本次不存在维度滞后，采信正常</b>；③连板高度"名义未断（5板）"与"梯队腰斩（31→15）"并存，报告同时披露两个读数，<b>不退潮定性依赖跌停递增 + 溢价转负两项硬条件</b>。</span>
+        </td>
+      </tr>
+    </table>
+
+    <div style="margin-top:14px; background:#0f1825; border-radius:9px; padding:12px; border-left:3px solid #7fc4ff">
+      <div style="font-size:12.5px; font-weight:700; color:#7fc4ff; margin-bottom:7px">交易三问</div>
+      <div style="font-size:12.5px; color:#dbe6f4; line-height:1.9">
+        <b>Q1 什么节点？</b>冰点（恐慌杀跌 · 退潮末段）——不是"退潮开始"（那已经过去了），是"退潮打到 10% 上涨占比"的位置。冰点的意思是<b>赔率开始划算、胜率仍然很低</b>。<br>
+        <b>Q2 什么模式？</b>只有 <b>M2 弱转强的"低开承接"变体</b> 与 <b>防御持有</b>。今日不做任何"高开追进"、不做首板、不做补涨、不抄硬件。<br>
+        <b>Q3 赔率多少？</b>M2：回撤 4% / 上行 8-12% = <b>2-3倍</b>。冰点日按 1% 单笔，输了亏 0.04% 总仓，赢了赚 0.1% —— <b>这个赔率的意义是"允许试错"，不是"值得重仓"</b>。低于 2 倍的标的一律放弃。
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DIFF2 V4.2 解释层 ============ -->
+  <div class="block-white">
+    <div class="sec-title">🧬 V4.2 解释层（Pair 定级 · run_v42 实跑）</div>
+    <div style="font-size:12.5px; margin-bottom:10px">
+      脚本：<span style="font-family:monospace">研究/v42_grade_pair.py::run_v42</span> ｜ 数据基准 <b>2026-11-25 收盘</b> ｜ K线源：腾讯前复权日K（<span style="font-family:monospace">web.ifzq.gtimg.cn fqkline qfq</span>）｜ 配对口径：<b>同申万二级细分 + 市值差≤5倍 + 当日涨幅 Top2</b>（非 3日涨幅降序配对，故与 19:30 主线分析的 Pair 可能不同态，已按铁律 5 显式标注）。
+    </div>
+    <div class="scroll">
+      <table class="dt" style="min-width:660px">
+        <thead><tr><th>Pair（配对双方）</th><th>state</th><th>leader</th><th>buyable</th><th>trace 摘要（脚本原文）</th></tr></thead>
+        <tbody>
+          <tr><td>渔业：好当家 sh600467 × 东方海洋 sz002086</td><td class="up"><b>P1确认</b></td><td>好当家</td><td class="up">✓</td><td>11/19 INT(-6.14%) → 11/20 反包恢复(+10.00%) → 11/24 P2预警(A3.81/B9.93) → <b>11/25 P1确认 龙头强(A10.09/B-4.41)</b></td></tr>
+          <tr><td>医药商业：人民同泰 sh600829 × 合富中国 sh603122</td><td class="up"><b>P1确认</b></td><td>合富中国</td><td class="up">✓</td><td>11/23 D0(B6.18) → 11/24 D1未确认 → <b>11/25 P1确认 ③D2涨&gt;5%</b>；累计 A13.13/B16.98 → leader 定死 B</td></tr>
+          <tr><td>中药：桂林三金 sz002275 × 天圣制药 sz002872</td><td class="up"><b>P1确认</b></td><td>天圣制药</td><td class="up">✓</td><td>11/19 D0(B6.93) → 11/24 确认 ③D2；累计 A0.90/B19.63 → <b>leader 定死 B（天圣一字 +10.08）</b></td></tr>
+          <tr><td>文娱用品：创源股份 sz300703 × 高乐股份 sz002348</td><td class="up"><b>P1确认</b></td><td>创源股份</td><td class="warn">✓但板块负</td><td>11/20 D0(B7.78) → 11/23 确认 ②；累计 A16.62/B9.33 → leader A；11/25 A+20.03 / B-8.88（A 独强）</td></tr>
+          <tr><td>元件：中京电子 sz002579 × 满坤科技 sz301132</td><td class="up"><b>P1确认</b></td><td>中京电子</td><td class="warn">✓但板块负</td><td>11/19 D0(A10.04) → 11/20 确认 ①；累计 A20.06/B16.01；11/25 A+10.00（5板）/ B-7.91</td></tr>
+          <tr><td>饲料：金新农 sz002548 × 天邦食品 sz002124</td><td class="up"><b>P1确认</b></td><td>金新农</td><td class="warn">✓但板块负</td><td>11/20 D0(A9.94) → 11/23 确认 ①；累计 A20.05/B8.95；11/25 A+10.11（4板）/ B+0.46</td></tr>
+          <tr><td>一般零售：中央商场 sh600280 × 杭州解百 sh600814</td><td class="warn"><b>P2预警</b></td><td>杭州解百</td><td class="up">✓</td><td>11/23 D0(B10.05) → 11/24 确认 ①；累计 A4.04/B20.05 → leader B；<b>11/25 补涨强于龙头(A10.16/B10.01) → P2预警</b></td></tr>
+          <tr><td>通信设备：天孚通信 sz300394 × 新易盛 sz300502</td><td class="neu"><b>P2确认</b></td><td>新易盛</td><td class="dn">✗ 非可买态</td><td>11/23 确认 ③ → 11/24 P2预警 → <b>11/25 P2确认（补涨强回溯两日）</b>；A+7.65 / B+0.72</td></tr>
+          <tr><td>化学制药：康芝药业 sz300086 × 新华制药 sz000756</td><td class="neu"><b>P1预警</b></td><td>康芝药业</td><td class="dn">✗ D0未确认</td><td><b>11/25 D0 触发</b>：A+20.05 / B+10.05（任一≥5%）；leader 暂定 A → 待 11/26 D1</td></tr>
+          <tr><td>电子化学品：西陇科学 sz002584 × 江化微 sh603078</td><td class="neu"><b>P1预警</b></td><td>江化微</td><td class="dn">✗ D1未确认</td><td>11/24 D0(B6.92) → 11/25 D1 未确认（A+1.97 / B<b class="dn">-9.99%跌停</b>）→ 继续观察 D2</td></tr>
+          <tr><td>晶圆代工：华虹宏力 sh688347 × 中芯国际 sh688981</td><td class="dn"><b>INT 中断①</b></td><td>—</td><td class="dn">✗ 清仓</td><td>11/18 确认 → 11/20 P2预警 → 11/23 回 P1确认 → <b>11/25 中断①：龙头单日 -13.89% ≤ -6%</b></td></tr>
+          <tr><td>酒店餐饮：同庆楼 sh605108 × 金陵饭店 sh601007</td><td class="neu"><b>WAIT</b></td><td>—</td><td class="dn">✗</td><td>无 D0 触发（11/25 A+3.70 / B-0.86，均 &lt;5%）→ 未成周期</td></tr>
+          <tr><td>白酒：山西汾酒 sh600809 × 古井贡酒 sz000596</td><td class="neu"><b>WAIT</b></td><td>—</td><td class="dn">✗</td><td>无 D0 触发（11/25 A+3.74 / B-1.78，均 &lt;5%）→ 未成周期</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-weight:700; color:#1a237e; font-size:12.5px; margin:12px 0 6px">股票级聚合（跨 Pair 取最高：P3确认 &gt; P3预警 &gt; P2确认 &gt; P2预警 &gt; P1确认 &gt; P1预警，同级确认 &gt; 预警）</div>
+    <div style="font-size:12px; line-height:1.85">
+      <b class="up">可买态（P1确认）6 只</b>：好当家（渔业）· 合富中国（医药商业）· 天圣制药（中药）· 创源股份（文娱用品）· 中京电子（元件）· 金新农（饲料）<br>
+      <b class="warn">可买态（P2预警）1 只</b>：杭州解百（一般零售）<br>
+      <b class="neu">非可买态</b>：新易盛（P2确认·加速段持有不加）· 人民同泰 / 桂林三金 / 中央商场 / 满坤科技 / 天邦食品（follower，不定级）· 康芝药业 / 新华制药 / 西陇科学 / 江化微（P1预警 D0/D1 观察）· 华虹宏力 / 中芯国际（INT 清仓）· 山西汾酒 / 古井贡酒 / 同庆楼 / 金陵饭店（WAIT）<br>
+      <b class="dn">P3 否决</b>：本日 <b>0 组</b>（无 P3确认/预警）——冰点日的典型特征：<b>老周期已被 INT 打断、新周期尚未建立</b>，不存在"高位崩塌需要否决"的对象。
+    </div>
+    <div class="note-box">
+      <b>口径自检（必读）</b>：①<b>buyable 7 只 ≠ 可推荐 7 只</b>——叠加"板块同向为正 / 外盘不冲击 / 换手&lt;25% / 规则 89"后只剩 <b>3 只</b>，<b>脚本 buyable 只解决"个股第几态"，不解决"环境能不能买"</b>（两道门是平行关系，不是包含关系）；②<b>创源/中京/金新农 三只 P1确认 全部因"所属板块当日为负"被淘汰</b>——这是 11/16（燧原 -12.39%）、11/17（金新农 -6.89%）、11/24（华虹）三次踩坑后固化的硬门槛，<b>板块负 = 一票否决，不看个股多强</b>；③<b>同票不同配对的实证</b>：新易盛 配天孚 = P2确认（非可买），若按 19:30 主线口径配对可能落 P1预警 → <b>两只口径均非 buyable，结论一致，分歧不影响本次决策</b>；④数据基准日 <b>2026-11-25 收盘</b>，V4.2 状态随基准日推进，明日状态可能变化。
+    </div>
+  </div>
+
+  <!-- ============ 5.1 节点对账修正卡 ============ -->
+  <div class="block-white">
+    <div class="sec-title">🧾 节点对账修正卡</div>
+    <div style="font-size:12.5px; margin-bottom:10px">
+      <b>今日 state v1（premarket 08:30 由本报告 init），未发生多写者 override。</b>与上一交易日（11/25 state v1）相比，有 <b>4 处字段级修正</b>必须留痕：
+    </div>
+    <div class="scroll">
+      <table class="dt" style="min-width:620px">
+        <thead><tr><th>字段</th><th>11/25 v1（昨日盘前）</th><th>11/26 v1（本日盘前）</th><th>依据</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>emo_stage</b></td>
+            <td class="warn">分歧（修复第2日冲高回落）</td>
+            <td class="dn">冰点（恐慌杀跌·退潮末段）</td>
+            <td>退潮三条件中 <b>2 项硬条件成立</b>：跌停 4→<b>49（递增 12 倍）</b>、昨日涨停溢价 +4.14%→<b>-0.64%（转负）</b>；高度名义未断（4→5板）但<b>连板梯队 31→15 腰斩、1进2 18.2%</b>、上涨占比仅 <b>10%</b>。叠加 ADJ 13.07→<b>3.97</b>（规则54 强信号）⇒ 由"分歧"直接下修至"冰点"，<b>不经过"退潮"中间档</b>（本日已一步到位）</td>
+          </tr>
+          <tr>
+            <td><b>lb_idx_chg</b></td>
+            <td class="up">+4.14%（实测·113/151 红）</td>
+            <td class="dn">-0.64%（实测·26/64 红）</td>
+            <td>同口径（westock「昨日涨停」概念板块当日涨跌幅），样本由 151 只缩至 64 只。<b>交叉验证同步转弱</b>：昨日连板 +4.13%→<b>+0.10%</b>、昨日首板 +4.13%→<b>-1.61%</b>、昨日触板 0.00%→<b>-6.25%</b>。四个口径三个转负 ⇒ 打板赚钱效应<b>实质消失</b></td>
+          </tr>
+          <tr>
+            <td><b>idx_trend</b></td>
+            <td class="neu">sideways（距 MA5 -0.25%）</td>
+            <td class="dn">down（距 MA5 -1.66%）</td>
+            <td>CALIBER 第1条：昨日收盘贴 MA5（-0.25% 在 1% 容差内）故判 sideways；今日收盘距 MA5 <b>-1.66% 超容差</b>、3日累计 <b>-1.62% 超 ±1.5%</b>、MA5&lt;MA10&lt;MA20 空头排列 ⇒ <b>下修 down，不得因"冰点该反弹"上修</b>（这是 10/21 踩过的"用预期覆盖读数"的坑）</td>
+          </tr>
+          <tr>
+            <td><b>theme_strength</b></td>
+            <td class="warn">medium</td>
+            <td class="dn">weak</td>
+            <td>唯一存活的防御方向<b>无高度</b>：最高板 5 板中京电子属<b>元件（-4.48%）</b>而非防御；防御内部最高仅 3 板（杭州解百）。<b>E2 高度缺失 ⇒ 一票封顶 weak</b>，即使中药/医药商业宽度为正也不给 strong</td>
+          </tr>
+          <tr>
+            <td><b>new_core_theme</b></td>
+            <td class="neu">false</td>
+            <td class="neu">false（维持）</td>
+            <td>无新主线：10 个红盘板块全为低波动避险资产（白酒主力 +5.84亿第一），无"新题材 + 连续涨停 + 梯队"三条件。<b>与昨日一致，无差异</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ok-box" style="display:flex; gap:10px; align-items:flex-start">
+      <div style="font-size:20px; line-height:1">🟢</div>
+      <div>
+        <b>对账状态：🟢 已修正（4 项字段下修，方向一致向下）</b><br>
+        <span style="font-size:12px">5 个字段中 4 个向下修正，<b>无一项上修</b>——这是"单边恶化"的对账形态，与 10/27（4 项上修）、11/16（下修后反弹）形态相反。裁定：以 state v1（本日 premarket）为准；<b>若 9:25 竞价 V3 或 10:00 盘中复核显示跌停快速收敛至 &lt;20、涨停回到 70+，须走 override --reason 留痕改为"冰点转修复"，不得另建 state</b>。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 6. 隔夜外盘 ============ -->
+  <div class="block-white">
+    <div class="sec-title">🌍 隔夜外盘 <span style="font-size:11px; color:#78889c; font-weight:400">（数据日期：美股 2026-11-25 收盘 / 亚太 2026-11-26 开盘）</span></div>
+    <div class="scroll">
+      <table class="dt" style="min-width:560px">
+        <thead><tr><th>市场</th><th>收盘/最新</th><th>涨跌</th><th>要点</th></tr></thead>
+        <tbody>
+          <tr><td>道琼斯</td><td>50,182.95</td><td class="up">+0.33%</td><td>+164.25点；<b>盘中曾跌超1000点（-2%），尾盘翻红</b></td></tr>
+          <tr><td>纳斯达克</td><td>23,585.80</td><td class="dn">-0.62%</td><td>-147.74点；<b>盘中一度 -4.5%</b></td></tr>
+          <tr><td>标普500</td><td>7,182.78</td><td class="dn">-0.25%</td><td>-18.31点；<b>盘中 -3%</b></td></tr>
+          <tr style="background:#fff8e1!important"><td><b>费城半导体 SOX</b></td><td>—</td><td class="dn"><b>-0.65%</b></td><td><b>跌幅较 11/25 的 -7.88% 收敛 12 倍</b>；30 只成分股 <b>11 涨 19 跌</b>。亚德诺 <b class="up">+6.44%</b>、德州仪器 <b class="up">+4.55%</b> vs 应用材料 -3.89%、AMD -1.75%</td></tr>
+          <tr><td>AI 算力龙头</td><td>—</td><td class="dn">继续杀</td><td><b>英伟达 -3.91%（盘中 -9%）市值 3.61万亿</b>；<b>标普全球将其 AA 评级列入负面信用观察（90天内或降 AA-）</b>；亚马逊 -3.12%、谷歌 -2.02%、微软 -1.25%</td></tr>
+          <tr><td>存储链</td><td>—</td><td class="dn">弱</td><td><b>闪迪 -5.57%、美光 -4.53%、希捷 -2.10%、SK海力士ADR -0.75%、西数 -0.55%</b></td></tr>
+          <tr><td>光通信</td><td>—</td><td class="dn">弱</td><td><b>Lumentum -2.16%、康宁 -1.60%</b>、Tower -1.40%、迈威尔 -0.49%</td></tr>
+          <tr><td>逆势个股</td><td>—</td><td class="up">分化</td><td><b>惠普 +11%</b>（财报）、<b>Meta +3.40%</b>、苹果 +0.43%、Anthropic +1%（盘中 -9% 低开高走）</td></tr>
+          <tr><td>中概/金龙</td><td>—</td><td class="up">+1.87%</td><td><b>BOSS直聘 +12.56%、理想汽车 +11.03%</b>、名创优品 +6%、蔚来 +4%、腾讯音乐 +3%、网易 +3%</td></tr>
+          <tr><td>欧股</td><td>—</td><td class="dn">全跌</td><td>DAX <b>-1.26%</b>、CAC40 -0.75%、FTSE100 -0.38%、STOXX600 -1.06%</td></tr>
+          <tr style="background:#fff8e1!important"><td><b>KOSPI（今晨）</b></td><td>4,745.10</td><td class="up"><b>+1.01%</b></td><td><b>SK海力士 +2%、三星 +1%</b> —— 11/25（-4.21%）之后存储链<b>首次正映射</b>；韩方还在扩大股市稳定基金</td></tr>
+          <tr><td>日经225（今晨）</td><td>57,429.54</td><td class="up">+0.73%</td><td>高开；台湾加权昨 <b class="dn">-4.8%</b>（联发科跌停、鸿海 -9%）</td></tr>
+          <tr><td>富时A50 期指</td><td>12,689</td><td class="up">+0.56%</td><td>夜盘翻红 → 对 A股 开盘是<b>唯一的正向指引</b></td></tr>
+          <tr><td>WTI原油（1月）</td><td>84.15</td><td class="up">+2.56%</td><td>布油 <b>90.85（+2.33%）</b>；<b>胡塞武装无人机袭击沙特 Ras Tanura 炼油厂</b>（日处理 55万桶，沙特最大）</td></tr>
+          <tr><td>现货黄金 / 白银</td><td>3,588.41 / 41.15</td><td class="up">+0.92% / +1.15%</td><td><b>金盘中跌破 3500 创 2025/9 以来新低后 V 型反转</b>；银盘中破 40，<b>较历史高点累计回落逾 67%</b></td></tr>
+          <tr><td>10Y / 2Y 美债</td><td>4.858% / 4.646%</td><td class="up">-6.77bp / -3.52bp</td><td><b>核心 PCE 3.3% 超预期（创 2023/11 来最高）却债息下行</b> → 债市交易"衰退"而非"加息"，<b>口径分歧已标注</b></td></tr>
+          <tr><td>美元 / 人民币</td><td>103.70 / 6.6675</td><td class="neu">-0.12% / +26bp贬</td><td>美元盘中曾破 104 后回吐全部涨幅</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-box">
+      <b>信号解读：</b>隔夜的主题是<b>"跌幅收敛，但信仰继续碎裂"</b>。①三大指数盘中崩 2%/3%/4.5% 后全部收窄、道指翻红，<b>说明抛压被消化了一部分</b>——这是今日 A股 能低开而不崩的外因；②<b>但半导体内部已经分家</b>：模拟/工业芯片（亚德诺 +6.44%、德仪 +4.55%）独立走强，而 AI 算力链（英伟达 -3.91%、美光 -4.53%、闪迪 -5.57%、Lumentum -2.16%）继续被杀，<b>标普把英伟达 AA 评级列入负面观察是"信用端"的第一次下调</b>——这比股价跌更麻烦，因为它影响的是杠杆资金的抵押品价值；③今晨 <b>KOSPI +1.01%、海力士 +2%</b> 是存储链的第一次正映射，<b>但 A股 存储/光模块今日仍不宜接</b>——11/25 是"无承接式下跌"（缩量 16.4% + 跌停 49），第一天的反弹通常是"被套者的减仓窗口"而非"抄底者的建仓窗口"。<br>
+      <b>对今日的可执行结论</b>：外盘给了"不继续恶化"的许可，<b>没有给"转多"的许可</b>。所以今日的正确姿势是<b>做防御、控仓位、等承接</b>，而不是"外盘跌得少了所以抄硬件"。
+    </div>
+  </div>
+
+  <!-- ============ 7. 市场全景 ============ -->
+  <div class="block-white">
+    <div class="sec-title">📊 市场全景 <span style="font-size:11px; color:#78889c; font-weight:400">（数据日期 2026-11-25 收盘 · westock 实测）</span></div>
+
+    <div class="scroll" style="margin-bottom:14px">
+      <table class="dt" style="min-width:580px">
+        <thead><tr><th>指数</th><th>收盘</th><th>涨跌幅</th><th>最高/最低</th><th>成交额</th><th>5日/20日</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td>上证指数</td><td>3,476.47</td><td class="dn">-2.03%</td><td>3526.34 / <b>3468.65</b></td><td>6,527亿</td><td class="dn">-3.10% / -5.57%</td><td><b>收盘距最低仅 7.8 点，三线全破</b></td></tr>
+          <tr><td>深证成指</td><td>10,086.36</td><td class="dn">-3.24%</td><td>10402.35 / <b>10086.36</b></td><td>7,304亿</td><td class="dn">-5.38% / -12.09%</td><td><b>收在全天最低</b></td></tr>
+          <tr><td>创业板指</td><td>2,183.58</td><td class="dn">-4.19%</td><td>2274.18 / <b>2183.58</b></td><td>3,549亿</td><td class="dn">-5.54% / -17.12%</td><td><b>收在全天最低，20日 -17.12%</b></td></tr>
+          <tr><td>科创50</td><td>1,186.14</td><td class="dn">-5.12%</td><td>1230.40 / <b>1185.45</b></td><td>823亿</td><td class="dn">-4.96% / -7.54%</td><td><b>最弱，半导体权重全崩</b></td></tr>
+          <tr><td>沪深300</td><td>3,898.24</td><td class="dn">-1.65%</td><td>3937.33 / 3886.92</td><td>4,110亿</td><td class="dn">-2.15% / -4.55%</td><td>ETF 尾盘天量承接（华夏 126亿）</td></tr>
+          <tr><td>上证50</td><td>2,751.85</td><td class="dn">-0.82%</td><td>2771.52 / 2739.95</td><td>1,241亿</td><td class="dn">-0.46% / -0.04%</td><td><b>最抗跌，红利权重护盘</b></td></tr>
+          <tr><td>中证500 / 北证50</td><td>5,890.41 / 755.87</td><td class="dn">-3.63% / -4.75%</td><td>—</td><td>2,226亿 / 97亿</td><td class="dn">-6.24% / -9.14%</td><td><b>小盘杀幅大于大盘</b>（中证500 收在全天最低）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi" style="border-left-color:#2e7d32"><div class="k">涨跌家数</div><div class="v"><span class="up">586</span> / <span class="dn">4926</span></div><div style="font-size:11px; color:#5a6b80">上涨占比 <b>10%</b> · 平69 / 停牌8 · 跌超5% 1864只</div></div>
+      <div class="kpi" style="border-left-color:#e65100"><div class="k">涨停 / 跌停</div><div class="v"><span class="up">58</span> / <span class="dn">49</span></div><div style="font-size:11px; color:#5a6b80">跌停暴增 12倍 · 封板率约45%（第三方）· 破板率55%</div></div>
+      <div class="kpi" style="border-left-color:#0d47a1"><div class="k">两市成交</div><div class="v">1.3831万亿</div><div style="font-size:11px; color:#5a6b80">缩 2719.88亿（-16.4%）· <b>11月最低量</b></div></div>
+      <div class="kpi" style="border-left-color:#c62828"><div class="k">市场评分</div><div class="v"><span class="dn">3.97</span> / 12.93</div><div style="font-size:11px; color:#5a6b80">调整/原始 · 板块宽度1分(全面下跌) · 技术1分(极弱) · 情绪3分</div></div>
+    </div>
+    <div style="font-size:11.5px; color:#78889c; margin-bottom:14px">注：ADJ 3.97 <b>≤ 11 触发"冰点强信号"（规则54）</b>，较 11/24 的 13.07 单日 <b>-9.10</b>。八个维度中 <b>6 个为 1-3 分</b>（板块宽度 1 / 技术 1 / 风格 1 / 中长期方向 1 / 长期强度 1 / 短期方向 2），<b>本日不存在维度滞后</b>——"板块宽度 1 分（全面下跌）"与"仅 10 个二级板块收红"完全一致，故本次<b>采信不打折</b>（对比 11/23、11/24 两次评分滞后已降权处理）。</div>
+
+    <div style="font-weight:700; color:#1a237e; font-size:13px; margin-bottom:7px">板块排行（11/25 收盘 · 申万二级）</div>
+    <div class="scroll" style="margin-bottom:14px">
+      <table class="dt" style="min-width:560px">
+        <thead><tr><th>方向</th><th>领涨行业（全市场仅 10 个收红）</th><th>领跌行业</th></tr></thead>
+        <tbody>
+          <tr><td>行业</td><td class="up">渔业 +4.65%（3/6）｜医药商业 +1.09%（17/32）｜酒店餐饮 +1.01%（5/9）｜非白酒 +1.00%｜饮料乳品 +0.96%｜白酒 +0.89%（5/19）｜中药 +0.88%（38/66）｜旅游及景区 +0.67%（14/25）｜国有大行 +0.60%（4/6）｜一般零售 +0.27%（29/60）</td><td class="dn">电子化学品 -8.94%（1/36）｜电池 -7.30%（1/97）｜半导体 -7.02%（<b>3/183</b>）｜非金属材料 -6.71%（0/8）｜家电零部件 -6.60%｜其他电子 -6.37%｜橡胶 -6.11%｜塑料 -5.96%｜照明设备 -5.92%（0/12）｜航天装备 -5.91%（0/9）｜金属新材料 -5.88%（0/32）｜能源金属 -5.48%（0/12）</td></tr>
+          <tr><td>概念</td><td class="up">离境退税 +3.64%（8/11）｜敦煌网 +3.14%（3/5）｜青蒿素 +1.34%｜农垦 +1.20%｜O2O +1.15%（12/22）｜肝素 +1.06%｜仿制药一致性评价 +0.76%（64/138）｜中药概念 +0.53%（65/134）｜流感 +0.47%（<b>79/178</b>，净 <b>+9.87亿</b>）</td><td class="dn">空心杯电机 -9.24%（0/4）｜模拟芯片 -8.47%（0/15）｜靶材 -8.17%（0/5）｜长鑫存储 -8.07%（<b>0/18</b>）｜国家大基金持股 -7.87%（0/34）｜光刻机 -7.81%（3/57）｜中芯国际概念 -7.74%（1/97）｜HBM -7.63%（2/53）｜华为机器人 -7.52%（0/6）｜电子特气 -7.35%（0/21）｜存储器 -7.30%（5/194，净 <b>-131.48亿</b>）｜光刻胶 -7.26%（4/85）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-weight:700; color:#1a237e; font-size:13px; margin-bottom:7px">板块资金流（主力净额 · 已折算亿元）</div>
+    <div class="scroll" style="margin-bottom:14px">
+      <table class="dt" style="min-width:520px">
+        <thead><tr><th>净流入 TOP5</th><th>金额</th><th>净流出 TOP5</th><th>金额</th></tr></thead>
+        <tbody>
+          <tr><td>白酒Ⅱ</td><td class="up">+5.84亿</td><td>半导体</td><td class="dn">-124.97亿</td></tr>
+          <tr><td>一般零售</td><td class="up">+5.18亿</td><td>元件</td><td class="dn">-39.60亿</td></tr>
+          <tr><td>化学制药</td><td class="up">+4.33亿</td><td>电池</td><td class="dn">-27.65亿</td></tr>
+          <tr><td>渔业</td><td class="up">+3.72亿</td><td>通信设备</td><td class="dn">-25.47亿</td></tr>
+          <tr><td>医药商业</td><td class="up">+3.23亿</td><td>消费电子</td><td class="dn">-17.09亿</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:11.5px; color:#78889c; margin-bottom:14px">（westock <span style="font-family:monospace">data_sector</span> 原始单位万元，已 ÷10000 折算。<b>硬件四链（半导体+元件+电池+通信设备）合计净流出约 -217.69亿</b>，而<b>防御五链（白酒+零售+化药+渔业+医药商业）合计仅 +22.30亿</b>——<b>流出的规模是流入的 10 倍</b>，这是"撤退"而非"搬家"的量化证据；另有证券 -13.11亿、自动化设备 -13.27亿、电子化学品 -13.50亿、工业金属 -12.23亿。）</div>
+
+    <div style="font-weight:700; color:#1a237e; font-size:13px; margin-bottom:7px">近3日主线轮动轨迹</div>
+    <div class="scroll">
+      <table class="dt" style="min-width:560px">
+        <thead><tr><th>日期</th><th>当日最强</th><th>当日最弱</th><th>高度</th><th>轮动判断</th></tr></thead>
+        <tbody>
+          <tr><td><b>11/23 周一</b></td><td class="up">修复日普涨：涨停 152、涨4658/跌783（83%）、lb_idx_chg +7.43%</td><td class="dn">仅 783 只下跌，无明显弱板块</td><td>5板（真视通/盛剑）</td><td>大奇迹日 V 型反转 · 修复第1日</td></tr>
+          <tr><td><b>11/24 周二</b></td><td class="up">消费电子 +3.00%（70/91）· 文娱用品 +3.55% · 保险 +2.21%（5/5）</td><td class="dn">贵金属 -4.00%（0/11）· 工业金属 -3.44% · 小金属 -2.14%</td><td>5板→4板（断板）</td><td class="warn">修复第2日<b>冲高回落转分歧</b>：创业板 +3.88% 高开收全天最低</td></tr>
+          <tr><td><b>11/25 周三</b></td><td class="up">防御独活：渔业 +4.65% · 医药商业 +1.09% · 白酒 +0.89%（主力 +5.84亿第一）· 中药 +0.88%（38/66）</td><td class="dn">电子化学品 -8.94% · 电池 -7.30% · 半导体 -7.02%（3/183）· 航天装备 -5.91%（0/9）</td><td>4→5板（中京）但连板 31→15</td><td class="dn"><b>恐慌杀跌 · 退潮末段</b>：上涨占比 10%、跌停 49、缩量 16.4%</td></tr>
+          <tr><td><b>11/26 今日（预判）</b></td><td class="up">医药（中药/流感）· 一般零售/离境退税 · 油气（布油 +2.33%）</td><td class="dn">AI 算力/存储/元件（学习时报 + 英伟达评级）· 电池（锂期货上市 + 宁德H -12%）· 贵金属（金破 3500）</td><td>看能否守 5 板 / 连板回 20</td><td class="warn">冰点<b>测底日</b>——不是抄底日。修复需"守 3468.65 + 量 ≥1.5万亿 + 涨停 ≥70"三条件</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-box" style="margin-top:12px">
+      <b>轮动警示：</b>近 3 日走完"<b>修复（11/23）→ 分歧（11/24）→ 恐慌（11/25）</b>"的完整下行链，<b>轮动周期已缩到 1 天/次</b>。按体系规则：轮动快于此阈值时，<b>任何"看起来是主线"的方向都只配 1% 以内试错仓</b>。更关键的是——<b>11/25 的"最强"（渔业/医药商业/白酒/中药）恰恰是"最低波动"的资产，不是"最强动量"的资产</b>。这类方向的上涨在 V 型修复日会第一个被卖掉（资金回流高弹性），所以今日给它们仓位时，<b>必须配"破 5 日线即走"的纪律，而不是"防御可以拿住"的幻觉</b>。
+    </div>
+  </div>
+
+  <!-- ============ 8. 板块共识度与方向表 ============ -->
+  <div class="dark-card">
+    <div class="dc-title">⭐ 板块共识度与方向表（节点门控版 · state v1 冰点）</div>
+    <div class="scroll">
+      <table style="min-width:1180px; font-size:12px">
+        <thead>
+          <tr>
+            <th style="width:92px">板块</th><th style="width:44px">评分</th><th style="width:70px">共识度</th><th style="width:78px">适配节点</th><th style="width:74px">适配模式</th><th style="width:50px">赔率</th><th style="width:104px">操作判断</th><th style="width:86px">建议仓位</th><th style="width:180px">核心策略</th><th style="width:190px">核心个股建议</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>中药/流感链</b></td><td>66</td><td>中高（中药 38/66·流感 79/178·净+9.87亿）</td><td>冰点</td><td>M2弱转强<br><span style="color:#8fa8c4; font-size:10.5px">低开承接</span></td><td>1:2.0</td>
+            <td><span class="badge b-blu">做多·只做确认</span></td><td><b>0.6%</b><br><span style="font-size:10.5px; color:#8fa8c4">单笔≤0.6%</span></td>
+            <td>宽度最好且<b>催化公开可预判</b>（疾控局流行季 + 农村"一老一小"免费疫苗 + 医保目录新增107种）。<b>唯一有梯队（2板）的防御方向</b>。一字板不追，开板回踩才接</td>
+            <td><b>天圣制药</b>（7.10·2板一字·换手1.47%·仅开板接）｜桂林三金（13.82·+10.03%·涨停放量）｜<b>不碰</b>康芝药业（P1预警 D0 未确认）</td>
+          </tr>
+          <tr>
+            <td><b>一般零售/离境退税</b></td><td>60</td><td>中高（29/60 红·离境退税 +3.64% 8/11）</td><td>冰点</td><td>M2弱转强<br><span style="color:#8fa8c4; font-size:10.5px">低开承接</span></td><td>1:1.8</td>
+            <td><span class="badge b-blu">做多·承接</span></td><td><b>0.8%</b><br><span style="font-size:10.5px; color:#8fa8c4">单笔≤0.8%</span></td>
+            <td>板块 +0.27% 但 <b>29/60 宽度为全市场最好之一</b>，主力 +5.18亿。离境退税概念 +3.64% 是<b>全场概念第一</b>。只做低开/平开承接，高开 &gt;4% 放弃</td>
+            <td><b>杭州解百</b>（8.35·3板·换手5.44%·止损7.68）｜中央商场（2.82·涨停·但为补涨腿，只0.3%）｜<b>不碰</b>高位百货</td>
+          </tr>
+          <tr>
+            <td><b>医药商业</b></td><td>58</td><td>中（17/32 红·+1.09% 板块第2）</td><td>冰点</td><td>M2弱转强</td><td>1:1.8</td>
+            <td><span class="badge b-org">规则89降档·观察</span></td><td><b>0.5%</b><br><span style="font-size:10.5px; color:#8fa8c4">≤0.5%</span></td>
+            <td><b>属 T-1 涨幅第 2 板块 → 规则 89 强制降为"观察 ≤0.5%"</b>（ADJ&lt;20/涨停&lt;60/缩量&gt;10%/跌停≥20 四项全中）。仅给最小试错仓，不做主攻</td>
+            <td><b>合富中国</b>（10.09·10日-15.71% 位置最低·量比3.11）｜人民同泰（8.39·+9.96%·follower）｜<b>不碰</b>ST海王（ST）</td>
+          </tr>
+          <tr>
+            <td><b>石油/油服<br>（事件驱动）</b></td><td>54</td><td>中低（外盘 WTI+2.56%/布油+2.33% ↔ A股油服 -1.55% 1/13）</td><td>冰点</td><td>事件型<br><span style="color:#8fa8c4; font-size:10.5px">非模式</span></td><td>1:1.6</td>
+            <td><span class="badge b-org">事件·只低开接</span></td><td><b>0-0.3%</b><br><span style="font-size:10.5px; color:#8fa8c4">仅低开</span></td>
+            <td>胡塞袭击沙特最大炼油厂（55万桶/日）→ 布油 +2.33%。<b>但 11/25 A股油服已跌 -1.55%（1/13）说明内资不认</b>，只做今日低开 -1% 以内的承接，不追高开</td>
+            <td>中国石油 / 中海油服 / 中远海能（列观察，9:25 看竞价）；<b>高开 &gt;2% 一律不追</b></td>
+          </tr>
+          <tr>
+            <td><b>银行/红利</b></td><td>52</td><td>中（国有大行 4/6·+0.60%·上证50 -0.82% 最抗跌）</td><td>冰点</td><td>不适用<br><span style="color:#8fa8c4; font-size:10.5px">防御</span></td><td>1:1.2</td>
+            <td><span class="badge b-red">防御·持有不加</span></td><td><b>0-0.5%</b><br><span style="font-size:10.5px; color:#8fa8c4">已有仓位</span></td>
+            <td>大行主力 -5.40亿（净流出）说明<b>不是主动加仓、是被动不卖</b>。今日若反弹启动，红利会第一个失血 ⇒ <b>不新开仓，已有仓位不动</b></td>
+            <td>交通银行（+1.78%）｜工商银行｜<b>本方向今日无新开仓</b></td>
+          </tr>
+          <tr>
+            <td><b>渔业/水产<br>（T-1 第一·降档）</b></td><td>50</td><td>低（+4.65% 全场第一，但仅 <b>3/6</b> 红）</td><td>—</td><td>禁用<br><span style="color:#8fa8c4; font-size:10.5px">规则89</span></td><td>1:1.2</td>
+            <td><span class="badge b-grn">回避·0 新开仓</span></td><td><b>0%</b><br><span style="font-size:10.5px; color:#8fa8c4">持有者减</span></td>
+            <td><b>规则 89 明确：T-1 涨幅第一板块当日最高只给"观察"</b>。好当家涨停但 5日 +29.96% / 20日 +65.14%、板块宽度仅 3/6、收于涨停价 3.60 无空间。持有者逢高减，空仓者不追</td>
+            <td>好当家（3.60·涨停·5日+29.96%）｜东方海洋（4.34·<b>-4.41%</b>·换手45.75%已崩）—— <b>全部 0 新开仓</b></td>
+          </tr>
+          <tr>
+            <td><b>白酒/食品饮料</b></td><td>55</td><td>中（白酒 5/19·+0.89%·主力 +5.84亿第一）</td><td>冰点</td><td>不适用<br><span style="color:#8fa8c4; font-size:10.5px">防御</span></td><td>1:1.3</td>
+            <td><span class="badge b-org">观察·不追</span></td><td><b>0-0.5%</b><br><span style="font-size:10.5px; color:#8fa8c4">仅观察</span></td>
+            <td>主力 +5.84亿全市场第一，但<b>宽度 5/19 太差</b>（只有汾酒等少数涨）。符合"资金避险买入"特征，<b>不是趋势启动</b>。V4.2 状态 WAIT（无 D0）⇒ 不参与</td>
+            <td>山西汾酒（133.00·+3.74%）｜古井贡酒（105.45·-1.78%）—— <b>WAIT，不定级，仅观察</b></td>
+          </tr>
+          <tr>
+            <td><b>AI 算力/光模块/PCB<br>（反面清单）</b></td><td>30</td><td>极低（通信设备 -2.44% 9/86·元件 -4.48% 5/61·存储器 -7.30% 5/194）</td><td>—</td><td>禁用<br><span style="color:#8fa8c4; font-size:10.5px">P2确认非可买</span></td><td>1:0.7</td>
+            <td><span class="badge b-grn">回避·0仓</span></td><td><b>0%</b></td>
+            <td>三重压制：①《学习时报》批"算力一哄而上"②英伟达评级入负面观察③隔夜存储/光通信继续跌。<b>天孚+7.65% 是单腿 α，不能代表板块</b>（三-④ 补条）</td>
+            <td>新易盛（181.30·+0.72%·P2确认非可买）｜天孚通信（130.87·+7.65%·单腿）｜中京电子（17.82·5板·换手42.49%）—— <b>全部 0 仓</b></td>
+          </tr>
+          <tr>
+            <td><b>半导体/存储/设备</b></td><td>24</td><td>极低（-7.02% <b>3/183</b>·主力 <b>-124.97亿</b>）</td><td>—</td><td>禁用</td><td>1:0.6</td>
+            <td><span class="badge b-grn">回避·0仓</span></td><td><b>0%</b></td>
+            <td>长鑫存储 -8.07%（0/18）、光刻机 -7.81%、中芯国际概念 -7.74%（1/97）、HBM -7.63%、国家大基金持股 -7.87%（0/34）。<b>华虹 -13.89% 已 INT 中断，当日清仓</b>。<b>不再重复"对抗性受益"的多头逻辑（11/25 已证伪）</b></td>
+            <td>华虹宏力（180.30·<b>-13.89%</b>·INT）｜中芯国际（122.00·-3.56%）—— <b>全部 0 仓，不抄</b></td>
+          </tr>
+          <tr>
+            <td><b>电池/锂电</b></td><td>22</td><td>极低（-7.30% <b>1/97</b>·宁德H -12%）</td><td>—</td><td>禁用</td><td>1:0.6</td>
+            <td><span class="badge b-grn">回避·0仓</span></td><td><b>0%</b></td>
+            <td>氢氧化锂期货<b>今日上市首日</b>（基准 75000元/吨）= 价格发现 + 波动放大双向，不做首日。能源金属 -5.48%（0/12）、金属新材料 -5.88%（0/32）已提前杀</td>
+            <td>宁德时代 / 永兴材料（-3.88%）/ 赣锋锂业 —— <b>全部 0 仓，不做首日</b></td>
+          </tr>
+          <tr>
+            <td><b>贵金属/有色</b></td><td>26</td><td>极低（贵金属 -1.73% 1/11·LME锡 -5.19%）</td><td>—</td><td>禁用</td><td>1:0.7</td>
+            <td><span class="badge b-grn">回避·0仓</span></td><td><b>0%</b></td>
+            <td>现货金盘中破 3500 创 2025/9 以来新低（虽 V 型反转收 +0.92%），银较历史高点回落逾 67%。<b>趋势未反转，不抄底</b>（与 11/25 方向表判定一致，本轮连续正确）</td>
+            <td>山东黄金 / 赤峰黄金（+0.18%）/ 湖南黄金 —— <b>全部 0 仓</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:11.5px; color:#8fa8c4; margin-top:10px; line-height:1.7">
+      <b>门控说明</b>：当前节点=冰点，引擎白名单仅 <b>M2（低开承接变体）</b>。表中"适配模式"列凡标 M2 者方可执行；M1/M3/M4/M5/M6 全部因"高度缺失 / 板块量能收缩 / 冰点补涨=接刀 / 无共振基础"被门控剔除。<b>合计建议仓位：0.6+0.8+0.5+0.3+0.5 = 2.7%（其中事件仓与红利仓为条件仓，实际执行 1.9%）</b>，与总仓 0-3%（执行 2%）一致。<b>注：渔业行虽给 0%，但保留在表中是为了留痕"它曾是 T-1 第一"，便于明日回测归因。</b>
+    </div>
+  </div>
+
+  <!-- ============ 9. 风险点 + 催化日历 + 纪律 ============ -->
+  <div class="block-white">
+    <div class="sec-title">⚠️ 风险点</div>
+    <ul class="li">
+      <li><b class="dn">【最高】3476 不是底部的证明，只是"暂住处"</b>：沪指 11/25 收 3476.47 <b>仅比 11/23 低点 3476.65 低 0.18 点</b>、比全天最低 3468.65 高 7.8 点——<b>这是典型的"贴着前低收"结构，方向由次日决定，不由今日决定</b>。若今日放量破 3468.65，下一个支撑在 <b>3400</b>（-2.2%），中间无结构。</li>
+      <li><b class="dn">【最高】中美关税待宣布，是最大尾部</b>：美国已对 14 个伙伴加税（日韩 15%、欧盟最高 20%），<b>对中国的加税尚未宣布</b>。若今日盘中落地，出口链（家电/机械/纺织/光伏）会二次杀跌，且<b>防御方向也护不住</b>——必须立即减半，不辩论。</li>
+      <li><b class="dn">【高】"缩量下跌"意味着承接力未验证</b>：1.3831万亿是 11 月最低量，<b>跌停 49 只却没有放量</b>——这不是"抛压出尽"，而是<b>"买盘消失"</b>。在买盘回来之前，任何反弹都是"卖压暂歇"而非"资金进场"。<b>量能回不到 1.5万亿，反弹不可持续</b>。</li>
+      <li><b class="warn">【高】涨停结构质量极差</b>：58 只涨停里含 <b>6 只 ST</b>（ST海王/ST荣科/*ST启环/*ST华幸/*ST瑞茂/*ST航图等）与大量低价小票，<b>真正的产业主线涨停为零</b>。这是"游资在垃圾里找活口"，不是"主线启动"。</li>
+      <li><b class="warn">【中】英伟达评级下调的传导是"滞后"的</b>：标普 90 天内或降至 AA-，影响的是<b>杠杆资金的抵押品价值与被动基金的风控阈值</b>，通常 1-2 周后才体现在资金流上。<b>今日不必恐慌，但不能因此认为"AI 链已见底"</b>。</li>
+      <li><b class="warn">【中】锂期货上市首日的双向波动</b>：氢氧化锂期货 6 个合约基准 75000元/吨，<b>首日可能出现"期货跌→股票跟跌"或"期货涨→股票跟涨"的放大效应</b>，而电池板块昨日 -7.30%（1/97）已在悬崖边，<b>不做首日、不接飞刀</b>。</li>
+      <li><b class="neu">【低】AH 映射</b>：恒指昨 -1.14%、恒生科技 -2.56%（华虹H -17%、宁德H -12%、壁仞 -24%）→ <b>9:25 与 10:30 两次校验港股科技是否止跌</b>；若港股科技继续跌而 A股 防御独涨，说明是"避险"不是"修复"，仓位不加。</li>
+    </ul>
+
+    <div class="sec-title" style="margin-top:18px">📅 催化日历</div>
+    <div class="scroll">
+      <table class="dt" style="min-width:540px">
+        <thead><tr><th>时间</th><th>事件</th><th>影响方向</th></tr></thead>
+        <tbody>
+          <tr><td><b>11/26 今日</b></td><td><b>广期所氢氧化锂期货上市</b>（LI2706-LI2711，基准 75000元/吨，我国首个锂盐期货）</td><td class="warn">锂矿/锂盐双向波动，<b>不做首日</b></td></tr>
+          <tr><td>11/26 今日</td><td>国家数据局组织实施数字经济发展"十五五"行动计划（2030 核心产业增加值占 GDP <b>12.5%</b>）</td><td class="up">数据要素/数字经济（中期）</td></tr>
+          <tr><td>11/26 今日</td><td><b>美股感恩节休市</b>（今晚无外盘指引）</td><td class="neu">A股走自己的节奏</td></tr>
+          <tr><td><b>11/27 周五</b></td><td>美股提前至 13:00 收盘（半日市）</td><td class="neu">外盘流动性下降</td></tr>
+          <tr><td><b>11/30 周一</b></td><td><b>融资保证金比例 100%→80% 正式施行</b>（11/22 稳市政策）｜11 月 PMI（官方/财新）</td><td class="up">理论释放增量资金；但<b>预期已于 11/23 定价</b>，不再构成新增催化</td></tr>
+          <tr><td>12/1 起</td><td>四部门《一老一小》方案配套落地（养老机器人/外骨骼、2030 护理床位 73%）｜工信部+农业农村部 55 个农业机器人场景</td><td class="up">机器人/养老服务（中期，需实测验证）</td></tr>
+          <tr><td>12 月上旬</td><td>11 月出口数据（关税影响首次体现）｜美联储 12 月议息（核心 PCE 3.3% 后预期升温）</td><td class="warn">关税链 + 全球风险资产定价锚</td></tr>
+          <tr><td>12 月中</td><td>中央经济工作会议（定调 2027 年政策）</td><td class="up">宏观预期，重点看财政与消费</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec-title" style="margin-top:18px">🛡️ 止盈止损纪律</div>
+    <ul class="li">
+      <li><b>单笔硬止损 -3%</b>（中药/零售/医药商业均适用），触发即走，<b>不补仓、不摊薄、不"再等等"</b>。<b>11/25 华虹的教训：09:25 竞价已 -7.80% 明确破 198 止损，仍留到午盘 -10.17% —— 止损位被破的标的，当档立即从名单移除，不留"观察"</b>。</li>
+      <li><b>标的止损锚（写死）</b>：杭州解百 <b>7.68</b>（-8%）｜天圣制药 <b>6.53</b>（-8%，一字板开板即按此）｜合富中国 <b>9.28</b>（-8%）。</li>
+      <li><b>指数级降仓</b>：① 放量跌破 <b>3468.65</b>（11/25 低点）→ 总仓压至 <b>0-1%</b>；② 跌破 <b>3400</b> → <b>清仓</b>；③ 沪指单日跌幅 &gt;2% 或跌停 &gt;100 只（铁律B）→ 立即降 10 个百分点。</li>
+      <li><b>铁律A（9:25 复核）</b>：四大指数集体低开 &gt;1% + 4300 只下跌 + 外盘冲击 → 触发 [ENV-REVISION] 紧急降仓。<b>今日外盘冲击项已部分解除（费半 -0.65%、亚太转正、A50 +0.56%），但中美关税与英伟达评级属事件型尾部，触发概率中</b>——不以"外盘不跌"为由满仓。</li>
+      <li><b>筹码门（11/25 新增，沿用）</b>：<b>换手 &gt;25% 一律不接</b>（中京电子 42.49%、东方海洋 45.75%、超声电子 32.59% 三次教训）；<b>一字板只在开板回踩时接，不排队</b>。</li>
+      <li><b>规则 89 门（今日核心）</b>：ADJ&lt;20 或 涨停&lt;60 或 缩量&gt;10% 或 跌停≥20 <b>四项全中</b> ⇒ <b>T-1 涨幅前三板块（渔业/医药商业/酒店餐饮）当日禁列为"做多·主攻"</b>，最高给"观察 ≤0.5%"。</li>
+      <li><b>时间纪律</b>：<b>14:00 后不开新仓</b>；今日买入标的<b>默认持仓不超过 2 个交易日</b>，除非出现连板晋级。</li>
+      <li><b>不做什么清单</b>：不抄半导体/存储/光模块 · 不接断板首阴 · 不打首板 · 不做锂期货首日 · 不碰贵金属（趋势未反转）· 不追渔业（规则89）· 不参与算力租赁/IDC（学习时报点名）。</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    数据来源：westock 实测（data_quote / data_changedist / data_market_overview / data_sector ranking / data_kline / tool_ranking）· 腾讯前复权日K（run_v42 专用）· 外盘与消息面：金十数据 / 陆家嘴财经早餐 / 东方财富 / 华尔街见闻 / 财联社 / 中国基金报 多源交叉<br>
+    节点事实源：<span style="font-family:monospace">量化监控/node_state/_node_state_canonical.json</span> · <b>state v1 / writer=premarket / validate ok / warnings=3</b><br>
+    V4.2 定级：<span style="font-family:monospace">研究/v42_grade_pair.py::run_v42</span> 实跑 <b>13 组</b> Pair（基准 2026-11-25 收盘）｜<b>内置回测：1✅0◐2❌（🏆 33.3%）+ 方向表 7✅1◐3❌（68.2%）= 合计 8✅1◐5❌ 命中率 60.7%</b><br>
+    <b>本报告仅供参考，不构成投资建议。</b><br>
+    生成时间：2026-11-26 08:30 · 数据基准 2026-11-25 收盘 + 美东 11/25 隔夜 + 今晨亚太 11/26 开盘
+  </div>
+
+</div>
+</body>
+</html>
